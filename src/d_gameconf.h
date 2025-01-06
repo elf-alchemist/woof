@@ -22,20 +22,39 @@
 #ifndef D_GAMECONF
 #define D_GAMECONF
 
-// [Elf] mismatched with compability systems outside of RNR/KEX Doom
-typedef enum {
-    EXEC_NONE = -1,
-    EXEC_DOOM19,
-    EXEC_LIMITREMOVING,
-    EXEC_BUGFIXED,
-    EXEC_BOOM202,
-    EXEC_COMPLEVEL9,
-    EXEC_MBF,
-    EXEC_MBFEXTRA,
-    EXEC_MBF21,
-    EXEC_MBF21EX,
-    EXEC_ID24,
+// [Elf] mismatched with compability systems outside of R&R/KEX Doom
+typedef enum id24_executable_t {
+    exec_none = -1,
+    exec_doom19,
+    exec_limitremoving,
+    exec_bugfixed,
+    exec_boom202,
+    exec_complevel9,
+    exec_mbf,
+    exec_mbfextra,
+    exec_mbf21,
+    exec_mbf21ex,
+    exec_id24,
 } id24_executable_t;
 
+typedef struct GameConfiguration_t {
+    const char* title;
+    const char* version;
+    const char* author;
+    const char* description;
+
+    const char*  iwad;
+    const char** pwads;
+    const char** pwadfiles;    // 0.99.1
+    const char** dehfiles;     // 0.99.1
+
+    const char* executable;
+    const char* complevel;     // COMPLVL
+    const char* mode;
+    const char* options;       // OPTIONS
+
+    const char** player_xlats;
+    const char** wad_xlats;
+} GameConfiguration_t;
 
 #endif // D_GAMECONF
