@@ -12,32 +12,48 @@
 //  GNU General Public License for more details.
 //
 
+#ifndef __P_SWANDEFS__
+#define __P_SWANDEFS__
+
+// Different SFX on different surfaces
+typedef enum {
+    TERRAIN_NONE,
+    TERRAIN_WATER,
+    TERRAIN_SLIME,
+    TERRAIN_LAVA,
+    TERRAIN_MAX,
+} swan_terrain_t;
+
+// Visual distortions on liquids
+typedef enum {
+    FLAT_EFFECT_NONE,
+    FLAT_EFFECT_SMMU,
+    FLAT_EFFECT_MAX,
+} swan_effect_t;
+
 // Improved switch texture definition
 typedef struct {
-    char state_inactive[9];
-    char state_active[9];
+    char texture_inactive[9];
+    char texture_active[9];
     int  sound_activation;
     int  sound_deactivation;
 } swan_switch_t;
 
 // Improved animated texture definition
 typedef struct {
-    char texture_initial[9];
-    char texture_final[9];
-    int  effect;
+    char initial[9];
+    char final[9];
     int  duration;
 } swan_texture_t;
 
 // Improved animated flat definition
 typedef struct {
-    char flat_initial[9];
-    char flat_final[9];
-    int  effect;
-    int  duration;
+    char           initial[9];
+    char           final[9];
+    swan_terrain_t terrain;
+    swan_effect_t  effect;
+    int            duration;
 } swan_flat_t;
 
-enum SwanFlatEffect {
-    SWAN_FLAT_NONE,
-    SWAN_FLAT_SMMU,
-    SWAN_FLAT_MAX,
-};
+
+#endif // __P_SWANDEFS__
