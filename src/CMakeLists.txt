@@ -111,6 +111,7 @@ set(WOOF_SOURCES
     p_setup.c              p_setup.h
     p_sight.c
     p_spec.c               p_spec.h
+    p_swandefs.c           p_swandefs.h
     p_switch.c
     p_telept.c
     p_tick.c               p_tick.h
