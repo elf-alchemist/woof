@@ -38,6 +38,7 @@
 #include "m_misc.h"
 #include "m_swap.h"
 #include "p_mobj.h"
+#include "p_swandefs.h"
 #include "p_tick.h"
 #include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 #include "r_defs.h"
@@ -139,7 +140,6 @@ unsigned  **texturecolumnofs2;
 byte      **texturecomposite;
 byte      **texturecomposite2;
 int       *flattranslation;             // for global animation
-int       *flatterrain;
 int       *texturetranslation;
 const byte **texturebrightmap; // [crispy] brightmaps
 
@@ -803,13 +803,13 @@ void R_InitFlats(void)
   flattranslation =
     Z_Malloc((numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
 
-  flatterrain =
-    Z_Malloc((numflats+1)*sizeof(*flatterrain), PU_STATIC, 0);
+  swandefs_terrain =
+    Z_Malloc((numflats+1)*sizeof(*swandefs_terrain), PU_STATIC, 0);
 
   for (i=0 ; i<numflats ; i++)
   {
     flattranslation[i] = i;
-    flatterrain[i] = 0; // terrain_solid
+    swandefs_terrain[i] = TERRAIN_NONE;
   }
 }
 

@@ -16,50 +16,51 @@
 #include "m_array.h"
 #include "m_json.h"
 #include "m_misc.h"
+#include "sounds.h"
 
 #include "p_swandefs.h"
 
 static swan_switch_t default_switches[] = {
-    { "SW1BRCOM", "SW2BRCOM", 23, 24 },
-    { "SW1BRN1",  "SW2BRN1",  23, 24 },
-    { "SW1BRN2",  "SW2BRN2",  23, 24 },
-    { "SW1BRNGN", "SW2BRNGN", 23, 24 },
-    { "SW1BROWN", "SW2BROWN", 23, 24 },
-    { "SW1COMM",  "SW2COMM",  23, 24 },
-    { "SW1COMP",  "SW2COMP",  23, 24 },
-    { "SW1DIRT",  "SW2DIRT",  23, 24 },
-    { "SW1EXIT",  "SW2EXIT",  23, 24 },
-    { "SW1GRAY",  "SW2GRAY",  23, 24 },
-    { "SW1GRAY1", "SW2GRAY1", 23, 24 },
-    { "SW1METAL", "SW2METAL", 23, 24 },
-    { "SW1PIPE",  "SW2PIPE",  23, 24 },
-    { "SW1SLAD",  "SW2SLAD",  23, 24 },
-    { "SW1STARG", "SW2STARG", 23, 24 },
-    { "SW1STON1", "SW2STON1", 23, 24 },
-    { "SW1STON2", "SW2STON2", 23, 24 },
-    { "SW1STONE", "SW2STONE", 23, 24 },
-    { "SW1STRTN", "SW2STRTN", 23, 24 },
-    { "SW1BLUE",  "SW2BLUE",  23, 24 },
-    { "SW1CMT",   "SW2CMT",   23, 24 },
-    { "SW1GARG",  "SW2GARG",  23, 24 },
-    { "SW1GSTON", "SW2GSTON", 23, 24 },
-    { "SW1HOT",   "SW2HOT",   23, 24 },
-    { "SW1LION",  "SW2LION",  23, 24 },
-    { "SW1SATYR", "SW2SATYR", 23, 24 },
-    { "SW1SKIN",  "SW2SKIN",  23, 24 },
-    { "SW1VINE",  "SW2VINE",  23, 24 },
-    { "SW1WOOD",  "SW2WOOD",  23, 24 },
-    { "SW1PANEL", "SW2PANEL", 23, 24 },
-    { "SW1ROCK",  "SW2ROCK",  23, 24 },
-    { "SW1MET2",  "SW2MET2",  23, 24 },
-    { "SW1WDMET", "SW2WDMET", 23, 24 },
-    { "SW1BRIK",  "SW2BRIK",  23, 24 },
-    { "SW1MOD1",  "SW2MOD1",  23, 24 },
-    { "SW1ZIM",   "SW2ZIM",   23, 24 },
-    { "SW1STON6", "SW2STON6", 23, 24 },
-    { "SW1TEK",   "SW2TEK",   23, 24 },
-    { "SW1MARB",  "SW2MARB",  23, 24 },
-    { "SW1SKULL", "SW2SKULL", 23, 24 },
+    { "SW1BRCOM", "SW2BRCOM", sfx_swtchn, sfx_swtchx },
+    { "SW1BRN1",  "SW2BRN1",  sfx_swtchn, sfx_swtchx },
+    { "SW1BRN2",  "SW2BRN2",  sfx_swtchn, sfx_swtchx },
+    { "SW1BRNGN", "SW2BRNGN", sfx_swtchn, sfx_swtchx },
+    { "SW1BROWN", "SW2BROWN", sfx_swtchn, sfx_swtchx },
+    { "SW1COMM",  "SW2COMM",  sfx_swtchn, sfx_swtchx },
+    { "SW1COMP",  "SW2COMP",  sfx_swtchn, sfx_swtchx },
+    { "SW1DIRT",  "SW2DIRT",  sfx_swtchn, sfx_swtchx },
+    { "SW1EXIT",  "SW2EXIT",  sfx_swtchn, sfx_swtchx },
+    { "SW1GRAY",  "SW2GRAY",  sfx_swtchn, sfx_swtchx },
+    { "SW1GRAY1", "SW2GRAY1", sfx_swtchn, sfx_swtchx },
+    { "SW1METAL", "SW2METAL", sfx_swtchn, sfx_swtchx },
+    { "SW1PIPE",  "SW2PIPE",  sfx_swtchn, sfx_swtchx },
+    { "SW1SLAD",  "SW2SLAD",  sfx_swtchn, sfx_swtchx },
+    { "SW1STARG", "SW2STARG", sfx_swtchn, sfx_swtchx },
+    { "SW1STON1", "SW2STON1", sfx_swtchn, sfx_swtchx },
+    { "SW1STON2", "SW2STON2", sfx_swtchn, sfx_swtchx },
+    { "SW1STONE", "SW2STONE", sfx_swtchn, sfx_swtchx },
+    { "SW1STRTN", "SW2STRTN", sfx_swtchn, sfx_swtchx },
+    { "SW1BLUE",  "SW2BLUE",  sfx_swtchn, sfx_swtchx },
+    { "SW1CMT",   "SW2CMT",   sfx_swtchn, sfx_swtchx },
+    { "SW1GARG",  "SW2GARG",  sfx_swtchn, sfx_swtchx },
+    { "SW1GSTON", "SW2GSTON", sfx_swtchn, sfx_swtchx },
+    { "SW1HOT",   "SW2HOT",   sfx_swtchn, sfx_swtchx },
+    { "SW1LION",  "SW2LION",  sfx_swtchn, sfx_swtchx },
+    { "SW1SATYR", "SW2SATYR", sfx_swtchn, sfx_swtchx },
+    { "SW1SKIN",  "SW2SKIN",  sfx_swtchn, sfx_swtchx },
+    { "SW1VINE",  "SW2VINE",  sfx_swtchn, sfx_swtchx },
+    { "SW1WOOD",  "SW2WOOD",  sfx_swtchn, sfx_swtchx },
+    { "SW1PANEL", "SW2PANEL", sfx_swtchn, sfx_swtchx },
+    { "SW1ROCK",  "SW2ROCK",  sfx_swtchn, sfx_swtchx },
+    { "SW1MET2",  "SW2MET2",  sfx_swtchn, sfx_swtchx },
+    { "SW1WDMET", "SW2WDMET", sfx_swtchn, sfx_swtchx },
+    { "SW1BRIK",  "SW2BRIK",  sfx_swtchn, sfx_swtchx },
+    { "SW1MOD1",  "SW2MOD1",  sfx_swtchn, sfx_swtchx },
+    { "SW1ZIM",   "SW2ZIM",   sfx_swtchn, sfx_swtchx },
+    { "SW1STON6", "SW2STON6", sfx_swtchn, sfx_swtchx },
+    { "SW1TEK",   "SW2TEK",   sfx_swtchn, sfx_swtchx },
+    { "SW1MARB",  "SW2MARB",  sfx_swtchn, sfx_swtchx },
+    { "SW1SKULL", "SW2SKULL", sfx_swtchn, sfx_swtchx },
 };
 
 static swan_texture_t default_textures[] = {
@@ -90,7 +91,11 @@ static swan_flat_t default_flats[] = {
     { "SLIME09", "SLIME12", TERRAIN_NONE,  FLAT_EFFECT_NONE, 8 },
 };
 
-swan_switch_t *swandefs_switches = NULL;
+swan_switch_t  *swandefs_switches = NULL;
+swan_texture_t *swandefs_textures = NULL;
+swan_flat_t    *swandefs_flats    = NULL;
+swan_terrain_t *swandefs_terrain  = NULL;
+
 static void ParseSwanDefsSwitches(json_t *switches)
 {
     const char *texture_inactive   = JS_GetStringValue(switches, "texture_inactive");
@@ -108,7 +113,6 @@ static void ParseSwanDefsSwitches(json_t *switches)
     array_push(swandefs_switches, swan_switch);
 }
 
-swan_texture_t *swandefs_textures = NULL;
 static void ParseSwanDefsTextures(json_t *texture)
 {
     const char *initial  = JS_GetStringValue(texture, "initial");
@@ -124,7 +128,6 @@ static void ParseSwanDefsTextures(json_t *texture)
     array_push(swandefs_textures, swan_texture);
 }
 
-swan_flat_t *swandefs_flats    = NULL;
 static void ParseSwanDefsFlats(json_t *flat)
 {
     const char *initial  = JS_GetStringValue(flat, "initial");
@@ -144,7 +147,7 @@ static void ParseSwanDefsFlats(json_t *flat)
     array_push(swandefs_flats, swan_flat);
 }
 
-static void ParseSwanDefs(void)
+void P_InitSwanDefs(void)
 {
     // Does the JSON lump even exist?
     json_t *json = JS_Open("SWANDEFS", "swandefs", (version_t){1, 0, 0});

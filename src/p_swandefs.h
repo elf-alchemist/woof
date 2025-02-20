@@ -55,5 +55,11 @@ typedef struct {
     int            duration;
 } swan_flat_t;
 
+extern swan_switch_t  *swandefs_switches;
+extern swan_texture_t *swandefs_textures;
+extern swan_flat_t    *swandefs_flats;
+extern swan_terrain_t *swandefs_terrain;
+
+void P_InitSwanDefs(void);
 
 #endif // __P_SWANDEFS__

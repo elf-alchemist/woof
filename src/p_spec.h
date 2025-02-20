@@ -948,10 +948,10 @@ int EV_DoGenLockedDoor(struct line_s *line);
 //
 ////////////////////////////////////////////////////////////////
 
-// at game start
-void P_InitPicAnims(void);
-
-void P_InitSwitchList(void);
+// [EA] expanded switches / animated textures support
+void P_InitSwanDefs(void);
+void P_InitBoomAnimated(void);
+void P_InitBoomSwitches(void);
 
 // at map load
 void P_SpawnSpecials(void);

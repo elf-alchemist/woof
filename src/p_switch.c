@@ -45,7 +45,7 @@ static int numswitches;                           // killough
 button_t  buttonlist[MAXBUTTONS];
 
 //
-// P_InitSwitchList()
+// P_InitBoomSwitches()
 //
 // Only called at game initialization in order to list the set of switches
 // and buttons known to the engine. This enables their texture to change
@@ -63,7 +63,7 @@ button_t  buttonlist[MAXBUTTONS];
 //
 // Rewritten by Lee Killough to remove limit 2/8/98
 //
-void P_InitSwitchList(void)
+void P_InitBoomSwitches(void)
 {
   int i, index = 0;
   int episode = (gamemode == registered || gamemode==retail) ?
@@ -91,13 +91,13 @@ void P_InitSwitchList(void)
       texture1 = R_CheckTextureNumForName(alphSwitchList[i].name1);
 
       if (texture1 == -1)
-        I_Printf(VB_WARNING, "P_InitSwitchList: unknown texture %s",
+        I_Printf(VB_WARNING, "P_InitBoomSwitches: unknown texture %s",
             alphSwitchList[i].name1);
 
       texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
 
       if (texture2 == -1)
-        I_Printf(VB_WARNING, "P_InitSwitchList: unknown texture %s",
+        I_Printf(VB_WARNING, "P_InitBoomSwitches: unknown texture %s",
             alphSwitchList[i].name2);
 
       if (texture1 != -1 && texture2 != -1)

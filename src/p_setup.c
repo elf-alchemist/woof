@@ -1724,8 +1724,15 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 //
 void P_Init (void)
 {
-  P_InitSwitchList();
-  P_InitPicAnims();
+  if (W_CheckNumForName("SWANDEFS"))
+  {
+    P_InitSwanDefs();
+  }
+  else
+  {
+    P_InitBoomAnimated();
+    P_InitBoomSwitches();
+  }
   R_InitSprites(sprnames);
 }
 

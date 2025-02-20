@@ -46,6 +46,7 @@
 #include "p_map.h"
 #include "p_maputl.h"
 #include "p_mobj.h"
+#include "p_swandefs.h"
 #include "p_setup.h"
 #include "p_spec.h"
 #include "p_tick.h"
@@ -69,14 +70,6 @@
 // Animating textures and planes
 // There is another anim_t used in wi_stuff, unrelated.
 //
-
-typedef enum
-{
-  terrain_solid,
-  terrain_water,
-  terrain_slime,
-  terrain_lava
-} terrain_t;
 
 typedef struct
 {
@@ -117,7 +110,7 @@ static void P_SpawnFriction(void);    // phares 3/16/98
 static void P_SpawnPushers(void);     // phares 3/20/98
 
 //
-// P_InitPicAnims
+// P_InitBoomAnimated
 //
 // Load the table of animation definitions, checking for existence of
 // the start and end of each frame. If the start doesn't exist the sequence
@@ -138,7 +131,7 @@ static void P_SpawnPushers(void);     // phares 3/20/98
 // source text file DEFSWANI.DAT also in the BOOM util distribution.
 //
 //
-void P_InitPicAnims (void)
+void P_InitBoomAnimated(void)
 {
   int         i;
   animdef_t   *animdefs; //jff 3/23/98 pointer to animation lump
@@ -176,46 +169,16 @@ void P_InitPicAnims (void)
           lastanim->picnum = R_FlatNumForName (animdefs[i].endname);
           lastanim->basepic = R_FlatNumForName (animdefs[i].startname);
 
-          if (lastanim->picnum >= lastanim->basepic)
-          {
-            char *startname;
-            terrain_t terrain;
-            int j;
-
-            startname = M_StringDuplicate(animdefs[i].startname);
-            M_StringToUpper(startname);
-
-            // [FG] play sound when hitting animated floor
-            if (strstr(startname, "WATER") || strstr(startname, "BLOOD"))
-              terrain = terrain_water;
-            else if (strstr(startname, "NUKAGE") || strstr(startname, "SLIME"))
-              terrain = terrain_slime;
-            else if (strstr(startname, "LAVA"))
-              terrain = terrain_lava;
-            else
-              terrain = terrain_solid;
-
-            free(startname);
-
-            for (j = lastanim->basepic; j <= lastanim->picnum; j++)
-            {
-              flatterrain[j] = terrain;
-            }
-          }
         }
 
       lastanim->istexture = animdefs[i].istexture;
       lastanim->numpics = lastanim->picnum - lastanim->basepic + 1;
       lastanim->speed = LONG(animdefs[i].speed); // killough 5/5/98: add LONG()
 
-      // [crispy] add support for SMMU swirling flats
-      if (lastanim->speed < 65536 && lastanim->numpics != 1)
-      {
       if (lastanim->numpics < 2)
-        I_Error ("P_InitPicAnims: bad cycle from %s to %s",
+        I_Error ("P_InitBoomAnimated: bad cycle from %s to %s",
                  animdefs[i].startname,
                  animdefs[i].endname);
-      }
 
       lastanim++;
     }
@@ -223,16 +186,17 @@ void P_InitPicAnims (void)
 }
 
 // [FG] play sound when hitting animated floor
-void P_HitFloor (mobj_t *mo, int oof)
+// [EA] expanded to SwanDefs feature set
+void P_HitFloor(mobj_t *mo, int oof)
 {
   const short floorpic = mo->subsector->sector->floorpic;
-  terrain_t terrain = flatterrain[floorpic];
+  swan_terrain_t terrain = swandefs_terrain[floorpic];
 
-  int hitsound[][2] = {
-    {sfx_None,   sfx_oof},    // terrain_solid
-    {sfx_splsml, sfx_splash}, // terrain_water
-    {sfx_plosml, sfx_ploosh}, // terrain_slime
-    {sfx_lavsml, sfx_lvsiz}   // terrain_lava
+  int hitsound[TERRAIN_MAX][2] = {
+    [TERRAIN_NONE]  = { sfx_None,   sfx_oof    },
+    [TERRAIN_WATER] = { sfx_splsml, sfx_splash },
+    [TERRAIN_SLIME] = { sfx_plosml, sfx_ploosh },
+    [TERRAIN_LAVA]  = { sfx_lavsml, sfx_lvsiz  },
   };
 
   S_StartSoundHitFloor(mo, hitsound[terrain][oof]);
@@ -2209,12 +2173,12 @@ void P_PlayerInSpecialSector (player_t *player)
 	{
 	  method_t mod = MOD_None;
 
-	  switch (flatterrain[sector->floorpic])
+	  switch (swandefs_terrain[sector->floorpic])
 	  {
-	      case terrain_lava:
+	      case TERRAIN_LAVA:
 	          mod = MOD_Lava;
 	          break;
-	      case terrain_slime:
+	      case TERRAIN_SLIME:
 	          mod = MOD_Slime;
 	          break;
 	      default:
