@@ -21,10 +21,10 @@
 #include "p_swandefs.h"
 
 static struct {
-    char texture_inactive[9];
-    char texture_active[9];
-    int  sound_activation;
-    int  sound_deactivation;
+    char inactive[9];
+    char active[9];
+    int  activation;
+    int  deactivation;
 } default_switches[] = {
     { "SW1BRCOM", "SW2BRCOM", sfx_swtchn, sfx_swtchx },
     { "SW1BRN1",  "SW2BRN1",  sfx_swtchn, sfx_swtchx },
@@ -124,10 +124,10 @@ static void ParseSwanDefsSwitches(json_t *switches)
 
     swan_switch_t swan_switch = {0};
 
-    swan_switch.texture_inactive   = W_CheckNumForName(texture_inactive);
-    swan_switch.texture_active     = W_CheckNumForName(texture_active);
-    swan_switch.sound_activation   = sound_activation;
-    swan_switch.sound_deactivation = sound_deactivation;
+    swan_switch.inactive     = W_CheckNumForName(texture_inactive);
+    swan_switch.active       = W_CheckNumForName(texture_active);
+    swan_switch.activation   = sound_activation;
+    swan_switch.deactivation = sound_deactivation;
 
     array_push(swandefs_switches, swan_switch);
     swan_count_switch++;

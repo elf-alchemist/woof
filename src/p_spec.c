@@ -35,7 +35,6 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "hu_obituary.h"
-#include "i_printf.h"
 #include "i_system.h"
 #include "info.h"
 #include "m_argv.h"
@@ -59,10 +58,8 @@
 #include "r_plane.h" // killough 10/98
 #include "r_sky.h"   // R_GetSkyColor
 #include "r_state.h"
-#include "r_swirl.h"
 #include "s_sound.h"
 #include "sounds.h"
-#include "st_stuff.h"
 #include "st_widgets.h"
 #include "tables.h"
 #include "w_wad.h"

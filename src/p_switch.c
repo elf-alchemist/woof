@@ -25,9 +25,11 @@
 #include "g_game.h"
 #include "i_printf.h"
 #include "i_system.h"
+#include "m_array.h"
 #include "m_swap.h"
 #include "p_mobj.h"
 #include "p_spec.h"
+#include "p_swandefs.h"
 #include "r_data.h"
 #include "r_defs.h"
 #include "r_state.h"
@@ -36,13 +38,14 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
-// killough 2/8/98: Remove switch limit
-
-static int *switchlist;                           // killough
-static int max_numswitches;                       // killough
-static int numswitches;                           // killough
-
 button_t  buttonlist[MAXBUTTONS];
+
+typedef PACKED_PREFIX struct
+{
+  char name1[9];
+  char name2[9];
+  short episode;
+} PACKED_SUFFIX switchlist_t; //jff 3/23/98 pack to read from memory
 
 //
 // P_InitBoomSwitches()
@@ -65,52 +68,55 @@ button_t  buttonlist[MAXBUTTONS];
 //
 void P_InitBoomSwitches(void)
 {
-  int i, index = 0;
-  int episode = (gamemode == registered || gamemode==retail) ?
-                 2 : gamemode == commercial ? 3 : 1;
-  switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch table
+  int i;
+  int episode = (gamemode == registered || gamemode == retail) ? 2
+                : gamemode == commercial                       ? 3
+                                                               : 1;
+  switchlist_t *alphSwitchList; // jff 3/23/98 pointer to switch table
 
-  //jff 3/23/98 read the switch table from a predefined lump             
-  alphSwitchList = (switchlist_t *)W_CacheLumpName("SWITCHES",PU_STATIC);
+  //jff 3/23/98 read the switch table from a predefined lump
+  alphSwitchList = W_CacheLumpName("SWITCHES", PU_STATIC);
 
-  for (i=0;;i++)
+  swan_switch_t swan_switch;
+
+  for (i = 0;; i++)
   {
-    if (index+1 >= max_numswitches)
-      switchlist = Z_Realloc(switchlist, sizeof *switchlist *
-          (max_numswitches = max_numswitches ? max_numswitches*2 : 8),
-          PU_STATIC, 0);
     if (SHORT(alphSwitchList[i].episode) <= episode) //jff 5/11/98 endianess
     {
-      int texture1, texture2;
-
       if (!SHORT(alphSwitchList[i].episode))
+      {
         break;
+      }
 
       // Ignore switches referencing unknown texture names, instead of exiting.
       // Warn if either one is missing, but only add if both are valid.
-      texture1 = R_CheckTextureNumForName(alphSwitchList[i].name1);
+      int texture1 = R_CheckTextureNumForName(alphSwitchList[i].name1);
+      int texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
 
       if (texture1 == -1)
+      {
         I_Printf(VB_WARNING, "P_InitBoomSwitches: unknown texture %s",
             alphSwitchList[i].name1);
-
-      texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
-
+      }
       if (texture2 == -1)
+      {
         I_Printf(VB_WARNING, "P_InitBoomSwitches: unknown texture %s",
             alphSwitchList[i].name2);
+      }
 
       if (texture1 != -1 && texture2 != -1)
       {
-        switchlist[index++] = texture1;
-        switchlist[index++] = texture2;
+        swan_switch.inactive     = texture1;
+        swan_switch.active       = texture2;
+        swan_switch.activation   = sfx_swtchn;
+        swan_switch.deactivation = sfx_swtchx;
+        array_push(swandefs_switches, swan_switch);
+        swan_count_switch++;
       }
     }
   }
 
-  numswitches = index/2;
-  switchlist[index] = -1;
-  Z_ChangeTag(alphSwitchList,PU_CACHE); //jff 3/23/98 allow table to be freed
+  Z_ChangeTag(alphSwitchList, PU_CACHE); //jff 3/23/98 allow table to be freed
 }
 
 //
@@ -170,56 +176,97 @@ void P_ChangeSwitchTexture
   int     i;
   int     sound;
 
+  side_t        *side;
+  swan_switch_t *switch_p;
+  int            active;
+  int            inactive;
+
   if (!useAgain)
-    line->special = 0;
-
-  texTop = sides[line->sidenum[0]].toptexture;
-  texMid = sides[line->sidenum[0]].midtexture;
-  texBot = sides[line->sidenum[0]].bottomtexture;
-
-  sound = sfx_swtchn;
-
-  // EXIT SWITCH?
-  if (line->special == 11)                
-    sound = sfx_swtchx;
-
-  for (i = 0;i < numswitches*2;i++)
   {
-    if (switchlist[i] == texTop)     // if an upper texture
+    line->special = 0;
+  }
+
+  side   = &sides[line->sidenum[0]];
+  texTop = side->toptexture;
+  texMid = side->midtexture;
+  texBot = side->bottomtexture;
+
+
+  for (i = 0; i < swan_count_switch; i++)
+  {
+    switch_p = &swandefs_switches[i];
+
+    active   = switch_p->active;
+    inactive = switch_p->inactive;
+
+    sound = (line->special == 11)
+            ? switch_p->deactivation
+            : switch_p->activation;
+
+    S_StartSound(buttonlist->soundorg, sound);
+
+    // if an upper texture
+    if (active == texTop)
     {
-      S_StartSound(buttonlist->soundorg,sound);     // switch activation sound
-      sides[line->sidenum[0]].toptexture = switchlist[i^1];       //chg texture
+      side->toptexture = inactive;
 
       if (useAgain)
-        P_StartButton(line,top,switchlist[i],BUTTONTIME);         //start timer
-
+      {
+        P_StartButton(line, top, active, BUTTONTIME);
+      }
       return;
     }
-    else
+    else if (inactive == texTop)
     {
-      if (switchlist[i] == texMid)   // if a normal texture
+      side->toptexture = active;
+
+      if (useAgain)
       {
-        S_StartSound(buttonlist->soundorg,sound);   // switch activation sound
-        sides[line->sidenum[0]].midtexture = switchlist[i^1];     //chg texture
-
-        if (useAgain)
-          P_StartButton(line, middle,switchlist[i],BUTTONTIME);   //start timer
-
-        return;
+        P_StartButton(line, top, inactive, BUTTONTIME);
       }
-      else
+      return;
+    }
+    // if a mid texture
+    else if (active == texMid)
+    {
+      side->midtexture = inactive;
+
+      if (useAgain)
       {
-        if (switchlist[i] == texBot) // if a lower texture
-        {
-          S_StartSound(buttonlist->soundorg,sound); // switch activation sound
-          sides[line->sidenum[0]].bottomtexture = switchlist[i^1];//chg texture
-
-          if (useAgain)
-            P_StartButton(line, bottom,switchlist[i],BUTTONTIME); //start timer
-
-          return;
-        }
+        P_StartButton(line, middle, active, BUTTONTIME);
       }
+      return;
+    }
+    else if (inactive == texMid)
+    {
+      side->midtexture = active;
+
+      if (useAgain)
+      {
+        P_StartButton(line, middle, inactive, BUTTONTIME);
+      }
+      return;
+    }
+    // if a lower texture
+    else if (active == texBot)
+    {
+      side->bottomtexture = inactive;
+
+      if (useAgain)
+      {
+        P_StartButton(line, bottom, active, BUTTONTIME);
+      }
+      return;
+    }
+    else if (inactive == texBot)
+    {
+      side->bottomtexture = active;
+
+      if (useAgain)
+      {
+        P_StartButton(line, bottom, inactive, BUTTONTIME);
+      }
+      return;
     }
   }
 }

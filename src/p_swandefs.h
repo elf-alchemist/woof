@@ -33,10 +33,10 @@ typedef enum {
 
 // Improved switch texture definition
 typedef struct {
-    int texture_inactive;
-    int texture_active;
-    int sound_activation;
-    int sound_deactivation;
+    int inactive;
+    int active;
+    int activation;
+    int deactivation;
 } swan_switch_t;
 
 // Improved animated texture definition
