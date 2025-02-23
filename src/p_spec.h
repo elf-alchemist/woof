@@ -59,9 +59,6 @@ struct sector_s;
 // killough 2/14/98: redefine in terms of MAXPLAYERS
 #define MAXBUTTONS    (MAXPLAYERS*4)
 
-// 1 second, in ticks. 
-#define BUTTONTIME  TICRATE
-
 // p_lights
 
 #define GLOWSPEED       8

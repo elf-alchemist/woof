@@ -108,6 +108,7 @@ void P_InitBoomSwitches(void)
       {
         swan_switch.inactive     = texture1;
         swan_switch.active       = texture2;
+        swan_switch.delay        = 1 * TICRATE;
         swan_switch.activation   = sfx_swtchn;
         swan_switch.deactivation = sfx_swtchx;
         array_push(swandefs_switches, swan_switch);
@@ -180,6 +181,7 @@ void P_ChangeSwitchTexture
   swan_switch_t *switch_p;
   int            active;
   int            inactive;
+  int            delay;
 
   if (!useAgain)
   {
@@ -198,6 +200,7 @@ void P_ChangeSwitchTexture
 
     active   = switch_p->active;
     inactive = switch_p->inactive;
+    delay    = switch_p->delay;
 
     sound = (line->special == 11)
             ? switch_p->deactivation
@@ -212,7 +215,7 @@ void P_ChangeSwitchTexture
 
       if (useAgain)
       {
-        P_StartButton(line, top, active, BUTTONTIME);
+        P_StartButton(line, top, active, delay);
       }
       return;
     }
@@ -222,7 +225,7 @@ void P_ChangeSwitchTexture
 
       if (useAgain)
       {
-        P_StartButton(line, top, inactive, BUTTONTIME);
+        P_StartButton(line, top, inactive, delay);
       }
       return;
     }
@@ -233,7 +236,7 @@ void P_ChangeSwitchTexture
 
       if (useAgain)
       {
-        P_StartButton(line, middle, active, BUTTONTIME);
+        P_StartButton(line, middle, active, delay);
       }
       return;
     }
@@ -243,7 +246,7 @@ void P_ChangeSwitchTexture
 
       if (useAgain)
       {
-        P_StartButton(line, middle, inactive, BUTTONTIME);
+        P_StartButton(line, middle, inactive, delay);
       }
       return;
     }
@@ -254,7 +257,7 @@ void P_ChangeSwitchTexture
 
       if (useAgain)
       {
-        P_StartButton(line, bottom, active, BUTTONTIME);
+        P_StartButton(line, bottom, active, delay);
       }
       return;
     }
@@ -264,7 +267,7 @@ void P_ChangeSwitchTexture
 
       if (useAgain)
       {
-        P_StartButton(line, bottom, inactive, BUTTONTIME);
+        P_StartButton(line, bottom, inactive, delay);
       }
       return;
     }

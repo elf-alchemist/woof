@@ -35,6 +35,7 @@ typedef enum {
 typedef struct {
     int inactive;
     int active;
+    int delay;
     int activation;
     int deactivation;
 } swan_switch_t;
