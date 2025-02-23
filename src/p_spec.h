@@ -949,7 +949,6 @@ int EV_DoGenLockedDoor(struct line_s *line);
 ////////////////////////////////////////////////////////////////
 
 // [EA] expanded switches / animated textures support
-void P_InitSwanDefs(void);
 void P_InitBoomAnimated(void);
 void P_InitBoomSwitches(void);
 

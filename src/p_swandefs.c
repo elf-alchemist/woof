@@ -15,12 +15,17 @@
 #include "i_printf.h"
 #include "m_array.h"
 #include "m_json.h"
-#include "m_misc.h"
 #include "sounds.h"
+#include "w_wad.h"
 
 #include "p_swandefs.h"
 
-static swan_switch_t default_switches[] = {
+static struct {
+    char texture_inactive[9];
+    char texture_active[9];
+    int  sound_activation;
+    int  sound_deactivation;
+} default_switches[] = {
     { "SW1BRCOM", "SW2BRCOM", sfx_swtchn, sfx_swtchx },
     { "SW1BRN1",  "SW2BRN1",  sfx_swtchn, sfx_swtchx },
     { "SW1BRN2",  "SW2BRN2",  sfx_swtchn, sfx_swtchx },
@@ -63,7 +68,11 @@ static swan_switch_t default_switches[] = {
     { "SW1SKULL", "SW2SKULL", sfx_swtchn, sfx_swtchx },
 };
 
-static swan_texture_t default_textures[] = {
+static struct {
+    char initial[9];
+    char final[9];
+    int  duration;
+} default_textures[] = {
     { "BLODGR1",  "BLODGR4",  8 },
     { "SLADRIP1", "SLADRIP3", 8 },
     { "BLODRIP1", "BLODRIP4", 8 },
@@ -79,7 +88,13 @@ static swan_texture_t default_textures[] = {
     { "DBRAIN1",  "DBRAIN4",  8 },
 };
 
-static swan_flat_t default_flats[] = {
+static struct {
+    char           initial[9];
+    char           final[9];
+    swan_terrain_t terrain;
+    swan_effect_t  effect;
+    int            duration;
+} default_flats[] = {
     { "NUKAGE1", "NUKAGE3", TERRAIN_SLIME, FLAT_EFFECT_NONE, 8 },
     { "FWATER1", "FWATER4", TERRAIN_WATER, FLAT_EFFECT_NONE, 8 },
     { "SWATER1", "SWATER4", TERRAIN_WATER, FLAT_EFFECT_NONE, 8 },
@@ -96,6 +111,10 @@ swan_texture_t *swandefs_textures = NULL;
 swan_flat_t    *swandefs_flats    = NULL;
 swan_terrain_t *swandefs_terrain  = NULL;
 
+int swan_count_switch  = 0;
+int swan_count_texture = 0;
+int swan_count_flat    = 0;
+
 static void ParseSwanDefsSwitches(json_t *switches)
 {
     const char *texture_inactive   = JS_GetStringValue(switches, "texture_inactive");
@@ -105,12 +124,13 @@ static void ParseSwanDefsSwitches(json_t *switches)
 
     swan_switch_t swan_switch = {0};
 
-    M_CopyLumpName(swan_switch.texture_inactive, texture_inactive);
-    M_CopyLumpName(swan_switch.texture_active,   texture_active);
+    swan_switch.texture_inactive   = W_CheckNumForName(texture_inactive);
+    swan_switch.texture_active     = W_CheckNumForName(texture_active);
     swan_switch.sound_activation   = sound_activation;
     swan_switch.sound_deactivation = sound_deactivation;
 
     array_push(swandefs_switches, swan_switch);
+    swan_count_switch++;
 }
 
 static void ParseSwanDefsTextures(json_t *texture)
@@ -121,11 +141,13 @@ static void ParseSwanDefsTextures(json_t *texture)
 
     swan_texture_t swan_texture = {0};
 
-    M_CopyLumpName(swan_texture.initial, initial);
-    M_CopyLumpName(swan_texture.final,   final);
+    swan_texture.initial  = W_CheckNumForName(initial);
+    swan_texture.final    = W_CheckNumForName(final);
+    swan_texture.count    = swan_texture.final - swan_texture.initial + 1;
     swan_texture.duration = duration;
 
     array_push(swandefs_textures, swan_texture);
+    swan_count_texture++;
 }
 
 static void ParseSwanDefsFlats(json_t *flat)
@@ -138,13 +160,15 @@ static void ParseSwanDefsFlats(json_t *flat)
 
     swan_flat_t swan_flat = {0};
 
-    M_CopyLumpName(swan_flat.initial, initial);
-    M_CopyLumpName(swan_flat.final,   final);
+    swan_flat.initial  = W_CheckNumForName(initial);
+    swan_flat.final    = W_CheckNumForName(final);
+    swan_flat.count    = swan_flat.final - swan_flat.initial + 1;
     swan_flat.terrain  = terrain;
     swan_flat.effect   = effect;
     swan_flat.duration = duration;
 
     array_push(swandefs_flats, swan_flat);
+    swan_count_flat++;
 }
 
 void P_InitSwanDefs(void)

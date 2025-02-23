@@ -35,9 +35,11 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "hu_obituary.h"
+#include "i_printf.h"
 #include "i_system.h"
 #include "info.h"
 #include "m_argv.h"
+#include "m_array.h"
 #include "m_bbox.h" // phares 3/20/98
 #include "m_misc.h"
 #include "m_random.h"
@@ -100,10 +102,6 @@ typedef PACKED_PREFIX struct
 #pragma pack(pop)
 #endif
 
-#define MAXANIMS 32                   // no longer a strict limit -- killough
-static anim_t *lastanim, *anims;      // new structure w/o limits -- killough
-static size_t maxanims;
-
 // killough 3/7/98: Initialize generalized scrolling
 static void P_SpawnScrollers(void);
 static void P_SpawnFriction(void);    // phares 3/16/98
@@ -130,6 +128,7 @@ static void P_SpawnPushers(void);     // phares 3/20/98
 // The standard list of switches and animations is contained in the example
 // source text file DEFSWANI.DAT also in the BOOM util distribution.
 //
+// [EA] reworked to match SwanDefs feature set
 //
 void P_InitBoomAnimated(void)
 {
@@ -138,51 +137,58 @@ void P_InitBoomAnimated(void)
   //  Init animation
 
   //jff 3/23/98 read from predefined or wad lump instead of table
-  animdefs = W_CacheLumpName("ANIMATED",PU_STATIC);
+  animdefs = W_CacheLumpName("ANIMATED", PU_STATIC);
 
-  lastanim = anims;
-  for (i=0 ; animdefs[i].istexture != -1 ; i++)
+  swan_flat_t    swan_flat;
+  swan_texture_t swan_texture;
+
+  for (i = 0; animdefs[i].istexture != -1; i++)
+  {
+    if (animdefs[i].istexture)
     {
-      // 1/11/98 killough -- removed limit by array-doubling
-      if (!anims || lastanim >= anims + maxanims)
-        {
-          size_t newmax = maxanims ? maxanims*2 : MAXANIMS;
-          anims = Z_Realloc(anims, newmax*sizeof(*anims), PU_STATIC, 0);   // killough
-          lastanim = anims + maxanims;
-          maxanims = newmax;
-        }
+      // different episode ?
+      if (R_CheckTextureNumForName(animdefs[i].startname) == -1)
+        continue;
 
-      if (animdefs[i].istexture)
-        {
-          // different episode ?
-          if (R_CheckTextureNumForName(animdefs[i].startname) == -1)
-            continue;
 
-          lastanim->picnum = R_TextureNumForName (animdefs[i].endname);
-          lastanim->basepic = R_TextureNumForName (animdefs[i].startname);
-        }
-      else
-        {
-          if ((W_CheckNumForName)(animdefs[i].startname, ns_flats) == -1)  // killough 4/17/98
-            continue;
+      swan_texture.final    = R_TextureNumForName(animdefs[i].endname);
+      swan_texture.initial  = R_TextureNumForName(animdefs[i].startname);
+      swan_texture.count    = swan_texture.final - swan_texture.initial + 1;
+      swan_texture.duration = LONG(animdefs[i].speed); // killough 5/5/98: add LONG()
 
-          lastanim->picnum = R_FlatNumForName (animdefs[i].endname);
-          lastanim->basepic = R_FlatNumForName (animdefs[i].startname);
+      if (swan_texture.count < 2)
+      {
+        I_Error("P_InitBoomAnimated: bad cycle from %s to %s",
+                animdefs[i].startname, animdefs[i].endname);
+      }
 
-        }
-
-      lastanim->istexture = animdefs[i].istexture;
-      lastanim->numpics = lastanim->picnum - lastanim->basepic + 1;
-      lastanim->speed = LONG(animdefs[i].speed); // killough 5/5/98: add LONG()
-
-      if (lastanim->numpics < 2)
-        I_Error ("P_InitBoomAnimated: bad cycle from %s to %s",
-                 animdefs[i].startname,
-                 animdefs[i].endname);
-
-      lastanim++;
+      array_push(swandefs_textures, swan_texture);
+      swan_count_texture++;
     }
-  Z_ChangeTag (animdefs,PU_CACHE); //jff 3/23/98 allow table to be freed
+    else
+    {
+      // killough 4/17/98
+      if ((W_CheckNumForName)(animdefs[i].startname, ns_flats) == -1)
+      {
+        continue;
+      }
+
+      swan_flat.final    = R_FlatNumForName(animdefs[i].endname);
+      swan_flat.initial  = R_FlatNumForName(animdefs[i].startname);
+      swan_flat.count    = swan_flat.final - swan_flat.initial + 1;
+      swan_flat.duration = LONG(animdefs[i].speed); // killough 5/5/98: add LONG()
+
+      if (swan_flat.count < 2)
+      {
+        I_Error("P_InitBoomAnimated: bad cycle from %s to %s",
+                animdefs[i].startname, animdefs[i].endname);
+      }
+
+      array_push(swandefs_flats, swan_flat);
+      swan_count_flat++;
+    }
+  }
+  Z_ChangeTag(animdefs, PU_CACHE); //jff 3/23/98 allow table to be freed
 }
 
 // [FG] play sound when hitting animated floor
@@ -2321,9 +2327,12 @@ int             levelFragLimitCount; // Ty 03/18/98 Added -frags support
 
 void P_UpdateSpecials (void)
 {
-  anim_t*     anim;
-  int         pic;
-  int         i;
+  int i;
+  int j;
+  int flat_pic;
+  int texture_pic;
+  swan_texture_t *texture_p;
+  swan_flat_t    *flat_p;
 
   // Downcount level timer, exit level if elapsed
   if (levelTimer == true)
@@ -2355,21 +2364,30 @@ void P_UpdateSpecials (void)
         G_ExitLevel();
     }
 
-  // Animate flats and textures globally
-  for (anim = anims ; anim < lastanim ; anim++)
-    for (i = 0 ; i < anim->numpics ; i++)
-      {
-        pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
-        if (anim->istexture)
-          texturetranslation[anim->basepic + i] = pic;
-        else
-        {
-          flattranslation[anim->basepic + i] = pic;
-          // [crispy] add support for SMMU swirling flats
-          if (anim->speed > 65535 || anim->numpics == 1 || r_swirl)
-            flattranslation[anim->basepic + i] = -1;
-        }
-      }
+  // [EA] Animate flats globally
+  for (i = 0; i < swan_count_flat; i++)
+  {
+    flat_p = &swandefs_flats[i];
+
+    for (j = 0; j < flat_p->count; j++)
+    {
+      flat_pic = flat_p->initial
+        + ((leveltime / flat_p->duration + j) % flat_p->count);
+      flattranslation[flat_p->initial + j] = flat_pic;
+    }
+  }
+
+  // [EA] Animate textures globally
+  for (i = 0; i < swan_count_texture; i++)
+  {
+    texture_p = &swandefs_textures[i];
+    for (j = 0; j < texture_p->count; j++)
+    {
+      texture_pic = texture_p->initial
+        + ((leveltime / texture_p->duration + j) % texture_p->count);
+      texturetranslation[texture_p->initial + j] = texture_pic;
+    }
+  }
 
   // Check buttons (retriggerable switches) and change texture on timeout
   for (i = 0; i < MAXBUTTONS; i++)

@@ -42,6 +42,7 @@
 #include "p_mobj.h"
 #include "p_setup.h"
 #include "p_spec.h"
+#include "p_swandefs.h"
 #include "p_tick.h"
 #include "r_data.h"
 #include "r_defs.h"
@@ -1724,7 +1725,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 //
 void P_Init (void)
 {
-  if (W_CheckNumForName("SWANDEFS"))
+  if (W_CheckNumForName("SWANDEFS") >= 0)
   {
     P_InitSwanDefs();
   }

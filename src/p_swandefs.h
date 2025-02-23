@@ -33,23 +33,25 @@ typedef enum {
 
 // Improved switch texture definition
 typedef struct {
-    char texture_inactive[9];
-    char texture_active[9];
-    int  sound_activation;
-    int  sound_deactivation;
+    int texture_inactive;
+    int texture_active;
+    int sound_activation;
+    int sound_deactivation;
 } swan_switch_t;
 
 // Improved animated texture definition
 typedef struct {
-    char initial[9];
-    char final[9];
-    int  duration;
+    int initial;
+    int final;
+    int count;
+    int duration;
 } swan_texture_t;
 
 // Improved animated flat definition
 typedef struct {
-    char           initial[9];
-    char           final[9];
+    int            initial;
+    int            final;
+    int            count;
     swan_terrain_t terrain;
     swan_effect_t  effect;
     int            duration;
@@ -59,6 +61,10 @@ extern swan_switch_t  *swandefs_switches;
 extern swan_texture_t *swandefs_textures;
 extern swan_flat_t    *swandefs_flats;
 extern swan_terrain_t *swandefs_terrain;
+
+extern int swan_count_switch;
+extern int swan_count_texture;
+extern int swan_count_flat;
 
 void P_InitSwanDefs(void);
 
