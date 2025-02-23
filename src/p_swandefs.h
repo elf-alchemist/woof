@@ -36,8 +36,8 @@ typedef struct {
     int inactive;
     int active;
     int delay;
-    int activation;
-    int deactivation;
+    int sound;
+    int exit;
 } swan_switch_t;
 
 // Improved animated texture definition
@@ -50,23 +50,27 @@ typedef struct {
 
 // Improved animated flat definition
 typedef struct {
-    int            initial;
-    int            final;
-    int            count;
-    swan_terrain_t terrain;
-    swan_effect_t  effect;
-    int            duration;
+    int initial;
+    int final;
+    int count;
+    int duration;
 } swan_flat_t;
 
 extern swan_switch_t  *swandefs_switches;
 extern swan_texture_t *swandefs_textures;
 extern swan_flat_t    *swandefs_flats;
-extern swan_terrain_t *swandefs_terrain;
+extern swan_terrain_t *swandefs_terrain; // R_InitFlats defaults all to NONE
+extern swan_effect_t  *swandefs_effect;  // R_InitFlats defaults all to NONE
 
 extern int swan_count_switch;
 extern int swan_count_texture;
 extern int swan_count_flat;
 
+void P_SwanSwitch(const char *inactive, const char *active, int delay,
+                  int sound, int exit);
+void P_SwanTexture(const char *initial, const char *final, int duration);
+void P_SwanFlat(const char *initial, const char *final, int terrain,
+                int effect, int duration);
 void P_InitSwanDefs(void);
 
 #endif // __P_SWANDEFS__

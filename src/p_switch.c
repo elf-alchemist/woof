@@ -106,11 +106,11 @@ void P_InitBoomSwitches(void)
 
       if (texture1 != -1 && texture2 != -1)
       {
-        swan_switch.inactive     = texture1;
-        swan_switch.active       = texture2;
-        swan_switch.delay        = 1 * TICRATE;
-        swan_switch.activation   = sfx_swtchn;
-        swan_switch.deactivation = sfx_swtchx;
+        swan_switch.inactive = texture1;
+        swan_switch.active   = texture2;
+        swan_switch.delay    = 1 * TICRATE;
+        swan_switch.sound    = sfx_swtchn;
+        swan_switch.exit     = sfx_swtchx;
         array_push(swandefs_switches, swan_switch);
         swan_count_switch++;
       }
@@ -203,8 +203,8 @@ void P_ChangeSwitchTexture
     delay    = switch_p->delay;
 
     sound = (line->special == 11)
-            ? switch_p->deactivation
-            : switch_p->activation;
+            ? switch_p->exit
+            : switch_p->sound;
 
     S_StartSound(buttonlist->soundorg, sound);
 

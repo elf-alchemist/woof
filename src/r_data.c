@@ -801,15 +801,19 @@ void R_InitFlats(void)
   // clean up malloc-ing to use sizeof
 
   flattranslation =
-    Z_Malloc((numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
+    Z_Malloc((numflats + 1) * sizeof(*flattranslation), PU_STATIC, 0);
 
   swandefs_terrain =
-    Z_Malloc((numflats+1)*sizeof(*swandefs_terrain), PU_STATIC, 0);
+    Z_Malloc((numflats + 1) * sizeof(*swandefs_terrain), PU_STATIC, 0);
+
+  swandefs_effect =
+    Z_Malloc((numflats + 1) * sizeof(*swandefs_effect), PU_STATIC, 0);
 
   for (i=0 ; i<numflats ; i++)
   {
     flattranslation[i] = i;
     swandefs_terrain[i] = TERRAIN_NONE;
+    swandefs_effect[i]  = FLAT_EFFECT_NONE;
   }
 }
 

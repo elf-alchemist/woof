@@ -136,31 +136,27 @@ void P_InitBoomAnimated(void)
   //jff 3/23/98 read from predefined or wad lump instead of table
   animdefs = W_CacheLumpName("ANIMATED", PU_STATIC);
 
-  swan_flat_t    swan_flat;
-  swan_texture_t swan_texture;
-
   for (i = 0; animdefs[i].istexture != -1; i++)
   {
     if (animdefs[i].istexture)
     {
       // different episode ?
       if (R_CheckTextureNumForName(animdefs[i].startname) == -1)
-        continue;
-
-
-      swan_texture.final    = R_TextureNumForName(animdefs[i].endname);
-      swan_texture.initial  = R_TextureNumForName(animdefs[i].startname);
-      swan_texture.count    = swan_texture.final - swan_texture.initial + 1;
-      swan_texture.duration = LONG(animdefs[i].speed); // killough 5/5/98: add LONG()
-
-      if (swan_texture.count < 2)
       {
-        I_Error("P_InitBoomAnimated: bad cycle from %s to %s",
-                animdefs[i].startname, animdefs[i].endname);
+        continue;
       }
 
-      array_push(swandefs_textures, swan_texture);
-      swan_count_texture++;
+      if ((R_TextureNumForName(animdefs[i].endname) -
+           R_TextureNumForName(animdefs[i].startname) + 1) < 2)
+      {
+          I_Error("P_InitBoomAnimated: bad cycle from %s to %s",
+                  animdefs[i].startname, animdefs[i].endname);
+      }
+
+      P_SwanTexture(animdefs[i].startname,
+                    animdefs[i].endname,
+                    LONG(animdefs[i].speed));
+      // killough 5/5/98: add LONG()
     }
     else
     {
@@ -170,19 +166,19 @@ void P_InitBoomAnimated(void)
         continue;
       }
 
-      swan_flat.final    = R_FlatNumForName(animdefs[i].endname);
-      swan_flat.initial  = R_FlatNumForName(animdefs[i].startname);
-      swan_flat.count    = swan_flat.final - swan_flat.initial + 1;
-      swan_flat.duration = LONG(animdefs[i].speed); // killough 5/5/98: add LONG()
-
-      if (swan_flat.count < 2)
+      if ((R_FlatNumForName(animdefs[i].endname) -
+           R_FlatNumForName(animdefs[i].startname) + 1) < 2)
       {
         I_Error("P_InitBoomAnimated: bad cycle from %s to %s",
                 animdefs[i].startname, animdefs[i].endname);
       }
 
-      array_push(swandefs_flats, swan_flat);
-      swan_count_flat++;
+      P_SwanFlat(animdefs[i].startname,
+                 animdefs[i].endname,
+                 TERRAIN_NONE,
+                 FLAT_EFFECT_NONE,
+                 LONG(animdefs[i].speed));
+      // killough 5/5/98: add LONG()
     }
   }
   Z_ChangeTag(animdefs, PU_CACHE); //jff 3/23/98 allow table to be freed
