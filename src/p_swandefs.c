@@ -197,32 +197,29 @@ void P_InitSwanDefs(void)
     }
 
     // Always parse vanilla definitions before
-    default_switches_t *vanilla_switch;
-    array_foreach(vanilla_switch, default_switches)
+    for (int i = 0; i < arrlen(default_switches); i++)
     {
-        P_SwanSwitch(vanilla_switch->inactive,
-                     vanilla_switch->active,
-                     vanilla_switch->delay,
-                     vanilla_switch->sound,
-                     vanilla_switch->exit);
+        P_SwanSwitch(default_switches[i].inactive,
+                     default_switches[i].active,
+                     default_switches[i].delay,
+                     default_switches[i].sound,
+                     default_switches[i].exit);
     }
 
-    default_texture_t *vanilla_texture;
-    array_foreach(vanilla_texture, default_textures)
+    for (int i = 0; i < arrlen(default_textures); i++)
     {
-        P_SwanTexture(vanilla_texture->initial,
-                      vanilla_texture->final,
-                      vanilla_texture->duration);
+        P_SwanTexture(default_textures[i].initial,
+                      default_textures[i].final,
+                      default_textures[i].duration);
     }
 
-    default_flat_t *vanilla_flat;
-    array_foreach(vanilla_flat, default_flats)
+    for (int i = 0; i < arrlen(default_flats); i++)
     {
-        P_SwanFlat(vanilla_flat->initial,
-                   vanilla_flat->final,
-                   vanilla_flat->terrain,
-                   vanilla_flat->effect,
-                   vanilla_flat->duration);
+        P_SwanFlat(default_flats[i].initial,
+                   default_flats[i].final,
+                   default_flats[i].terrain,
+                   default_flats[i].effect,
+                   default_flats[i].duration);
     }
 
     // Does is it even have the definitions we are looking for?
