@@ -26,7 +26,7 @@
 // which needs to be calculated at initialization time, not hardcoded in the
 // default values.
 
-typedef struct {
+typedef const struct {
     char inactive[9];
     char active[9];
     int  delay;
@@ -34,13 +34,13 @@ typedef struct {
     int  exit;
 } default_switches_t;
 
-typedef struct {
+typedef const struct {
     char initial[9];
     char final[9];
     int  duration;
 } default_texture_t;
 
-typedef struct {
+typedef const struct {
     char           initial[9];
     char           final[9];
     swan_terrain_t terrain;
