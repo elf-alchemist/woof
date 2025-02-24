@@ -21,34 +21,13 @@
 
 #include "p_swandefs.h"
 
-// [EA]
-// Partly duplicated from header because the anim loop requires Index values,
-// which needs to be calculated at initialization time, not hardcoded in the
-// default values.
-
-typedef const struct {
-    char inactive[9];
-    char active[9];
-    int  delay;
-    int  sound;
-    int  exit;
-} default_switches_t;
-
-typedef const struct {
-    char initial[9];
-    char final[9];
-    int  duration;
-} default_texture_t;
-
-typedef const struct {
-    char           initial[9];
-    char           final[9];
-    swan_terrain_t terrain;
-    swan_effect_t  effect;
-    int            duration;
-} default_flat_t;
-
-static default_switches_t default_switches[] = {
+static const struct {
+    const char inactive[9];
+    const char active[9];
+    const int  delay;
+    const int  sound;
+    const int  exit;
+} default_switches[] = {
     { "SW1BRCOM", "SW2BRCOM", 35, sfx_swtchn, sfx_swtchx },
     { "SW1BRN1",  "SW2BRN1",  35, sfx_swtchn, sfx_swtchx },
     { "SW1BRN2",  "SW2BRN2",  35, sfx_swtchn, sfx_swtchx },
@@ -91,7 +70,11 @@ static default_switches_t default_switches[] = {
     { "SW1SKULL", "SW2SKULL", 35, sfx_swtchn, sfx_swtchx },
 };
 
-static default_texture_t default_textures[] = {
+static const struct {
+    const char initial[9];
+    const char final[9];
+    const int  duration;
+} default_textures[] = {
     { "BLODGR1",  "BLODGR4",  8 },
     { "SLADRIP1", "SLADRIP3", 8 },
     { "BLODRIP1", "BLODRIP4", 8 },
@@ -107,7 +90,13 @@ static default_texture_t default_textures[] = {
     { "DBRAIN1",  "DBRAIN4",  8 },
 };
 
-static default_flat_t default_flats[] = {
+static const struct {
+    const char           initial[9];
+    const char           final[9];
+    const swan_terrain_t terrain;
+    const swan_effect_t  effect;
+    const int            duration;
+} default_flats[] = {
     { "NUKAGE1", "NUKAGE3", TERRAIN_SLIME, EFFECT_NONE, 8 },
     { "FWATER1", "FWATER4", TERRAIN_WATER, EFFECT_NONE, 8 },
     { "SWATER1", "SWATER4", TERRAIN_WATER, EFFECT_NONE, 8 },
