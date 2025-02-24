@@ -121,13 +121,13 @@ int swan_count_flat    = 0;
 void P_SwanSwitch(const char *inactive, const char *active, int delay,
                   int sound, int exit)
 {
-    swan_switch_t swan_switch = {0};
-
-    swan_switch.inactive = W_CheckNumForName(inactive);
-    swan_switch.active   = W_CheckNumForName(active);
-    swan_switch.delay    = delay;
-    swan_switch.sound    = sound;
-    swan_switch.exit     = exit;
+    const swan_switch_t swan_switch = {
+        .inactive = W_CheckNumForName(inactive),
+        .active   = W_CheckNumForName(active),
+        .delay    = delay,
+        .sound    = sound,
+        .exit     = exit,
+    };
 
     array_push(swandefs_switches, swan_switch);
     swan_count_switch++;
@@ -135,26 +135,26 @@ void P_SwanSwitch(const char *inactive, const char *active, int delay,
 
 void P_SwanTexture(const char *initial, const char *final, int duration)
 {
-    swan_texture_t swan_texture = {0};
-
-    swan_texture.initial  = W_CheckNumForName(initial);
-    swan_texture.final    = W_CheckNumForName(final);
-    swan_texture.count    = swan_texture.final - swan_texture.initial + 1;
-    swan_texture.duration = duration;
+    const swan_texture_t swan_texture = {
+        .initial  = W_CheckNumForName(initial),
+        .final    = W_CheckNumForName(final),
+        .count    = swan_texture.final - swan_texture.initial + 1,
+        .duration = duration,
+    };
 
     array_push(swandefs_textures, swan_texture);
     swan_count_texture++;
 }
 
-void P_SwanFlat(const char *initial, const char *final, int terrain,
-                int effect, int duration)
+void P_SwanFlat(const char *initial, const char *final, int terrain, int effect,
+                int duration)
 {
-    swan_flat_t swan_flat = {0};
-
-    swan_flat.initial  = W_CheckNumForName(initial);
-    swan_flat.final    = W_CheckNumForName(final);
-    swan_flat.count    = swan_flat.final - swan_flat.initial + 1;
-    swan_flat.duration = duration;
+    const swan_flat_t swan_flat = {
+        .initial  = W_CheckNumForName(initial),
+        .final    = W_CheckNumForName(final),
+        .count    = swan_flat.final - swan_flat.initial + 1,
+        .duration = duration,
+    };
 
     for (int flat = swan_flat.initial; flat <= swan_flat.final; flat++)
     {
