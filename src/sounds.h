@@ -309,12 +309,19 @@ typedef enum {
   sfx_secret,
 
   // [FG] play sound when hitting animated floor
+  // [EA] expanded for SwanDefs terrain
   sfx_splash,
-  sfx_ploosh,
-  sfx_lvsiz,
   sfx_splsml,
+  sfx_ploosh,
   sfx_plosml,
+  sfx_lavsiz,
   sfx_lavsml,
+  sfx_muddy,
+  sfx_mudsml,
+  sfx_icicle,
+  sfx_icesml,
+  sfx_snowy,
+  sfx_snosml,
 
   sfx_fre000 = 500,
   sfx_fre001,

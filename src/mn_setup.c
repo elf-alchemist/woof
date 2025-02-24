@@ -3287,8 +3287,6 @@ static setup_menu_t gen_settings5[] = {
     {"Linear Sky Scrolling", S_ONOFF, OFF_CNTR_X, M_SPC, {"linearsky"},
      .action = R_InitPlanes},
 
-    {"Swirling Flats", S_ONOFF, OFF_CNTR_X, M_SPC, {"r_swirl"}},
-
     {"Smooth Diminishing Lighting", S_ONOFF, OFF_CNTR_X, M_SPC, {"smoothlight"},
      .action = SmoothLight},
 

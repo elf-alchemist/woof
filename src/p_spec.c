@@ -176,7 +176,7 @@ void P_InitBoomAnimated(void)
       P_SwanFlat(animdefs[i].startname,
                  animdefs[i].endname,
                  TERRAIN_NONE,
-                 FLAT_EFFECT_NONE,
+                 EFFECT_NONE,
                  LONG(animdefs[i].speed));
       // killough 5/5/98: add LONG()
     }
@@ -195,7 +195,10 @@ void P_HitFloor(mobj_t *mo, int oof)
     [TERRAIN_NONE]  = { sfx_None,   sfx_oof    },
     [TERRAIN_WATER] = { sfx_splsml, sfx_splash },
     [TERRAIN_SLIME] = { sfx_plosml, sfx_ploosh },
-    [TERRAIN_LAVA]  = { sfx_lavsml, sfx_lvsiz  },
+    [TERRAIN_LAVA]  = { sfx_lavsml, sfx_lavsiz },
+    [TERRAIN_MUD]   = { sfx_mudsml, sfx_muddy  },
+    [TERRAIN_ICE]   = { sfx_icesml, sfx_icicle },
+    [TERRAIN_SNOW] =  { sfx_snosml, sfx_snowy  },
   };
 
   S_StartSoundHitFloor(mo, hitsound[terrain][oof]);

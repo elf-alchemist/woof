@@ -27,8 +27,6 @@
 #include "v_fmt.h"
 #include "z_zone.h"
 
-boolean r_swirl;
-
 // swirl factors determine the number of waves per flat width
 
 // 1 cycle per 64 units

@@ -813,7 +813,7 @@ void R_InitFlats(void)
   {
     flattranslation[i] = i;
     swandefs_terrain[i] = TERRAIN_NONE;
-    swandefs_effect[i]  = FLAT_EFFECT_NONE;
+    swandefs_effect[i]  = EFFECT_NONE;
   }
 }
 

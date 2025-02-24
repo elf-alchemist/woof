@@ -41,6 +41,7 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "m_fixed.h"
+#include "p_swandefs.h"
 #include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 #include "r_data.h"
 #include "r_defs.h"
@@ -616,7 +617,7 @@ static void do_draw_plane(visplane_t *pl)
     // regular flat
 
     int stop, light;
-    boolean swirling = (flattranslation[pl->picnum] == -1);
+    boolean swirling = (swandefs_effect[pl->picnum] == EFFECT_SMMU);
 
     // [crispy] add support for SMMU swirling flats
     if (swirling)

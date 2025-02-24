@@ -412,11 +412,17 @@ struct
     {sfx_itemup, sfx_None  },
 
     {sfx_splash, sfx_oof   },
-    {sfx_ploosh, sfx_oof   },
-    {sfx_lvsiz,  sfx_oof   },
     {sfx_splsml, sfx_None  },
+    {sfx_ploosh, sfx_oof   },
     {sfx_plosml, sfx_None  },
+    {sfx_lavsiz, sfx_oof   },
     {sfx_lavsml, sfx_None  },
+    {sfx_muddy,  sfx_oof   },
+    {sfx_mudsml, sfx_None  },
+    {sfx_icicle, sfx_oof   },
+    {sfx_icesml, sfx_None  },
+    {sfx_snowy,  sfx_oof   },
+    {sfx_snosml, sfx_None  },
 };
 
 //

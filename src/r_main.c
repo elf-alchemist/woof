@@ -44,7 +44,6 @@
 #include "r_segs.h"
 #include "r_sky.h"
 #include "r_state.h"
-#include "r_swirl.h"
 #include "r_things.h"
 #include "r_voxel.h"
 #include "m_config.h"
@@ -1021,7 +1020,6 @@ void R_BindRenderVariables(void)
   BIND_NUM_GENERAL(extra_level_brightness, 0, 0, 4, "Level brightness");
   BIND_BOOL_GENERAL(stretchsky, false, "Stretch short skies");
   BIND_BOOL_GENERAL(linearsky, false, "Linear horizontal scrolling for skies");
-  BIND_BOOL_GENERAL(r_swirl, false, "Swirling animated flats");
   BIND_BOOL_GENERAL(smoothlight, false, "Smooth diminishing lighting");
   M_BindBool("voxels_rendering", &default_voxels_rendering, &voxels_rendering,
              true, ss_none, wad_no, "Allow voxel models");

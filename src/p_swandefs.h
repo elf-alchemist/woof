@@ -21,14 +21,16 @@ typedef enum {
     TERRAIN_WATER,
     TERRAIN_SLIME,
     TERRAIN_LAVA,
+    TERRAIN_MUD,
+    TERRAIN_ICE,
+    TERRAIN_SNOW,
     TERRAIN_MAX,
 } swan_terrain_t;
 
 // Visual distortions on liquids
 typedef enum {
-    FLAT_EFFECT_NONE,
-    FLAT_EFFECT_SMMU,
-    FLAT_EFFECT_MAX,
+    EFFECT_NONE,
+    EFFECT_SMMU,
 } swan_effect_t;
 
 // Improved switch texture definition
