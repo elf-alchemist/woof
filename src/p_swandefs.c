@@ -16,6 +16,7 @@
 #include "i_printf.h"
 #include "m_array.h"
 #include "m_json.h"
+#include "r_data.h"
 #include "sounds.h"
 #include "w_wad.h"
 
@@ -136,8 +137,8 @@ void P_SwanSwitch(const char *inactive, const char *active, int delay,
 void P_SwanTexture(const char *initial, const char *final, int duration)
 {
     const swan_texture_t swan_texture = {
-        .initial  = W_CheckNumForName(initial),
-        .final    = W_CheckNumForName(final),
+        .initial  = R_TextureNumForName(initial),
+        .final    = R_TextureNumForName(final),
         .count    = swan_texture.final - swan_texture.initial + 1,
         .duration = duration,
     };
@@ -150,8 +151,8 @@ void P_SwanFlat(const char *initial, const char *final, int terrain, int effect,
                 int duration)
 {
     const swan_flat_t swan_flat = {
-        .initial  = W_CheckNumForName(initial),
-        .final    = W_CheckNumForName(final),
+        .initial  = R_FlatNumForName(initial),
+        .final    = R_FlatNumForName(final),
         .count    = swan_flat.final - swan_flat.initial + 1,
         .duration = duration,
     };
