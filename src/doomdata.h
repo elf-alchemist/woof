@@ -191,6 +191,137 @@ typedef struct {
   short options;
 } mapthing_t;
 
+//
+// [EA] Universal Doom Map Format support
+//
+
+typedef enum UDMF_Lumps_e
+{
+  UDMF_Label,
+  UDMF_TextMap,
+  UDMF_BlockMap,
+  UDMF_Reject,
+  UDMF_Nodes,
+  UDMF_EndMap,
+} UDMF_Lumps_t;
+
+typedef enum UDMF_LineFlag_e
+{
+  UDMF_LineBlocking          = 0x00000001,
+  UDMF_LineBlockMonsters     = 0x00000002,
+  UDMF_LineTwosided          = 0x00000004,
+  UDMF_LineDontPegTop        = 0x00000008,
+  UDMF_LineDontPegNottom     = 0x00000010,
+  UDMF_LineSecret            = 0x00000020,
+  UDMF_LineBlockSound        = 0x00000040,
+  UDMF_LineDontDraw          = 0x00000080,
+  UDMF_LineMapped            = 0x00000100,
+  UDMF_LinePassuse           = 0x00000200, // Boom
+  UDMF_LineBlockLandMonsters = 0x00000400, // MBF21
+  UDMF_LineBlockPlayers      = 0x00000800, // MBF21
+} UDMF_LineFlag_t;
+
+typedef enum UDMF_ThingFlags_e
+{
+  UDMF_ThingSkill1       = 0x00000001,
+  UDMF_ThingSkill2       = 0x00000002,
+  UDMF_ThingSkill3       = 0x00000004,
+  UDMF_ThingSkill4       = 0x00000008,
+  UDMF_ThingSkill5       = 0x00000010,
+  UDMF_ThingAmbush       = 0x00000020,
+  UDMF_ThingSingleplayer = 0x00000040,
+  UDMF_ThingDeathmatch   = 0x00000080,
+  UDMF_ThingCooperative  = 0x00000100,
+  UDMF_ThingFriendly     = 0x00000200, // MBF
+} UDMF_ThingFlags_t;
+
+//
+// UDMF Linedefs
+//
+
+typedef struct {
+  int id;
+
+  int v1;
+  int v2;
+
+  int special;
+
+  int arg0;
+  int arg1;
+  int arg2;
+  int arg3;
+  int arg4;
+
+  int sidefront;
+  int sideback;
+
+  UDMF_LineFlag_t flags;
+} UDMF_Line_t;
+
+//
+// UDMF Sidedefs
+//
+
+typedef struct {
+  int offsetx;
+  int offsety;
+
+  int texturetop;
+  int texturemid;
+  int texturebottom;
+
+  int sector;
+} UDMF_Side_t;
+
+//
+// UDMF Vertex
+//
+
+typedef struct {
+  double x;
+  double y;
+} UDMF_Vertex_t;
+
+//
+// UDMF Sector
+//
+
+typedef struct {
+  int heightfloor;
+  int heightceiling;
+
+  int texturefloor;
+  int textureceiling;
+
+  int lightlevel;
+
+  int special;
+  int id;
+} UDMF_Sector_t;
+
+//
+// UDMF Things
+//
+
+typedef struct {
+  int id;
+
+  // DoomEdNum
+  int type;
+
+  double x;
+  double y;
+
+  // Relative to floor by default, relative to ceiling when SPAWNCEILING is set
+  double height;
+
+  // 360 degrees, where east = 0
+  int angle;
+
+  UDMF_ThingFlags_t flags;
+} UDMF_Thing_t;
+
 #endif // __DOOMDATA__
 
 //----------------------------------------------------------------------------
