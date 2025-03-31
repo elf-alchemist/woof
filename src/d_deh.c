@@ -1204,7 +1204,7 @@ static const char *deh_mobjinfo[] = {
     "Blood color", // .bloodcolor
 
     // DEHEXTRA
-    "Dropped item", // .droppeditem
+    "Dropped item", // .dropped_item
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -2048,7 +2048,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
                         return;
                     }
                     // make it base zero (deh is 1-based)
-                    mobjinfo[indexnum].droppeditem = (int)(value - 1);
+                    mobjinfo[indexnum].dropped_item = (int)(value - 1);
                     break;
 
                 default:

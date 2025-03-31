@@ -201,6 +201,7 @@ typedef enum
 
 typedef enum
 {
+    MF2_NONE            = 0x00000000,
     MF2_LOGRAV          = 0x00000001, // alternate gravity setting
     MF2_SHORTMRANGE     = 0x00000002, // has short missile range (archvile)
     MF2_DMGIGNORED      = 0x00000004, // other things ignore its attacks (archvile)
@@ -211,7 +212,7 @@ typedef enum
     MF2_NOTHRESHOLD     = 0x00000080, // has no target threshold
     MF2_LONGMELEE       = 0x00000100, // has long melee range (revenant)
     MF2_BOSS            = 0x00000200, // mobj is a major boss
-    MF2_MAP07BOSS1      = 0x00000400, // is a MAP07 boss type 2 (667)
+    MF2_MAP07BOSS1      = 0x00000400, // is a MAP07 boss type 1 (666)
     MF2_MAP07BOSS2      = 0x00000800, // is a MAP07 boss type 2 (667)
     MF2_E1M8BOSS        = 0x00001000, // is an E1M8 boss
     MF2_E2M8BOSS        = 0x00002000, // is an E2M8 boss
@@ -223,6 +224,16 @@ typedef enum
     MF2_COLOREDBLOOD    = 0x00080000, // [FG] colored blood and gibs
     MF2_FLIPPABLE       = 0x00100000, // [crispy] randomly flip corpse, blood and death animation sprites
 } mobjflag2_t;
+
+
+typedef enum
+{
+  MF3_NONE               = 0x00000000,
+  MF3_NORESPAWN          = 0x00000000, // Never respawn when respawning is on
+  MF3_SPECIALSTAYSSINGLE = 0x00000000, // Item pickup remains in world on SP
+  MF3_SPECIALSTAYSCOOP   = 0x00000000, // Item pickup remains in world on COOP
+  MF3_SPECIALSTAYSDM     = 0x00000000, // Item pickup remains in world on DM
+} mobjflag3_t;
 
 // killough 9/15/98: Same, but internal flags, not intended for .deh
 // (some degree of opaqueness is good, to avoid compatibility woes)

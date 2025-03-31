@@ -1505,19 +1505,21 @@ static void D_InitTables(void)
   int i;
   for (i = 0; i < num_mobj_types; ++i)
   {
-    mobjinfo[i].flags2           = 0;
+    // mbf21
+    mobjinfo[i].flags2           = MF2_NONE;
     mobjinfo[i].infighting_group = IG_DEFAULT;
     mobjinfo[i].projectile_group = PG_DEFAULT;
     mobjinfo[i].splash_group     = SG_DEFAULT;
     mobjinfo[i].ripsound         = sfx_None;
     mobjinfo[i].altspeed         = NO_ALTSPEED;
     mobjinfo[i].meleerange       = MELEERANGE;
+    // id24
+    mobjinfo[i].dropped_item      = MT_NULL;
     // [Woof!]
     mobjinfo[i].bloodcolor       = 0; // Normal
-    // DEHEXTRA
-    mobjinfo[i].droppeditem      = MT_NULL;
   }
 
+  // mbf21
   mobjinfo[MT_VILE].flags2    = MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD;
   mobjinfo[MT_CYBORG].flags2  = MF2_NORADIUSDMG | MF2_HIGHERMPROB | MF2_RANGEHALF |
                                 MF2_FULLVOLSOUNDS | MF2_E2M8BOSS | MF2_E4M6BOSS;
@@ -1536,11 +1538,11 @@ static void D_InitTables(void)
   mobjinfo[MT_HEADSHOT].altspeed = 20 * FRACUNIT;
   mobjinfo[MT_TROOPSHOT].altspeed = 20 * FRACUNIT;
 
-  // DEHEXTRA
-  mobjinfo[MT_WOLFSS].droppeditem = MT_CLIP;
-  mobjinfo[MT_POSSESSED].droppeditem = MT_CLIP;
-  mobjinfo[MT_SHOTGUY].droppeditem = MT_SHOTGUN;
-  mobjinfo[MT_CHAINGUY].droppeditem = MT_CHAINGUN;
+  // id24
+  mobjinfo[MT_WOLFSS].dropped_item = MT_CLIP;
+  mobjinfo[MT_POSSESSED].dropped_item = MT_CLIP;
+  mobjinfo[MT_SHOTGUY].dropped_item = MT_SHOTGUN;
+  mobjinfo[MT_CHAINGUY].dropped_item = MT_CHAINGUN;
 
   // [crispy] randomly mirrored death animations
   for (i = MT_PLAYER; i <= MT_KEEN; ++i)

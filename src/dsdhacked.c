@@ -411,7 +411,7 @@ void dsdh_EnsureMobjInfoCapacity(int limit)
 
     for (int i = old_num_mobj_types; i < num_mobj_types; ++i)
     {
-        mobjinfo[i].droppeditem = MT_NULL;
+        mobjinfo[i].dropped_item = MT_NULL;
         mobjinfo[i].infighting_group = IG_DEFAULT;
         mobjinfo[i].projectile_group = PG_DEFAULT;
         mobjinfo[i].splash_group = SG_DEFAULT;

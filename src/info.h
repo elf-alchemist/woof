@@ -1509,21 +1509,32 @@ typedef struct
                       //  resurrection.  Zero means it won't come
                       //  back to life.
 
-    // mbf21
-    int flags2;
-    int infighting_group;
-    int projectile_group;
-    int splash_group;
-    int ripsound;
-    int altspeed;
-    int meleerange;
+    mobjflag2_t flags2;   // [MBF21]
+    int infighting_group; // Things of same value will not infight
+    int projectile_group; // Things of same value will not hurt via projectiles
+                          // A negative value mean no immunity whatsoever
+    int splash_group;     // Things of same value will not hurt via splash damage
+    int ripsound;         // Sound index when a RIP projectile goes through
+    int altspeed;         // Speed value when under `-fast` or `-skill 5`
+    int meleerange;       // Melee attack distance threshold
+
+    mobjflag3_t flags3;         // [ID24]
+    int min_respawn_tics;       // Minimum amount of tics before respawn
+    int respawn_dice;           // RNG value for respawn check
+    int dropped_item;           // Thing Type to spawn on death
+    int pickup_ammo_type;       // Ammo ID to pick up
+    int pickup_ammo_category;   // Ammo category to resolve
+    int pickup_weapon_type;     // Weapon ID to pickup
+    int pickup_item_type;       // Powerup to pickup
+    int pickup_bonus_count;     // Screen flash value to add
+    int pickup_sound;           // Sound index to play
+    char *pickup_message;       // Text to show in 
+    int translation;            // TranMap lump to use when rendering
+    fixed_t self_damage_factor; // Damage multiplier when hurting shooter
 
     // [Woof!]
-    int bloodcolor;   // [FG] colored blood and gibs
-    // DEHEXTRA
-    mobjtype_t droppeditem; // mobj to drop after death
-    // [FG] Obituaries
-    char *obituary, *obituary_melee;
+    int bloodcolor; // [FG] colored blood and gibs
+    char *obituary, *obituary_melee; // [FG] Obituaries
 } mobjinfo_t;
 
 #define NO_ALTSPEED -1

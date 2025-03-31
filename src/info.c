@@ -28,6 +28,7 @@
 
 #include "doomtype.h"
 #include "m_fixed.h"
+#include "p_map.h"
 #include "p_mobj.h"
 #include "sounds.h"
 #include "w_wad.h"
@@ -1251,7 +1252,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_DROPOFF|MF_PICKUP|MF_NOTDMATCH,  // flags // killough 7/18/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_POSSESSED
@@ -1277,7 +1300,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_posact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL, // flags
-    S_POSS_RAISE1   // raisestate
+    S_POSS_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SHOTGUY
@@ -1303,7 +1348,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_posact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL, // flags
-    S_SPOS_RAISE1   // raisestate
+    S_SPOS_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_VILE
@@ -1329,7 +1396,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_vilact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_FIRE
@@ -1355,7 +1444,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY|MF_TRANSLUCENT,   // flags  // killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_UNDEAD
@@ -1381,7 +1492,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_skeact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,  // flags
-    S_SKEL_RAISE1   // raisestate
+    S_SKEL_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_TRACER
@@ -1407,7 +1540,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     10,   // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SMOKE
@@ -1433,7 +1588,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY|MF_TRANSLUCENT,   // flags             // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_FATSO
@@ -1459,7 +1636,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_posact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_FATT_RAISE1   // raisestate
+    S_FATT_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_FATSHOT
@@ -1485,7 +1684,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     8,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT,   // flags \\ killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_CHAINGUY
@@ -1511,7 +1732,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_posact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_CPOS_RAISE1   // raisestate
+    S_CPOS_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_TROOP
@@ -1537,7 +1780,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_bgact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL, // flags
-    S_TROO_RAISE1   // raisestate
+    S_TROO_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SERGEANT
@@ -1563,7 +1828,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL, // flags
-    S_SARG_RAISE1   // raisestate
+    S_SARG_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SHADOWS
@@ -1589,7 +1876,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_SHADOW|MF_COUNTKILL,   // flags
-    S_SARG_RAISE1   // raisestate
+    S_SARG_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_HEAD
@@ -1615,7 +1924,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_FLOAT|MF_NOGRAVITY|MF_COUNTKILL,   // flags
-    S_HEAD_RAISE1   // raisestate
+    S_HEAD_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BRUISER
@@ -1641,7 +1972,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_BOSS_RAISE1   // raisestate
+    S_BOSS_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BRUISERSHOT
@@ -1667,7 +2020,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     8,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT,   // flags  killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_KNIGHT
@@ -1693,7 +2068,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_BOS2_RAISE1   // raisestate
+    S_BOS2_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   {   // MT_SKULL
@@ -1719,7 +2116,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     3,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_FLOAT|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SPIDER
@@ -1745,7 +2164,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BABY
@@ -1771,7 +2212,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_bspact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_BSPI_RAISE1   // raisestate
+    S_BSPI_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_CYBORG
@@ -1797,7 +2260,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_PAIN
@@ -1823,7 +2308,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dmact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_FLOAT|MF_NOGRAVITY|MF_COUNTKILL,   // flags
-    S_PAIN_RAISE1   // raisestate
+    S_PAIN_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_WOLFSS
@@ -1849,7 +2356,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_posact,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL,   // flags
-    S_SSWV_RAISE1   // raisestate
+    S_SSWV_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_KEEN
@@ -1875,7 +2404,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY|MF_SHOOTABLE|MF_COUNTKILL,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BOSSBRAIN
@@ -1901,7 +2452,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SHOOTABLE,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BOSSSPIT
@@ -1927,7 +2500,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOSECTOR,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BOSSTARGET
@@ -1953,7 +2548,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOSECTOR,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SPAWNSHOT
@@ -1979,7 +2596,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     3,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_NOCLIP,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SPAWNFIRE
@@ -2005,7 +2644,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY|MF_TRANSLUCENT,   // flags             // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BARREL
@@ -2031,7 +2692,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SHOOTABLE|MF_NOBLOOD,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_TROOPSHOT
@@ -2057,7 +2740,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     3,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_HEADSHOT
@@ -2083,7 +2788,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     5,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_ROCKET
@@ -2109,7 +2836,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     20,   // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_PLASMA
@@ -2135,7 +2884,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     5,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BFG
@@ -2161,7 +2932,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_ARACHPLAZ
@@ -2187,7 +2980,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     5,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_PUFF
@@ -2213,7 +3028,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_BLOOD
@@ -2239,7 +3076,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_TFOG
@@ -2265,7 +3124,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_IFOG
@@ -2291,7 +3172,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY|MF_TRANSLUCENT, // flags // phares
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_TELEPORTMAN
@@ -2317,7 +3220,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOSECTOR,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_EXTRABFG
@@ -2343,7 +3268,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC0
@@ -2369,7 +3316,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC1
@@ -2395,7 +3364,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC2
@@ -2421,7 +3412,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC3
@@ -2447,7 +3460,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC4
@@ -2473,7 +3508,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_NOTDMATCH,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC5
@@ -2499,7 +3556,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_NOTDMATCH,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC6
@@ -2525,7 +3604,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_NOTDMATCH,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC7
@@ -2551,7 +3652,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_NOTDMATCH,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC8
@@ -2577,7 +3700,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_NOTDMATCH,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC9
@@ -2603,7 +3748,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_NOTDMATCH,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC10
@@ -2629,7 +3796,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC11
@@ -2655,7 +3844,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC12
@@ -2681,7 +3892,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM|MF_TRANSLUCENT,    // flags   // killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_INV
@@ -2707,7 +3940,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM|MF_TRANSLUCENT,    // flags // killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC13
@@ -2733,7 +3988,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_INS
@@ -2759,7 +4036,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM|MF_TRANSLUCENT,    // flags // killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC14
@@ -2785,7 +4084,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC15
@@ -2811,7 +4132,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC16
@@ -2837,7 +4180,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MEGA
@@ -2863,7 +4228,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM|MF_TRANSLUCENT,    // flags // killough 2/21/98
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_CLIP
@@ -2889,7 +4276,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC17
@@ -2915,7 +4324,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC18
@@ -2941,7 +4372,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC19
@@ -2967,7 +4420,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC20
@@ -2993,7 +4468,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC21
@@ -3019,7 +4516,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC22
@@ -3045,7 +4564,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC23
@@ -3071,7 +4612,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC24
@@ -3097,7 +4660,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC25
@@ -3123,7 +4708,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_CHAINGUN
@@ -3149,7 +4756,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC26
@@ -3175,7 +4804,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC27
@@ -3201,7 +4852,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC28
@@ -3227,7 +4900,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SHOTGUN
@@ -3253,7 +4948,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_SUPERSHOTGUN
@@ -3279,7 +4996,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC29
@@ -3305,7 +5044,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC30
@@ -3331,7 +5092,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC31
@@ -3357,7 +5140,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC32
@@ -3383,7 +5188,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC33
@@ -3409,7 +5236,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC34
@@ -3435,7 +5284,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC35
@@ -3461,7 +5332,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC36
@@ -3487,7 +5380,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC37
@@ -3513,7 +5428,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC38
@@ -3539,7 +5476,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC39
@@ -3565,7 +5524,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC40
@@ -3591,7 +5572,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC41
@@ -3617,7 +5620,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC42
@@ -3643,7 +5668,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC43
@@ -3669,7 +5716,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC44
@@ -3695,7 +5764,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC45
@@ -3721,7 +5812,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC46
@@ -3747,7 +5860,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC47
@@ -3773,7 +5908,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC48
@@ -3799,7 +5956,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC49
@@ -3825,7 +6004,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC50
@@ -3851,7 +6052,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC51
@@ -3877,7 +6100,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC52
@@ -3903,7 +6148,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC53
@@ -3929,7 +6196,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC54
@@ -3955,7 +6244,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC55
@@ -3981,7 +6292,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC56
@@ -4007,7 +6340,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPAWNCEILING|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC57
@@ -4033,7 +6388,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPAWNCEILING|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC58
@@ -4059,7 +6436,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPAWNCEILING|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC59
@@ -4085,7 +6484,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPAWNCEILING|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC60
@@ -4111,7 +6532,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPAWNCEILING|MF_NOGRAVITY,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC61
@@ -4137,7 +6580,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC62
@@ -4163,7 +6628,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC63
@@ -4189,7 +6676,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC64
@@ -4215,7 +6724,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC65
@@ -4241,7 +6772,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC66
@@ -4267,7 +6820,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC67
@@ -4293,7 +6868,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC68
@@ -4319,7 +6916,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC69
@@ -4345,7 +6964,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC70
@@ -4371,7 +7012,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC71
@@ -4397,7 +7060,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     0,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC72
@@ -4423,7 +7108,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC73
@@ -4449,7 +7156,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC74
@@ -4475,7 +7204,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC75
@@ -4501,7 +7252,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC76
@@ -4527,7 +7300,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC77
@@ -4553,7 +7348,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID,   // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC78
@@ -4579,7 +7396,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC79
@@ -4605,7 +7444,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC80
@@ -4631,7 +7492,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC81
@@ -4657,7 +7540,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC82
@@ -4683,7 +7588,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC83
@@ -4709,7 +7636,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SOLID|MF_SPAWNCEILING|MF_NOGRAVITY,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC84
@@ -4735,7 +7684,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC85
@@ -4761,7 +7732,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   {   // MT_MISC86
@@ -4787,7 +7780,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // For use with wind and current effects
@@ -4814,7 +7829,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,              // damage                                   
     sfx_None,       // activesound                              
     MF_NOBLOCKMAP,  // flags
-    S_NULL          // raisestate                                   
+    S_NULL,         // raisestate                                   
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // For use with wind and current effects
@@ -4841,7 +7878,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,              // damage                                   
     sfx_None,       // activesound                              
     MF_NOBLOCKMAP,  // flags
-    S_NULL          // raisestate                                   
+    S_NULL,          // raisestate                                   
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // Marine's best friend :)      // killough 7/19/98
@@ -4868,7 +7927,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_dgact,    // activesound
     MF_SOLID|MF_SHOOTABLE|MF_COUNTKILL, // flags
-    S_DOGS_RAISE1   // raisestate
+    S_DOGS_RAISE1,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // killough 7/11/98: this is the first of two plasma fireballs in the beta
@@ -4895,7 +7976,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     4,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_BOUNCES|MF_TRANSLUCENT, // [FG] translucent
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
   
   // killough 7/11/98: this is the second of two plasma fireballs in the beta
@@ -4922,7 +8025,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     4,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_BOUNCES|MF_TRANSLUCENT, // [FG] translucent
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // killough 7/11/98: this is the evil sceptre in the beta version
@@ -4949,7 +8074,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // killough 7/11/98: this is the unholy bible in the beta version
@@ -4976,7 +8123,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_SPECIAL|MF_COUNTITEM,    // flags
-    S_NULL    // raisestate
+    S_NULL,    // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
   // [crispy] support MUSINFO lump (dynamic music changing)
@@ -5003,7 +8172,29 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     0,    // damage
     sfx_None,   // activesound
     MF_NOBLOCKMAP,   // flags
-    S_NULL   // raisestate
+    S_NULL,   // raisestate
+
+    MF2_NONE,    // flags2
+    IG_DEFAULT,    // infighting_group
+    PG_DEFAULT,    // projectile_group
+    SG_DEFAULT,    // splash_group
+    sfx_None,    // ripsound
+    NO_ALTSPEED,    // altspeed
+    MELEERANGE,    // meleerange
+
+    MF3_NONE,    // flags3
+    420,    // min_respawn_tics
+    4,    // respawn_dice
+    -1,    // dropped_item
+    -1,    // pickup_ammo_type
+    -1,    // pickup_ammo_category
+    -1,    // pickup_weapon_type
+    -1,    // pickup_item_type
+    6,    // pickup_bonus_count
+    sfx_None,    // pickup_sound
+    NULL,    // pickup_message
+    NULL,    // translation
+    1 * FRACUNIT,    // self_damage_factor
   },
 
 };
