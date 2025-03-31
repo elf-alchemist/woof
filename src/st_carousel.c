@@ -166,9 +166,9 @@ static void DrawIcon(int x, int y, sbarelem_t *elem, weapon_icon_t icon)
 {
     char lump[9] = {0};
     const char *name;
-    if (weaponinfo[icon.weapon].carouselicon)
+    if (weaponinfo[icon.weapon].carousel_icon)
     {
-        name = weaponinfo[icon.weapon].carouselicon;
+        name = weaponinfo[icon.weapon].carousel_icon;
     }
     else
     {

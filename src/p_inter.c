@@ -781,9 +781,9 @@ static void P_KillMobj(mobj_t *source, mobj_t *target, method_t mod)
   // This determines the kind of object spawned
   // during the death frame of a thing.
 
-  if (target->info->droppeditem != MT_NULL)
+  if (target->info->dropped_item != MT_NULL)
   {
-    item = target->info->droppeditem;
+    item = target->info->dropped_item;
   }
   else return;
 

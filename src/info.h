@@ -1262,6 +1262,7 @@ typedef struct
   long        misc1, misc2; // used for psprite positioning
   long        args[MAXSTATEARGS]; // [XA] mbf21 args
   int         flags;
+  char       *tranmap; // ID24
 } state_t;
 
 //

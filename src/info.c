@@ -1314,7 +1314,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    MT_NULL,    // dropped_item
+    MT_CLIP,    // dropped_item
     am_noammo,    // pickup_ammo_type
     PAC_NONE,    // pickup_ammo_category
     wp_nochange,    // pickup_weapon_type
@@ -1362,7 +1362,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    MT_NULL,    // dropped_item
+    MT_SHOTGUN,    // dropped_item
     am_noammo,    // pickup_ammo_type
     PAC_NONE,    // pickup_ammo_category
     wp_nochange,    // pickup_weapon_type
@@ -1746,7 +1746,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    MT_NULL,    // dropped_item
+    MT_CHAINGUN,    // dropped_item
     am_noammo,    // pickup_ammo_type
     PAC_NONE,    // pickup_ammo_category
     wp_nochange,    // pickup_weapon_type
@@ -2370,7 +2370,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    MT_NULL,    // dropped_item
+    MT_CLIP,    // dropped_item
     am_noammo,    // pickup_ammo_type
     PAC_NONE,    // pickup_ammo_category
     wp_nochange,    // pickup_weapon_type
@@ -3519,7 +3519,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     NO_ALTSPEED,    // altspeed
     MELEERANGE,    // meleerange
 
-    MF3_NONE,    // flags3
+    MF3_SPECIALSTAYSCOOP,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
     MT_NULL,    // dropped_item
@@ -3567,7 +3567,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     NO_ALTSPEED,    // altspeed
     MELEERANGE,    // meleerange
 
-    MF3_NONE,    // flags3
+    MF3_SPECIALSTAYSCOOP,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
     MT_NULL,    // dropped_item
@@ -3615,7 +3615,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     NO_ALTSPEED,    // altspeed
     MELEERANGE,    // meleerange
 
-    MF3_NONE,    // flags3
+    MF3_SPECIALSTAYSCOOP,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
     MT_NULL,    // dropped_item
@@ -3663,7 +3663,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     NO_ALTSPEED,    // altspeed
     MELEERANGE,    // meleerange
 
-    MF3_NONE,    // flags3
+    MF3_SPECIALSTAYSCOOP,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
     MT_NULL,    // dropped_item
@@ -3711,7 +3711,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     NO_ALTSPEED,    // altspeed
     MELEERANGE,    // meleerange
 
-    MF3_NONE,    // flags3
+    MF3_SPECIALSTAYSCOOP,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
     MT_NULL,    // dropped_item
@@ -3759,7 +3759,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     NO_ALTSPEED,    // altspeed
     MELEERANGE,    // meleerange
 
-    MF3_NONE,    // flags3
+    MF3_SPECIALSTAYSCOOP,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
     MT_NULL,    // dropped_item

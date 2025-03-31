@@ -1148,20 +1148,32 @@ enum
     DEH_MOBJINFO_FLAGS,
     DEH_MOBJINFO_RAISESTATE,
 
-    // mbf21
+    // MBF21
+    DEH_MOBJINFO_FLAGS2,
     DEH_MOBJINFO_INFIGHTING_GROUP,
     DEH_MOBJINFO_PROJECTILE_GROUP,
     DEH_MOBJINFO_SPLASH_GROUP,
-    DEH_MOBJINFO_FLAGS2,
     DEH_MOBJINFO_RIPSOUND,
     DEH_MOBJINFO_ALTSPEED,
     DEH_MOBJINFO_MELEERANGE,
 
+    // ID24
+    DEH_MOBJINFO_FLAGS3,
+    DEH_MOBJINFO_MIN_RESPAWN_TICS,
+    DEH_MOBJINFO_RESPAWN_DICE,
+    DEH_MOBJINFO_DROPPED_ITEM,
+    DEH_MOBJINFO_PICKUP_AMMO_TYPE,
+    DEH_MOBJINFO_PICKUP_AMMO_CATEGORY,
+    DEH_MOBJINFO_PICKUP_WEAPON_TYPE,
+    DEH_MOBJINFO_PICKUP_ITEM_TYPE,
+    DEH_MOBJINFO_PICKUP_BONUS_COUNT,
+    DEH_MOBJINFO_PICKUP_SOUND,
+    DEH_MOBJINFO_PICKUP_MESSAGE,
+    DEH_MOBJINFO_TRANSLATION,
+    DEH_MOBJINFO_SELF_DAMAGE_FACTOR,
+
     // [Woof!]
     DEH_MOBJINFO_BLOODCOLOR,
-
-    // DEHEXTRA
-    DEH_MOBJINFO_DROPPEDITEM,
 
     DEH_MOBJINFOMAX
 };
@@ -1191,20 +1203,32 @@ static const char *deh_mobjinfo[] = {
     "Bits",               // .flags
     "Respawn frame",      // .raisestate
 
-    // mbf21
+    // MBF21
+    "MBF21 Bits",       // .flags2
     "Infighting group", // .infighting_group
     "Projectile group", // .projectile_group
     "Splash group",     // .splash_group
-    "MBF21 Bits",       // .flags2
     "Rip sound",        // .ripsound
     "Fast speed",       // .altspeed
     "Melee range",      // .meleerange
 
+    // ID24
+    "ID24 Bits",            // .flags3
+    "Min respawn tics",     // .min_respawn_tics
+    "Respawn dice",         // .respawn_dice
+    "Dropped item",         // .dropped_item
+    "Pickup ammo type",     // .pickup_ammo_type
+    "Pickup ammo category", // .pickup_ammo_category
+    "Pickup weapon type",   // .pickup_weapon_type
+    "Pickup item type",     // .pickup_item_type
+    "Pickup bonus count",   // .pickup_bonus_count
+    "Pickup sound",         // .pickup_sound
+    "Pickup message",       // .pickup_message
+    "Translation",          // .translation
+    "Self damage factor",   // .self_damage_factor
+
     // [Woof!]
     "Blood color", // .bloodcolor
-
-    // DEHEXTRA
-    "Dropped item", // .dropped_item
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -1227,78 +1251,85 @@ struct
     const char *name;
     long value;
 } deh_mobjflags[] = {
-    {"SPECIAL",      0x00000001}, // call  P_Specialthing when touched
-    {"SOLID",        0x00000002}, // block movement
-    {"SHOOTABLE",    0x00000004}, // can be hit
-    {"NOSECTOR",     0x00000008}, // invisible but touchable
-    {"NOBLOCKMAP",   0x00000010}, // inert but displayable
-    {"AMBUSH",       0x00000020}, // deaf monster
-    {"JUSTHIT",      0x00000040}, // will try to attack right back
-    {"JUSTATTACKED", 0x00000080}, // take at least 1 step before attacking
-    {"SPAWNCEILING", 0x00000100}, // initially hang from ceiling
-    {"NOGRAVITY",    0x00000200}, // don't apply gravity during play
-    {"DROPOFF",      0x00000400}, // can jump from high places
-    {"PICKUP",       0x00000800}, // will pick up items
-    {"NOCLIP",       0x00001000}, // goes through walls
-    {"SLIDE",        0x00002000}, // keep info about sliding along walls
-    {"FLOAT",        0x00004000}, // allow movement to any height
-    {"TELEPORT",     0x00008000}, // don't cross lines or look at heights
-    {"MISSILE",      0x00010000}, // don't hit same species, explode on block
-    {"DROPPED",      0x00020000}, // dropped, not spawned (like ammo clip)
-    {"SHADOW",       0x00040000}, // use fuzzy draw like spectres
-    {"NOBLOOD",      0x00080000}, // puffs instead of blood when shot
-    {"CORPSE",       0x00100000}, // so it will slide down steps when dead
-    {"INFLOAT",      0x00200000}, // float but not to target height
-    {"COUNTKILL",    0x00400000}, // count toward the kills total
-    {"COUNTITEM",    0x00800000}, // count toward the items total
-    {"SKULLFLY",     0x01000000}, // special handling for flying skulls
-    {"NOTDMATCH",    0x02000000}, // do not spawn in deathmatch
+    {"SPECIAL",      MF_SPECIAL     }, // call  P_Specialthing when touched
+    {"SOLID",        MF_SOLID       }, // block movement
+    {"SHOOTABLE",    MF_SHOOTABLE   }, // can be hit
+    {"NOSECTOR",     MF_NOSECTOR    }, // invisible but touchable
+    {"NOBLOCKMAP",   MF_NOBLOCKMAP  }, // inert but displayable
+    {"AMBUSH",       MF_AMBUSH      }, // deaf monster
+    {"JUSTHIT",      MF_JUSTHIT     }, // will try to attack right back
+    {"JUSTATTACKED", MF_JUSTATTACKED}, // take at least 1 step before attacking
+    {"SPAWNCEILING", MF_SPAWNCEILING}, // initially hang from ceiling
+    {"NOGRAVITY",    MF_NOGRAVITY   }, // don't apply gravity during play
+    {"DROPOFF",      MF_DROPOFF     }, // can jump from high places
+    {"PICKUP",       MF_PICKUP      }, // will pick up items
+    {"NOCLIP",       MF_NOCLIP      }, // goes through walls
+    {"SLIDE",        MF_SLIDE       }, // keep info about sliding along walls
+    {"FLOAT",        MF_FLOAT       }, // allow movement to any height
+    {"TELEPORT",     MF_TELEPORT    }, // don't cross lines or look at heights
+    {"MISSILE",      MF_MISSILE     }, // don't hit same species, explode on block
+    {"DROPPED",      MF_DROPPED     }, // dropped, not spawned (like ammo clip)
+    {"SHADOW",       MF_SHADOW      }, // use fuzzy draw like spectres
+    {"NOBLOOD",      MF_NOBLOOD     }, // puffs instead of blood when shot
+    {"CORPSE",       MF_CORPSE      }, // so it will slide down steps when dead
+    {"INFLOAT",      MF_INFLOAT     }, // float but not to target height
+    {"COUNTKILL",    MF_COUNTKILL   }, // count toward the kills total
+    {"COUNTITEM",    MF_COUNTITEM   }, // count toward the items total
+    {"SKULLFLY",     MF_SKULLFLY    }, // special handling for flying skulls
+    {"NOTDMATCH",    MF_NOTDMATCH   }, // do not spawn in deathmatch
 
     // killough 10/98: TRANSLATION consists of 2 bits, not 1:
 
-    {"TRANSLATION",  0x04000000}, // for Boom bug-compatibility
-    {"TRANSLATION1", 0x04000000}, // use translation table for color (players)
-    {"TRANSLATION2", 0x08000000}, // use translation table for color (players)
-    {"UNUSED1",      0x08000000}, // unused bit # 1 -- For Boom bug-compatibility
-    {"UNUSED2",      0x10000000}, // unused bit # 2 -- For Boom compatibility
-    {"UNUSED3",      0x20000000}, // unused bit # 3 -- For Boom compatibility
-    {"UNUSED4",      0x40000000}, // unused bit # 4 -- For Boom compatibility
-    {"TOUCHY",       0x10000000}, // dies on contact with solid objects (MBF)
-    {"BOUNCES",      0x20000000}, // bounces off floors, ceilings and maybe walls
-    {"FRIEND",       0x40000000}, // a friend of the player(s) (MBF)
-    {"TRANSLUCENT",  0x80000000}, // apply translucency to sprite (BOOM)
+    {"TRANSLATION",  MF_TRANSLATION}, // for Boom bug-compatibility
+    {"TRANSLATION1", 0x04000000    }, // use translation table for color (players)
+    {"TRANSLATION2", 0x08000000    }, // use translation table for color (players)
+    {"UNUSED1",      0x08000000    }, // unused bit # 1 -- For Boom bug-compatibility
+    {"UNUSED2",      0x10000000    }, // unused bit # 2 -- For Boom compatibility
+    {"UNUSED3",      0x20000000    }, // unused bit # 3 -- For Boom compatibility
+    {"UNUSED4",      0x40000000    }, // unused bit # 4 -- For Boom compatibility
+    {"TOUCHY",       MF_TOUCHY     }, // dies on contact with solid objects (MBF)
+    {"BOUNCES",      MF_BOUNCES    }, // bounces off floors, ceilings and maybe walls
+    {"FRIEND",       MF_FRIEND     }, // a friend of the player(s) (MBF)
+    {"TRANSLUCENT",  MF_TRANSLUCENT}, // apply translucency to sprite (BOOM)
 };
 
 static const deh_flag_t deh_mobjflags_mbf21[] = {
-    {"LOGRAV",         MF2_LOGRAV       }, // low gravity
-    {"SHORTMRANGE",    MF2_SHORTMRANGE  }, // short missile range
-    {"DMGIGNORED",     MF2_DMGIGNORED   }, // other things ignore its attacks
-    {"NORADIUSDMG",    MF2_NORADIUSDMG  }, // doesn't take splash damage
-    {"FORCERADIUSDMG", MF2_FORCERADIUSDMG }, // causes splash damage even if target immune
-    {"HIGHERMPROB",    MF2_HIGHERMPROB  }, // higher missile attack probability
-    {"RANGEHALF",      MF2_RANGEHALF    }, // use half distance for missile attack probability
-    {"NOTHRESHOLD",    MF2_NOTHRESHOLD  }, // no targeting threshold
-    {"LONGMELEE",      MF2_LONGMELEE    }, // long melee range
-    {"BOSS",           MF2_BOSS         }, // full volume see / death sound + splash immunity
-    {"MAP07BOSS1",     MF2_MAP07BOSS1   }, // Tag 666 "boss" on doom 2 map 7
-    {"MAP07BOSS2",     MF2_MAP07BOSS2   }, // Tag 667 "boss" on doom 2 map 7
-    {"E1M8BOSS",       MF2_E1M8BOSS     }, // E1M8 boss
-    {"E2M8BOSS",       MF2_E2M8BOSS     }, // E2M8 boss
-    {"E3M8BOSS",       MF2_E3M8BOSS     }, // E3M8 boss
-    {"E4M6BOSS",       MF2_E4M6BOSS     }, // E4M6 boss
-    {"E4M8BOSS",       MF2_E4M8BOSS     }, // E4M8 boss
-    {"RIP",            MF2_RIP          }, // projectile rips through targets
-    {"FULLVOLSOUNDS",  MF2_FULLVOLSOUNDS}, // full volume see / death sound
+  {"LOGRAV",         MF2_LOGRAV        }, // low gravity
+  {"SHORTMRANGE",    MF2_SHORTMRANGE   }, // short missile range
+  {"DMGIGNORED",     MF2_DMGIGNORED    }, // other things ignore its attacks
+  {"NORADIUSDMG",    MF2_NORADIUSDMG   }, // doesn't take splash damage
+  {"FORCERADIUSDMG", MF2_FORCERADIUSDMG}, // causes splash damage even if target immune
+  {"HIGHERMPROB",    MF2_HIGHERMPROB   }, // higher missile attack probability
+  {"RANGEHALF",      MF2_RANGEHALF     }, // use half distance for missile attack probability
+  {"NOTHRESHOLD",    MF2_NOTHRESHOLD   }, // no targeting threshold
+  {"LONGMELEE",      MF2_LONGMELEE     }, // long melee range
+  {"BOSS",           MF2_BOSS          }, // full volume see / death sound + splash immunity
+  {"MAP07BOSS1",     MF2_MAP07BOSS1    }, // Tag 666 "boss" on doom 2 map 7
+  {"MAP07BOSS2",     MF2_MAP07BOSS2    }, // Tag 667 "boss" on doom 2 map 7
+  {"E1M8BOSS",       MF2_E1M8BOSS      }, // E1M8 boss
+  {"E2M8BOSS",       MF2_E2M8BOSS      }, // E2M8 boss
+  {"E3M8BOSS",       MF2_E3M8BOSS      }, // E3M8 boss
+  {"E4M6BOSS",       MF2_E4M6BOSS      }, // E4M6 boss
+  {"E4M8BOSS",       MF2_E4M8BOSS      }, // E4M8 boss
+  {"RIP",            MF2_RIP           }, // projectile rips through targets
+  {"FULLVOLSOUNDS",  MF2_FULLVOLSOUNDS }, // full volume see / death sound
+};
+
+static const deh_flag_t deh_mobjflags_id24[] = {
+  {"NORESPAWN",          MF3_NORESPAWN         }, // Never respawn when respawning is on
+  {"SPECIALSTAYSSINGLE", MF3_SPECIALSTAYSSINGLE}, // Item pickup remains in world on SP
+  {"SPECIALSTAYSCOOP",   MF3_SPECIALSTAYSCOOP  }, // Item pickup remains in world on COOP
+  {"SPECIALSTAYSDM",     MF3_SPECIALSTAYSDM    }, // Item pickup remains in world on DM
 };
 
 static const deh_flag_t deh_weaponflags_mbf21[] = {
-    {"NOTHRUST", WPF_NOTHRUST}, // doesn't thrust Mobj's
-    {"SILENT", WPF_SILENT}, // weapon is silent
-    {"NOAUTOFIRE", WPF_NOAUTOFIRE}, // weapon won't autofire in A_WeaponReady
-    {"FLEEMELEE", WPF_FLEEMELEE}, // monsters consider it a melee weapon
-    {"AUTOSWITCHFROM", WPF_AUTOSWITCHFROM}, // can be switched away from when ammo is picked up
-    {"NOAUTOSWITCHTO", WPF_NOAUTOSWITCHTO}, // cannot be switched to when ammo is picked up
-    {NULL}
+  {"NOTHRUST",       WPF_NOTHRUST      }, // doesn't thrust Mobj's
+  {"SILENT",         WPF_SILENT        }, // weapon is silent
+  {"NOAUTOFIRE",     WPF_NOAUTOFIRE    }, // weapon won't autofire in A_WeaponReady
+  {"FLEEMELEE",      WPF_FLEEMELEE     }, // monsters consider it a melee weapon
+  {"AUTOSWITCHFROM", WPF_AUTOSWITCHFROM}, // can be switched away from when ammo is picked up
+  {"NOAUTOSWITCHTO", WPF_NOAUTOSWITCHTO}, // cannot be switched to when ammo is picked up
+  {NULL}
 };
 
 // STATE - Dehacked block name = "Frame" and "Pointer"
@@ -1397,8 +1428,18 @@ static const char *deh_weapon[] = {
     "Ammo per shot", // .ammopershot
     "MBF21 Bits",    // .flags
     // id24
-    "Carousel icon", // .carouselicon
+    "Slot"                           // .slot
+    "Slot Priority"                  // .slot_priority
+    "Switch Priority"                // .switch_priority
+    "Initial Owned"                  // .initial_owned
+    "Initial Raised"                 // .initial_raised
+    "Carousel icon"                  // .carousel_icon
+    "Allow switch with owned weapon" // .
+    "No switch with owned weapon"    // .
+    "Allow switch with owned item"   // .
+    "No switch with owned item"      // .
 };
+
 
 // CHEATS - Dehacked block name = "Cheat"
 // Usage: Cheat 0
@@ -2026,6 +2067,17 @@ static void deh_procThing(DEHFILE *fpin, char *line)
                     }
                     break;
 
+                case DEH_MOBJINFO_DROPPED_ITEM:
+                    if (value < 0) // MT_NULL = -1
+                    {
+                        I_Error(
+                            "Dropped item must be >= 0 (check your dehacked)");
+                        return;
+                    }
+                    // make it base zero (deh is 1-based)
+                    mobjinfo[indexnum].dropped_item = (int)(value - 1);
+                    break;
+
                 case DEH_MOBJINFO_BLOODCOLOR:
                     {
                         mobjinfo_t *mi = &mobjinfo[indexnum];
@@ -2038,17 +2090,6 @@ static void deh_procThing(DEHFILE *fpin, char *line)
                         mi->bloodcolor = (int)(value);
                         deh_set_blood_color = true;
                     }
-                    break;
-
-                case DEH_MOBJINFO_DROPPEDITEM:
-                    if (value < 0) // MT_NULL = -1
-                    {
-                        I_Error(
-                            "Dropped item must be >= 0 (check your dehacked)");
-                        return;
-                    }
-                    // make it base zero (deh is 1-based)
-                    mobjinfo[indexnum].dropped_item = (int)(value - 1);
                     break;
 
                 default:
@@ -2556,7 +2597,7 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
                 deh_log("Bad length for carousel icon name '%s'\n", candidate);
                 continue;
             }
-            weaponinfo[indexnum].carouselicon = M_StringDuplicate(candidate);
+            weaponinfo[indexnum].carousel_icon = M_StringDuplicate(candidate);
         }
         else
         {

@@ -33,7 +33,7 @@ enum wepintflags_e
 //
 // mbf21: haleyjd 09/11/07: weapon flags
 //
-enum wepflags_e
+typedef enum wepflags_e
 {
   WPF_NOFLAG             = 0x00000000, // no flag
   WPF_NOTHRUST           = 0x00000001, // doesn't thrust Mobj's
@@ -42,7 +42,7 @@ enum wepflags_e
   WPF_FLEEMELEE          = 0x00000008, // monsters consider it a melee weapon
   WPF_AUTOSWITCHFROM     = 0x00000010, // can be switched away from when ammo is picked up
   WPF_NOAUTOSWITCHTO     = 0x00000020, // cannot be switched to when ammo is picked up
-};
+} wepflags_t;
 
 // Weapon info: sprite frames, ammunition use.
 typedef struct
@@ -54,12 +54,20 @@ typedef struct
   int         atkstate;
   int         flashstate;
   // mbf21
+  wepflags_t  flags;
   int         ammopershot;
   int         intflags;
-  int         flags;
   // id24
   int         slot;
-  const char  *carouselicon;
+  int         slot_priority;
+  int         switch_priority;
+  boolean     initial_owned;
+  boolean     initial_raised;
+  const char *carousel_icon;
+  int         allow_switch_weapon;
+  int         no_switch_weapon;
+  int         allow_switch_item;
+  int         no_switch_item;
 } weaponinfo_t;
 
 extern  weaponinfo_t    weaponinfo[NUMWEAPONS+2];
