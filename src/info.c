@@ -26,6 +26,7 @@
 
 #include <stddef.h>
 
+#include "doomdef.h"
 #include "doomtype.h"
 #include "m_fixed.h"
 #include "p_map.h"
@@ -1265,11 +1266,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1313,11 +1314,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1361,11 +1362,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1409,11 +1410,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1457,11 +1458,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1505,11 +1506,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1553,11 +1554,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1601,11 +1602,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1649,11 +1650,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1697,11 +1698,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1745,11 +1746,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1793,11 +1794,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1841,11 +1842,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1889,11 +1890,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1937,11 +1938,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -1985,11 +1986,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2033,11 +2034,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2081,11 +2082,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2129,11 +2130,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2177,11 +2178,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2225,11 +2226,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2273,11 +2274,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2321,11 +2322,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2369,11 +2370,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2417,11 +2418,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2465,11 +2466,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2513,11 +2514,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2561,11 +2562,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2609,11 +2610,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2657,11 +2658,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2705,11 +2706,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2753,11 +2754,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2801,11 +2802,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2849,11 +2850,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2897,11 +2898,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2945,11 +2946,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -2993,11 +2994,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3041,11 +3042,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3089,11 +3090,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3137,11 +3138,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3185,11 +3186,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3233,11 +3234,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3281,11 +3282,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3329,11 +3330,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3377,11 +3378,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3425,11 +3426,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3473,11 +3474,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3521,11 +3522,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3569,11 +3570,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3617,11 +3618,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3665,11 +3666,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3713,11 +3714,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3761,11 +3762,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3809,11 +3810,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3857,11 +3858,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3905,11 +3906,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -3953,11 +3954,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4001,11 +4002,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4049,11 +4050,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4097,11 +4098,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4145,11 +4146,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4193,11 +4194,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4241,11 +4242,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4289,11 +4290,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4337,11 +4338,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4385,11 +4386,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4433,11 +4434,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4481,11 +4482,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4529,11 +4530,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4577,11 +4578,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4625,11 +4626,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4673,11 +4674,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4721,11 +4722,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4769,11 +4770,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4817,11 +4818,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4865,11 +4866,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4913,11 +4914,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -4961,11 +4962,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5009,11 +5010,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5057,11 +5058,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5105,11 +5106,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5153,11 +5154,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5201,11 +5202,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5249,11 +5250,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5297,11 +5298,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5345,11 +5346,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5393,11 +5394,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5441,11 +5442,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5489,11 +5490,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5537,11 +5538,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5585,11 +5586,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5633,11 +5634,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5681,11 +5682,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5729,11 +5730,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5777,11 +5778,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5825,11 +5826,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5873,11 +5874,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5921,11 +5922,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -5969,11 +5970,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6003,7 +6004,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6017,11 +6018,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6065,11 +6066,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6113,11 +6114,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6161,11 +6162,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6209,11 +6210,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6257,11 +6258,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6305,11 +6306,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6353,11 +6354,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6401,11 +6402,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6449,11 +6450,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6497,11 +6498,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6545,11 +6546,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6579,7 +6580,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6593,11 +6594,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6627,7 +6628,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6641,11 +6642,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6675,7 +6676,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6689,11 +6690,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6723,7 +6724,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6737,11 +6738,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6771,7 +6772,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6785,11 +6786,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6819,7 +6820,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6833,11 +6834,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6867,7 +6868,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6881,11 +6882,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6915,7 +6916,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6929,11 +6930,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -6963,7 +6964,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -6977,11 +6978,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7025,11 +7026,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7059,7 +7060,7 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     100,    // mass
     0,    // damage
     sfx_None,   // activesound
-    0,    // flags
+    MF_NONE,    // flags
     S_NULL,    // raisestate
 
     MF2_NONE,    // flags2
@@ -7073,11 +7074,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7121,11 +7122,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7169,11 +7170,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7217,11 +7218,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7265,11 +7266,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7313,11 +7314,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7361,11 +7362,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7409,11 +7410,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7457,11 +7458,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7505,11 +7506,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7553,11 +7554,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7601,11 +7602,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7649,11 +7650,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7697,11 +7698,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7745,11 +7746,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7793,11 +7794,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7842,11 +7843,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7891,11 +7892,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7940,11 +7941,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -7989,11 +7990,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -8038,11 +8039,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -8087,11 +8088,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -8136,11 +8137,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message
@@ -8185,11 +8186,11 @@ mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {
     MF3_NONE,    // flags3
     420,    // min_respawn_tics
     4,    // respawn_dice
-    -1,    // dropped_item
-    -1,    // pickup_ammo_type
-    -1,    // pickup_ammo_category
-    -1,    // pickup_weapon_type
-    -1,    // pickup_item_type
+    MT_NULL,    // dropped_item
+    am_noammo,    // pickup_ammo_type
+    PAC_NONE,    // pickup_ammo_category
+    wp_nochange,    // pickup_weapon_type
+    PIT_NO_ITEM,    // pickup_item_type
     6,    // pickup_bonus_count
     sfx_None,    // pickup_sound
     NULL,    // pickup_message

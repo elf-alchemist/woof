@@ -107,6 +107,7 @@
 //
 typedef enum
 {
+    MF_NONE             = 0,
     // Call P_SpecialThing when touched.
     MF_SPECIAL          = 1,
     // Blocks.
@@ -199,7 +200,7 @@ typedef enum
     MF_TRANSLUCENT      = (int)0x80000000,                          // phares
 } mobjflag_t;
 
-typedef enum
+typedef enum mobjflag2_e
 {
     MF2_NONE            = 0x00000000,
     MF2_LOGRAV          = 0x00000001, // alternate gravity setting
@@ -226,7 +227,7 @@ typedef enum
 } mobjflag2_t;
 
 
-typedef enum
+typedef enum mobjflag3_e
 {
   MF3_NONE               = 0x00000000,
   MF3_NORESPAWN          = 0x00000000, // Never respawn when respawning is on

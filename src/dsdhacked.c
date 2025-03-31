@@ -20,7 +20,9 @@
 
 #include "d_think.h"
 #include "doomtype.h"
+#include "doomdef.h"
 #include "info.h"
+#include "p_mobj.h"
 #include "m_array.h"
 
 //
@@ -411,12 +413,26 @@ void dsdh_EnsureMobjInfoCapacity(int limit)
 
     for (int i = old_num_mobj_types; i < num_mobj_types; ++i)
     {
-        mobjinfo[i].dropped_item = MT_NULL;
+        mobjinfo[i].flags2 = MF2_NONE;
         mobjinfo[i].infighting_group = IG_DEFAULT;
         mobjinfo[i].projectile_group = PG_DEFAULT;
         mobjinfo[i].splash_group = SG_DEFAULT;
         mobjinfo[i].altspeed = NO_ALTSPEED;
         mobjinfo[i].meleerange = MELEERANGE;
+
+        mobjinfo[i].flags3 = MF3_NONE;
+        mobjinfo[i].min_respawn_tics = 420;
+        mobjinfo[i].respawn_dice = 4;
+        mobjinfo[i].dropped_item = MT_NULL;
+        mobjinfo[i].pickup_ammo_type = am_noammo;
+        mobjinfo[i].pickup_ammo_category = PAC_NONE;
+        mobjinfo[i].pickup_weapon_type = wp_nochange;
+        mobjinfo[i].pickup_item_type = PIT_NO_ITEM;
+        mobjinfo[i].pickup_bonus_count = 6;
+        mobjinfo[i].pickup_sound = 0;
+        mobjinfo[i].pickup_message = NULL;
+        mobjinfo[i].translation = NULL;
+        mobjinfo[i].self_damage_factor = 1 * FRACUNIT;
     }
 }
 

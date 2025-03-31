@@ -1439,6 +1439,10 @@ typedef enum {
 
 } mobjtype_t;
 
+//
+// MBF21
+//
+
 typedef enum {
   IG_DEFAULT,
   IG_END
@@ -1455,6 +1459,48 @@ typedef enum {
   SG_DEFAULT,
   SG_END
 } splash_group_t;
+
+//
+// ID24
+//
+
+typedef enum
+{
+  PAC_NONE = -1,
+  PAC_SMALL,
+  PAC_LARGE,
+  PAC_WEAPON,
+  PAC_BACKPACK,
+  PAC_DROPPED    = 0x04,
+  PAC_DEATHMATCH = 0x08,
+} pickup_ammo_category;
+
+typedef enum
+{
+  PIT_NO_ITEM = -1,
+  PIT_MESSAGE_ONLY,
+  PIT_BLUE_KEYCARD,
+  PIT_YELLOW_KEYCARD,
+  PIT_RED_KEYCARD,
+  PIT_BLUE_SKULL,
+  PIT_YELLOW_SKULL,
+  PIT_RED_SKULL,
+  PIT_BACKPACK,
+  PIT_HEALTH_BONUS,
+  PIT_STIMPACK,
+  PIT_MEDIKIT,
+  PIT_SOULSPHERE,
+  PIT_MEGASPHERE,
+  PIT_ARMOR_BONUS,
+  PIT_GREEN_ARMOR,
+  PIT_BLUE_ARMOR,
+  PIT_AUTOMAP,
+  PIT_LITEAMP,
+  PIT_BERSERK,
+  PIT_BLUR,
+  PIT_RADSUIT,
+  PIT_INVULNERABILITY,
+} pickup_item_type_t;
 
 // ********************************************************************
 // Definition of the Thing structure

@@ -1505,16 +1505,6 @@ static void D_InitTables(void)
   int i;
   for (i = 0; i < num_mobj_types; ++i)
   {
-    // mbf21
-    mobjinfo[i].flags2           = MF2_NONE;
-    mobjinfo[i].infighting_group = IG_DEFAULT;
-    mobjinfo[i].projectile_group = PG_DEFAULT;
-    mobjinfo[i].splash_group     = SG_DEFAULT;
-    mobjinfo[i].ripsound         = sfx_None;
-    mobjinfo[i].altspeed         = NO_ALTSPEED;
-    mobjinfo[i].meleerange       = MELEERANGE;
-    // id24
-    mobjinfo[i].dropped_item      = MT_NULL;
     // [Woof!]
     mobjinfo[i].bloodcolor       = 0; // Normal
   }
