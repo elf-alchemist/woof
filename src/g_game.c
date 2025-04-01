@@ -3096,7 +3096,7 @@ void G_PlayerReborn(int player)
   p->nextweapon = p->readyweapon = p->pendingweapon = wp_pistol;
   p->weaponowned[wp_fist] = true;
   p->weaponowned[wp_pistol] = true;
-  p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  p->ammo[am_bull] = initial_bullets; // Ty 03/12/98 - use dehacked values
 
   for (i=0 ; i<NUMAMMO ; i++)
     p->maxammo[i] = maxammo[i];

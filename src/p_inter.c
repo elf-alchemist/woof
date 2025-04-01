@@ -69,8 +69,8 @@ int deh_species_infighting = 0;
 
 // a weapon is found with two clip loads,
 // a big item has five clip loads
-int maxammo[NUMAMMO]  = {200, 50, 300, 50};
-int clipammo[NUMAMMO] = { 10,  4,  20,  1};
+int maxammo[NUMAMMO]  = {200, 50, 50, 300};
+int clipammo[NUMAMMO] = { 10,  4,  1,  20};
 
 //
 // GET STUFF
@@ -152,7 +152,7 @@ boolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
 
   switch (ammo)
     {
-    case am_clip:
+    case am_bull:
       if (player->readyweapon == wp_fist)
       {
         if (player->weaponowned[wp_chaingun])
@@ -524,19 +524,19 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
     case SPR_CLIP:
       if (special->flags & MF_DROPPED)
         {
-          if (!P_GiveAmmo (player,am_clip,0))
+          if (!P_GiveAmmo (player,am_bull,0))
             return;
         }
       else
         {
-          if (!P_GiveAmmo (player,am_clip,1))
+          if (!P_GiveAmmo (player,am_bull,1))
             return;
         }
       pickupmsg(player, "%s", s_GOTCLIP); // Ty 03/22/98 - externalized
       break;
 
     case SPR_AMMO:
-      if (!P_GiveAmmo (player, am_clip,5))
+      if (!P_GiveAmmo (player, am_bull,5))
         return;
       pickupmsg(player, "%s", s_GOTCLIPBOX); // Ty 03/22/98 - externalized
       break;

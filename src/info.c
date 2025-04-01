@@ -86,6 +86,19 @@ char *original_sprnames[NUMSPRITES+1] = {
   NULL
 };
 
+//
+// Whole numer indices get ORed with 0x70000000
+//
+char *negative_sprnames[] = {
+  "BSH1", "BSH2", "BSHE", "CBR2", "CHR1", "CSPI", "CYB2", "FLMF", "FLMG", "GBAL",
+  "GHUL", "GOR6", "GOR7", "GOR8", "GORA", "HBB2", "HBBQ", "HDB7", "HDB8", "HETB",
+  "HETC", "HETF", "HETG", "IFLM", "LAMP", "PHED", "POB6", "POL7", "POLA", "PPOS",
+  "STC1", "STC2", "STC3", "STG1", "STG2", "STG3", "STMI", "TLP6", "VASS", "VFLM",
+  "INCN", "CBLD", "FCPU", "FTNK",
+
+  NULL,
+};
+
 #include "p_action.h"
 
 // ********************************************************************

@@ -196,6 +196,56 @@ typedef enum
   NUMSPRITES  // counter of how many there are
 } spritenum_t;
 
+typedef enum negative_spritenum_e
+{
+  SPR_BSH1,
+  SPR_BSH2,
+  SPR_BSHE,
+  SPR_CBR2,
+  SPR_CHR1,
+  SPR_CSPI,
+  SPR_CYB2,
+  SPR_FLMF,
+  SPR_FLMG,
+  SPR_GBAL,
+  SPR_GHUL,
+  SPR_GOR6,
+  SPR_GOR7,
+  SPR_GOR8,
+  SPR_GORA,
+  SPR_HBB2,
+  SPR_HBBQ,
+  SPR_HDB7,
+  SPR_HDB8,
+  SPR_HETB,
+  SPR_HETC,
+  SPR_HETF,
+  SPR_HETG,
+  SPR_IFLM,
+  SPR_LAMP,
+  SPR_PHED,
+  SPR_POB6,
+  SPR_POL7,
+  SPR_POLA,
+  SPR_PPOS,
+  SPR_STC1,
+  SPR_STC2,
+  SPR_STC3,
+  SPR_STG1,
+  SPR_STG2,
+  SPR_STG3,
+  SPR_STMI,
+  SPR_TLP6,
+  SPR_VASS,
+  SPR_VFLM,
+  SPR_INCN,
+  SPR_CBLD,
+  SPR_FCPU,
+  SPR_FTNK,
+
+  NEGATIVE_NUMSPRITE,
+} negative_spritenum_t;
+
 // ********************************************************************
 // States (frames) enumeration -- must match info.c
 // ********************************************************************

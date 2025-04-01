@@ -153,18 +153,25 @@ typedef enum {
   wp_bfg,
   wp_chainsaw,
   wp_supershotgun,
+  wp_incinerator,
+  wp_calamityblade,
 
   NUMWEAPONS,
+  NUMWEAPONS_VANILLA = wp_supershotgun,
+  NUMWEAPONS_ID24 = wp_calamityblade,
 } weapontype_t;
 
 // Ammunition types defined.
 typedef enum {
   am_noammo = -1,   // Unlimited for chainsaw / fist.
-  am_clip,    // Pistol / chaingun ammo.
+  am_bull,    // Pistol / chaingun ammo.
   am_shell,   // Shotgun / double barreled shotgun.
-  am_cell,    // Plasma rifle, BFG.
   am_misl,    // Missile launcher.
+  am_cell,    // Plasma rifle, BFG.
+  am_fuel,
   NUMAMMO,
+  NUMAMMO_VANILLA = am_cell,
+  NUMAMMO_ID24 = am_fuel,
 } ammotype_t;
 
 // Power up artifacts.

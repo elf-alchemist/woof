@@ -295,7 +295,7 @@ int P_SwitchWeapon(player_t *player)
         newweapon = wp_fist;
         break;
       case 2:
-        if (player->ammo[am_clip])
+        if (player->ammo[am_bull])
           newweapon = wp_pistol;
         break;
       case 3:
@@ -303,7 +303,7 @@ int P_SwitchWeapon(player_t *player)
           newweapon = wp_shotgun;
         break;
       case 4:
-        if (player->weaponowned[wp_chaingun] && player->ammo[am_clip])
+        if (player->weaponowned[wp_chaingun] && player->ammo[am_bull])
           newweapon = wp_chaingun;
         break;
       case 5:

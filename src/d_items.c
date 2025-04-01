@@ -35,8 +35,7 @@
 //
 weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
 {
-  {
-    // fist
+  { // Fist
     am_noammo, // ammo
     S_PUNCHUP, // upstate
     S_PUNCHDOWN, // downstate
@@ -53,11 +52,14 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     0, // switch_priority
     true, // initial_owned
     false, // initial_raised
-    "SMFIST" // carousel_icon
+    "SMFIST", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // pistol
-    am_clip, // ammo
+  { // pistol
+    am_bull, // ammo
     S_PISTOLUP, // upstate
     S_PISTOLDOWN, // downstate
     S_PISTOL, // readystate
@@ -73,10 +75,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     6, // switch_priority
     true, // initial_owned
     true, // initial_raised
-    "SMPISG" // carousel_icon
+    "SMPISG", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // shotgun
+  { // Shotgun
     am_shell, // ammo
     S_SGUNUP, // upstate
     S_SGUNDOWN, // downstate
@@ -93,11 +98,14 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     7, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMSHOT" // carousel_icon
+    "SMSHOT", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // chaingun
-    am_clip, // ammo
+  { // Chaingun
+    am_bull, // ammo
     S_CHAINUP, // upstate
     S_CHAINDOWN, // downstate
     S_CHAIN, // readystate
@@ -113,10 +121,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     8, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMMGUN" // carousel_icon
+    "SMMGUN", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // missile launcher
+  { // Missile Launcher
     am_misl, // ammo
     S_MISSILEUP, // upstate
     S_MISSILEDOWN, // downstate
@@ -133,10 +144,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     4, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMLAUN" // carousel_icon
+    "SMLAUN", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // plasma rifle
+  { // Plasma Rifle
     am_cell, // ammo
     S_PLASMAUP, // upstate
     S_PLASMADOWN, // downstate
@@ -153,10 +167,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     10, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMPLAS" // carousel_icon
+    "SMPLAS", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // bfg 9000
+  { // BFG9000
     am_cell, // ammo
     S_BFGUP, // upstate
     S_BFGDOWN, // downstate
@@ -173,10 +190,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     2, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMBFGG" // carousel_icon
+    "SMBFGG", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // chainsaw
+  { // Chainsaw
     am_noammo, // ammo
     S_SAWUP, // upstate
     S_SAWDOWN, // downstate
@@ -193,10 +213,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     5, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMVSAW" // carousel_icon
+    "SMCSAW", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
-  {
-    // super shotgun
+  { // Super Shotgun
     am_shell, // ammo
     S_DSGUNUP, // upstate
     S_DSGUNDOWN, // downstate
@@ -213,7 +236,57 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     9, // switch_priority
     false, // initial_owned
     false, // initial_raised
-    "SMSGN2" // carousel_icon
+    "SMSGN2", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
+  },
+  { // Incinerator
+    am_fuel, // ammo
+    -1879047888, // upstate
+    -1879047889, // downstate
+    -1879047890, // readystate
+    -1879047887, // atkstate
+    -1879047878, // flashstate
+
+    WPF_NOAUTOFIRE, // flags
+    1, // ammopershot
+    0, // intflags
+
+    8, // slot
+    0, // slot_priority
+    3, // switch_priority
+    false, // initial_owned
+    false, // initial_raised
+    "SMFLAM", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
+  },
+  { // Calamity Blade
+    am_fuel, // ammo
+    -1879047839, // upstate
+    -1879047840, // downstate
+    -1879047841, // readystate
+    -1879047838, // atkstate
+    -1879047743, // flashstate
+
+    WPF_NOAUTOFIRE, // flags
+    10, // ammopershot
+    0, // intflags
+
+    9, // slot
+    0, // slot_priority
+    1, // switch_priority
+    false, // initial_owned
+    false, // initial_raised
+    "SMHEAT", // carousel_icon
+    -1, // allow_switch_weapon
+    -1, // no_switch_weapon
+    -1, // allow_switch_item
+    -1, // no_switch_item
   },
   {
     0

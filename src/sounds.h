@@ -97,6 +97,7 @@ typedef struct {
 
 // the complete set of sound effects
 extern sfxinfo_t    original_S_sfx[];
+extern sfxinfo_t    negative_S_sfx[];
 
 // the complete set of music
 extern musicinfo_t  original_S_music[];
@@ -527,6 +528,49 @@ typedef enum {
 
   NUMSFX
 } sfxenum_t;
+
+typedef enum negative_sfxenum_e
+{
+  sfx_banact,
+  sfx_bandth,
+  sfx_banpai,
+  sfx_break,
+  sfx_cspact,
+  sfx_cspdth,
+  sfx_cspsit,
+  sfx_cspwlk,
+  sfx_gatcls,
+  sfx_gatlop,
+  sfx_gatopn,
+  sfx_ghlact,
+  sfx_ghldth,
+  sfx_ghlpai,
+  sfx_ghlsit,
+  sfx_hetchg,
+  sfx_hetsht,
+  sfx_hetxpl,
+  sfx_incbrn,
+  sfx_incfi1,
+  sfx_incfi2,
+  sfx_incht1,
+  sfx_incht2,
+  sfx_incht3,
+  sfx_klaxon,
+  sfx_ppoact,
+  sfx_ppodth,
+  sfx_ppohed,
+  sfx_ppopai,
+  sfx_tyrdth,
+  sfx_tyrsit,
+  sfx_tyrwlk,
+  sfx_vasact,
+  sfx_vasatk,
+  sfx_vasdth,
+  sfx_vaspai,
+  sfx_vassit,
+
+  NEGATIVE_NUMSFX,
+} negative_sfxenum_t;
 
 // DSDHacked
 extern sfxinfo_t* S_sfx;
