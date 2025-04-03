@@ -133,9 +133,9 @@ typedef struct player_s
   // Is wp_nochange if not changing.
   weapontype_t        pendingweapon;
 
-  boolean             weaponowned[NUMWEAPONS];
-  int                 ammo[NUMAMMO];
-  int                 maxammo[NUMAMMO];
+  boolean             weaponowned[NUMWEAPONS_TOTAL];
+  int                 ammo[NUMAMMO_TOTAL];
+  int                 maxammo[NUMAMMO_TOTAL];
 
   // True if button down last tic.
   int                 attackdown;

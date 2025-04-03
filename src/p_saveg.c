@@ -874,8 +874,8 @@ static void saveg_read_player_t(player_t *str)
     // weapontype_t pendingweapon;
     str->pendingweapon = saveg_read_enum();
 
-    // boolean weaponowned[NUMWEAPONS];
-    for (i = 0; i < NUMWEAPONS; ++i)
+    // boolean weaponowned[NUMWEAPONS_VANILLA];
+    for (i = 0; i < NUMWEAPONS_VANILLA; ++i)
     {
         str->weaponowned[i] = saveg_read32();
     }
@@ -1073,8 +1073,8 @@ static void saveg_write_player_t(player_t *str)
     // weapontype_t pendingweapon;
     saveg_write_enum(str->pendingweapon);
 
-    // boolean weaponowned[NUMWEAPONS];
-    for (i = 0; i < NUMWEAPONS; ++i)
+    // boolean weaponowned[NUMWEAPONS_VANILLA];
+    for (i = 0; i < NUMWEAPONS_VANILLA; ++i)
     {
         saveg_write32(str->weaponowned[i]);
     }

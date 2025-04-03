@@ -64,7 +64,7 @@ typedef struct pspdef_s
   fixed_t oldsy2;
 } pspdef_t;
 
-extern int weapon_preferences[2][NUMWEAPONS+1];      // killough 5/2/98
+extern int weapon_preferences[2][NUMWEAPONS_VANILLA+1];      // killough 5/2/98
 int P_WeaponPreferred(int w1, int w2);
 
 extern boolean weapon_recoilpitch;

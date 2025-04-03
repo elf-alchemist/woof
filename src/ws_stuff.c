@@ -198,7 +198,7 @@ void WS_UpdateSlots(void)
 
     for (int i = 0; i < NUM_WS_SLOTS; i++)
     {
-        int count[NUMWEAPONS] = {0};
+        int count[NUMWEAPONS_VANILLA] = {0};
         slots[i].num_weapons = 0;
 
         for (int j = 0; j < NUM_WS_WEAPS; j++)

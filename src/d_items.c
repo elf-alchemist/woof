@@ -25,15 +25,7 @@
 // PSPRITE ACTIONS for waepons.
 // This struct controls the weapon animations.
 //
-// Each entry is:
-//  ammo/amunition type
-//  upstate
-//  downstate
-//  readystate
-//  atkstate, i.e. attack/fire/hit frame
-//  flashstate, muzzle flash
-//
-weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
+weaponinfo_t weaponinfo[NUMWEAPONS_TOTAL] =
 {
   { // Fist
     am_noammo, // ammo

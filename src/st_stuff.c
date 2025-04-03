@@ -246,7 +246,7 @@ static boolean CheckConditions(sbarcondition_t *conditions, player_t *player)
         switch (cond->condition)
         {
             case sbc_weaponowned:
-                if (cond->param >= 0 && cond->param < NUMWEAPONS)
+                if (cond->param >= 0 && cond->param < NUMWEAPONS_VANILLA)
                 {
                     result &= !!player->weaponowned[cond->param];
                 }
@@ -261,7 +261,7 @@ static boolean CheckConditions(sbarcondition_t *conditions, player_t *player)
                 break;
 
             case sbc_weaponhasammo:
-                if (cond->param >= 0 && cond->param < NUMWEAPONS)
+                if (cond->param >= 0 && cond->param < NUMWEAPONS_VANILLA)
                 {
                     result &= weaponinfo[cond->param].ammo != am_noammo;
                 }
@@ -279,7 +279,7 @@ static boolean CheckConditions(sbarcondition_t *conditions, player_t *player)
             case sbc_weaponslotowned:
                 {
                     boolean owned = false;
-                    for (int i = 0; i < NUMWEAPONS; ++i)
+                    for (int i = 0; i < NUMWEAPONS_VANILLA; ++i)
                     {
                         if (weaponinfo[i].slot == cond->param
                             && player->weaponowned[i])
@@ -295,7 +295,7 @@ static boolean CheckConditions(sbarcondition_t *conditions, player_t *player)
             case sbc_weaponslotnotowned:
                 {
                     boolean notowned = true;
-                    for (int i = 0; i < NUMWEAPONS; ++i)
+                    for (int i = 0; i < NUMWEAPONS_VANILLA; ++i)
                     {
                         if (weaponinfo[i].slot == cond->param
                             && player->weaponowned[i])
@@ -473,14 +473,14 @@ static int ResolveNumber(sbe_number_t *number, player_t *player)
             break;
 
         case sbn_weaponammo:
-            if (param >= 0 && param < NUMWEAPONS)
+            if (param >= 0 && param < NUMWEAPONS_VANILLA)
             {
                 result = player->ammo[weaponinfo[param].ammo];
             }
             break;
 
         case sbn_weaponmaxammo:
-            if (param >= 0 && param < NUMWEAPONS)
+            if (param >= 0 && param < NUMWEAPONS_VANILLA)
             {
                 result = player->maxammo[weaponinfo[param].ammo];
             }
@@ -545,7 +545,7 @@ static void UpdateFace(sbe_face_t *face, player_t *player)
             // picking up bonus
             boolean doevilgrin = false;
 
-            for (int i = 0; i < NUMWEAPONS; ++i)
+            for (int i = 0; i < NUMWEAPONS_VANILLA; ++i)
             {
                 if (face->oldweaponsowned[i] != player->weaponowned[i])
                 {
@@ -1023,7 +1023,7 @@ static void ResetElem(sbarelem_t *elem, player_t *player)
                 face->faceindex = 0;
                 face->facecount = 0;
                 face->oldhealth = -1;
-                for (int i = 0; i < NUMWEAPONS; i++)
+                for (int i = 0; i < NUMWEAPONS_VANILLA; i++)
                 {
                     face->oldweaponsowned[i] = player->weaponowned[i];
                 }

@@ -182,7 +182,7 @@ typedef struct
     int oldhealth;
 
     // used for evil grin
-    boolean oldweaponsowned[NUMWEAPONS];
+    boolean oldweaponsowned[NUMWEAPONS_VANILLA];
 } sbe_face_t;
 
 typedef struct

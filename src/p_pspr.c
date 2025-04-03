@@ -158,7 +158,7 @@ static void P_BringUpWeapon(player_t *player)
   if (player->pendingweapon == wp_chainsaw)
     S_StartSoundPitchEx(player->mo, sfx_sawup, PITCH_HALF);
 
-  if (player->pendingweapon >= NUMWEAPONS)
+  if (player->pendingweapon >= NUMWEAPONS_VANILLA)
   {
     I_Printf(VB_WARNING, "P_BringUpWeapon: weaponinfo overrun has occurred.");
   }
@@ -182,7 +182,7 @@ static void P_BringUpWeapon(player_t *player)
 // in DOOM2 to bring up the weapon, i.e. 6 = plasma gun. These    //    |
 // are NOT the wp_* constants.                                    //    V
 
-int weapon_preferences[2][NUMWEAPONS+1] = {
+int weapon_preferences[2][NUMWEAPONS_VANILLA+1] = {
   {6, 9, 4, 3, 2, 8, 5, 7, 1, 0},  // !compatibility preferences
   {6, 9, 4, 3, 2, 8, 5, 7, 1, 0},  //  compatibility preferences
 };
@@ -202,7 +202,7 @@ static int P_SwitchWeaponMBF21(player_t *player)
   prefer = weapon_preferences[0];
   currentweapon = player->readyweapon;
   newweapon = currentweapon;
-  i = NUMWEAPONS + 1;
+  i = NUMWEAPONS_VANILLA + 1;
 
   do
   {
@@ -268,7 +268,7 @@ int P_SwitchWeapon(player_t *player)
   int *prefer = weapon_preferences[demo_compatibility!=0]; // killough 3/22/98
   int currentweapon = player->readyweapon;
   int newweapon = currentweapon;
-  int i = NUMWEAPONS+1;   // killough 5/2/98
+  int i = NUMWEAPONS_VANILLA+1;   // killough 5/2/98
 
   G_NextWeaponReset();
 
@@ -596,7 +596,7 @@ void A_Lower(player_t *player, pspdef_t *psp)
       return;
     }
 
-  if (player->pendingweapon < NUMWEAPONS || !mbf21)
+  if (player->pendingweapon < NUMWEAPONS_VANILLA || !mbf21)
   {
     player->lastweapon = player->readyweapon;
     player->readyweapon = player->pendingweapon;

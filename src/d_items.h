@@ -70,7 +70,7 @@ typedef struct
   int         no_switch_item;
 } weaponinfo_t;
 
-extern  weaponinfo_t    weaponinfo[NUMWEAPONS+2];
+extern  weaponinfo_t weaponinfo[NUMWEAPONS_TOTAL];
 
 #endif
 

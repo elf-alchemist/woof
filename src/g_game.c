@@ -227,7 +227,7 @@ static weapontype_t LastWeapon(void)
 {
     const weapontype_t weapon = players[consoleplayer].lastweapon;
 
-    if (weapon < wp_fist || weapon >= NUMWEAPONS
+    if (weapon < wp_fist || weapon >= NUMWEAPONS_VANILLA
         || !G_WeaponSelectable(weapon))
     {
         return wp_nochange;
@@ -3098,7 +3098,7 @@ void G_PlayerReborn(int player)
   p->weaponowned[wp_pistol] = true;
   p->ammo[am_bull] = initial_bullets; // Ty 03/12/98 - use dehacked values
 
-  for (i=0 ; i<NUMAMMO ; i++)
+  for (i = 0; i < NUMAMMO_TOTAL; i++)
     p->maxammo[i] = maxammo[i];
 }
 

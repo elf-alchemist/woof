@@ -86,6 +86,24 @@ typedef enum
 // State updates, number of tics / second.
 #define TICRATE          35
 
+//
+// Reserved ranges for Thing Types and DoomEdNum values:
+//
+// * (0x00000000 - 0x7FFFFFFF) The original Vanilla/Boom/MBF sets and DSDHACKED
+// * (0x80000000 - 0x8FFFFFFF) Internal source port representations
+// * (0x90000000 - 0xBFFFFFFF) id Software extensions
+// * (0xC0000000 - 0xFFFFFFFE) Later community extensions
+// * (0xFFFFFFFF)              Invalid, unused
+//
+
+#define NEG_INT     ((signed int) 0x90000000)
+#define NEG_INT_MAX ((signed int) 0xBFFFFFFF)
+
+#define NEG_SHORT     ((signed short) 0x9000)
+#define NEG_SHORT_MAX ((signed short) 0xBFFF)
+
+#define NEG(x) ( x + NEG_INT )
+
 // The current state of the game: whether we are playing, gazing
 // at the intermission screen, the game final animation, or a demo.
 
@@ -153,25 +171,29 @@ typedef enum {
   wp_bfg,
   wp_chainsaw,
   wp_supershotgun,
-  wp_incinerator,
+
+  wp_incinerator = NEG_INT,
   wp_calamityblade,
 
-  NUMWEAPONS,
   NUMWEAPONS_VANILLA = wp_supershotgun,
-  NUMWEAPONS_ID24 = wp_calamityblade,
+  NUMWEAPONS_ID24 = NUMWEAPONS_VANILLA + 2,
+
+  NUMWEAPONS_TOTAL,
 } weapontype_t;
 
 // Ammunition types defined.
 typedef enum {
-  am_noammo = -1,   // Unlimited for chainsaw / fist.
-  am_bull,    // Pistol / chaingun ammo.
-  am_shell,   // Shotgun / double barreled shotgun.
-  am_misl,    // Missile launcher.
-  am_cell,    // Plasma rifle, BFG.
-  am_fuel,
-  NUMAMMO,
+  am_noammo = -1,    // Unlimited for chainsaw / fist.
+  am_bull,           // Pistol / chaingun ammo.
+  am_shell,          // Shotgun / double barreled shotgun.
+  am_misl,           // Missile launcher.
+  am_cell,           // Plasma rifle, BFG.
+  am_fuel = NEG_INT, // Incinerator, Calamity Blade
+
   NUMAMMO_VANILLA = am_cell,
-  NUMAMMO_ID24 = am_fuel,
+  NUMAMMO_ID24 = NUMAMMO_VANILLA + 1,
+
+  NUMAMMO_TOTAL
 } ammotype_t;
 
 // Power up artifacts.

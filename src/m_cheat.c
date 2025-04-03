@@ -533,7 +533,7 @@ static void cheat_fa(void)
 
   if (!plyr->backpack)
     {
-      for (i=0 ; i<NUMAMMO ; i++)
+      for (i=0 ; i<NUMAMMO_TOTAL ; i++)
         plyr->maxammo[i] *= 2;
       plyr->backpack = true;
     }
@@ -542,12 +542,12 @@ static void cheat_fa(void)
   plyr->armortype = idfa_armor_class;  // Ty 03/09/98 - deh
         
   // You can't own weapons that aren't in the game // phares 02/27/98
-  for (i=0;i<NUMWEAPONS;i++)
+  for (i=0;i<NUMWEAPONS_VANILLA;i++)
     if (!(((i == wp_plasma || i == wp_bfg) && gamemode == shareware) ||
           (i == wp_supershotgun && !ALLOW_SSG)))
       plyr->weaponowned[i] = true;
         
-  for (i=0;i<NUMAMMO;i++)
+  for (i=0;i<NUMAMMO_TOTAL;i++)
     if (i!=am_cell || gamemode!=shareware)
       plyr->ammo[i] = plyr->maxammo[i];
 
@@ -1125,7 +1125,7 @@ static void cheat_weapx(char *buf)
   if (w==wp_fist)           // make '1' apply beserker strength toggle
     cheat_pw(pw_strength);
   else
-    if (w >= 0 && w < NUMWEAPONS)
+    if (w >= 0 && w < NUMWEAPONS_VANILLA)
     {
       if ((plyr->weaponowned[w] = !plyr->weaponowned[w]))
       {
@@ -1152,16 +1152,16 @@ static void cheat_ammox(char *buf)
   int a = *buf - '1';
   if (*buf == 'b')  // Ty 03/27/98 - strings *not* externalized
     if ((plyr->backpack = !plyr->backpack))
-      for (displaymsg("Backpack Added"),   a=0 ; a<NUMAMMO ; a++)
+      for (displaymsg("Backpack Added"),   a=0 ; a<NUMAMMO_TOTAL ; a++)
         plyr->maxammo[a] <<= 1;
     else
-      for (displaymsg("Backpack Removed"), a=0 ; a<NUMAMMO ; a++)
+      for (displaymsg("Backpack Removed"), a=0 ; a<NUMAMMO_TOTAL ; a++)
         {
           if (plyr->ammo[a] > (plyr->maxammo[a] >>= 1))
             plyr->ammo[a] = plyr->maxammo[a];
         }
   else
-    if (a>=0 && a<NUMAMMO)  // Ty 03/27/98 - *not* externalized
+    if (a>=0 && a<NUMAMMO_TOTAL)  // Ty 03/27/98 - *not* externalized
       { // killough 5/5/98: switch plasma and rockets for now -- KLUDGE 
         a = a==am_cell ? am_misl : a==am_misl ? am_cell : a;  // HACK
         if ((plyr->ammo[a] = !plyr->ammo[a]))

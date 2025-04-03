@@ -69,8 +69,8 @@ int deh_species_infighting = 0;
 
 // a weapon is found with two clip loads,
 // a big item has five clip loads
-int maxammo[NUMAMMO]  = {200, 50, 50, 300};
-int clipammo[NUMAMMO] = { 10,  4,  1,  20};
+int maxammo[NUMAMMO_TOTAL]  = {200, 50, 50, 300, 100};
+int clipammo[NUMAMMO_TOTAL] = { 10,  4,  1,  20, 100};
 
 //
 // GET STUFF
@@ -93,7 +93,7 @@ static boolean P_GiveAmmoAutoSwitch(player_t *player, ammotype_t ammo, int oldam
     weaponinfo[player->readyweapon].ammo != ammo
   )
   {
-    for (i = NUMWEAPONS - 1; i > player->readyweapon; --i)
+    for (i = NUMWEAPONS_VANILLA - 1; i > player->readyweapon; --i)
     {
       if (
         player->weaponowned[i] &&
@@ -119,7 +119,7 @@ boolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
   if (ammo == am_noammo)
     return false;
 
-  if ((unsigned) ammo > NUMAMMO)
+  if ((unsigned) ammo > NUMAMMO_TOTAL)
     I_Error ("P_GiveAmmo: bad type %i", ammo);
 
   if ( player->ammo[ammo] == player->maxammo[ammo]  )
@@ -580,11 +580,11 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
     case SPR_BPAK:
       if (!player->backpack)
         {
-          for (i=0 ; i<NUMAMMO ; i++)
+          for (i=0 ; i<NUMAMMO_TOTAL ; i++)
             player->maxammo[i] *= 2;
           player->backpack = true;
         }
-      for (i=0 ; i<NUMAMMO ; i++)
+      for (i=0 ; i<NUMAMMO_TOTAL ; i++)
         P_GiveAmmo (player, i, 1);
       pickupmsg(player, "%s", s_GOTBACKPACK); // Ty 03/22/98 - externalized
       break;

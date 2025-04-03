@@ -2449,9 +2449,9 @@ static void deh_procAmmo(DEHFILE *fpin, char *line)
     // killough 8/98: allow hex numbers in input:
     sscanf(inbuffer, "%s %i", key, &indexnum);
     deh_log("Processing Ammo at index %d: %s\n", indexnum, key);
-    if (indexnum < 0 || indexnum >= NUMAMMO)
+    if (indexnum < 0 || indexnum >= NUMAMMO_TOTAL)
     {
-        deh_log("Bad ammo number %d of %d\n", indexnum, NUMAMMO);
+        deh_log("Bad ammo number %d of %d\n", indexnum, NUMAMMO_TOTAL);
     }
 
     while (!deh_feof(fpin) && *inbuffer && (*inbuffer != ' '))
@@ -2507,9 +2507,9 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
     // killough 8/98: allow hex numbers in input:
     sscanf(inbuffer, "%s %i", key, &indexnum);
     deh_log("Processing Weapon at index %d: %s\n", indexnum, key);
-    if (indexnum < 0 || indexnum >= NUMWEAPONS)
+    if (indexnum < 0 || indexnum >= NUMWEAPONS_VANILLA)
     {
-        deh_log("Bad weapon number %d of %d\n", indexnum, NUMAMMO);
+        deh_log("Bad weapon number %d of %d\n", indexnum, NUMAMMO_TOTAL);
     }
 
     while (!deh_feof(fpin) && *inbuffer && (*inbuffer != ' '))

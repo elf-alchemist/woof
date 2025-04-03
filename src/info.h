@@ -1625,7 +1625,7 @@ typedef struct
     int pickup_item_type;       // Powerup to pickup
     int pickup_bonus_count;     // Screen flash value to add
     int pickup_sound;           // Sound index to play
-    char *pickup_message;       // Text to show in 
+    char *pickup_message;       // Text to show when SPECIAL is picked up
     int translation;            // TranMap lump to use when rendering
     fixed_t self_damage_factor; // Damage multiplier when hurting shooter
 
