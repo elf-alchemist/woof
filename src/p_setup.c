@@ -120,13 +120,13 @@ byte *rejectmatrix;
 // Maintain single and multi player starting spots.
 
 // 1/11/98 killough: Remove limit on deathmatch starts
+mapthing_t *deathmatchstarts;      // killough
 size_t     num_deathmatchstarts;   // killough
 
-mapthing_t *deathmatchstarts;      // killough
 mapthing_t *deathmatch_p;
 mapthing_t playerstarts[MAXPLAYERS];
 
-mapthing_hexen_t *hexen_deathmatchstarts;      // killough
+mapthing_hexen_t *hexen_deathmatchstarts;
 mapthing_hexen_t *hexen_deathmatch_p;
 mapthing_hexen_t hexen_playerstarts[MAXPLAYERS];
 
@@ -494,7 +494,7 @@ void P_LoadThings_Hexen (int lump)
     spawnthing.type = SHORT(mt->type);
     spawnthing.options = SHORT(mt->options);
 
-    spawnthing.spac = mt->spac;
+    spawnthing.special = mt->special;
     spawnthing.arg1 = mt->arg1;
     spawnthing.arg2 = mt->arg2;
     spawnthing.arg3 = mt->arg3;
@@ -648,7 +648,7 @@ void P_LoadLineDefs_Hexen (int lump)
   {
     ld->flags = (unsigned short)SHORT(mld->flags);
 
-    ld->spac = mld->spac;
+    ld->spac = mld->special;
     ld->arg1 = mld->arg1;
     ld->arg2 = mld->arg2;
     ld->arg3 = mld->arg3;

@@ -209,11 +209,27 @@ typedef struct {
 //
 
 typedef struct {
+  short tid;
+  short x;
+  short y;
+  short height;
+  short angle;
+  short type;
+  short options;
+  byte special;
+  byte arg1;
+  byte arg2;
+  byte arg3;
+  byte arg4;
+  byte arg5;
+} mapthing_hexen_t;
+
+typedef struct {
   // [FG] extended nodes
   unsigned short v1;
   unsigned short v2;
   unsigned short flags;
-  byte spac;
+  byte special;
   byte arg1;
   byte arg2;
   byte arg3;
@@ -222,32 +238,33 @@ typedef struct {
   unsigned short sidenum[2];
 } maplinedef_hexen_t;
 
-typedef struct {
-  short tid;
-  short x;
-  short y;
-  short height;
-  short angle;
-  short type;
-  short options;
-  byte spac;
-  byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
-} mapthing_hexen_t;
+typedef enum {
+  HMTF_EASY        = 0x0001,
+  HMTF_NORMAL      = 0x0002,
+  HMTF_HARD        = 0x0004,
+  HMTF_AMBUSH      = 0x0008,
+  HMTF_DORMANT     = 0x0010,
+  HMTF_FIGHTER     = 0x0020,
+  HMTF_CLERIC      = 0x0040,
+  HMTF_MAGE        = 0x0080,
+  HMTF_GSINGLE     = 0x0100,
+  HMTF_GCOOP       = 0x0200,
+  HMTF_GDEATHMATCH = 0x0400,
+  HMTF_FRIEND      = 0x0800,
+} mapthing_hexen_flags_t;
 
-#define SPAC_CROSS         0 // when player crosses line
-#define SPAC_USE           1 // when player uses line
-#define SPAC_MCROSS        2 // when monster crosses line
-#define SPAC_IMPACT        3 // when projectile hits line
-#define SPAC_PUSH          4 // when player/monster pushes line
-#define SPAC_PCROSS        5 // when projectile crosses line
+typedef enum {
+  SPAC_CROSS  = 0, // when player crosses line
+  SPAC_USE    = 1, // when player uses line
+  SPAC_MCROSS = 2, // when monster crosses line
+  SPAC_IMPACT = 3, // when projectile hits line
+  SPAC_PUSH   = 4, // when player/monster pushes line
+  SPAC_PCROSS = 5, // when projectile crosses line
+} spac_flags_t;
 
-#define HML_REPEAT_SPECIAL 0x0200  // special is repeatable
-#define HML_SPAC_SHIFT     10
-#define HML_SPAC_MASK      0x1c00
+#define HML_REPEAT     0x0200  // special is repeatable
+#define HML_SPAC_SHIFT 10
+#define HML_SPAC_MASK  0x1c00
 #define GET_SPAC(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
 
 //
