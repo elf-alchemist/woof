@@ -54,6 +54,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+// Detect map Format currently being set up.
+MapFormat_t mapformat = MF_Invalid;
+
 //
 // MAP related Lookup tables.
 // Store VERTEXES, LINEDEFS, SIDEDEFS, etc.
@@ -117,11 +120,15 @@ byte *rejectmatrix;
 // Maintain single and multi player starting spots.
 
 // 1/11/98 killough: Remove limit on deathmatch starts
-mapthing_t *deathmatchstarts;      // killough
 size_t     num_deathmatchstarts;   // killough
 
+mapthing_t *deathmatchstarts;      // killough
 mapthing_t *deathmatch_p;
 mapthing_t playerstarts[MAXPLAYERS];
+
+mapthing_hexen_t *hexen_deathmatchstarts;      // killough
+mapthing_hexen_t *hexen_deathmatch_p;
+mapthing_hexen_t hexen_playerstarts[MAXPLAYERS];
 
 //
 // P_LoadVertexes
@@ -464,6 +471,42 @@ void P_LoadThings (int lump)
   Z_Free (data);
 }
 
+// [crispy] allow loading of Hexen-format maps
+void P_LoadThings_Hexen (int lump)
+{
+  byte *data;
+  int i;
+  mapthing_hexen_t spawnthing;
+  mapthing_hexen_t *mt;
+  int numthings;
+
+  data = W_CacheLumpNum(lump, PU_STATIC);
+  numthings = W_LumpLength(lump) / sizeof(mapthing_hexen_t);
+
+  mt = (mapthing_hexen_t *) data;
+  for (i = 0; i < numthings; i++, mt++)
+  {
+    spawnthing.tid = SHORT(mt->tid);
+    spawnthing.x = SHORT(mt->x);
+    spawnthing.y = SHORT(mt->y);
+    spawnthing.height = SHORT(mt->height);
+    spawnthing.angle = SHORT(mt->angle);
+    spawnthing.type = SHORT(mt->type);
+    spawnthing.options = SHORT(mt->options);
+
+    spawnthing.spac = mt->spac;
+    spawnthing.arg1 = mt->arg1;
+    spawnthing.arg2 = mt->arg2;
+    spawnthing.arg3 = mt->arg3;
+    spawnthing.arg4 = mt->arg4;
+    spawnthing.arg5 = mt->arg5;
+
+    P_SpawnMapThing_Hexen(&spawnthing);
+  }
+
+  Z_Free(data);
+}
+
 //
 // P_LoadLineDefs
 // Also counts secret lines for intermissions.
@@ -581,6 +624,111 @@ void P_LoadLineDefs2(int lump)
             break;
         }
     }
+}
+
+// [crispy] allow loading of Hexen-format maps
+void P_LoadLineDefs_Hexen (int lump)
+{
+  byte *data;
+  int i;
+  maplinedef_hexen_t *mld;
+  line_t *ld;
+  vertex_t *v1, *v2;
+  int warn; // [crispy] warn about unknown linedef types
+
+  numlines = W_LumpLength(lump) / sizeof(maplinedef_hexen_t);
+  lines = Z_Malloc(numlines * sizeof(line_t), PU_LEVEL, 0);
+  memset(lines, 0, numlines * sizeof(line_t));
+  data = W_CacheLumpNum(lump, PU_STATIC);
+
+  mld = (maplinedef_hexen_t *) data;
+  ld = lines;
+  warn = 0; // [crispy] warn about unknown linedef types
+  for (i = 0; i < numlines; i++, mld++, ld++)
+  {
+    ld->flags = (unsigned short)SHORT(mld->flags);
+
+    ld->spac = mld->spac;
+    ld->arg1 = mld->arg1;
+    ld->arg2 = mld->arg2;
+    ld->arg3 = mld->arg3;
+    ld->arg4 = mld->arg4;
+    ld->arg5 = mld->arg5;
+
+    // [crispy] warn about unknown linedef types
+    if ((unsigned short) ld->spac > 141)
+    {
+      fprintf(stderr, "P_LoadLineDefs: Unknown special %d at line %d\n", ld->spac, i);
+      warn++;
+    }
+
+    v1 = ld->v1 = &vertexes[(unsigned short)SHORT(mld->v1)];
+    v2 = ld->v2 = &vertexes[(unsigned short)SHORT(mld->v2)];
+
+    ld->dx = v2->x - v1->x;
+    ld->dy = v2->y - v1->y;
+
+    if (!ld->dx)
+      ld->slopetype = ST_VERTICAL;
+    else if (!ld->dy)
+      ld->slopetype = ST_HORIZONTAL;
+    else
+    {
+      if (FixedDiv(ld->dy, ld->dx) > 0)
+        ld->slopetype = ST_POSITIVE;
+      else
+        ld->slopetype = ST_NEGATIVE;
+    }
+
+    if (v1->x < v2->x)
+    {
+      ld->bbox[BOXLEFT] = v1->x;
+      ld->bbox[BOXRIGHT] = v2->x;
+    }
+    else
+    {
+      ld->bbox[BOXLEFT] = v2->x;
+      ld->bbox[BOXRIGHT] = v1->x;
+    }
+
+    if (v1->y < v2->y)
+    {
+      ld->bbox[BOXBOTTOM] = v1->y;
+      ld->bbox[BOXTOP] = v2->y;
+    }
+    else
+    {
+      ld->bbox[BOXBOTTOM] = v2->y;
+      ld->bbox[BOXTOP] = v1->y;
+    }
+
+    ld->sidenum[0] = SHORT(mld->sidenum[0]);
+    ld->sidenum[1] = SHORT(mld->sidenum[1]);
+
+    // [crispy] substitute dummy sidedef for missing right side
+    if (ld->sidenum[0] == NO_INDEX)
+    {
+      ld->sidenum[0] = 0;
+      fprintf(stderr, "P_LoadLineDefs: linedef %d without first sidedef!\n", i);
+    }
+
+    if (ld->sidenum[0] != NO_INDEX)
+      ld->frontsector = sides[ld->sidenum[0]].sector;
+    else
+      ld->frontsector = 0;
+
+    if (ld->sidenum[1] != NO_INDEX)
+      ld->backsector = sides[ld->sidenum[1]].sector;
+    else
+      ld->backsector = 0;
+  }
+
+  // [crispy] warn about unknown linedef types
+  if (warn)
+  {
+    fprintf(stderr, "P_LoadLineDefs: Found %d line%s with unknown linedef type.\n"
+                    "THIS MAP MAY NOT WORK AS EXPECTED!\n", warn, (warn > 1) ? "s" : "");
+  }
 }
 
 //
@@ -1610,7 +1758,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   int   i;
   char  lumpname[9];
   int   lumpnum;
-  mapformat_t mapformat;
+  nodeformat_t nodeformat;
   boolean gen_blockmap, pad_reject;
 
   totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
@@ -1663,7 +1811,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // to allow texture names to be used in special linedefs
 
   // [FG] check nodes format
-  mapformat = P_CheckMapFormat(lumpnum);
+  nodeformat = P_CheckNodeFormat(lumpnum);
 
   P_LoadVertexes  (lumpnum+ML_VERTEXES);
   P_LoadSectors   (lumpnum+ML_SECTORS);
@@ -1673,20 +1821,20 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   P_LoadLineDefs2 (lumpnum+ML_LINEDEFS);             // killough 4/4/98
   gen_blockmap = P_LoadBlockMap  (lumpnum+ML_BLOCKMAP);             // killough 3/1/98
   // [FG] build nodes with NanoBSP
-  if (mapformat >= MFMT_UNSUPPORTED)
+  if (nodeformat >= NFMT_UNSUPPORTED)
   {
     BSP_BuildNodes();
   }
   // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed ZNOD/ZGLN formats, or DeePBSP format
-  else if (mapformat == MFMT_XGLN || mapformat == MFMT_ZGLN)
+  else if (nodeformat == NFMT_XGLN || nodeformat == NFMT_ZGLN)
   {
-    P_LoadNodes_XNOD (lumpnum+ML_SSECTORS, mapformat == MFMT_ZGLN, true);
+    P_LoadNodes_XNOD (lumpnum+ML_SSECTORS, nodeformat == NFMT_ZGLN, true);
   }
-  else if (mapformat == MFMT_XNOD || mapformat == MFMT_ZNOD)
+  else if (nodeformat == NFMT_XNOD || nodeformat == NFMT_ZNOD)
   {
-    P_LoadNodes_XNOD (lumpnum+ML_NODES, mapformat == MFMT_ZNOD, false);
+    P_LoadNodes_XNOD (lumpnum+ML_NODES, nodeformat == NFMT_ZNOD, false);
   }
-  else if (mapformat == MFMT_DEEP)
+  else if (nodeformat == NFMT_DEEP)
   {
     P_LoadSubsectors_DEEP (lumpnum+ML_SSECTORS);
     P_LoadNodes_DEEP (lumpnum+ML_NODES);
@@ -1702,7 +1850,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // [FG] pad the REJECT table when the lump is too small
   pad_reject = P_LoadReject (lumpnum+ML_REJECT, P_GroupLines());
 
-  if (mapformat != MFMT_UNSUPPORTED)
+  if (nodeformat != NFMT_UNSUPPORTED)
     P_RemoveSlimeTrails();    // killough 10/98: remove slime trails from wad
 
   // [crispy] fix long wall wobble
@@ -1750,13 +1898,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   I_Printf(VB_DEMO, "P_SetupLevel: %.8s (%s), Skill %d, %s%s%s, %s",
     lumpname, W_WadNameForLump(lumpnum),
     gameskill + 1,
-    mapformat >= MFMT_UNSUPPORTED ? "NanoBSP" :
-    mapformat == MFMT_XNOD ? "XNOD" :
-    mapformat == MFMT_ZNOD ? "ZNOD" :
-    mapformat == MFMT_XGLN ? "XGLN" :
-    mapformat == MFMT_ZGLN ? "ZGLN" :
-    mapformat == MFMT_DEEP ? "DeepBSP" :
-    "Doom",
+    node_format_names[nodeformat],
     gen_blockmap ? "+Blockmap" : "",
     pad_reject ? "+Reject" : "",
     G_GetCurrentComplevelName());

@@ -28,21 +28,34 @@ struct vertex_s;
 
 typedef enum
 {
-    MFMT_DOOM,
-    MFMT_DEEP,
-    MFMT_XNOD,
-    MFMT_ZNOD,
-    MFMT_XGLN,
-    MFMT_ZGLN,
-    MFMT_XGL2,
-    MFMT_ZGL2,
-    MFMT_XGL3,
-    MFMT_ZGL3,
+    NFMT_DOOM,
+    NFMT_DEEP,
+    NFMT_XNOD,
+    NFMT_ZNOD,
+    NFMT_XGLN,
+    NFMT_ZGLN,
+    NFMT_XGL2,
+    NFMT_ZGL2,
+    NFMT_XGL3,
+    NFMT_ZGL3,
 
-    MFMT_UNSUPPORTED = MFMT_XGL2
-} mapformat_t;
+    NFMT_UNSUPPORTED = NFMT_XGL2
+} nodeformat_t;
 
-extern mapformat_t P_CheckMapFormat(int lumpnum);
+const char * const node_format_names[] = {
+  [NFMT_DOOM] = "Doom",
+  [NFMT_DEEP] = "DeepBSP",
+  [NFMT_XNOD] = "XNOD",
+  [NFMT_ZNOD] = "ZNOD",
+  [NFMT_XGLN] = "XGLN",
+  [NFMT_ZGLN] = "ZGLN",
+  [NFMT_XGL2] = "NanoBSP",
+  [NFMT_ZGL2] = "NanoBSP",
+  [NFMT_XGL3] = "NanoBSP",
+  [NFMT_ZGL3] = "NanoBSP",
+};
+
+nodeformat_t P_CheckNodeFormat(int lumpnum);
 extern int P_GetOffset(struct vertex_s *v1, struct vertex_s *v2);
 
 extern void P_LoadSegs_DEEP(int lump);

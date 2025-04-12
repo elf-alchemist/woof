@@ -439,6 +439,7 @@ mobj_t  *P_SpawnMissile(mobj_t *source, mobj_t *dest, mobjtype_t type);
 extern int autoaim;
 mobj_t  *P_SpawnPlayerMissile(mobj_t *source, mobjtype_t type);
 void    P_SpawnMapThing (mapthing_t*  mthing);
+void    P_SpawnMapThing_Hexen (mapthing_hexen_t* mthing);
 boolean P_CheckMissileSpawn(mobj_t*);  // killough 8/2/98
 void    P_ExplodeMissile(mobj_t*);    // killough
 

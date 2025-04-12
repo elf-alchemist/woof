@@ -1,6 +1,8 @@
 //
 //  Copyright (C) 1999 by
-//  id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
+//    id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
+//  Copyright (C) 1993-2008 Raven Software
+//  Copyright (C) 2005-2014 Simon Howard
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -22,6 +24,16 @@
 #ifndef __DOOMDATA__
 #define __DOOMDATA__
 
+#include "doomtype.h"
+
+typedef enum {
+  MF_Invalid = -1,
+  MF_Doom,
+  MF_Hexen,
+  MF_Doom_UDMF,
+  MF_Hexen_UDMF,
+} MapFormat_t;
+
 //
 // Map level types.
 // The following data structures define the persistent format
@@ -41,7 +53,8 @@ enum {
   ML_NODES,             // BSP nodes
   ML_SECTORS,           // Sectors, from editing
   ML_REJECT,            // LUT, sector-sector visibility
-  ML_BLOCKMAP           // LUT, motion clipping, walls/grid element
+  ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
+  ML_BEHAVIOUR,         // ACS byte code
 };
 
 // A single Vertex.
@@ -190,6 +203,251 @@ typedef struct {
   short type;
   short options;
 } mapthing_t;
+
+//
+// [EA] Hexen Map Format support -- pulled from Crispy
+//
+
+typedef struct {
+  // [FG] extended nodes
+  unsigned short v1;
+  unsigned short v2;
+  unsigned short flags;
+  byte spac;
+  byte arg1;
+  byte arg2;
+  byte arg3;
+  byte arg4;
+  byte arg5;
+  unsigned short sidenum[2];
+} maplinedef_hexen_t;
+
+typedef struct {
+  short tid;
+  short x;
+  short y;
+  short height;
+  short angle;
+  short type;
+  short options;
+  byte spac;
+  byte arg1;
+  byte arg2;
+  byte arg3;
+  byte arg4;
+  byte arg5;
+} mapthing_hexen_t;
+
+#define SPAC_CROSS         0 // when player crosses line
+#define SPAC_USE           1 // when player uses line
+#define SPAC_MCROSS        2 // when monster crosses line
+#define SPAC_IMPACT        3 // when projectile hits line
+#define SPAC_PUSH          4 // when player/monster pushes line
+#define SPAC_PCROSS        5 // when projectile crosses line
+
+#define HML_REPEAT_SPECIAL 0x0200  // special is repeatable
+#define HML_SPAC_SHIFT     10
+#define HML_SPAC_MASK      0x1c00
+#define GET_SPAC(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
+
+//
+// Every line action special
+// https://doomwiki.org/wiki/Action_specials
+//
+
+typedef enum {
+  Polyobj_StartLine = 1,
+  Polyobj_RotateLeft,
+  Polyobj_RotateRight,
+  Polyobj_Move,
+  Polyobj_ExplicitLine,
+  Polyobj_MoveTimes8,
+  Polyobj_DoorSwing,
+  Polyobj_DoorSlide,
+
+  Door_Close = 10,
+  Door_Open,
+  Door_Raise,
+  Door_LockedRaise,
+
+  Floor_LowerByValue = 20,
+  Floor_LowerToLowest,
+  Floor_LowerToNearest,
+  Floor_RaiseByValue,
+  Floor_RaiseToHighest,
+  Floor_RaiseToNearest,
+  Stairs_BuildDown,
+  Stairs_BuildUp,
+  Floor_RaiseAndCrush,
+  Pillar_Build,
+  Pillar_Open,
+  Stairs_BuildDownSync,
+  Stairs_BuildUpSync,
+
+  Floor_RaiseByValueTimes8 = 35,
+  Floor_LowerByValueTimes8,
+
+  Ceiling_LowerByValue = 40,
+  Ceiling_RaiseByValue,
+  Ceiling_CrushAndRaise,
+  Ceiling_LowerAndCrush,
+  Ceiling_CrushStop,
+  Ceiling_CrushRaiseAndStay,
+  Floor_CrushStop,
+
+  Plat_PerpetualRaise = 60,
+  Plat_Stop,
+  Plat_DownWaitUpStay,
+  Plat_DownByValue,
+  Plat_UpWaitDownStay,
+  Plat_UpByValue,
+  Floor_LowerInstant,
+  Floor_RaiseInstant,
+  Floor_MoveToValueTimes8,
+  Ceiling_MoveToValueTimes8,
+  Teleport,
+  Teleport_NoFog,
+  ThrustThing,
+  DamageThing,
+  Teleport_NewMap,
+  Teleport_EndGame,
+
+  ACS_Execute = 80,
+  ACS_Suspend,
+  ACS_Terminate,
+  ACS_LockedExecute,
+  ACS_ExecuteWithResult,
+  ACS_LockedExecuteDoor,
+  Polyobj_MoveToSpot,
+  Polyobj_Stop,
+  Polyobj_MoveTo,
+  Polyobj_OR_MoveTo,
+  Polyobj_OR_RotateLeft,
+  Polyobj_OR_RotateRight,
+  Polyobj_OR_Move,
+  Polyobj_OR_MoveTimes8,
+  Pillar_BuildAndCrush,
+  FloorAndCeiling_LowerByValue,
+  FloorAndCeiling_RaiseByValue,
+  Ceiling_LowerAndCrushDist,
+  Sector_SetTranslucent,
+  Floor_RaiseAndCrushDoom,
+  Scroll_Texture_Left,
+  Scroll_Texture_Model,
+  Scroll_Texture_Right,
+  Scroll_Texture_Up,
+  Ceiling_CrushAndRaiseSilentDist,
+  Door_WaitRaise,
+  Door_WaitClose,
+  Line_SetPortalTarget,
+  Light_ForceLightning,
+  Light_RaiseByValue,
+  Light_RaiseByValueAlt,
+  Light_LowerByValue,
+  Light_ChangeToValue,
+  Light_Fade,
+  Light_Glow,
+  Light_Flicker,
+  Light_Strobe,
+  Light_Stop,
+  Plane_Copy,
+  Thing_Damage,
+  Radius_Quake,
+  Line_SetIdentification,
+
+  Thing_Move = 125,
+
+  Thing_SetSpecial = 127,
+  ThrustThingZ,
+  UsePuzzleItem,
+  Thing_Activate,
+  Thing_Deactivate,
+  Thing_Remove,
+  Thing_Destroy,
+  Thing_Projectile,
+  Thing_Spawn,
+  Thing_ProjectileGravity,
+  Thing_SpawnNoFog,
+  Floor_Waggle,
+} line_spac_t;
+
+//
+// Every sector action special
+// https://doomwiki.org/wiki/Sector
+//
+
+typedef enum {
+  Light_Phased = 1,
+  LightSequenceStart,
+  LightSequenceSpecial1,
+  LightSequenceSpecial2,
+
+  Secret = 9,
+
+  Stairs_Special1 = 26,
+  Stairs_Special2,
+
+  Wind_East_Weak = 40,
+  Wind_East_Medium,
+  Wind_East_Strong,
+  Wind_North_Weak,
+  Wind_North_Medium,
+  Wind_North_Strong,
+  Wind_South_Weak,
+  Wind_South_Medium,
+  Wind_South_Strong,
+  Wind_West_Weak,
+  Wind_West_Medium,
+  Wind_West_Strong,
+
+  Light_IndoorLightning1 = 198,
+  Light_IndoorLightning2,
+  Sky2,
+  Scroll_North_Slow,
+  Scroll_North_Medium,
+  Scroll_North_Fast,
+  Scroll_East_Slow,
+  Scroll_East_Medium,
+  Scroll_East_Fast,
+  Scroll_South_Slow,
+  Scroll_South_Medium,
+  Scroll_South_Fast,
+  Scroll_West_Slow,
+  Scroll_West_Medium,
+  Scroll_West_Fast,
+  Scroll_NorthWest_Slow,
+  Scroll_NorthWest_Medium,
+  Scroll_NorthWest_Fast,
+  Scroll_NorthEast_Slow,
+  Scroll_NorthEast_Medium,
+  Scroll_NorthEast_Fast,
+  Scroll_SouthEast_Slow,
+  Scroll_SouthEast_Medium,
+  Scroll_SouthEast_Fast,
+  Scroll_SouthWest_Slow,
+  Scroll_SouthWest_Medium,
+  Scroll_SouthWest_Fast,
+  Carry_East5,
+  Carry_East10,
+  Carry_East25,
+  Carry_East30,
+  Carry_East35,
+  Carry_North5,
+  Carry_North10,
+  Carry_North25,
+  Carry_North30,
+  Carry_North35,
+  Carry_South5,
+  Carry_South10,
+  Carry_South25,
+  Carry_South30,
+  Carry_South35,
+  Carry_West5,
+  Carry_West10,
+  Carry_West25,
+  Carry_West30,
+  Carry_West35,
+} sector_spac_t ;
 
 #endif // __DOOMDATA__
 

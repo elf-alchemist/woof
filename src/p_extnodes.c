@@ -102,9 +102,9 @@ typedef PACKED_PREFIX struct
 // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed
 // ZNOD/ZGLN formats, or DeePBSP format
 
-mapformat_t P_CheckMapFormat(int lumpnum)
+nodeformat_t P_CheckNodeFormat(int lumpnum)
 {
-    mapformat_t format = MFMT_DOOM;
+    nodeformat_t format = NFMT_DOOM;
     byte *lump_data = NULL;
     int size_subs = 0, size_nodes = 0;
 
@@ -122,7 +122,7 @@ mapformat_t P_CheckMapFormat(int lumpnum)
 
     if (M_CheckParm("-bsp"))
     {
-        return MFMT_UNSUPPORTED;
+        return NFMT_UNSUPPORTED;
     }
 
     //!
@@ -141,32 +141,32 @@ mapformat_t P_CheckMapFormat(int lumpnum)
 
             if (!memcmp(lump_data, "XGLN", 4))
             {
-                format = MFMT_XGLN;
+                format = NFMT_XGLN;
             }
             else if (!memcmp(lump_data, "ZGLN", 4))
             {
-                format = MFMT_ZGLN;
+                format = NFMT_ZGLN;
             }
             else if (!memcmp(lump_data, "XGL2", 4))
             {
-                format = MFMT_XGL2;
+                format = NFMT_XGL2;
             }
             else if (!memcmp(lump_data, "ZGL2", 4))
             {
-                format = MFMT_ZGL2;
+                format = NFMT_ZGL2;
             }
             else if (!memcmp(lump_data, "XGL3", 4))
             {
-                format = MFMT_XGL3;
+                format = NFMT_XGL3;
             }
             else if (!memcmp(lump_data, "ZGL3", 4))
             {
-                format = MFMT_ZGL3;
+                format = NFMT_ZGL3;
             }
         }
         else
         {
-            format = MFMT_UNSUPPORTED;
+            format = NFMT_UNSUPPORTED;
         }
     }
 
@@ -176,7 +176,7 @@ mapformat_t P_CheckMapFormat(int lumpnum)
         lump_data = NULL;
     }
 
-    if (format == MFMT_DOOM || format >= MFMT_UNSUPPORTED)
+    if (format == NFMT_DOOM || format >= NFMT_UNSUPPORTED)
     {
         size_nodes = W_LumpLengthWithName(lumpnum + ML_NODES, "NODES");
 
@@ -186,27 +186,27 @@ mapformat_t P_CheckMapFormat(int lumpnum)
 
             if (!memcmp(lump_data, "xNd4\0\0\0\0", 8))
             {
-                format = MFMT_DEEP;
+                format = NFMT_DEEP;
             }
             else if (!memcmp(lump_data, "XNOD", 4))
             {
-                format = MFMT_XNOD;
+                format = NFMT_XNOD;
             }
             else if (!memcmp(lump_data, "ZNOD", 4))
             {
-                format = MFMT_ZNOD;
+                format = NFMT_ZNOD;
             }
         }
         else
         {
-            format = MFMT_UNSUPPORTED;
+            format = NFMT_UNSUPPORTED;
         }
     }
 
     // [FG] no nodes for exactly one subsector
     if (size_subs == sizeof(mapsubsector_t) && size_nodes == 0)
     {
-        format = MFMT_DOOM;
+        format = NFMT_DOOM;
     }
 
     if (lump_data)
