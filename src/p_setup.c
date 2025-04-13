@@ -627,7 +627,7 @@ void P_LoadLineDefs2(int lump)
 }
 
 // [crispy] allow loading of Hexen-format maps
-void P_LoadLineDefs_Hexen (int lump)
+void P_LoadLineDefs_Hexen(int lump)
 {
   byte *data;
   int i;
@@ -656,9 +656,10 @@ void P_LoadLineDefs_Hexen (int lump)
     ld->arg5 = mld->arg5;
 
     // [crispy] warn about unknown linedef types
-    if ((unsigned short) ld->spac > 141)
+    if (ld->spac >= MAX_LINE_SPAC)
     {
-      fprintf(stderr, "P_LoadLineDefs: Unknown special %d at line %d\n", ld->spac, i);
+      I_Printf(VB_WARNING, "P_LoadLineDefs: Unknown special %d at line %d\n",
+               ld->spac, i);
       warn++;
     }
 
@@ -704,7 +705,22 @@ void P_LoadLineDefs_Hexen (int lump)
 
     ld->sidenum[0] = SHORT(mld->sidenum[0]);
     ld->sidenum[1] = SHORT(mld->sidenum[1]);
+  }
+  // [crispy] warn about unknown linedef types
+  if (warn)
+  {
+    I_Printf(VB_WARNING, "P_LoadLineDefs: Found %d line%s with unknown linedef type.\n"
+                    "THIS MAP MAY NOT WORK AS EXPECTED!\n", warn, (warn > 1) ? "s" : "");
+  }
+  Z_Free(data);
+}
 
+void P_LoadLineDefs2_Hexen(int lump)
+{
+  int i = numlines;
+  register line_t *ld = lines;
+  for (;i--;ld++)
+  {
     // [crispy] substitute dummy sidedef for missing right side
     if (ld->sidenum[0] == NO_INDEX)
     {
@@ -723,12 +739,7 @@ void P_LoadLineDefs_Hexen (int lump)
       ld->backsector = 0;
   }
 
-  // [crispy] warn about unknown linedef types
-  if (warn)
-  {
-    fprintf(stderr, "P_LoadLineDefs: Found %d line%s with unknown linedef type.\n"
-                    "THIS MAP MAY NOT WORK AS EXPECTED!\n", warn, (warn > 1) ? "s" : "");
-  }
+
 }
 
 //
@@ -1810,15 +1821,31 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // killough 4/4/98: split load of sidedefs into two parts,
   // to allow texture names to be used in special linedefs
 
+  // [EA] check map format
+  if (W_LumpExistsWithName(lumpnum+ML_BEHAVIOR, "BEHAVIOR"))
+    mapformat = MF_Hexen;
+
   // [FG] check nodes format
   nodeformat = P_CheckNodeFormat(lumpnum);
 
   P_LoadVertexes  (lumpnum+ML_VERTEXES);
   P_LoadSectors   (lumpnum+ML_SECTORS);
-  P_LoadSideDefs  (lumpnum+ML_SIDEDEFS);             // killough 4/4/98
-  P_LoadLineDefs  (lumpnum+ML_LINEDEFS);             //       |
-  P_LoadSideDefs2 (lumpnum+ML_SIDEDEFS);             //       |
-  P_LoadLineDefs2 (lumpnum+ML_LINEDEFS);             // killough 4/4/98
+
+  if (mapformat == MF_Hexen)
+  {
+    P_LoadSideDefs       (lumpnum+ML_SIDEDEFS);
+    P_LoadLineDefs_Hexen (lumpnum+ML_LINEDEFS);
+    P_LoadSideDefs2      (lumpnum+ML_SIDEDEFS);
+    P_LoadLineDefs2_Hexen(lumpnum+ML_LINEDEFS);
+  }
+  else
+  {
+    P_LoadSideDefs (lumpnum+ML_SIDEDEFS);             // killough 4/4/98
+    P_LoadLineDefs (lumpnum+ML_LINEDEFS);             //       |
+    P_LoadSideDefs2(lumpnum+ML_SIDEDEFS);             //       |
+    P_LoadLineDefs2(lumpnum+ML_LINEDEFS);             // killough 4/4/98
+  }
+
   gen_blockmap = P_LoadBlockMap  (lumpnum+ML_BLOCKMAP);             // killough 3/1/98
   // [FG] build nodes with NanoBSP
   if (nodeformat >= NFMT_UNSUPPORTED)

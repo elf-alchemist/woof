@@ -30,8 +30,7 @@ typedef enum {
   MF_Invalid = -1,
   MF_Doom,
   MF_Hexen,
-  MF_Doom_UDMF,
-  MF_Hexen_UDMF,
+  MF_UDMF,
 } MapFormat_t;
 
 //
@@ -54,7 +53,7 @@ enum {
   ML_SECTORS,           // Sectors, from editing
   ML_REJECT,            // LUT, sector-sector visibility
   ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
-  ML_BEHAVIOUR,         // ACS byte code
+  ML_BEHAVIOR,          // ACS byte code
 };
 
 // A single Vertex.
@@ -333,13 +332,8 @@ typedef enum {
   ACS_Suspend,
   ACS_Terminate,
   ACS_LockedExecute,
-  ACS_ExecuteWithResult,
-  ACS_LockedExecuteDoor,
-  Polyobj_MoveToSpot,
-  Polyobj_Stop,
-  Polyobj_MoveTo,
-  Polyobj_OR_MoveTo,
-  Polyobj_OR_RotateLeft,
+
+  Polyobj_OR_RotateLeft = 90,
   Polyobj_OR_RotateRight,
   Polyobj_OR_Move,
   Polyobj_OR_MoveTimes8,
@@ -366,10 +360,8 @@ typedef enum {
   Light_Glow,
   Light_Flicker,
   Light_Strobe,
-  Light_Stop,
-  Plane_Copy,
-  Thing_Damage,
-  Radius_Quake,
+
+  Radius_Quake = 120,
   Line_SetIdentification,
 
   Thing_Move = 125,
@@ -386,11 +378,15 @@ typedef enum {
   Thing_ProjectileGravity,
   Thing_SpawnNoFog,
   Floor_Waggle,
+
+  Sector_ChangeSound = 140,
+
+  MAX_LINE_SPAC,
 } line_spac_t;
 
 //
 // Every sector action special
-// https://doomwiki.org/wiki/Sector
+// https://doomwiki.org/wiki/Sector#Hexen
 //
 
 typedef enum {
@@ -444,26 +440,8 @@ typedef enum {
   Scroll_SouthWest_Slow,
   Scroll_SouthWest_Medium,
   Scroll_SouthWest_Fast,
-  Carry_East5,
-  Carry_East10,
-  Carry_East25,
-  Carry_East30,
-  Carry_East35,
-  Carry_North5,
-  Carry_North10,
-  Carry_North25,
-  Carry_North30,
-  Carry_North35,
-  Carry_South5,
-  Carry_South10,
-  Carry_South25,
-  Carry_South30,
-  Carry_South35,
-  Carry_West5,
-  Carry_West10,
-  Carry_West25,
-  Carry_West30,
-  Carry_West35,
+
+  MAX_SECTOR_SPAC,
 } sector_spac_t ;
 
 #endif // __DOOMDATA__
