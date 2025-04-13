@@ -48,6 +48,7 @@
 #include "p_mobj.h"
 #include "p_setup.h"
 #include "p_spec.h"
+#include "p_user.h"
 #include "p_tick.h"
 #include "r_data.h"
 #include "r_defs.h"
@@ -2288,6 +2289,28 @@ void P_ShootSpecialLine(mobj_t *thing, line_t *line, int side)
     }
 }
 
+//
+// P_ActivateLine_Hexen
+//
+// When playing on a Hexen Map Format level, apply Hexen-based action specials.
+//
+
+boolean P_ActivateLine_Hexen(line_t *ld, mobj_t *mo, int side, int activationType)
+{
+  
+}
+
+//
+// P_ExecuteLineSpecial_Hexen
+//
+// When playing on a Hexen Map Format level, apply Hexen-based action specials.
+//
+
+boolean P_ExecuteLineSpecial_Hexen(int special, byte *args, line_t *line, int side, mobj_t *mo)
+{
+  
+}
+
 int disable_nuke;  // killough 12/98: nukage disabling cheat
 
 //
@@ -2321,8 +2344,130 @@ static void P_SecretRevealed(player_t *player)
   }
 }
 
+//
+// P_PlayerInSpecialSector_Hexen
+//
+// When playing on a Hexen Map Format level, apply Hexen-based action specials.
+//
+
+void P_PlayerInSpecialSector_Hexen(player_t *player)
+{
+  sector_t *sector;
+  static int pushTab[3] = {
+      2048 * 5,
+      2048 * 10,
+      2048 * 25
+  };
+
+  sector = player->mo->subsector->sector;
+  if (player->mo->z != sector->floorheight)
+    return; // Player is not touching the floor
+
+  if (sector->special == 9)     // killough 12/98
+  {
+    // Tally player in secret sector, clear secret special
+    player->secretcount++;
+    sector->special = 0;
+    P_SecretRevealed(player);
+  }
+  else if (!disable_nuke)  // killough 12/98: nukage disabling cheat
+  {
+    method_t mod = MOD_None;
+
+    switch (flatterrain[sector->floorpic])
+    {
+      case terrain_lava:
+        mod = MOD_Lava;
+        break;
+      case terrain_slime:
+        mod = MOD_Slime;
+        break;
+      default:
+        break;
+    }
+
+    switch (sector->special)
+    {
+      case Scroll_North_Slow:
+      case Scroll_North_Medium:
+      case Scroll_North_Fast:
+        P_Thrust(player, ANG90, pushTab[sector->special - 201]);
+        break;
+      case Scroll_East_Slow:
+      case Scroll_East_Medium:
+      case Scroll_East_Fast:
+        P_Thrust(player, 0, pushTab[sector->special - 204]);
+        break;
+      case Scroll_South_Slow:
+      case Scroll_South_Medium:
+      case Scroll_South_Fast:
+        P_Thrust(player, ANG270, pushTab[sector->special - 207]);
+        break;
+      case Scroll_West_Slow:
+      case Scroll_West_Medium:
+      case Scroll_West_Fast:
+        P_Thrust(player, ANG180, pushTab[sector->special - 210]);
+        break;
+      case Scroll_NorthWest_Slow:
+      case Scroll_NorthWest_Medium:
+      case Scroll_NorthWest_Fast:
+        P_Thrust(player, ANG90 + ANG45, pushTab[sector->special - 213]);
+        break;
+      case Scroll_NorthEast_Slow:
+      case Scroll_NorthEast_Medium:
+      case Scroll_NorthEast_Fast:
+        P_Thrust(player, ANG45, pushTab[sector->special - 216]);
+        break;
+      case Scroll_SouthEast_Slow:
+      case Scroll_SouthEast_Medium:
+      case Scroll_SouthEast_Fast:
+        P_Thrust(player, ANG270 + ANG45, pushTab[sector->special - 219]);
+        break;
+      case Scroll_SouthWest_Slow:
+      case Scroll_SouthWest_Medium:
+      case Scroll_SouthWest_Fast:
+        P_Thrust(player, ANG180 + ANG45, pushTab[sector->special - 222]);
+        break;
+
+      case Wind_East_Weak:
+      case Wind_East_Medium:
+      case Wind_East_Strong:
+      case Wind_North_Weak:
+      case Wind_North_Medium:
+      case Wind_North_Strong:
+      case Wind_South_Weak:
+      case Wind_South_Medium:
+      case Wind_South_Strong:
+      case Wind_West_Weak:
+      case Wind_West_Medium:
+      case Wind_West_Strong:
+        // Wind specials are handled in (P_mobj):P_XYMovement
+        break;
+
+      case Stairs_Special1:
+      case Stairs_Special2:
+        // Used in (P_floor):ProcessStairSector
+        break;
+
+      case Light_IndoorLightning1:
+      case Light_IndoorLightning2:
+      case Sky2:
+        // Used in (R_plane):R_Drawplanes
+        break;
+
+      default:
+        I_Error("P_PlayerInSpecialSector: "
+                "unknown special %i", sector->special);
+    }
+  }
+}
+
 void P_PlayerInSpecialSector (player_t *player)
 {
+  // [EA] Hexen Map Format support
+  if (mapformat == MF_Hexen)
+    P_PlayerInSpecialSector_Hexen(player);
+
   sector_t *sector = player->mo->subsector->sector;
 
   // Falling, not all the way down yet?

@@ -973,7 +973,17 @@ void P_ShootSpecialLine(struct mobj_s *thing, struct line_s *line, int side);
 void P_CrossSpecialLine(struct line_s *, int side, struct mobj_s *thing,
                         boolean bossaction); // killough 11/98
 
+// [EA] Hexen Map Format support
+
+boolean P_ActivateLine_Hexen(struct line_s *ld, struct mobj_s *mo, int side,
+                             int activationType);
+
+boolean P_ExecuteLineSpecial_Hexen(int special, byte *args, struct line_s *line,
+                                   int side, struct mobj_s *mo);
+
 extern int disable_nuke;  // killough 12/98: nukage disabling cheat
+
+void P_PlayerInSpecialSector_Hexen(struct player_s *player);
 
 void P_PlayerInSpecialSector(struct player_s *player);
 

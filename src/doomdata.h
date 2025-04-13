@@ -33,6 +33,8 @@ typedef enum {
   MF_UDMF,
 } MapFormat_t;
 
+extern MapFormat_t mapformat;
+
 //
 // Map level types.
 // The following data structures define the persistent format

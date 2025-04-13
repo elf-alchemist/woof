@@ -236,7 +236,8 @@ enum {
   // cosmetic
   MIF_FLIP = 16,
   MIF_SPAWNED_BY_ICON = 32,
-  MIF_DORMANT         = 64, // [EA] Hexen Map Format support
+  // [EA] Hexen Map Format support
+  MIF_DORMANT         = 64,
 };
 
 // Map Object definition.
