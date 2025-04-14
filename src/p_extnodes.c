@@ -99,6 +99,36 @@ typedef PACKED_PREFIX struct
 #  pragma pack(pop)
 #endif
 
+mapformat_t P_CheckMapFormat(int lumpnum)
+{
+    mapformat_t format = MFMT_Invalid;
+
+    if (W_LumpExistsWithName(lumpnum + ML_THINGS, "THINGS")
+        && W_LumpExistsWithName(lumpnum + ML_LINEDEFS, "LINEDEFS")
+        && W_LumpExistsWithName(lumpnum + ML_SIDEDEFS, "SIDEDEFS")
+        && W_LumpExistsWithName(lumpnum + ML_VERTEXES, "VERTEXES")
+        && W_LumpExistsWithName(lumpnum + ML_SECTORS, "SECTORS"))
+    {
+        format = MFMT_Doom;
+    }
+
+    if (format == MFMT_Doom &&
+        W_LumpExistsWithName(lumpnum + ML_BEHAVIOR, "BEHAVIOR"))
+    {
+        format = MFMT_Hexen;
+    }
+
+    if (W_LumpExistsWithName(lumpnum + UDMF_TEXTMAP, "TEXTMAP"))
+    {
+        const char * label = W_WadNameForLump(lumpnum);
+        I_Printf(VB_ERROR, "%s: UDMF maps are not supported.", label);
+        format = MFMT_Invalid;
+    }
+
+    return format;
+}
+
+
 // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed
 // ZNOD/ZGLN formats, or DeePBSP format
 

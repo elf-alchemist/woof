@@ -1,8 +1,9 @@
 //
 //  Copyright (C) 1999 by
-//    id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
+//  id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
 //  Copyright (C) 1993-2008 Raven Software
 //  Copyright (C) 2005-2014 Simon Howard
+//  Copyright (C) 2013 James Haley et al.
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -25,15 +26,15 @@
 #define __DOOMDATA__
 
 #include "doomtype.h"
+#include "m_fixed.h"
 
 typedef enum {
-  MF_Invalid = -1,
-  MF_Doom,
-  MF_Hexen,
-  MF_UDMF,
-} MapFormat_t;
+  MFMT_Invalid,
+  MFMT_Doom,
+  MFMT_Hexen,
+} mapformat_t;
 
-extern MapFormat_t mapformat;
+extern mapformat_t mapformat;
 
 //
 // Map level types.
@@ -56,6 +57,18 @@ enum {
   ML_REJECT,            // LUT, sector-sector visibility
   ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
   ML_BEHAVIOR,          // ACS byte code
+
+  // haleyjd 12/12/13: for identifying console map formats
+  ML_LEAFS = ML_BEHAVIOR,
+  ML_LIGHTS,
+  ML_MACROS,
+};
+
+enum {
+  UDMF_LABEL,
+  UDMF_TEXTMAP,
+  UDMF_ZNODES,
+  UDMF_ENDMAP,
 };
 
 // A single Vertex.
@@ -85,6 +98,20 @@ typedef struct {
   short tag;
   unsigned short sidenum[2];  // sidenum[1] will be -1 (NO_INDEX) if one sided
 } maplinedef_t;
+
+typedef struct {
+  // [FG] extended nodes
+  unsigned short v1;
+  unsigned short v2;
+  unsigned short flags;
+  byte special;
+  byte arg1;
+  byte arg2;
+  byte arg3;
+  byte arg4;
+  byte arg5;
+  unsigned short sidenum[2];
+} maplinedef_hexen_t;
 
 //
 // LineDef attributes.
@@ -203,11 +230,7 @@ typedef struct {
   short angle;
   short type;
   short options;
-} mapthing_t;
-
-//
-// [EA] Hexen Map Format support -- pulled from Crispy
-//
+} mapthing_doom_t;
 
 typedef struct {
   short tid;
@@ -225,19 +248,29 @@ typedef struct {
   byte arg5;
 } mapthing_hexen_t;
 
-typedef struct {
-  // [FG] extended nodes
-  unsigned short v1;
-  unsigned short v2;
-  unsigned short flags;
-  byte special;
-  byte arg1;
+// haleyjd 03/03/07: New mapthing_t structure. The structures above are used to
+// read things from the wad lump, but this new mapthing_t is used to store the
+// data in memory now. This eliminates some weirdness and redundancies
+
+// [EA] only using the
+
+typedef struct mapthing_s
+{
+  short tid;       // scripting id
+  fixed_t x;         // x coord
+  fixed_t y;         // y coord
+  fixed_t height;    // z height relative to floor
+  short angle;     // angle in wad format
+  short type;      // doomednum
+  int   options;   // bitflags
+
+  byte special; // scripting special
+  byte arg1;    // arguments for special
   byte arg2;
   byte arg3;
   byte arg4;
   byte arg5;
-  unsigned short sidenum[2];
-} maplinedef_hexen_t;
+} mapthing_t;
 
 typedef enum {
   HMTF_EASY        = 0x0001,
@@ -263,10 +296,10 @@ typedef enum {
   SPAC_PCROSS = 5, // when projectile crosses line
 } spac_flags_t;
 
-#define HML_REPEAT     0x0200  // special is repeatable
-#define HML_SPAC_SHIFT 10
-#define HML_SPAC_MASK  0x1c00
-#define GET_SPAC(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
+#define HMLF_REPEAT     0x0200  // special is repeatable
+#define HMLF_SPAC_SHIFT 10
+#define HMLF_SPAC_MASK  0x1c00
+#define GET_SPAC(flags) ((flags&HMLF_SPAC_MASK)>>HMLF_SPAC_SHIFT)
 
 //
 // Every line action special

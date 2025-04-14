@@ -355,11 +355,6 @@ extern  mapthing_t *deathmatch_p;
 // Player spawn spots.
 extern  mapthing_t playerstarts[];
 
-// [EA] Hexen Map Format support
-mapthing_hexen_t *hexen_deathmatchstarts;
-mapthing_hexen_t *hexen_deathmatch_p;
-mapthing_hexen_t hexen_playerstarts[MAXPLAYERS];
-
 // Intermission stats.
 // Parameters for world map / intermission.
 extern wbstartstruct_t wminfo;

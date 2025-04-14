@@ -55,7 +55,7 @@
 #include "z_zone.h"
 
 // Detect map Format currently being set up.
-MapFormat_t mapformat = MF_Invalid;
+mapformat_t mapformat = MFMT_Invalid;
 
 //
 // MAP related Lookup tables.
@@ -126,9 +126,6 @@ size_t     num_deathmatchstarts;   // killough
 mapthing_t *deathmatch_p;
 mapthing_t playerstarts[MAXPLAYERS];
 
-mapthing_hexen_t *hexen_deathmatchstarts;
-mapthing_hexen_t *hexen_deathmatch_p;
-mapthing_hexen_t hexen_playerstarts[MAXPLAYERS];
 
 //
 // P_LoadVertexes
@@ -439,7 +436,8 @@ void P_LoadThings (int lump)
 
   for (i=0; i<numthings; i++)
     {
-      mapthing_t *mt = (mapthing_t *) data + i;
+      mapthing_doom_t *mt = (mapthing_doom_t *) data + i;
+      mapthing_t *ft = {0};
 
       // Do not spawn cool, new monsters if !commercial
       if (gamemode != commercial)
@@ -459,13 +457,13 @@ void P_LoadThings (int lump)
           }
 
       // Do spawn all other stuff.
-      mt->x = SHORT(mt->x);
-      mt->y = SHORT(mt->y);
-      mt->angle = SHORT(mt->angle);
-      mt->type = SHORT(mt->type);
-      mt->options = SHORT(mt->options);
+      ft->x = SHORT(mt->x);
+      ft->y = SHORT(mt->y);
+      ft->angle = SHORT(mt->angle);
+      ft->type = SHORT(mt->type);
+      ft->options = SHORT(mt->options);
 
-      P_SpawnMapThing (mt);
+      P_SpawnMapThing (ft);
     }
 
   Z_Free (data);
@@ -476,7 +474,7 @@ void P_LoadThings_Hexen (int lump)
 {
   byte *data;
   int i;
-  mapthing_hexen_t spawnthing;
+  mapthing_t spawnthing;
   mapthing_hexen_t *mt;
   int numthings;
 
@@ -501,7 +499,7 @@ void P_LoadThings_Hexen (int lump)
     spawnthing.arg4 = mt->arg4;
     spawnthing.arg5 = mt->arg5;
 
-    P_SpawnMapThing_Hexen(&spawnthing);
+    P_SpawnMapThing(&spawnthing);
   }
 
   Z_Free(data);
@@ -1822,8 +1820,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // to allow texture names to be used in special linedefs
 
   // [EA] check map format
-  if (W_LumpExistsWithName(lumpnum+ML_BEHAVIOR, "BEHAVIOR"))
-    mapformat = MF_Hexen;
+  mapformat = P_CheckMapFormat(lumpnum);
 
   // [FG] check nodes format
   nodeformat = P_CheckNodeFormat(lumpnum);
@@ -1831,7 +1828,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   P_LoadVertexes  (lumpnum+ML_VERTEXES);
   P_LoadSectors   (lumpnum+ML_SECTORS);
 
-  if (mapformat == MF_Hexen)
+  if (mapformat == MFMT_Hexen)
   {
     P_LoadSideDefs       (lumpnum+ML_SIDEDEFS);
     P_LoadLineDefs_Hexen (lumpnum+ML_LINEDEFS);
