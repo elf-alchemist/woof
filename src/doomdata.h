@@ -56,19 +56,7 @@ enum {
   ML_SECTORS,           // Sectors, from editing
   ML_REJECT,            // LUT, sector-sector visibility
   ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
-  ML_BEHAVIOR,          // ACS byte code
-
-  // haleyjd 12/12/13: for identifying console map formats
-  ML_LEAFS = ML_BEHAVIOR,
-  ML_LIGHTS,
-  ML_MACROS,
-};
-
-enum {
-  UDMF_LABEL,
-  UDMF_TEXTMAP,
-  UDMF_ZNODES,
-  UDMF_ENDMAP,
+  ML_BEHAVIOR,          // Hexen-format, ACS byte code
 };
 
 // A single Vertex.
@@ -251,8 +239,6 @@ typedef struct {
 // haleyjd 03/03/07: New mapthing_t structure. The structures above are used to
 // read things from the wad lump, but this new mapthing_t is used to store the
 // data in memory now. This eliminates some weirdness and redundancies
-
-// [EA] only using the
 
 typedef struct mapthing_s
 {

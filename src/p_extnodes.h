@@ -56,8 +56,8 @@ const char * const node_format_names[] = {
   [NFMT_ZGL3] = "NanoBSP",
 };
 
-mapformat_t P_CheckMapFormat(int lumpnum);
-nodeformat_t P_CheckNodeFormat(int lumpnum);
+extern mapformat_t P_CheckMapFormat(int lumpnum);
+extern nodeformat_t P_CheckNodeFormat(int lumpnum);
 extern int P_GetOffset(struct vertex_s *v1, struct vertex_s *v2);
 
 extern void P_LoadSegs_DEEP(int lump);

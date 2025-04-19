@@ -118,11 +118,11 @@ mapformat_t P_CheckMapFormat(int lumpnum)
         format = MFMT_Hexen;
     }
 
-    if (W_LumpExistsWithName(lumpnum + UDMF_TEXTMAP, "TEXTMAP"))
+    if (W_LumpExistsWithName(lumpnum + 1, "TEXTMAP"))
     {
         const char * label = W_WadNameForLump(lumpnum);
-        I_Printf(VB_ERROR, "%s: UDMF maps are not supported.", label);
         format = MFMT_Invalid;
+        I_Error("%s: UDMF maps are not supported.", label);
     }
 
     return format;
@@ -137,12 +137,6 @@ nodeformat_t P_CheckNodeFormat(int lumpnum)
     nodeformat_t format = NFMT_DOOM;
     byte *lump_data = NULL;
     int size_subs = 0, size_nodes = 0;
-
-    if (W_LumpExistsWithName(lumpnum + ML_BLOCKMAP + 1, "BEHAVIOR"))
-    {
-        I_Error("P_SetupLevel: Hexen map format not supported in %s.\n",
-                lumpinfo[lumpnum].name);
-    }
 
     //!
     // @category mod

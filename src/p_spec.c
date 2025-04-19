@@ -2465,7 +2465,7 @@ void P_PlayerInSpecialSector_Hexen(player_t *player)
 void P_PlayerInSpecialSector (player_t *player)
 {
   // [EA] Hexen Map Format support
-  if (mapformat == MF_Hexen)
+  if (mapformat == MFMT_Hexen)
     P_PlayerInSpecialSector_Hexen(player);
 
   sector_t *sector = player->mo->subsector->sector;
