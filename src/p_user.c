@@ -434,7 +434,7 @@ void P_PlayerThink (player_t* player)
   // going to affect you, like painful floors.
 
   if (player->mo->subsector->sector->special)
-    P_PlayerInSpecialSector (player);
+    P_PlayerInSpecialSector(player);
 
   // Sprite Height problem...                                         // phares
   // Future code:                                                     //  |

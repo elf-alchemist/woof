@@ -126,7 +126,6 @@ size_t     num_deathmatchstarts;   // killough
 mapthing_t *deathmatch_p;
 mapthing_t playerstarts[MAXPLAYERS];
 
-
 //
 // P_LoadVertexes
 //
@@ -474,34 +473,49 @@ void P_LoadThings_Hexen (int lump)
 {
   byte *data;
   int i;
-  mapthing_t spawnthing;
-  mapthing_hexen_t *mt;
+  mapthing_t ft, *mt;
   int numthings;
 
   data = W_CacheLumpNum(lump, PU_STATIC);
-  numthings = W_LumpLength(lump) / sizeof(mapthing_hexen_t);
+  numthings = W_LumpLength(lump) / sizeof(mapthing_t);
 
-  mt = (mapthing_hexen_t *) data;
+  mt = (mapthing_t *) data;
   for (i = 0; i < numthings; i++, mt++)
   {
-    spawnthing.tid = SHORT(mt->tid);
-    spawnthing.x = SHORT(mt->x);
-    spawnthing.y = SHORT(mt->y);
-    spawnthing.height = SHORT(mt->height);
-    spawnthing.angle = SHORT(mt->angle);
-    spawnthing.type = SHORT(mt->type);
-    spawnthing.options = SHORT(mt->options);
+    // Do not spawn cool, new monsters if !commercial
+    if (gamemode != commercial)
+      switch(mt->type)
+      {
+        case 68:  // Arachnotron
+        case 64:  // Archvile
+        case 88:  // Boss Brain
+        case 89:  // Boss Shooter
+        case 69:  // Hell Knight
+        case 67:  // Mancubus
+        case 71:  // Pain Elemental
+        case 65:  // Former Human Commando
+        case 66:  // Revenant
+        case 84:  // Wolf SS
+          continue;
+      }
 
-    spawnthing.special = mt->special;
-    spawnthing.arg1 = mt->arg1;
-    spawnthing.arg2 = mt->arg2;
-    spawnthing.arg3 = mt->arg3;
-    spawnthing.arg4 = mt->arg4;
-    spawnthing.arg5 = mt->arg5;
+    ft.tid = SHORT(mt->tid);
+    ft.x = SHORT(mt->x);
+    ft.y = SHORT(mt->y);
+    ft.height = SHORT(mt->height);
+    ft.angle = SHORT(mt->angle);
+    ft.type = SHORT(mt->type);
+    ft.options = SHORT(mt->options);
 
-    P_SpawnMapThing(&spawnthing);
+    ft.special = mt->special;
+    ft.arg1 = mt->arg1;
+    ft.arg2 = mt->arg2;
+    ft.arg3 = mt->arg3;
+    ft.arg4 = mt->arg4;
+    ft.arg5 = mt->arg5;
+
+    P_SpawnMapThing(&ft);
   }
-
   Z_Free(data);
 }
 
@@ -646,7 +660,7 @@ void P_LoadLineDefs_Hexen(int lump)
   {
     ld->flags = (unsigned short)SHORT(mld->flags);
 
-    ld->spac = mld->special;
+    ld->special = mld->special;
     ld->arg1 = mld->arg1;
     ld->arg2 = mld->arg2;
     ld->arg3 = mld->arg3;
@@ -654,10 +668,10 @@ void P_LoadLineDefs_Hexen(int lump)
     ld->arg5 = mld->arg5;
 
     // [crispy] warn about unknown linedef types
-    if (ld->spac >= MAX_LINE_SPAC)
+    if (ld->special >= MAX_LINE_SPAC)
     {
       I_Printf(VB_WARNING, "P_LoadLineDefs: Unknown special %d at line %d\n",
-               ld->spac, i);
+               ld->special, i);
       warn++;
     }
 
@@ -1886,7 +1900,21 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   bodyqueslot = 0;
   deathmatch_p = deathmatchstarts;
   P_MapStart();
-  P_LoadThings(lumpnum+ML_THINGS);
+
+  if (mapformat == MFMT_Hexen)
+    P_LoadThings_Hexen(lumpnum+ML_THINGS);
+  else
+    P_LoadThings(lumpnum+ML_THINGS);
+
+  // [EA] setup different logic for different formats
+  if (mapformat == MFMT_Hexen)
+  {
+    P_PlayerInSpecialSector = P_PlayerInSpecialSector_Hexen;
+  }
+  else
+  {
+    P_PlayerInSpecialSector = P_PlayerInSpecialSector_Doom;
+  }
 
   // if deathmatch, randomly spawn the active players
   if (deathmatch)

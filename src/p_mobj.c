@@ -1145,68 +1145,6 @@ void P_SpawnPlayer (mapthing_t* mthing)
     }
 }
 
-//
-// P_SpawnPlayer_Hexen
-//
-
-void P_SpawnPlayer_Hexen (mapthing_hexen_t* hmthing)
-{
-  player_t* p;
-  fixed_t   x, y, z;
-  mobj_t*   mobj;
-  int       i;
-
-  // not playing?
-
-  if (hmthing->type == 0 || !playeringame[hmthing->type-1]) // [FG] catch overflow
-    return;
-
-  p = &players[hmthing->type-1];
-
-  if (p->playerstate == PST_REBORN)
-    G_PlayerReborn(hmthing->type-1);
-
-  x    = hmthing->x << FRACBITS;
-  y    = hmthing->y << FRACBITS;
-  z    = ONFLOORZ;
-  mobj = P_SpawnMobj(x, y, z, MT_PLAYER);
-
-  // set color translations for player sprites
-
-  if (hmthing->type > 1)
-    mobj->flags |= (hmthing->type-1)<<MF_TRANSSHIFT;
-
-  mobj->angle      = ANG45 * (hmthing->angle/45);
-  mobj->player     = p;
-  mobj->health     = p->health;
-
-  p->mo            = mobj;
-  p->playerstate   = PST_LIVE;
-  p->refire        = 0;
-  p->message       = NULL;
-  p->secretmessage = NULL;
-  p->damagecount   = 0;
-  p->bonuscount    = 0;
-  p->extralight    = 0;
-  p->fixedcolormap = 0;
-  p->viewheight    = VIEWHEIGHT;
-
-  p->momx = p->momy = 0;   // killough 10/98: initialize bobbing to 0.
-
-  // setup gun psprite
-
-  P_SetupPsprites(p);
-
-  // give all cards in death match mode
-
-  if (deathmatch)
-    for (i = 0 ; i < NUMCARDS ; i++)
-      p->cards[i] = true;
-
-  if (hmthing->type - 1 == consoleplayer)
-    ST_Start(); // wake up the status bar
-}
-
 
 //
 // P_SpawnMapThing

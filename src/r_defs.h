@@ -238,14 +238,11 @@ typedef struct line_s
   int backmusic; // Front lower texture -- activated from the back side
 
   // [EA] Hexen Map Format support
-  byte spac;
-  byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
-
-  
+  int arg1;
+  int arg2;
+  int arg3;
+  int arg4;
+  int arg5;
 } line_t;
 
 //

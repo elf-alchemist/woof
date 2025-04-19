@@ -983,9 +983,9 @@ boolean P_ExecuteLineSpecial_Hexen(int special, byte *args, struct line_s *line,
 
 extern int disable_nuke;  // killough 12/98: nukage disabling cheat
 
+void (*P_PlayerInSpecialSector)(struct player_s *player);
+void P_PlayerInSpecialSector_Doom(struct player_s *player);
 void P_PlayerInSpecialSector_Hexen(struct player_s *player);
-
-void P_PlayerInSpecialSector(struct player_s *player);
 
 // p_lights
 

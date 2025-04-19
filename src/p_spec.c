@@ -2297,7 +2297,49 @@ void P_ShootSpecialLine(mobj_t *thing, line_t *line, int side)
 
 boolean P_ActivateLine_Hexen(line_t *ld, mobj_t *mo, int side, int activationType)
 {
-  
+  byte args[5];
+  int lineActivation;
+  boolean repeat;
+  boolean buttonSuccess;
+
+  lineActivation = GET_SPAC(ld->flags);
+  if (lineActivation != activationType)
+  {
+    return false;
+  }
+  if (!mo->player && !(mo->flags & MF_MISSILE))
+  {
+    // currently, monsters can only activate the MCROSS activation type
+    if (lineActivation != SPAC_MCROSS)
+    {
+      return false;
+    }
+    // never open secret doors
+    if (ld->flags & ML_SECRET)
+    {
+      return false;
+    }
+  }
+  repeat = (ld->flags & HMLF_REPEAT) != 0;
+
+  // Construct args[] array to contain the arguments from the line, as we
+  // cannot rely on struct field ordering and layout.
+  args[0] = ld->arg1;
+  args[1] = ld->arg2;
+  args[2] = ld->arg3;
+  args[3] = ld->arg4;
+  args[4] = ld->arg5;
+  buttonSuccess = P_ExecuteLineSpecial_Hexen(ld->special, args, ld, side, mo);
+  // clear the special on non-retriggerable lines
+  if (!repeat && buttonSuccess)
+  {
+    ld->special = 0;
+  }
+  if ((lineActivation == SPAC_USE || lineActivation == SPAC_IMPACT) && buttonSuccess)
+  {
+    P_ChangeSwitchTexture(ld, repeat);
+  }
+  return true;
 }
 
 //
@@ -2308,7 +2350,113 @@ boolean P_ActivateLine_Hexen(line_t *ld, mobj_t *mo, int side, int activationTyp
 
 boolean P_ExecuteLineSpecial_Hexen(int special, byte *args, line_t *line, int side, mobj_t *mo)
 {
-  
+  boolean buttonSuccess = false;
+
+  switch (special)
+  {
+    case Polyobj_StartLine:
+    case Polyobj_RotateLeft:
+    case Polyobj_RotateRight:
+    case Polyobj_Move:
+    case Polyobj_ExplicitLine:
+    case Polyobj_MoveTimes8:
+    case Polyobj_DoorSwing:
+    case Polyobj_DoorSlide:
+    case Door_Close:
+    case Door_Open:
+    case Door_Raise:
+    case Door_LockedRaise:
+    case Floor_LowerByValue:
+    case Floor_LowerToLowest:
+    case Floor_LowerToNearest:
+    case Floor_RaiseByValue:
+    case Floor_RaiseToHighest:
+    case Floor_RaiseToNearest:
+    case Stairs_BuildDown:
+    case Stairs_BuildUp:
+    case Floor_RaiseAndCrush:
+    case Pillar_Build:
+    case Pillar_Open:
+    case Stairs_BuildDownSync:
+    case Stairs_BuildUpSync:
+    case Floor_RaiseByValueTimes8:
+    case Floor_LowerByValueTimes8:
+    case Ceiling_LowerByValue:
+    case Ceiling_RaiseByValue:
+    case Ceiling_CrushAndRaise:
+    case Ceiling_LowerAndCrush:
+    case Ceiling_CrushStop:
+    case Ceiling_CrushRaiseAndStay:
+    case Floor_CrushStop:
+    case Plat_PerpetualRaise:
+    case Plat_Stop:
+    case Plat_DownWaitUpStay:
+    case Plat_DownByValue:
+    case Plat_UpWaitDownStay:
+    case Plat_UpByValue:
+    case Floor_LowerInstant:
+    case Floor_RaiseInstant:
+    case Floor_MoveToValueTimes8:
+    case Ceiling_MoveToValueTimes8:
+    case Teleport:
+    case Teleport_NoFog:
+    case ThrustThing:
+    case DamageThing:
+    case Teleport_NewMap:
+    case Teleport_EndGame:
+    case ACS_Execute:
+    case ACS_Suspend:
+    case ACS_Terminate:
+    case ACS_LockedExecute:
+    case Polyobj_OR_RotateLeft:
+    case Polyobj_OR_RotateRight:
+    case Polyobj_OR_Move:
+    case Polyobj_OR_MoveTimes8:
+    case Pillar_BuildAndCrush:
+    case FloorAndCeiling_LowerByValue:
+    case FloorAndCeiling_RaiseByValue:
+    case Ceiling_LowerAndCrushDist:
+    case Sector_SetTranslucent:
+    case Floor_RaiseAndCrushDoom:
+    case Scroll_Texture_Left:
+    case Scroll_Texture_Model:
+    case Scroll_Texture_Right:
+    case Scroll_Texture_Up:
+    case Ceiling_CrushAndRaiseSilentDist:
+    case Door_WaitRaise:
+    case Door_WaitClose:
+    case Line_SetPortalTarget:
+    case Light_ForceLightning:
+    case Light_RaiseByValue:
+    case Light_RaiseByValueAlt:
+    case Light_LowerByValue:
+    case Light_ChangeToValue:
+    case Light_Fade:
+    case Light_Glow:
+    case Light_Flicker:
+    case Light_Strobe:
+    case Radius_Quake:
+    case Line_SetIdentification:
+    case Thing_Move:
+    case Thing_SetSpecial:
+    case ThrustThingZ:
+    case UsePuzzleItem:
+    case Thing_Activate:
+    case Thing_Deactivate:
+    case Thing_Remove:
+    case Thing_Destroy:
+    case Thing_Projectile:
+    case Thing_Spawn:
+    case Thing_ProjectileGravity:
+    case Thing_SpawnNoFog:
+    case Floor_Waggle:
+    case Sector_ChangeSound:
+    default:
+    {
+      break;
+    }
+  }
+  return buttonSuccess;
 }
 
 int disable_nuke;  // killough 12/98: nukage disabling cheat
@@ -2372,20 +2520,6 @@ void P_PlayerInSpecialSector_Hexen(player_t *player)
   }
   else if (!disable_nuke)  // killough 12/98: nukage disabling cheat
   {
-    method_t mod = MOD_None;
-
-    switch (flatterrain[sector->floorpic])
-    {
-      case terrain_lava:
-        mod = MOD_Lava;
-        break;
-      case terrain_slime:
-        mod = MOD_Slime;
-        break;
-      default:
-        break;
-    }
-
     switch (sector->special)
     {
       case Scroll_North_Slow:
@@ -2441,33 +2575,29 @@ void P_PlayerInSpecialSector_Hexen(player_t *player)
       case Wind_West_Weak:
       case Wind_West_Medium:
       case Wind_West_Strong:
-        // Wind specials are handled in (P_mobj):P_XYMovement
+        // p_mobj:P_XYMovement
         break;
 
       case Stairs_Special1:
       case Stairs_Special2:
-        // Used in (P_floor):ProcessStairSector
+        // p_floor:ProcessStairSector
         break;
 
       case Light_IndoorLightning1:
       case Light_IndoorLightning2:
       case Sky2:
-        // Used in (R_plane):R_Drawplanes
+        // r_plane:R_Drawplanes
         break;
 
       default:
-        I_Error("P_PlayerInSpecialSector: "
-                "unknown special %i", sector->special);
+        // I_Error("P_PlayerInSpecialSector: unknown special %i", sector->special);
+        break;
     }
   }
 }
 
-void P_PlayerInSpecialSector (player_t *player)
+void P_PlayerInSpecialSector_Doom(player_t *player)
 {
-  // [EA] Hexen Map Format support
-  if (mapformat == MFMT_Hexen)
-    P_PlayerInSpecialSector_Hexen(player);
-
   sector_t *sector = player->mo->subsector->sector;
 
   // Falling, not all the way down yet?

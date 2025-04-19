@@ -3,7 +3,6 @@
 //  id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
 //  Copyright (C) 1993-2008 Raven Software
 //  Copyright (C) 2005-2014 Simon Howard
-//  Copyright (C) 2013 James Haley et al.
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -26,7 +25,6 @@
 #define __DOOMDATA__
 
 #include "doomtype.h"
-#include "m_fixed.h"
 
 typedef enum {
   MFMT_Invalid,
@@ -230,28 +228,6 @@ typedef struct {
   short options;
   byte special;
   byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
-} mapthing_hexen_t;
-
-// haleyjd 03/03/07: New mapthing_t structure. The structures above are used to
-// read things from the wad lump, but this new mapthing_t is used to store the
-// data in memory now. This eliminates some weirdness and redundancies
-
-typedef struct mapthing_s
-{
-  short tid;       // scripting id
-  fixed_t x;         // x coord
-  fixed_t y;         // y coord
-  fixed_t height;    // z height relative to floor
-  short angle;     // angle in wad format
-  short type;      // doomednum
-  int   options;   // bitflags
-
-  byte special; // scripting special
-  byte arg1;    // arguments for special
   byte arg2;
   byte arg3;
   byte arg4;
