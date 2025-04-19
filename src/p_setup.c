@@ -22,17 +22,24 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "d_think.h"
 #include "doomdata.h"
+#include "doomdef.h"
 #include "doomstat.h"
+#include "doomtype.h"
 #include "g_game.h"
 #include "g_compatibility.h"
 #include "i_printf.h"
 #include "i_system.h"
 #include "info.h"
 #include "m_argv.h"
+#include "m_array.h"
 #include "m_bbox.h"
+#include "m_fixed.h"
+#include "m_misc.h"
+#include "m_scanner.h"
 #include "m_swap.h"
 #include "nano_bsp.h"
 #include "p_enemy.h"
@@ -53,6 +60,9 @@
 #include "tables.h"
 #include "w_wad.h"
 #include "z_zone.h"
+
+// Detect map Format currently being set up.
+mapformat_t mapformat = MFMT_Invalid;
 
 //
 // MAP related Lookup tables.
@@ -79,6 +89,27 @@ line_t   *lines;
 
 int      numsides;
 side_t   *sides;
+
+int      numthings;
+
+//
+// MAP related LUTs, for UDMF
+//
+
+static int         udmf_ns        = UDMF_Invalid;
+static const char *udmf_namespace = NULL;
+
+int udmf_num_things;
+int udmf_num_vertexes;
+int udmf_num_linedefs;
+int udmf_num_sidedefs;
+int udmf_num_sectors;
+
+UDMF_Thing_t   *udmf_things;
+UDMF_Vertex_t  *udmf_vertexes;
+UDMF_Linedef_t *udmf_linedefs;
+UDMF_Sidedef_t *udmf_sidedefs;
+UDMF_Sector_t  *udmf_sectors;
 
 // BLOCKMAP
 // Created from axis aligned bounding box
@@ -1598,6 +1629,617 @@ static boolean P_LoadReject(int lumpnum, int totallines)
 }
 
 //
+// SetupDoomFormat
+// [EA] Different formats different loading behavior
+//
+
+static void SetupDoomFormat(int lumpnum, nodeformat_t *nodeformat,
+                            boolean *gen_blockmap, boolean *pad_reject)
+{
+  // note: most of this ordering is important
+
+  // killough 3/1/98: P_LoadBlockMap call moved down to below
+  // killough 4/4/98: split load of sidedefs into two parts,
+  // to allow texture names to be used in special linedefs
+
+  // [FG] check nodes format
+  *nodeformat = P_CheckDoomNodeFormat(lumpnum);
+
+  P_LoadVertexes  (lumpnum+ML_VERTEXES);
+  P_LoadSectors   (lumpnum+ML_SECTORS);
+  P_LoadSideDefs  (lumpnum+ML_SIDEDEFS);             // killough 4/4/98
+  P_LoadLineDefs  (lumpnum+ML_LINEDEFS);             //       |
+  P_LoadSideDefs2 (lumpnum+ML_SIDEDEFS);             //       |
+  P_LoadLineDefs2 (lumpnum+ML_LINEDEFS);             // killough 4/4/98
+  *gen_blockmap = P_LoadBlockMap  (lumpnum+ML_BLOCKMAP);             // killough 3/1/98
+  // [FG] build nodes with NanoBSP
+  if (*nodeformat >= NFMT_UNSUPPORTED)
+  {
+    BSP_BuildNodes();
+  }
+  // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed ZNOD/ZGLN formats, or DeePBSP format
+  else if (*nodeformat == NFMT_XGLN || *nodeformat == NFMT_ZGLN)
+  {
+    P_LoadNodes_XNOD (lumpnum+ML_SSECTORS, *nodeformat == NFMT_ZGLN, true);
+  }
+  else if (*nodeformat == NFMT_XNOD || *nodeformat == NFMT_ZNOD)
+  {
+    P_LoadNodes_XNOD (lumpnum+ML_NODES, *nodeformat == NFMT_ZNOD, false);
+  }
+  else if (*nodeformat == NFMT_DEEP)
+  {
+    P_LoadSubsectors_DEEP (lumpnum+ML_SSECTORS);
+    P_LoadNodes_DEEP (lumpnum+ML_NODES);
+    P_LoadSegs_DEEP (lumpnum+ML_SEGS);
+  }
+  else
+  {
+  P_LoadSubsectors(lumpnum+ML_SSECTORS);
+  P_LoadNodes     (lumpnum+ML_NODES);
+  P_LoadSegs      (lumpnum+ML_SEGS);
+  }
+
+  // [FG] pad the REJECT table when the lump is too small
+  *pad_reject = P_LoadReject (lumpnum+ML_REJECT, P_GroupLines());
+
+  if (*nodeformat != NFMT_UNSUPPORTED)
+    P_RemoveSlimeTrails();    // killough 10/98: remove slime trails from wad
+
+  // [crispy] fix long wall wobble
+  P_SegLengths(false);
+
+  // Note: you don't need to clear player queue slots --
+  // a much simpler fix is in g_game.c -- killough 10/98
+
+  bodyqueslot = 0;
+  deathmatch_p = deathmatchstarts;
+  P_MapStart();
+  P_LoadThings(lumpnum+ML_THINGS);
+}
+
+//
+// UDMF parsing utils
+//
+
+#define UDMF_ScanInt(s, x)         \
+{                                  \
+  SC_MustGetToken(s, '=');         \
+  SC_MustGetToken(s, TK_IntConst); \
+  x = SC_GetNumber(s);             \
+  SC_MustGetToken(s, ';');         \
+};
+
+#define UDMF_ScanDouble(s, x)        \
+{                                    \
+  SC_MustGetToken(s, '=');           \
+  SC_MustGetToken(s, TK_FloatConst); \
+  x = SC_GetDecimal(s);              \
+  SC_MustGetToken(s, ';');           \
+};
+
+#define UDMF_ScanFlag(s, x, f)      \
+{                                   \
+  SC_MustGetToken(s, '=');          \
+  SC_MustGetToken(s, TK_BoolConst); \
+  boolean flag = SC_GetBoolean(s);  \
+  if (flag)                         \
+    x |= f;                         \
+  SC_MustGetToken(s, ';');          \
+};
+
+#define UDMF_ScanLumpName(s, x)       \
+{                                     \
+  SC_MustGetToken(s, '=');            \
+  SC_MustGetToken(s, TK_StringConst); \
+  SC_GetNextTokenLumpName(s);         \
+  x = SC_GetString(s);                \
+  SC_MustGetToken(s, ';');            \
+};
+
+//
+// Skip unknown keyword
+//
+
+static inline void UDMF_SkipScan(scanner_t *s)
+{
+  if (SC_CheckToken(s, '='))
+  {
+    while (SC_TokensLeft(s))
+    {
+      if (SC_CheckToken(s, ';'))
+        break;
+
+      SC_GetNextToken(s, true);
+    }
+    return;
+  }
+
+  SC_MustGetToken(s, '{');
+  int brace_count = 1;
+  while (SC_TokensLeft(s))
+  {
+    if (SC_CheckToken(s, '}'))
+      --brace_count;
+    else if (SC_CheckToken(s, '{'))
+      ++brace_count;
+
+    if (!brace_count)
+      break;
+
+    SC_GetNextToken(s, true);
+  }
+
+  return;
+}
+
+//
+// UDMF thing parsing
+//
+
+static void UDMF_ParseThing(scanner_t *s)
+{
+  UDMF_Thing_t udmf_thing = {0};
+
+  SC_MustGetToken(s, '{');
+  while (SC_CheckToken(s, '}'))
+  {
+    char *prop = M_StringDuplicate(SC_GetString(s));
+    SC_MustGetToken(s, TK_StringConst);
+    if (!strcasecmp(prop, "id"))
+    {
+      UDMF_ScanInt(s, udmf_thing.id);
+    }
+    else if (!strcasecmp(prop, "type"))
+    {
+      UDMF_ScanInt(s, udmf_thing.type);
+    }
+    else if (!strcasecmp(prop, "x"))
+    {
+      UDMF_ScanDouble(s, udmf_thing.x);
+    }
+    else if (!strcasecmp(prop, "y"))
+    {
+      UDMF_ScanDouble(s, udmf_thing.y);
+    }
+    else if (!strcasecmp(prop, "height"))
+    {
+      UDMF_ScanDouble(s, udmf_thing.height);
+    }
+    else if (!strcasecmp(prop, "angle"))
+    {
+      UDMF_ScanInt(s, udmf_thing.angle);
+    }
+    else if (!strcasecmp(prop, "skill1"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingSkill1);
+    }
+    else if (!strcasecmp(prop, "skill2"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingSkill2);
+    }
+    else if (!strcasecmp(prop, "skill3"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingSkill3);
+    }
+    else if (!strcasecmp(prop, "skill4"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingSkill4);
+    }
+    else if (!strcasecmp(prop, "skill5"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingSkill5);
+    }
+    else if (!strcasecmp(prop, "ambush"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingAmbush);
+    }
+    else if (!strcasecmp(prop, "single"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingSingleplayer);
+    }
+    else if (!strcasecmp(prop, "dm"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingDeathmatch);
+    }
+    else if (!strcasecmp(prop, "coop"))
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingCooperative);
+    }
+    else if (!strcasecmp(prop, "friend")) // MBF
+    {
+      UDMF_ScanFlag(s, udmf_thing.flags, UDMF_ThingFriendly);
+    }
+    else
+    {
+      UDMF_SkipScan(s);
+    }
+  }
+
+  udmf_num_things++;
+  array_push(udmf_things, udmf_thing);
+}
+
+//
+// UDMF vertex parsing
+//
+
+static void UDMF_ParseVertex(scanner_t *s)
+{
+  UDMF_Vertex_t udmf_vertex = {0};
+
+  SC_MustGetToken(s, '{');
+  while (SC_CheckToken(s, '}'))
+  {
+    char *prop = M_StringDuplicate(SC_GetString(s));
+    SC_MustGetToken(s, TK_StringConst);
+    if (!strcasecmp(prop, "x"))
+    {
+      UDMF_ScanDouble(s, udmf_vertex.x);
+    }
+    else if (!strcasecmp(prop, "y"))
+    {
+      UDMF_ScanDouble(s, udmf_vertex.y);
+    }
+    else
+    {
+      UDMF_SkipScan(s);
+    }
+  }
+
+  udmf_num_vertexes++;
+  array_push(udmf_vertexes, udmf_vertex);
+}
+
+//
+// UDMF linedef parsing
+//
+
+static void UDMF_ParseLinedef(scanner_t *s)
+{
+  UDMF_Linedef_t udmf_linedef = {0};
+
+  SC_MustGetToken(s, '{');
+  while (SC_CheckToken(s, '}'))
+  {
+    char *prop = M_StringDuplicate(SC_GetString(s));
+    SC_MustGetToken(s, TK_StringConst);
+    if (!strcasecmp(prop, "id"))
+    {
+      UDMF_ScanInt(s, udmf_linedef.id);
+    }
+    else if (!strcasecmp(prop, "v1"))
+    {
+      UDMF_ScanInt(s, udmf_linedef.v1);
+    }
+    else if (!strcasecmp(prop, "v2"))
+    {
+      UDMF_ScanInt(s, udmf_linedef.v2);
+    }
+    else if (!strcasecmp(prop, "special"))
+    {
+      UDMF_ScanInt(s, udmf_linedef.special);
+    }
+    else if (!strcasecmp(prop, "sidefront"))
+    {
+      UDMF_ScanInt(s, udmf_linedef.sidefront);
+    }
+    else if (!strcasecmp(prop, "sideback"))
+    {
+      UDMF_ScanInt(s, udmf_linedef.sideback);
+    }
+    else if (!strcasecmp(prop, "blocking"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineBlocking);
+    }
+    else if (!strcasecmp(prop, "blockmonsters"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineBlockMonsters);
+    }
+    else if (!strcasecmp(prop, "twosided"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineTwosided);
+    }
+    else if (!strcasecmp(prop, "dontpegtop"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineDontPegTop);
+    }
+    else if (!strcasecmp(prop, "dontpegbottom"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineDontPegNottom);
+    }
+    else if (!strcasecmp(prop, "secret"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineSecret);
+    }
+    else if (!strcasecmp(prop, "blocksound"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineBlockSound);
+    }
+    else if (!strcasecmp(prop, "dontdraw"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineDontDraw);
+    }
+    else if (!strcasecmp(prop, "mapped"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineMapped);
+    }
+    else if (!strcasecmp(prop, "passuse"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LinePassuse);
+    }
+    else if (!strcasecmp(prop, "blocklandmonsters"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineBlockLandMonsters);
+    }
+    else if (!strcasecmp(prop, "blockplayers"))
+    {
+      UDMF_ScanFlag(s, udmf_linedef.flags, UDMF_LineBlockPlayers);
+    }
+    else
+    {
+      UDMF_SkipScan(s);
+    }
+  }
+
+  udmf_num_linedefs++;
+  array_push(udmf_linedefs, udmf_linedef);
+}
+
+//
+// UDMF sidedef parsing
+//
+
+static void UDMF_ParseSidedef(scanner_t *s)
+{
+  UDMF_Sidedef_t udmf_sidedef = {0};
+
+  SC_MustGetToken(s, '{');
+  while (SC_CheckToken(s, '}'))
+  {
+    char *prop = M_StringDuplicate(SC_GetString(s));
+    SC_MustGetToken(s, TK_StringConst);
+    if (!strcasecmp(prop, "offsetx"))
+    {
+      UDMF_ScanInt(s, udmf_sidedef.offsetx);
+    }
+    else if (!strcasecmp(prop, "offsety"))
+    {
+      UDMF_ScanInt(s, udmf_sidedef.offsety);
+    }
+    else if (!strcasecmp(prop, "sector"))
+    {
+      UDMF_ScanInt(s, udmf_sidedef.sector);
+    }
+    else if (!strcasecmp(prop, "texturetop"))
+    {
+      UDMF_ScanLumpName(s, udmf_sidedef.texturetop);
+    }
+    else if (!strcasecmp(prop, "texturemiddle"))
+    {
+      UDMF_ScanLumpName(s, udmf_sidedef.texturemiddle);
+    }
+    else if (!strcasecmp(prop, "texturebottom"))
+    {
+      UDMF_ScanLumpName(s, udmf_sidedef.texturebottom);
+    }
+    else
+    {
+      UDMF_SkipScan(s);
+    }
+  }
+
+  udmf_num_sidedefs++;
+  array_push(udmf_sidedefs, udmf_sidedef);
+}
+
+//
+// UDMF sector parsing
+//
+
+static void UDMF_ParseSector(scanner_t *s)
+{
+  UDMF_Sector_t udmf_sector = {0};
+
+  SC_MustGetToken(s, '{');
+  while (SC_CheckToken(s, '}'))
+  {
+    char *prop = M_StringDuplicate(SC_GetString(s));
+    SC_MustGetToken(s, TK_StringConst);
+    if (!strcasecmp(prop, "heightfloor"))
+    {
+      UDMF_ScanInt(s, udmf_sector.heightfloor);
+    }
+    else if (!strcasecmp(prop, "heightceiling"))
+    {
+      UDMF_ScanInt(s, udmf_sector.heightceiling);
+    }
+    if (!strcasecmp(prop, "texturefloor"))
+    {
+      UDMF_ScanLumpName(s, udmf_sector.texturefloor);
+    }
+    else if (!strcasecmp(prop, "textureceiling"))
+    {
+      UDMF_ScanLumpName(s, udmf_sector.textureceiling);
+    }
+    else if (!strcasecmp(prop, "lightlevel"))
+    {
+      UDMF_ScanInt(s, udmf_sector.lightlevel);
+    }
+    else if (!strcasecmp(prop, "id"))
+    {
+      UDMF_ScanInt(s, udmf_sector.id);
+    }
+    else if (!strcasecmp(prop, "special"))
+    {
+      UDMF_ScanInt(s, udmf_sector.special);
+    }
+    else
+    {
+      UDMF_SkipScan(s);
+    }
+  }
+
+  udmf_num_sectors++;
+  array_push(udmf_sectors, udmf_sector);
+}
+
+//
+// UDMF textmap parsing
+//
+
+static void UDMF_ParseTextMap(int lumpnum) {
+  scanner_t *s = SC_Open("TEXTMAP", W_CacheLumpNum(lumpnum, PU_LEVEL), W_LumpLength(lumpnum));
+
+  // Parse namespace only once
+  // Bomb out as early as possible -- spec is clear on formatting
+
+  SC_MustGetToken(s, TK_Identifier);
+  if (!strcasecmp(SC_GetString(s), "namespace"))
+    SC_Error(s, "Missing namespace.");
+  SC_MustGetToken(s, '=');
+  SC_MustGetToken(s, TK_Identifier);
+  udmf_namespace = SC_GetString(s);
+  SC_MustGetToken(s, ';');
+
+  if (udmf_namespace == NULL)
+    SC_Error(s, "Unknown namespace \"%s\"", udmf_namespace);
+
+  for (int i = UDMF_Doom; i < UDMF_Namespace_MAX; i++)
+    if(!strcasecmp(UDMF_Namespaces[i], udmf_namespace))
+      udmf_ns = i;
+
+  const char* toplevel = NULL;
+  while (SC_TokensLeft(s))
+  {
+    SC_MustGetToken(s, TK_Identifier);
+    toplevel = SC_GetString(s);
+
+    if (!strcasecmp(toplevel, "thing"))
+    {
+      UDMF_ParseThing(s);
+    }
+    else if (!strcasecmp(toplevel, "vertex"))
+    {
+      UDMF_ParseVertex(s);
+    }
+    else if (!strcasecmp(toplevel, "linedef"))
+    {
+      UDMF_ParseLinedef(s);
+    }
+    else if (!strcasecmp(toplevel, "sidedef"))
+    {
+      UDMF_ParseSidedef(s);
+    }
+    else if (!strcasecmp(toplevel, "sector"))
+    {
+      UDMF_ParseSector(s);
+    }
+    else
+    {
+      UDMF_SkipScan(s);
+    }
+  }
+
+  if (udmf_num_things == 0
+      || udmf_num_vertexes == 0
+      || udmf_num_linedefs == 0
+      || udmf_num_sidedefs == 0
+      || udmf_num_sectors == 0)
+    {
+      SC_Error(s, "Not enough UDMF data");
+    }
+
+}
+
+//
+// UDMF data loading
+//
+
+static void UDMF_LoadThings()
+{
+  numthings = udmf_num_things;
+  mapthing_t *mapthings = Z_Malloc(numthings * sizeof(mapthing_t) , PU_LEVEL, 0);
+  for (int i = 0; i < numthings; ++i)
+  {
+    const UDMF_Thing_t *ut = udmf_things;
+    mapthing_t *mt = &mapthings[i];
+
+    mt->x = DOUBLE2FIXED(ut->x) >> FRACBITS;
+    mt->y = DOUBLE2FIXED(ut->y) >> FRACBITS;
+    mt->angle = ut->angle;
+    mt->type = ut->type;
+
+    if ((ut->flags & UDMF_ThingSkill1) ||
+        (ut->flags & UDMF_ThingSkill2))
+    {
+      mt->options |= MTF_EASY;
+    }
+    if (ut->flags & UDMF_ThingSkill3)
+    {
+      mt->options |= MTF_NORMAL;
+    }
+    if ((ut->flags & UDMF_ThingSkill4) ||
+        (ut->flags & UDMF_ThingSkill5))
+    {
+      mt->options |= MTF_HARD;
+    }
+    if (ut->flags & UDMF_ThingAmbush)
+    {
+      mt->options |= MTF_AMBUSH;
+    }
+
+
+  }
+  Z_Free(mapthings);
+}
+
+static void UDMF_LoadVertexes()
+{
+  numvertexes = udmf_num_vertexes;
+  vertexes = Z_Malloc(numvertexes * sizeof(vertex_t), PU_LEVEL, 0);
+
+  for (int i = 0; i < numvertexes; ++i)
+  {
+    vertexes[i].x = (udmf_vertexes[i].x);
+    vertexes[i].y = (udmf_vertexes[i].y);
+  }
+}
+
+static void UDMF_LoadLinedefs()
+{
+  numlines = udmf_num_linedefs;
+  lines = Z_Malloc(numlines * sizeof(line_t), PU_LEVEL, 0);
+
+  for (int i = 0; i < numlines; ++i)
+  {
+    *lines[i].v1 = vertexes[udmf_linedefs[i].v1];
+    *lines[i].v2 = vertexes[udmf_linedefs[i].v2];
+    lines[i].tag = udmf_linedefs[i].id >= 0 ? udmf_linedefs[i].id : 0;
+    lines[i].special = udmf_linedefs[i].special;
+    lines[i].sidenum[0] = udmf_linedefs[i].sidefront;
+    lines[i].sidenum[1] = udmf_linedefs[i].sideback;
+    lines[i].flags = udmf_linedefs[i].flags;
+  }
+}
+
+static void UDMF_LoadSidedefs()
+{
+  numsides = udmf_num_sidedefs;
+  sides = Z_Malloc(numsides * sizeof(side_t), PU_LEVEL, 0);
+}
+
+static void UDMF_LoadSector()
+{
+  
+}
+
+static void SetupUDMF(int lumpnum, nodeformat_t *nodeformat,
+                      boolean *gen_blockmap, boolean *pad_reject)
+{
+  
+}
+
+//
 // P_SetupLevel
 //
 // killough 5/3/98: reformatted, cleaned up
@@ -1610,7 +2252,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   int   i;
   char  lumpname[9];
   int   lumpnum;
-  mapformat_t mapformat;
+  nodeformat_t nodeformat;
   boolean gen_blockmap, pad_reject;
 
   totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
@@ -1656,65 +2298,12 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   leveltime = 0;
   oldleveltime = 0;
 
-  // note: most of this ordering is important
-
-  // killough 3/1/98: P_LoadBlockMap call moved down to below
-  // killough 4/4/98: split load of sidedefs into two parts,
-  // to allow texture names to be used in special linedefs
-
-  // [FG] check nodes format
   mapformat = P_CheckMapFormat(lumpnum);
 
-  P_LoadVertexes  (lumpnum+ML_VERTEXES);
-  P_LoadSectors   (lumpnum+ML_SECTORS);
-  P_LoadSideDefs  (lumpnum+ML_SIDEDEFS);             // killough 4/4/98
-  P_LoadLineDefs  (lumpnum+ML_LINEDEFS);             //       |
-  P_LoadSideDefs2 (lumpnum+ML_SIDEDEFS);             //       |
-  P_LoadLineDefs2 (lumpnum+ML_LINEDEFS);             // killough 4/4/98
-  gen_blockmap = P_LoadBlockMap  (lumpnum+ML_BLOCKMAP);             // killough 3/1/98
-  // [FG] build nodes with NanoBSP
-  if (mapformat >= MFMT_UNSUPPORTED)
-  {
-    BSP_BuildNodes();
-  }
-  // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed ZNOD/ZGLN formats, or DeePBSP format
-  else if (mapformat == MFMT_XGLN || mapformat == MFMT_ZGLN)
-  {
-    P_LoadNodes_XNOD (lumpnum+ML_SSECTORS, mapformat == MFMT_ZGLN, true);
-  }
-  else if (mapformat == MFMT_XNOD || mapformat == MFMT_ZNOD)
-  {
-    P_LoadNodes_XNOD (lumpnum+ML_NODES, mapformat == MFMT_ZNOD, false);
-  }
-  else if (mapformat == MFMT_DEEP)
-  {
-    P_LoadSubsectors_DEEP (lumpnum+ML_SSECTORS);
-    P_LoadNodes_DEEP (lumpnum+ML_NODES);
-    P_LoadSegs_DEEP (lumpnum+ML_SEGS);
-  }
+  if (mapformat == MFMT_Doom)
+    SetupDoomFormat(lumpnum, &nodeformat, &gen_blockmap, &pad_reject);
   else
-  {
-  P_LoadSubsectors(lumpnum+ML_SSECTORS);
-  P_LoadNodes     (lumpnum+ML_NODES);
-  P_LoadSegs      (lumpnum+ML_SEGS);
-  }
-
-  // [FG] pad the REJECT table when the lump is too small
-  pad_reject = P_LoadReject (lumpnum+ML_REJECT, P_GroupLines());
-
-  if (mapformat != MFMT_UNSUPPORTED)
-    P_RemoveSlimeTrails();    // killough 10/98: remove slime trails from wad
-
-  // [crispy] fix long wall wobble
-  P_SegLengths(false);
-
-  // Note: you don't need to clear player queue slots --
-  // a much simpler fix is in g_game.c -- killough 10/98
-
-  bodyqueslot = 0;
-  deathmatch_p = deathmatchstarts;
-  P_MapStart();
-  P_LoadThings(lumpnum+ML_THINGS);
+    SetupUDMF(lumpnum, &nodeformat, &gen_blockmap, &pad_reject);
 
   // if deathmatch, randomly spawn the active players
   if (deathmatch)
@@ -1750,13 +2339,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   I_Printf(VB_DEMO, "P_SetupLevel: %.8s (%s), Skill %d, %s%s%s, %s",
     lumpname, W_WadNameForLump(lumpnum),
     gameskill + 1,
-    mapformat >= MFMT_UNSUPPORTED ? "NanoBSP" :
-    mapformat == MFMT_XNOD ? "XNOD" :
-    mapformat == MFMT_ZNOD ? "ZNOD" :
-    mapformat == MFMT_XGLN ? "XGLN" :
-    mapformat == MFMT_ZGLN ? "ZGLN" :
-    mapformat == MFMT_DEEP ? "DeepBSP" :
-    "Doom",
+    node_format_names[nodeformat],
     gen_blockmap ? "+Blockmap" : "",
     pad_reject ? "+Reject" : "",
     G_GetCurrentComplevelName());

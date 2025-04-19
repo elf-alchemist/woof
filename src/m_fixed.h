@@ -1,6 +1,7 @@
 //
 //  Copyright (C) 1999 by
 //  id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
+//  Copyright (C) 2013 James Haley et al.
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -44,6 +45,11 @@
 #define FRACUNIT (1<<FRACBITS)
 #define FIXED2DOUBLE(x) ((x)/(double)FRACUNIT)
 #define FRACMASK (FRACUNIT - 1)
+
+// SoM: this is only the case for 16.16 bit fixed point. If a different 
+// precision is desired, this must be changed accordingly
+#define FPFRACUNIT 65536.0
+#define DOUBLE2FIXED(x) ((fixed_t)((x) * FPFRACUNIT))
 
 #define IntToFixed(x) ((x) << FRACBITS)
 #define FixedToInt(x) ((x) >> FRACBITS)

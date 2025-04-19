@@ -22,6 +22,16 @@
 #ifndef __DOOMDATA__
 #define __DOOMDATA__
 
+#include <string.h>
+
+typedef enum {
+  MFMT_Invalid,
+  MFMT_Doom,
+  MFMT_UDMF,
+} mapformat_t;
+
+extern mapformat_t mapformat;
+
 //
 // Map level types.
 // The following data structures define the persistent format
@@ -41,7 +51,8 @@ enum {
   ML_NODES,             // BSP nodes
   ML_SECTORS,           // Sectors, from editing
   ML_REJECT,            // LUT, sector-sector visibility
-  ML_BLOCKMAP           // LUT, motion clipping, walls/grid element
+  ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
+  ML_BEHAVIOR,          // Hexen-format, ACS byte code unsopported
 };
 
 // A single Vertex.
@@ -190,6 +201,125 @@ typedef struct {
   short type;
   short options;
 } mapthing_t;
+
+//
+//
+// [EA] Universal Doom Map Format (UDMF) support
+//
+//
+
+typedef enum {
+  UDMF_Lump_LABEL,
+  UDMF_Lump_TEXTMAP,
+  UDMF_Lump_BLOCKMAP,
+  UDMF_Lump_REJECT,
+  UDMF_Lump_ZNODES,
+  UDMF_Lump_ENDMAP,
+  UDMF_Lump_MAX,
+} UDMF_Lumps_t;
+
+typedef enum {
+  UDMF_Invalid = -1,
+  UDMF_Doom,
+  UDMF_Doom_Vanilla,
+  UDMF_Doom_Boom,
+  UDMF_Doom_MBF,
+  UDMF_Doom_MBF21,
+  UDMF_Doom_ID24,
+  UDMF_Namespace_MAX,
+} UDMF_Namespace_t;
+
+const char * const UDMF_Lumps[] = {
+  [UDMF_Lump_LABEL]    = "-",
+  [UDMF_Lump_TEXTMAP]  = "TEXTMAP",
+  [UDMF_Lump_BLOCKMAP] = "BLOCKMAP",
+  [UDMF_Lump_REJECT]   = "REJECT",
+  [UDMF_Lump_ZNODES]   = "ZNODES",
+  [UDMF_Lump_ENDMAP]   = "ENDMAP",
+  [UDMF_Lump_MAX]      = NULL,
+};
+
+const char * const UDMF_Namespaces[] = {
+  [UDMF_Doom]          = "Doom",
+  [UDMF_Doom_Vanilla]  = "Doom_Vanilla",
+  [UDMF_Doom_Boom]     = "Doom_Boom",
+  [UDMF_Doom_MBF]      = "Doom_MBF",
+  [UDMF_Doom_MBF21]    = "Doom_MBF21",
+  [UDMF_Doom_ID24]     = "Doom_ID24",
+  [UDMF_Namespace_MAX] = NULL,
+};
+
+typedef enum {
+  UDMF_ThingSkill1       = 0x00000001,
+  UDMF_ThingSkill2       = 0x00000002,
+  UDMF_ThingSkill3       = 0x00000004,
+  UDMF_ThingSkill4       = 0x00000008,
+  UDMF_ThingSkill5       = 0x00000010,
+  UDMF_ThingAmbush       = 0x00000020,
+  UDMF_ThingSingleplayer = 0x00000040,
+  UDMF_ThingDeathmatch   = 0x00000080,
+  UDMF_ThingCooperative  = 0x00000100,
+  UDMF_ThingFriendly     = 0x00000200, // MBF
+} UDMF_ThingFlags_t;
+
+typedef enum {
+  UDMF_LineBlocking          = 0x00000001,
+  UDMF_LineBlockMonsters     = 0x00000002,
+  UDMF_LineTwosided          = 0x00000004,
+  UDMF_LineDontPegTop        = 0x00000008,
+  UDMF_LineDontPegNottom     = 0x00000010,
+  UDMF_LineSecret            = 0x00000020,
+  UDMF_LineBlockSound        = 0x00000040,
+  UDMF_LineDontDraw          = 0x00000080,
+  UDMF_LineMapped            = 0x00000100,
+  UDMF_LinePassuse           = 0x00000200, // Boom
+  UDMF_LineBlockLandMonsters = 0x00000400, // MBF21
+  UDMF_LineBlockPlayers      = 0x00000800, // MBF21
+} UDMF_LinedefFlags_t;
+
+typedef struct {
+  int    id;
+  int    type; // DoomEdNum
+  double x;
+  double y;
+  double height; // Floor by default -- ceiling when SPAWNCEILING is set
+  short  angle;
+  int    flags;
+} UDMF_Thing_t;
+
+typedef struct {
+  double x;
+  double y;
+} UDMF_Vertex_t;
+
+typedef struct {
+  int id;
+  int v1;
+  int v2;
+  int special;
+  int sidefront;
+  int sideback;
+  int flags;
+} UDMF_Linedef_t;
+
+typedef struct {
+  int         offsetx;
+  int         offsety;
+  const char *texturetop;
+  const char *texturemiddle;
+  const char *texturebottom;
+  int         sector;
+} UDMF_Sidedef_t;
+
+typedef struct {
+  int         id;
+  int         heightfloor;
+  int         heightceiling;
+  const char *texturefloor;
+  const char *textureceiling;
+  int         lightlevel;
+  int         special;
+} UDMF_Sector_t;
 
 #endif // __DOOMDATA__
 
