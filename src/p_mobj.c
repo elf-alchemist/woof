@@ -658,8 +658,8 @@ void P_NightmareRespawn(mobj_t* mobj)
   mobj_t*      mo;
   mapthing_t*  mthing;
 
-  x = mobj->spawnpoint.x << FRACBITS;
-  y = mobj->spawnpoint.y << FRACBITS;
+  x = mobj->spawnpoint.x;
+  y = mobj->spawnpoint.y;
 
   // haleyjd: stupid nightmare respawning bug fix
   //
@@ -900,9 +900,19 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
   mobj->dropoffz =           // killough 11/98: for tracking dropoffs
   mobj->floorz   = mobj->subsector->sector->floorheight;
   mobj->ceilingz = mobj->subsector->sector->ceilingheight;
-  
-  mobj->z = z == ONFLOORZ ? mobj->floorz : z == ONCEILINGZ ?
-    mobj->ceilingz - mobj->height : z;
+
+  if (z == ONFLOORZ)
+  {
+    mobj->z = mobj->floorz;
+  }
+  else if (z == ONCEILINGZ)
+  {
+    mobj->z = mobj->ceilingz - mobj->height;
+  }
+  else
+  {
+    mobj->z = z;
+  };
 
   // [AM] Do not interpolate on spawn.
   mobj->interp = false;
@@ -1075,8 +1085,8 @@ void P_RespawnSpecials (void)
   
   mthing = &itemrespawnque[iquetail];
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   // spawn a teleport fog at the new spot
 
@@ -1125,8 +1135,8 @@ void P_SpawnPlayer (mapthing_t* mthing)
   if (p->playerstate == PST_REBORN)
     G_PlayerReborn (mthing->type-1);
 
-  x    = mthing->x << FRACBITS;
-  y    = mthing->y << FRACBITS;
+  x    = mthing->x;
+  y    = mthing->y;
   z    = ONFLOORZ;
   mobj = P_SpawnMobj (x,y,z, MT_PLAYER);
 
@@ -1319,8 +1329,8 @@ void P_SpawnMapThing (mapthing_t* mthing)
   // spawn it
 spawnit:
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   z = mobjinfo[i].flags & MF_SPAWNCEILING ? ONCEILINGZ : ONFLOORZ;
 
@@ -1332,6 +1342,10 @@ spawnit:
   if (mobj->tics > 0)
     mobj->tics = 1 + (P_Random (pr_spawnthing) % mobj->tics);
 
+  //
+  // Setup MObj flags -- Start
+  //
+
   if (!(mobj->flags & MF_FRIEND) &&
       mthing->options & MTF_FRIEND && 
       demo_version >= DV_MBF)
@@ -1339,6 +1353,16 @@ spawnit:
       mobj->flags |= MF_FRIEND;            // killough 10/98:
       P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
     }
+
+  // UDMF thing height
+  if (z == ONFLOORZ)
+  {
+    mobj->z += mthing->height;
+  }
+  else if (z == ONCEILINGZ)
+  {
+    mobj->z -= mthing->height;
+  }
 
   // killough 7/20/98: exclude friends
   if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
@@ -1350,6 +1374,10 @@ spawnit:
   mobj->angle = (angle_t)ANG45 * (mthing->angle/45);
   if (mthing->options & MTF_AMBUSH)
     mobj->flags |= MF_AMBUSH;
+
+  //
+  // Setup MObj flags -- End
+  //
 
   // [crispy] support MUSINFO lump (dynamic music changing)
   if (i == MT_MUSICSOURCE)

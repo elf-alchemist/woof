@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "doomdata.h"
 #include "doomstat.h"
 #include "doomtype.h"
 #include "g_game.h"
@@ -165,17 +166,25 @@ static void MD5UpdateLump(int lump, struct MD5Context *md5)
     MD5Update(md5, W_CacheLumpNum(lump, PU_CACHE), W_LumpLength(lump));
 }
 
-static void GetLevelCheckSum(int lump, md5_checksum_t* cksum)
+static void GetLevelCheckSum(int lump, md5_checksum_t* cksum, mapformat_t mapformat)
 {
     struct MD5Context md5;
 
     MD5Init(&md5);
 
-    MD5UpdateLump(lump + ML_LABEL, &md5);
-    MD5UpdateLump(lump + ML_THINGS, &md5);
-    MD5UpdateLump(lump + ML_LINEDEFS, &md5);
-    MD5UpdateLump(lump + ML_SIDEDEFS, &md5);
-    MD5UpdateLump(lump + ML_SECTORS, &md5);
+    if (mapformat == MFMT_Doom)
+    {
+      MD5UpdateLump(lump + ML_LABEL, &md5);
+      MD5UpdateLump(lump + ML_THINGS, &md5);
+      MD5UpdateLump(lump + ML_LINEDEFS, &md5);
+      MD5UpdateLump(lump + ML_SIDEDEFS, &md5);
+      MD5UpdateLump(lump + ML_SECTORS, &md5);
+    }
+    else if (mapformat == MFMT_UDMF)
+    {
+      MD5UpdateLump(lump + UDMF_LABEL, &md5);
+      MD5UpdateLump(lump + UDMF_TEXTMAP, &md5);
+    }
 
     // ML_BEHAVIOR when it becomes applicable to comp options
 
@@ -192,7 +201,7 @@ static void GetLevelCheckSum(int lump, md5_checksum_t* cksum)
 // function will apply comp options to automatically fix some issues that
 // appear when playing wads in mbf21 (since this is the default).
 
-void G_ApplyLevelCompatibility(int lump)
+void G_ApplyLevelCompatibility(int lump, mapformat_t mapformat)
 {
     static demo_version_t old_demo_version;
     static boolean restore_comp;
@@ -215,7 +224,7 @@ void G_ApplyLevelCompatibility(int lump)
 
     md5_checksum_t cksum;
 
-    GetLevelCheckSum(lump, &cksum);
+    GetLevelCheckSum(lump, &cksum, mapformat);
 
     I_Printf(VB_DEBUG, "Level checksum: %s", cksum.string);
 
