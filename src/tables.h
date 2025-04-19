@@ -66,6 +66,7 @@ extern const fixed_t finetangent[FINEANGLES/2];
 #define DBITS      (FRACBITS-SLOPEBITS)
 
 typedef unsigned angle_t;
+#define Short2Angle(angle) (ANG45 * (angle_t)(angle/45))
 
 // Effective size is 2049;
 // The +1 size is to handle the case when x==y without additional checking.
