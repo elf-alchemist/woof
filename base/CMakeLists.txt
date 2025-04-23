@@ -215,6 +215,10 @@ set(BASE_SOURCES
     e1m4b.wad/dehacked.lmp
     e1m8b.wad/dehacked.lmp
 
+    eviternity.wad/dehacked.lmp
+
+    "eviternity ii.wad/dehacked.lmp"
+
     extras.wad/sbardef.lmp
 
     hacx.wad/brghtmps.lmp

@@ -68,23 +68,27 @@ static void AssignObituary(const int type, char *ob, char *ob_m)
 
 void HU_InitObituaries(void)
 {
-    AssignObituary(MT_POSSESSED, s_OB_ZOMBIE,   NULL);
-    AssignObituary(MT_SHOTGUY,   s_OB_SHOTGUY,  NULL);
-    AssignObituary(MT_VILE,      s_OB_VILE,     NULL);
+    AssignObituary(MT_POSSESSED, s_OB_ZOMBIE,   s_OB_ZOMBIEHIT);
+    AssignObituary(MT_SHOTGUY,   s_OB_SHOTGUY,  s_OB_SHOTGUYHIT);
+    AssignObituary(MT_VILE,      s_OB_VILE,     s_OB_VILEHIT);
     AssignObituary(MT_UNDEAD,    s_OB_UNDEAD,   s_OB_UNDEADHIT);
-    AssignObituary(MT_FATSO,     s_OB_FATSO,    NULL);
-    AssignObituary(MT_CHAINGUY,  s_OB_CHAINGUY, NULL);
-    AssignObituary(MT_SKULL,     s_OB_SKULL,    NULL);
+    AssignObituary(MT_FATSO,     s_OB_FATSO,    s_OB_FATSOHIT);
+    AssignObituary(MT_CHAINGUY,  s_OB_CHAINGUY, s_OB_CHAINGUYHIT);
+    AssignObituary(MT_SKULL,     s_OB_SKULL,    s_OB_SKULLHIT);
     AssignObituary(MT_TROOP,     s_OB_IMP,      s_OB_IMPHIT);
     AssignObituary(MT_HEAD,      s_OB_CACO,     s_OB_CACOHIT);
-    AssignObituary(MT_SERGEANT,  NULL,          s_OB_DEMONHIT);
-    AssignObituary(MT_SHADOWS,   NULL,          s_OB_SPECTREHIT);
+    AssignObituary(MT_SERGEANT,  s_OB_DEMON,    s_OB_DEMONHIT);
+    AssignObituary(MT_SHADOWS,   s_OB_SPECTRE,  s_OB_SPECTREHIT);
     AssignObituary(MT_BRUISER,   s_OB_BARON,    s_OB_BARONHIT);
     AssignObituary(MT_KNIGHT,    s_OB_KNIGHT,   s_OB_KNIGHTHIT);
-    AssignObituary(MT_SPIDER,    s_OB_SPIDER,   NULL);
-    AssignObituary(MT_BABY,      s_OB_BABY,     NULL);
-    AssignObituary(MT_CYBORG,    s_OB_CYBORG,   NULL);
-    AssignObituary(MT_WOLFSS,    s_OB_WOLFSS,   NULL);
+    AssignObituary(MT_SPIDER,    s_OB_SPIDER,   s_OB_SPIDERHIT);
+    AssignObituary(MT_BABY,      s_OB_BABY,     s_OB_BABYHIT);
+    AssignObituary(MT_CYBORG,    s_OB_CYBORG,   s_OB_CYBORGHIT);
+    AssignObituary(MT_WOLFSS,    s_OB_WOLFSS,   s_OB_WOLFSSHIT);
+    AssignObituary(MT_KEEN,      s_OB_KEEN,     s_OB_KEENHIT);
+    AssignObituary(MT_BOSSSPIT,  s_OB_BOSSEYE,  s_OB_BOSSEYEHIT);
+    AssignObituary(MT_DOGS,      s_OB_DOG,      s_OB_DOGHIT);
+    AssignObituary(MT_BIBLE,     s_OB_BIBLE,    s_OB_BIBLEHIT);
 
     // [FG] TODO only the server knows the names of all clients,
     //           but at least we know ours...

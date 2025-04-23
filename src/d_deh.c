@@ -514,13 +514,27 @@ char *s_OB_MONTELEFRAG = OB_MONTELEFRAG;
 char *s_OB_DEFAULT = OB_DEFAULT;
 char *s_OB_MPDEFAULT = OB_MPDEFAULT;
 
+char *s_OB_ZOMBIEHIT = OB_DEFAULT;
+char *s_OB_SHOTGUYHIT = OB_DEFAULT;
+char *s_OB_VILEHIT = OB_DEFAULT;
 char *s_OB_UNDEADHIT = OB_UNDEADHIT;
+char *s_OB_FATSOHIT = OB_DEFAULT;
+char *s_OB_CHAINGUYHIT = OB_DEFAULT;
+char *s_OB_SKULLHIT = OB_DEFAULT;
 char *s_OB_IMPHIT = OB_IMPHIT;
 char *s_OB_CACOHIT = OB_CACOHIT;
 char *s_OB_DEMONHIT = OB_DEMONHIT;
 char *s_OB_SPECTREHIT = OB_SPECTREHIT;
 char *s_OB_BARONHIT = OB_BARONHIT;
 char *s_OB_KNIGHTHIT = OB_KNIGHTHIT;
+char *s_OB_SPIDERHIT = OB_DEFAULT;
+char *s_OB_BABYHIT = OB_DEFAULT;
+char *s_OB_CYBORGHIT = OB_DEFAULT;
+char *s_OB_WOLFSSHIT = OB_DEFAULT;
+char *s_OB_KEENHIT = OB_DEFAULT;
+char *s_OB_BOSSEYEHIT = OB_DEFAULT;
+char *s_OB_DOGHIT = OB_DEFAULT;
+char *s_OB_BIBLEHIT = OB_DEFAULT;
 
 char *s_OB_ZOMBIE = OB_ZOMBIE;
 char *s_OB_SHOTGUY = OB_SHOTGUY;
@@ -531,12 +545,18 @@ char *s_OB_CHAINGUY = OB_CHAINGUY;
 char *s_OB_SKULL = OB_SKULL;
 char *s_OB_IMP = OB_IMP;
 char *s_OB_CACO = OB_CACO;
+char *s_OB_DEMON = OB_DEFAULT;
+char *s_OB_SPECTRE = OB_DEFAULT;
 char *s_OB_BARON = OB_BARON;
 char *s_OB_KNIGHT = OB_KNIGHT;
 char *s_OB_SPIDER = OB_SPIDER;
 char *s_OB_BABY = OB_BABY;
 char *s_OB_CYBORG = OB_CYBORG;
 char *s_OB_WOLFSS = OB_WOLFSS;
+char *s_OB_KEEN = OB_DEFAULT;
+char *s_OB_BOSSEYE = OB_DEFAULT;
+char *s_OB_DOG = OB_DEFAULT;
+char *s_OB_BIBLE = OB_DEFAULT;
 
 char *s_OB_MPFIST = OB_MPFIST;
 char *s_OB_MPCHAINSAW = OB_MPCHAINSAW;
@@ -913,13 +933,24 @@ static deh_strs deh_strlookup[] = {
     {&s_OB_MONTELEFRAG,     "OB_MONTELEFRAG"    },
     {&s_OB_DEFAULT,         "OB_DEFAULT"        },
     {&s_OB_MPDEFAULT,       "OB_MPDEFAULT"      },
+    {&s_OB_ZOMBIEHIT,       "OB_ZOMBIEHIT"      },
+    {&s_OB_SHOTGUYHIT,      "OB_SHOTGUYHIT"     },
+    {&s_OB_VILEHIT,         "OB_VILEHIT"        },
     {&s_OB_UNDEADHIT,       "OB_UNDEADHIT"      },
+    {&s_OB_FATSOHIT,        "OB_FATSOHIT"       },
+    {&s_OB_CHAINGUYHIT,     "OB_CHAINGUYHIT"    },
+    {&s_OB_SKULLHIT,        "OB_SKULLHIT"       },
     {&s_OB_IMPHIT,          "OB_IMPHIT"         },
     {&s_OB_CACOHIT,         "OB_CACOHIT"        },
     {&s_OB_DEMONHIT,        "OB_DEMONHIT"       },
     {&s_OB_SPECTREHIT,      "OB_SPECTREHIT"     },
     {&s_OB_BARONHIT,        "OB_BARONHIT"       },
     {&s_OB_KNIGHTHIT,       "OB_KNIGHTHIT"      },
+    {&s_OB_SPIDERHIT,       "OB_SPIDERHIT"      },
+    {&s_OB_BABYHIT,         "OB_BABYHIT"        },
+    {&s_OB_CYBORGHIT,       "OB_CYBORGHIT"      },
+    {&s_OB_WOLFSSHIT,       "OB_WOLFSSHIT"      },
+    {&s_OB_DOGHIT,          "OB_DOGHIT"         },
     {&s_OB_ZOMBIE,          "OB_ZOMBIE"         },
     {&s_OB_SHOTGUY,         "OB_SHOTGUY"        },
     {&s_OB_VILE,            "OB_VILE"           },
@@ -929,12 +960,15 @@ static deh_strs deh_strlookup[] = {
     {&s_OB_SKULL,           "OB_SKULL"          },
     {&s_OB_IMP,             "OB_IMP"            },
     {&s_OB_CACO,            "OB_CACO"           },
+    {&s_OB_DEMON,           "OB_DEMON"          },
+    {&s_OB_SPECTRE,         "OB_SPECTRE"        },
     {&s_OB_BARON,           "OB_BARON"          },
     {&s_OB_KNIGHT,          "OB_KNIGHT"         },
     {&s_OB_SPIDER,          "OB_SPIDER"         },
     {&s_OB_BABY,            "OB_BABY"           },
     {&s_OB_CYBORG,          "OB_CYBORG"         },
     {&s_OB_WOLFSS,          "OB_WOLFSS"         },
+    {&s_OB_DOG,             "OB_DOG"            },
     {&s_OB_MPFIST,          "OB_MPFIST"         },
     {&s_OB_MPCHAINSAW,      "OB_MPCHAINSAW"     },
     {&s_OB_MPPISTOL,        "OB_MPPISTOL"       },
