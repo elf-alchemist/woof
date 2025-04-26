@@ -213,6 +213,7 @@ sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
           tempsec->floor_xoffs = s->floor_xoffs;
           tempsec->floor_yoffs = s->floor_yoffs;
           tempsec->floor_rotation = s->floor_rotation;
+          tempsec->colormap    = s->colormap;
 
           if (underwater)
           {
@@ -252,6 +253,7 @@ sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
             tempsec->floorheight   = s->ceilingheight + 1;
             tempsec->interpceilingheight = s->interpceilingheight;
             tempsec->interpfloorheight   = s->interpceilingheight + 1;
+            tempsec->colormap      = s->colormap;
 
             tempsec->floorpic    = tempsec->ceilingpic    = s->ceilingpic;
             tempsec->floor_xoffs = tempsec->ceiling_xoffs = s->ceiling_xoffs;
@@ -484,6 +486,7 @@ static void R_AddLine (seg_t *line)
       && backsector->ceiling_yoffs == frontsector->ceiling_yoffs
       && backsector->floor_rotation == frontsector->floor_rotation
       && backsector->ceiling_rotation == frontsector->ceiling_rotation
+      && backsector->colormap == frontsector->colormap
 
       // killough 4/16/98: consider altered lighting
       && backsector->floorlightsec == frontsector->floorlightsec

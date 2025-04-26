@@ -234,6 +234,8 @@ typedef struct line_s
 
   // ID24 line specials
   angle_t angle;
+  int frontcolormap; // Front upper texture -- activated from the front side
+  int backcolormap; // Front lower texture -- activated from the back side
   int frontmusic; // Front upper texture -- activated from the front side
   int backmusic; // Front lower texture -- activated from the back side
 } line_t;
@@ -453,6 +455,7 @@ typedef struct visplane_s
   fixed_t height;
   fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
   angle_t rotation;
+  lighttable_t *colormap;
   unsigned short *bottom;
   unsigned short pad1;          // leave pads for [minx-1]/[maxx+1]
   unsigned short top[3];

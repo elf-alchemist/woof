@@ -1772,6 +1772,18 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, boolean bossactio
       EV_ChangeMusic(line, side);
       break;
 
+    // Set the target sector's colormap.
+    case 2076:
+      line->special = 0;
+      // fallthrough
+
+    case 2077:
+      for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0 ; )
+        sectors[s].colormap_index = side ? line->backcolormap
+                                         : line->frontcolormap;
+      break;
+
+
       // Extended walk triggers
 
       // jff 1/29/98 added new linedef types to fill all functions out so that
@@ -2240,6 +2252,17 @@ void P_ShootSpecialLine(mobj_t *thing, line_t *line, int side)
     case 2061: case 2067: case 2091: case 2097:
     case 2062: case 2068: case 2092: case 2098:
       EV_ChangeMusic(line, side);
+      break;
+
+    // Set the target sector's colormap.
+    case 2080:
+      line->special = 0;
+      // fallthrough
+
+    case 2081:
+      for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0 ; )
+        sectors[s].colormap_index = side ? line->backcolormap
+                                         : line->frontcolormap;
       break;
 
       //jff 1/30/98 added new gun linedefs here
@@ -2858,6 +2881,12 @@ void P_SpawnSpecials (void)
         R_GetSkyColor(texturetranslation[sides[*lines[i].sidenum].toptexture]);
         for (s = -1; (s = P_FindSectorFromLineTag(lines+i,s)) >= 0;)
           sectors[s].floorsky = sectors[s].ceilingsky = i | PL_SKYFLAT;
+        break;
+
+      // Always - Set the target sector's colormap.
+      case 2075:
+        for (s = -1; (s = P_FindSectorFromLineTag(&lines[i], s)) >= 0;)
+          sectors[s].colormap_index = lines[i].frontcolormap;
         break;
 
       case 2048: case 2049: case 2050:
