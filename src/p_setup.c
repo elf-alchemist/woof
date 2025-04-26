@@ -1675,25 +1675,27 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // [FG] build nodes with NanoBSP
   if (mapformat >= MFMT_UNSUPPORTED)
   {
+    R_PointOnSide = R_PointOnSideClassic;
     BSP_BuildNodes();
   }
   // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed ZNOD/ZGLN formats, or DeePBSP format
-  else if (mapformat == MFMT_XGLN || mapformat == MFMT_ZGLN)
+  // [EA] support all of XNOD/XGLN/XGL2/XGL3 and ZNOD/ZGLN/ZGL2/ZGL3
+  else if (mapformat >= MFMT_XNOD && mapformat <= MFMT_ZGL3)
   {
-    P_LoadNodes_XNOD (lumpnum+ML_SSECTORS, mapformat == MFMT_ZGLN, true);
-  }
-  else if (mapformat == MFMT_XNOD || mapformat == MFMT_ZNOD)
-  {
-    P_LoadNodes_XNOD (lumpnum+ML_NODES, mapformat == MFMT_ZNOD, false);
+    R_PointOnSide = mapformat >= MFMT_ZGL3 ? R_PointOnSidePrecise
+                                           : R_PointOnSideClassic;
+    P_LoadZDoomNodes(lumpnum+ML_NODES, mapformat);
   }
   else if (mapformat == MFMT_DEEP)
   {
+    R_PointOnSide = R_PointOnSideClassic;
     P_LoadSubsectors_DEEP (lumpnum+ML_SSECTORS);
     P_LoadNodes_DEEP (lumpnum+ML_NODES);
     P_LoadSegs_DEEP (lumpnum+ML_SEGS);
   }
   else
   {
+  R_PointOnSide = R_PointOnSideClassic;
   P_LoadSubsectors(lumpnum+ML_SSECTORS);
   P_LoadNodes     (lumpnum+ML_NODES);
   P_LoadSegs      (lumpnum+ML_SEGS);

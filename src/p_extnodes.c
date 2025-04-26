@@ -95,6 +95,32 @@ typedef PACKED_PREFIX struct
     unsigned int numsegs;
 } PACKED_SUFFIX mapsubsector_xnod_t;
 
+// [EA] support maps with NODES in XGLN/2/3 format
+
+typedef PACKED_PREFIX struct
+{
+    unsigned int vertex, partner;
+    unsigned short linedef;
+    unsigned char side;
+} PACKED_SUFFIX mapseg_xgln_t;
+
+typedef PACKED_PREFIX struct
+{
+    unsigned int vertex, partner;
+    unsigned int linedef;
+    unsigned char side;
+} PACKED_SUFFIX mapseg_xgl2_t;
+
+typedef PACKED_PREFIX struct
+{
+    int x;
+    int y;
+    int dx;
+    int dy;
+    short bbox[2][4];
+    int children[2];
+} PACKED_SUFFIX mapnode_xgl3_t;
+
 #if defined(_MSC_VER)
 #  pragma pack(pop)
 #endif
@@ -430,10 +456,9 @@ static void P_LoadSegs_XNOD(byte *data)
 
 // adapted from dsda-doom/prboom2/src/p_setup.c:P_LoadGLZSegs()
 
-static void P_LoadSegs_XGLN(byte *data)
+static void P_LoadSegs_XGLN(byte *data, mapformat_t xgln_version)
 {
     int i, j;
-    const mapseg_xnod_t *ml = (const mapseg_xnod_t *)data;
 
     for (i = 0; i < numsubsectors; ++i)
     {
@@ -445,17 +470,28 @@ static void P_LoadSegs_XGLN(byte *data)
             unsigned char side;
             seg_t *seg;
 
-            v1 = LONG(ml->v1);
-            // partner = LONG(ml->v2);
-            line = (unsigned short)SHORT(ml->linedef);
-            side = ml->side;
-
-            if (line == 0xffff)
+            if (xgln_version == MFMT_XGLN)
             {
-                line = 0xffffffff;
+              const mapseg_xgln_t *mln = (const mapseg_xgln_t *)data;
+              v1 = LONG(mln->vertex);
+              // partner = LONG(mln->partner);
+              line = (unsigned short)SHORT(mln->linedef);
+              side = mln->side;
+              if (line == 0xffff)
+              {
+                  line = 0xffffffff;
+              }
+              mln++;
             }
-
-            ml++;
+            else
+            {
+              const mapseg_xgl2_t *ml2 = (const mapseg_xgl2_t *)data;
+              v1 = LONG(ml2->vertex);
+              // partner = LONG(ml2->partner);
+              line = (unsigned short)SHORT(ml2->linedef);
+              side = ml2->side;
+              ml2++;
+            }
 
             seg = &segs[subsectors[i].firstline + j];
 
@@ -555,7 +591,7 @@ static void P_LoadSegs_XGLN(byte *data)
     }
 }
 
-void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
+void P_LoadZDoomNodes(int lump, mapformat_t znode_type)
 {
     byte *data;
     unsigned int i;
@@ -570,6 +606,9 @@ void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
     data = W_CacheLumpNum(lump, PU_LEVEL);
 
     // 0. Uncompress nodes lump (or simply skip header)
+    boolean compressed = znode_type == MFMT_ZNOD || znode_type == MFMT_ZGLN ||
+                         znode_type == MFMT_ZGL2 || znode_type == MFMT_ZGL3;
+
 
     if (compressed)
     {
@@ -592,7 +631,7 @@ void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
 
         if (inflateInit(zstream) != Z_OK)
         {
-            I_Error("P_LoadNodes_XNOD: Error during ZNOD nodes decompression "
+            I_Error("P_LoadZDoomNodes: Error during ZNOD nodes decompression "
                     "initialization!");
         }
 
@@ -608,18 +647,18 @@ void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
 
         if (err != Z_STREAM_END)
         {
-            I_Error("P_LoadNodes_XNOD: Error during ZNOD nodes decompression!");
+            I_Error("P_LoadZDoomNodes: Error during ZNOD nodes decompression!");
         }
 
         I_Printf(VB_DEBUG,
-                 "P_LoadNodes_XNOD: ZNOD nodes compression ratio %.3f",
+                 "P_LoadZDoomNodes: ZNOD nodes compression ratio %.3f",
                  (float)zstream->total_out / zstream->total_in);
 
         data = output;
 
         if (inflateEnd(zstream) != Z_OK)
         {
-            I_Error("P_LoadNodes_XNOD: Error during ZNOD nodes decompression "
+            I_Error("P_LoadZDoomNodes: Error during ZNOD nodes decompression "
                     "shut-down!");
         }
 
@@ -684,7 +723,7 @@ void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
 
     if (numSubs < 1)
     {
-        I_Error("P_LoadNodes_XNOD: No subsectors in map!");
+        I_Error("P_LoadZDoomNodes: No subsectors in map!");
     }
 
     numsubsectors = numSubs;
@@ -710,22 +749,27 @@ void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
     // subsectors
     if (numSegs != currSeg)
     {
-        I_Error("P_LoadNodes_XNOD: Incorrect number of segs in XNOD nodes!");
+        I_Error("P_LoadZDoomNodes: Incorrect number of segs in XNOD nodes!");
     }
 
     numsegs = numSegs;
     segs = Z_Malloc(numsegs * sizeof(seg_t), PU_LEVEL, 0);
 
-    if (glnodes)
+    if (znode_type >= MFMT_XGL2)
     {
-        P_LoadSegs_XGLN(data);
+        P_LoadSegs_XGLN(data, znode_type);
+        data += numsegs * sizeof(mapseg_xgl2_t);
+    }
+    else if (znode_type == MFMT_XGLN)
+    {
+        P_LoadSegs_XGLN(data, znode_type);
+        data += numsegs * sizeof(mapseg_xgln_t);
     }
     else
     {
         P_LoadSegs_XNOD(data);
+        data += numsegs * sizeof(mapseg_xnod_t);
     }
-
-    data += numsegs * sizeof(mapseg_xnod_t);
 
     // 4. Load nodes
 
@@ -740,21 +784,39 @@ void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes)
         int j, k;
         node_t *no = nodes + i;
         mapnode_xnod_t *mn = (mapnode_xnod_t *)data + i;
+        mapnode_xgl3_t *mn3 = (mapnode_xgl3_t *)data + i;
 
-        no->x = SHORT(mn->x) << FRACBITS;
-        no->y = SHORT(mn->y) << FRACBITS;
-        no->dx = SHORT(mn->dx) << FRACBITS;
-        no->dy = SHORT(mn->dy) << FRACBITS;
-
-        for (j = 0; j < 2; j++)
+        if (znode_type >= MFMT_XGL3)
         {
-            no->children[j] = LONG(mn->children[j]);
-
-            for (k = 0; k < 4; k++)
-            {
-                no->bbox[j][k] = SHORT(mn->bbox[j][k]) << FRACBITS;
-            }
+          no->x = SHORT(mn3->x);
+          no->y = SHORT(mn3->y);
+          no->dx = SHORT(mn3->dx);
+          no->dy = SHORT(mn3->dy);
+          for (j = 0; j < 2; j++)
+          {
+              no->children[j] = LONG(mn3->children[j]);
+              for (k = 0; k < 4; k++)
+              {
+                  no->bbox[j][k] = SHORT(mn3->bbox[j][k]) << FRACBITS;
+              }
+          }
         }
+        else
+        {
+          no->x = SHORT(mn->x) << FRACBITS;
+          no->y = SHORT(mn->y) << FRACBITS;
+          no->dx = SHORT(mn->dx) << FRACBITS;
+          no->dy = SHORT(mn->dy) << FRACBITS;
+          for (j = 0; j < 2; j++)
+          {
+              no->children[j] = LONG(mn->children[j]);
+              for (k = 0; k < 4; k++)
+              {
+                  no->bbox[j][k] = SHORT(mn->bbox[j][k]) << FRACBITS;
+              }
+          }
+        }
+
     }
 
     if (compressed && output)

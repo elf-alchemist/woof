@@ -39,7 +39,7 @@ typedef enum
     MFMT_XGL3,
     MFMT_ZGL3,
 
-    MFMT_UNSUPPORTED = MFMT_XGL2
+    MFMT_UNSUPPORTED,
 } mapformat_t;
 
 extern mapformat_t P_CheckMapFormat(int lumpnum);
@@ -48,6 +48,6 @@ extern int P_GetOffset(struct vertex_s *v1, struct vertex_s *v2);
 extern void P_LoadSegs_DEEP(int lump);
 extern void P_LoadSubsectors_DEEP(int lump);
 extern void P_LoadNodes_DEEP(int lump);
-extern void P_LoadNodes_XNOD(int lump, boolean compressed, boolean glnodes);
+extern void P_LoadZDoomNodes(int lump, mapformat_t znode_type);
 
 #endif
