@@ -80,6 +80,10 @@ struct sector_s;
 #define PUSH_MASK       0x200
 #define PUSH_SHIFT      9
 
+// smmu
+#define KILL_SOUND_MASK      0x0400 // bit 10
+#define KILL_MOVE_SOUND_MASK 0x0800 // bit 11
+
 // mbf21
 #define DEATH_MASK            0x1000 // bit 12
 #define KILL_MONSTERS_MASK    0x2000 // bit 13
