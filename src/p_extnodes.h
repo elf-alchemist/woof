@@ -22,8 +22,6 @@
 #ifndef __P_EXTNODES__
 #define __P_EXTNODES__
 
-#include "doomtype.h"
-
 struct vertex_s;
 
 typedef enum

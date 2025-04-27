@@ -603,6 +603,8 @@ void P_LoadZDoomNodes(int lump, mapformat_t znode_type)
     unsigned int numNodes;
     vertex_t *newvertarray = NULL;
 
+    lump += (znode_type >= MFMT_XGLN) ? ML_SSECTORS : ML_NODES;
+
     data = W_CacheLumpNum(lump, PU_LEVEL);
 
     // 0. Uncompress nodes lump (or simply skip header)
