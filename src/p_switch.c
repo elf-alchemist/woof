@@ -442,7 +442,7 @@ P_UseSpecialLine
 
     // S1 - Exit to the next map and reset inventory.
     case 2070:
-      if (demo_version >= DV_ID24)
+      if (demo_version < DV_ID24)
         break;
       reset_inventory = true;
       // fallthrough
@@ -529,7 +529,7 @@ P_UseSpecialLine
 
     // SR - Exit to the secret map and reset inventory.
     case 2073:
-      if (demo_version >= DV_ID24)
+      if (demo_version < DV_ID24)
         break;
       reset_inventory = true;
       // fallthrough
