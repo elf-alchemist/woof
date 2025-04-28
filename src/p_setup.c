@@ -1664,8 +1664,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   // [FG] check nodes format
   mapformat = P_CheckMapFormat(lumpnum);
+
   R_PointOnSide = R_PointOnSideClassic;
   R_PointOnSegSide = R_PointOnSegSideClassic;
+  P_PointOnLineSide = P_PointOnLineSideClassic;
+  P_PointOnDivlineSide = P_PointOnDivlineSideClassic;
 
   P_LoadVertexes  (lumpnum+ML_VERTEXES);
   P_LoadSectors   (lumpnum+ML_SECTORS);
@@ -1686,6 +1689,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     {
       R_PointOnSide = R_PointOnSidePrecise;
       R_PointOnSegSide = R_PointOnSegSidePrecise;
+      P_PointOnLineSide = P_PointOnLineSidePrecise;
+      P_PointOnDivlineSide = P_PointOnDivlineSidePrecise;
     }
     P_LoadZDoomNodes(lumpnum, mapformat);
   }
