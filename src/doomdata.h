@@ -52,7 +52,7 @@ enum {
   ML_SECTORS,           // Sectors, from editing
   ML_REJECT,            // LUT, sector-sector visibility
   ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
-  ML_BEHAVIOR,          // Hexen-format, ACS byte code unsopported
+  ML_BEHAVIOR,          // Hexen-format, ACS byte code. Unsupported
 };
 
 // A single Vertex.

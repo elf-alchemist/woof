@@ -1100,7 +1100,7 @@ static void P_CreateBlockMap(void)
   //
   //     If current block is the same as the ending vertex's block, exit loop.
   //
-  //     Move to an adjacent block by moving towards the ending block in 
+  //     Move to an adjacent block by moving towards the ending block in
   //     either the x or y direction, to the block which contains the linedef.
 
   {
@@ -1113,16 +1113,16 @@ static void P_CreateBlockMap(void)
 	// starting coordinates
 	int x = (lines[i].v1->x >> FRACBITS) - minx;
 	int y = (lines[i].v1->y >> FRACBITS) - miny;
-	
+
 	// x-y deltas
 	int adx = lines[i].dx >> FRACBITS, dx = adx < 0 ? -1 : 1;
-	int ady = lines[i].dy >> FRACBITS, dy = ady < 0 ? -1 : 1; 
+	int ady = lines[i].dy >> FRACBITS, dy = ady < 0 ? -1 : 1;
 
 	// difference in preferring to move across y (>0) instead of x (<0)
 	int diff = !adx ? 1 : !ady ? -1 :
-	  (((x >> MAPBTOFRAC) << MAPBTOFRAC) + 
+	  (((x >> MAPBTOFRAC) << MAPBTOFRAC) +
 	   (dx > 0 ? MAPBLOCKUNITS-1 : 0) - x) * (ady = abs(ady)) * dx -
-	  (((y >> MAPBTOFRAC) << MAPBTOFRAC) + 
+	  (((y >> MAPBTOFRAC) << MAPBTOFRAC) +
 	   (dy > 0 ? MAPBLOCKUNITS-1 : 0) - y) * (adx = abs(adx)) * dy;
 
 	// starting block, and pointer to its blocklist structure
@@ -1144,8 +1144,8 @@ static void P_CreateBlockMap(void)
 	  {
 	    // Increase size of allocated list if necessary
 	    if (bmap[b].n >= bmap[b].nalloc)
-	      bmap[b].list = realloc(bmap[b].list, 
-				     (bmap[b].nalloc = bmap[b].nalloc ? 
+	      bmap[b].list = realloc(bmap[b].list,
+				     (bmap[b].nalloc = bmap[b].nalloc ?
 				      bmap[b].nalloc*2 : 8)*sizeof*bmap->list);
 
 	    // Add linedef to end of list
@@ -1156,7 +1156,7 @@ static void P_CreateBlockMap(void)
 	      break;
 
 	    // Move in either the x or y direction to the next block
-	    if (diff < 0) 
+	    if (diff < 0)
 	      diff += ady, b += dx;
 	    else
 	      diff -= adx, b += dy;
@@ -1179,7 +1179,7 @@ static void P_CreateBlockMap(void)
 
       // Allocate blockmap lump with computed count
       blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
-    }									 
+    }
 
     // Now compress the blockmap.
     {
@@ -1355,7 +1355,7 @@ int P_GroupLines (void)
       sectors[i].lines = linebuffer;
       linebuffer += sectors[i].linecount;
     }
-  
+
   for (i=0; i<numlines; i++)
     {
       AddLineToSector(lines[i].frontsector, &lines[i]);
@@ -2231,13 +2231,13 @@ static void UDMF_LoadSidedefs()
 
 static void UDMF_LoadSector()
 {
-  
+
 }
 
 static void SetupUDMF(int lumpnum, nodeformat_t *nodeformat,
                       boolean *gen_blockmap, boolean *pad_reject)
 {
-  
+
 }
 
 //
