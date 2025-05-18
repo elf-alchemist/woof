@@ -60,7 +60,8 @@ static void T_PlatRaise(plat_t* plat)
           || plat->type == raiseToNearestAndChange)
       {
         if (!(leveltime&7))
-          S_StartSoundPitch((mobj_t *)&plat->sector->soundorg, sfx_stnmov, PITCH_NONE);
+          if (!(plat->sector->special & KILL_SEC_SOUNDS_MASK))
+            S_StartSoundPitch((mobj_t *)&plat->sector->soundorg, sfx_stnmov, PITCH_NONE);
       }
       
       // if encountered an obstacle, and not a crush type, reverse direction                    
@@ -68,7 +69,8 @@ static void T_PlatRaise(plat_t* plat)
       {
         plat->count = plat->wait;
         plat->status = down;
-        S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstart);
+        if (!(plat->sector->special & KILL_SEC_SOUNDS_MASK))
+          S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstart);
       }
       else  // else handle reaching end of up stroke
       {
@@ -79,7 +81,8 @@ static void T_PlatRaise(plat_t* plat)
           {
             plat->count = plat->wait;
             plat->status = waiting;
-            S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstop);
+            if (!(plat->sector->special & KILL_SEC_SOUNDS_MASK))
+              S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstop);
           }
           else // else go into stasis awaiting next toggle activation
           {
@@ -115,7 +118,8 @@ static void T_PlatRaise(plat_t* plat)
         {                           // is silent, instant, no waiting
           plat->count = plat->wait;
           plat->status = waiting;
-          S_StartSound((mobj_t *)&plat->sector->soundorg,sfx_pstop);
+          if (!(plat->sector->special & KILL_SEC_SOUNDS_MASK))
+            S_StartSound((mobj_t *)&plat->sector->soundorg,sfx_pstop);
         }
         else // instant toggles go into stasis awaiting next activation
         {
@@ -151,7 +155,8 @@ static void T_PlatRaise(plat_t* plat)
           plat->status = down;   // if at top, start down
 
         // make plat start sound
-        S_StartSound((mobj_t *)&plat->sector->soundorg,sfx_pstart);
+        if (!(plat->sector->special & KILL_SEC_SOUNDS_MASK))
+           S_StartSound((mobj_t *)&plat->sector->soundorg,sfx_pstart);
       }
       break; //jff 1/27/98 don't pickup code added later to in_stasis
 
@@ -242,7 +247,9 @@ int EV_DoPlat
         //jff 3/14/98 clear old field as well
         sec->oldspecial = 0;               
 
-        S_StartSoundPitch((mobj_t *)&sec->soundorg,sfx_stnmov, PITCH_NONE);
+        if (!(sec->special & KILL_SEC_SOUNDS_MASK))
+            S_StartSoundPitch((mobj_t *)&sec->soundorg,sfx_stnmov, PITCH_NONE);
+
         break;
           
       case raiseAndChange:
@@ -252,7 +259,8 @@ int EV_DoPlat
         plat->wait = 0;
         plat->status = up;
 
-        S_StartSoundPitch((mobj_t *)&sec->soundorg,sfx_stnmov, PITCH_NONE);
+        if (!(sec->special & KILL_SEC_SOUNDS_MASK))
+          S_StartSoundPitch((mobj_t *)&sec->soundorg,sfx_stnmov, PITCH_NONE);
         break;
           
       case downWaitUpStay:
@@ -265,7 +273,8 @@ int EV_DoPlat
         plat->high = sec->floorheight;
         plat->wait = 35*PLATWAIT;
         plat->status = down;
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+        if (!(sec->special & KILL_SEC_SOUNDS_MASK))
+          S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
         break;
           
       case blazeDWUS:
@@ -278,7 +287,8 @@ int EV_DoPlat
         plat->high = sec->floorheight;
         plat->wait = 35*PLATWAIT;
         plat->status = down;
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+        if (!(sec->special & KILL_SEC_SOUNDS_MASK))
+          S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
         break;
           
       case perpetualRaise:
@@ -296,7 +306,8 @@ int EV_DoPlat
         plat->wait = 35*PLATWAIT;
         plat->status = P_Random(pr_plats)&1;
 
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+        if (!(sec->special & KILL_SEC_SOUNDS_MASK))
+          S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
         break;
 
       case toggleUpDn: //jff 3/14/98 add new type to support instant toggle

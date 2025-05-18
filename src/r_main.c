@@ -848,15 +848,32 @@ void R_SetupFrame (player_t *player)
   viewcos = finecosine[viewangle>>ANGLETOFINESHIFT];
 
   // killough 3/20/98, 4/4/98: select colormap based on player status
+  const sector_t * sec = player->mo->subsector->sector;
 
-  if (player->mo->subsector->sector->heightsec != -1)
+  if (sec->colormap)
+  {
+    cm = sec->colormap;
+  }
+  else if (sec->heightsec != -1)
+  {
+    const sector_t *s = sec->heightsec + sectors;
+
+    if (viewz < s->interpfloorheight)
     {
-      const sector_t *s = player->mo->subsector->sector->heightsec + sectors;
-      cm = viewz < s->interpfloorheight ? s->bottommap : viewz > s->interpceilingheight ?
-        s->topmap : s->midmap;
-      if (cm < 0 || cm > numcolormaps)
-        cm = 0;
+      cm = s->bottommap;
     }
+    else if (viewz > s->interpceilingheight)
+    {
+      cm = s->topmap;
+    }
+    else
+    {
+      cm = s->midmap;
+    }
+
+    if (cm < 0 || cm > numcolormaps)
+      cm = 0;
+  }
   else
     cm = 0;
 

@@ -832,7 +832,6 @@ static void UDMF_LoadLineDefs(void)
         {
             side_t *backside = &sides[lines[i].sidenum[1]];
             lines[i].backsector = backside->sector;
-            backside->special = lines[i].special;
         }
     }
 }

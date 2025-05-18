@@ -122,9 +122,16 @@ typedef enum linedef_flags_e
   ML_PASSUSE           = (1u << 9),  // jff 3/21/98 Set if line absorbs use by player
                                      // allow multiple push/switch triggers to be used on one push
   ML_3DMIDTEX          = (1u << 10), // SoM 9/02/02: 3D Middletexture flag!
-  ML_RESERVED          = (1u << 11),
+  ML_3DMTPASSPROJ      = (1u << 11), // with ML_3DMIDTEX, makes it pass projectiles
   ML_BLOCKLANDMONSTERS = (1u << 12), // mbf21
   ML_BLOCKPLAYERS      = (1u << 13), // mbf21
+  ML_RESERVED1         = (1u << 14), // mbf2y
+  ML_RESERVED2         = (1u << 15), // mbf2y
+
+  ML_RESERVED = ML_3DMTPASSPROJ, // comp_reservedlineflag
+
+  // UDMF? internal? both!?
+  ML_HORIZON = (1u << 16),
 } linedef_flags_t;
 
 // Sector definition, from editing.

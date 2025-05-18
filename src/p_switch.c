@@ -17,6 +17,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "a_specials.h"
 #include "d_player.h"
 #include "doomdata.h"
 #include "doomdef.h"
@@ -1070,6 +1071,28 @@ P_UseSpecialLine
             return true;
 
           // 1/29/98 jff end of added SR linedef types
+
+          default:
+            if (demo_version >= DV_MBF2Y)
+            {
+              switch (line->special)
+              {
+                case S1_LineHorizon:
+                  line->special = 0;
+                  // fallthrough
+                case SR_LineHorizon:
+                  EV_ToggleLineHorizon(line);
+                  break;
+
+                case S1_SectorColormap:
+                  line->special = 0;
+                  // fallthrough
+                case SR_SectorColormap:
+                  EV_SetSectorColormap(line, side);
+                  break;
+              }
+            }
+            break;
 
         }
       break;

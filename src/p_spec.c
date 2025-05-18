@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "a_specials.h"
 #include "d_deh.h"
 #include "d_player.h"
 #include "doomdata.h"
@@ -2098,6 +2099,27 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, boolean bossactio
             break;
             //jff 1/29/98 end of added WR linedef types
 
+          default:
+            if (demo_version >= DV_MBF2Y)
+            {
+              switch (line->special)
+              {
+                case W1_LineHorizon:
+                  line->special = 0;
+                  // fallthrough
+                case WR_LineHorizon:
+                  EV_ToggleLineHorizon(line);
+                  break;
+
+                case W1_SectorColormap:
+                  line->special = 0;
+                  // fallthrough
+                case WR_SectorColormap:
+                  EV_SetSectorColormap(line, side);
+                  break;
+              }
+            }
+            break;
           }
       break;
     }
@@ -2318,6 +2340,28 @@ void P_ShootSpecialLine(mobj_t *thing, line_t *line, int side)
             G_SecretExitLevel();
             break;
             //jff end addition of new gun linedefs
+
+          default:
+            if (demo_version >= DV_MBF2Y)
+            {
+              switch (line->special)
+              {
+                case G1_LineHorizon:
+                  line->special = 0;
+                  // fallthrough
+                case GR_LineHorizon:
+                  EV_ToggleLineHorizon(line);
+                  break;
+
+                case G1_SectorColormap:
+                  line->special = 0;
+                  // fallthrough
+                case GR_SectorColormap:
+                  EV_SetSectorColormap(line, side);
+                  break;
+              }
+            }
+            break;
           }
       break;
     }
@@ -2908,6 +2952,14 @@ void P_SpawnSpecials (void)
         {
           sectors[s].tint = lines[i].fronttint;
         }
+        break;
+
+      case Static_LineHorizon:
+        EV_ToggleLineHorizon(&lines[i]);
+        break;
+
+      case Static_SectorColormap:
+        EV_SetSectorColormap(&lines[i], 0);
         break;
       }
 }

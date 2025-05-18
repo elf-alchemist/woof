@@ -109,9 +109,9 @@ static void P_RecursiveSound(sector_t *sec, int soundblocks,
       if (!(check->flags & ML_TWOSIDED))
         continue;
 
-      P_LineOpening(check);
+      P_LineOpening(check, NULL);
 
-      if (openrange <= 0)
+      if (LineOpening.range <= 0)
         continue;       // closed door
 
       other=sides[check->sidenum[sides[check->sidenum[0]].sector==sec]].sector;

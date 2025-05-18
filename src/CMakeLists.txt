@@ -1,6 +1,7 @@
 include(WoofSettings)
 
 set(WOOF_SOURCES
+    a_specials.c           a_specials.h
     am_map.c               am_map.h
     d_deh.c                d_deh.h
     d_demoloop.c           d_demoloop.h

@@ -259,7 +259,8 @@ static void T_MoveFloor(floormove_t* floor)
   );
   
   if (!(leveltime&7))     // make the floormove sound
-    S_StartSoundPitch((mobj_t *)&floor->sector->soundorg, sfx_stnmov, PITCH_NONE);
+    if (!(floor->sector->special & KILL_SEC_SOUNDS_MASK))
+      S_StartSoundPitch((mobj_t *)&floor->sector->soundorg, sfx_stnmov, PITCH_NONE);
     
   if (res == pastdest)    // if destination height is reached
   {
@@ -339,7 +340,8 @@ static void T_MoveFloor(floormove_t* floor)
     }
 
     // make floor stop sound
-    S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
+    if (!(floor->sector->special & KILL_SEC_SOUNDS_MASK))
+      S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
   }
 }
 
@@ -415,7 +417,8 @@ static void T_MoveElevator(elevator_t *elevator)
 
   // make floor move sound
   if (!(leveltime&7))
-    S_StartSoundPitch((mobj_t *)&elevator->sector->soundorg, sfx_stnmov, PITCH_NONE);
+    if (!(elevator->sector->special & KILL_SEC_SOUNDS_MASK))
+      S_StartSoundPitch((mobj_t *)&elevator->sector->soundorg, sfx_stnmov, PITCH_NONE);
     
   if (res == pastdest)            // if destination height acheived
   {
@@ -424,7 +427,8 @@ static void T_MoveElevator(elevator_t *elevator)
     P_RemoveElevatorThinker(elevator);    // remove elevator from actives
 
     // make floor stop sound
-    S_StartSound((mobj_t *)&elevator->sector->soundorg, sfx_pstop);
+    if (!(elevator->sector->special & KILL_SEC_SOUNDS_MASK))
+      S_StartSound((mobj_t *)&elevator->sector->soundorg, sfx_pstop);
   }
 }
 
@@ -668,6 +672,8 @@ int EV_DoFloor
 //
 // jff 3/15/98 added to better support generalized sector types
 //
+// [EA] MBF2y: Added ceiling variants
+//
 int EV_DoChange
 ( line_t*       line,
   change_e      changetype )
@@ -704,7 +710,31 @@ int EV_DoChange
         }
         break;
       default:
+      {
+        if (demo_version < DV_MBF2Y)
+          break;
+
+        switch (changetype)
+        {
+          case trigChangeOnlyCeiling:
+            sec->ceilingpic = line->frontsector->ceilingpic;
+            sec->special = line->frontsector->special;
+            sec->oldspecial = line->frontsector->oldspecial;
+            break;
+          case numChangeOnlyCeiling:
+            secm = P_FindModelCeilingSector(sec->floorheight,secnum);
+            if (secm) // if no model, no change
+            {
+              sec->ceilingpic = secm->ceilingpic;
+              sec->special = secm->special;
+              sec->oldspecial = secm->oldspecial;
+            }
+            break;
+          default:
+            break;
+        }
         break;
+      }
     }
   }
   return rtn;

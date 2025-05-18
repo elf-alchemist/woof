@@ -35,6 +35,9 @@
 #include "m_random.h"
 #include "p_ambient.h"
 #include "p_mobj.h"
+#include "p_spec.h"
+#include "r_defs.h"
+#include "r_main.h"
 #include "s_musinfo.h" // [crispy] struct musinfo
 #include "s_sound.h"
 #include "s_trakinfo.h"
@@ -196,6 +199,29 @@ void S_EvictChannels(void)
     ResetActive();
     memset(channels, 0, sizeof(channels));
     memset(sobjs, 0, sizeof(sobjs));
+}
+
+//
+// S_CheckSectorKill
+//
+// haleyjd: isolated code to check for sector sound killing.
+// Returns true if the sound should be killed.
+//
+static boolean S_CheckSectorKill(const sector_t *earsec, const mobj_t *src)
+{
+    // haleyjd 05/29/06: moved up to here and fixed a major bug
+    if(gamestate == GS_LEVEL)
+    {
+        // are we in a killed-sound sector?
+        if(earsec && earsec->special & KILL_ALL_SOUNDS_MASK)
+            return true;
+
+        // source in a killed-sound sector?
+        if(src && R_PointInSubsector(src->x, src->y)->sector->special & KILL_ALL_SOUNDS_MASK)
+            return true;
+    }
+
+    return false;
 }
 
 //
@@ -440,6 +466,7 @@ static boolean StartSoundEx(const mobj_t *origin, int sfx_id,
     int o_priority, singularity, cnum, handle;
     sfxparams_t params;
     sfxinfo_t *sfx;
+    sector_t *earsec = NULL;
 
     // jff 1/22/98 return if sound is not enabled
     if (nosfxparm)
@@ -480,6 +507,20 @@ static boolean StartSoundEx(const mobj_t *origin, int sfx_id,
     // haleyjd: also modified to get and store proper singularity value
     o_priority = params.priority = sfx->priority;
     singularity = sfx->singularity;
+
+    // haleyjd: setup playercam
+    // MBF2Y: adapted, as cameras aren't part of the spec
+    if(gamestate == GS_LEVEL)
+    {
+        mobj_t *player = players[displayplayer].mo;
+        earsec = R_PointInSubsector(player->x, player->y)->sector;
+    }
+
+    // haleyjd 09/29/06: check for sector sound kill here.
+    if(S_CheckSectorKill(earsec, origin))
+    {
+        return false;
+    }
 
     // Check to see if it is audible, modify the params
     // killough 3/7/98, 4/25/98: code rearranged slightly

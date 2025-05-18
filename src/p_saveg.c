@@ -2200,7 +2200,7 @@ void P_ArchiveWorld (void)
     {
       int j;
 
-      saveg_write16(li->flags);
+      saveg_write32(li->flags);
       saveg_write16(li->special);
       saveg_write16(li->id);
 
@@ -2230,6 +2230,9 @@ void P_ArchiveWorld (void)
             saveg_write16(si->toptexture);
             saveg_write16(si->bottomtexture);
             saveg_write16(si->midtexture);
+            saveg_write16(si->topindex);
+            saveg_write16(si->bottomindex);
+            saveg_write16(si->midindex);
           }
     }
 }
@@ -2302,6 +2305,15 @@ void P_UnArchiveWorld (void)
     {
       int j;
 
+      if (saveg_compat > saveg_woof1500)
+      {
+        li->flags = saveg_read32();
+      }
+      else
+      {
+        li->flags = saveg_read16();
+      }
+
       li->flags = saveg_read16();
       li->special = saveg_read16();
       li->id = saveg_read16();
@@ -2336,6 +2348,12 @@ void P_UnArchiveWorld (void)
             si->toptexture = saveg_read16();
             si->bottomtexture = saveg_read16();
             si->midtexture = saveg_read16();
+            if (saveg_compat > saveg_woof1500)
+            {
+              si->topindex = saveg_read16();
+              si->bottomindex = saveg_read16();
+              si->midindex = saveg_read16();
+            }
           }
     }
 }

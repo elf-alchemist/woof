@@ -794,6 +794,13 @@ void R_StoreWallRange(const int start, const int stop)
         }
     }
 
+	if (curline->linedef->flags & ML_HORIZON)
+	{
+		rw_scale = ds_p->scale1 = ds_p->scale2 = rw_scalestep = 0;
+		rw_distance = rw_bottomtexturemid = rw_midtexturemid = rw_toptexturemid = 0;
+		midtexture = toptexture = bottomtexture = maskedtexture = 0;
+	}
+
   // calculate rw_offset (only needed for textured lines)
   segtextured = midtexture | toptexture | bottomtexture | maskedtexture;
 

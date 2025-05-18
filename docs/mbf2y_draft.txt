@@ -1,0 +1,136 @@
+
+//===================\\
+|| [ Elf-Alchemist ] ||
+\\===================//
+
+1 - New special Sector generalized flags -- a.k.a. sector flags:
+
+1.1 - Existing MBF21 flags
+| Bit | Decimal | Name               | Behavior
+|-----|---------|--------------------|---------
+| 12  | 4096    | DEATH_MASK         | alternative damage mode
+| 13  | 8192    | KILL_MONSTERS_MASK | monster instant death
+
+1.2 - Flags part of MBF2Y
+
+1.2.1 - originally slated for later Boom updates, missing from MBF, added in SMMU.
+| Bit | Decimal | Name                 | Behavior
+|-----|---------|----------------------|---------
+| 10  | 1024    | KILL_ALL_SOUNDS_MASK | Silences all sound effects within the sector
+| 11  | 2048    | KILL_SEC_SOUNDS_MASK | Silences sounds originated from sector's movement
+
+1.2.2 - new
+| Bit | Decimal | Name | Behavior
+|-----|---------|------|---------
+| 14  | 16384   |      | ??
+| 15  | 32768   |      | ??
+
+
+2 - New linedef flags:
+
+2.1 - Existing MBF21 flags:
+| Bit | Decimal | Name                 | Behavior
+|-----|---------|----------------------|---------
+| 12  | 4096    | ML_BLOCKLANDMONSTERS | alternative damage mode
+| 13  | 8192    | ML_BLOCKPLAYERS      | monster instant death
+
+
+2.2 - Newly added linedef flags
+| Bit | Decimal | Name            | Behavior
+|-----|---------|-----------------|---------
+| 10  | 1024    | ML_3DMIDTEX     | [p.f. Eternity] Makes the middle texture of a two-sided linedef "solid" -- turning it into effectively "3D geometry". MObjs below it will hit their head, MObjs above will walk over it, and will be stopped when coming from the side.
+| 11  | 2048    | ML_3DMTPASSPROJ | [p.f. Eternity] Formerly ML_RESERVED -- Combined with 3DMIDTEX, allows only MF_MISSLE to pass through
+| 14  | 16384   | ML_RESERVED1    | ??
+| 15  | 32768   | ML_RESERVED2    | ??
+
+Tentalizing:
+
+could all be sidedef flags on UDMF:
+ML_CLIPMIDTEX -- Clips midtexes to floor/ceiling
+ML_WRAPMIDTEX -- Midtex extends infinitely
+ML_NOSKYWALLS -- stops drawing skyhack? needs more investigating
+
+how to deal with jumping?
+ML_RAILING/ML_JUMPOVER -- strife style railing, 32px tall
+
+possibly? ceski might confirm if useful
+ML_ZONEBOUNDARY -- "line marks a sound zone boundary"
+
+ML_BLOCKALL/ML_BLOCKEVERYTHING -- "line blocks everything" how is this different than ML_BLOCKING?
+ML_BLOCKFLOATERS -- floating monster only
+
+ML_BLOCKSIGHT -- stops enemies sight checks
+ML_BLOCKHITSCAN -- stops hitscan lines
+ML_BLOCKUSE -- opposite of ML_PASSUSE, "eats" up an use action
+
+ML_CHECKSWITCHRANGE -- makes swicth activation aware of upper/middle/lower texture height
+ML_FIRSTSIDEONLY -- can't be activated from the back side, more useful on Hexen-actions?
+
+
+3 - 
+
+New classic-style linedef special actions:
+
+* toggle line into "horizon" effect. affects self, if (tag == 0).
+  zeros out certain seg-related variables in software renderer, i.e. flats bleed infintely
+  internal ML_HORIZON flag
+1090 - None
+1091 - W1
+1092 - WR
+1093 - S1
+1094 - SR
+1095 - G1
+1096 - GR
+
+* Change the local COLORMAP lump for the tagged sector
+  Uses the front upper texture if activated from the front, front lower if activated from the back
+1097 - None
+1098 - W1
+1099 - WR
+1100 - S1
+1101 - SR
+1102 - G1
+1103 - GR
+
+special ideas:
+
+
+* [WSG] Set absolute light level, using the front side's sector light level -- Back side's sector if activated from the back side
+* [WSG] Add the line's front side's sector's brightness value to all tagged sectors -- Subtracting, if activated from the back side
+* [WSG] Transfer the line's front textures to all tagged lines' front side -- Transfer to the back side, if activated from the back side
+* [WSG] Activate tagged sectors' adjacent lines' special -- Front side if front-activated, back-side if back activated
+
+* [W] Teleports only the player to a destination Thing
+* [W] Teleports only the player, silently, to a destination Thing
+* [W] Teleports only the player to a tagged line
+* [W] Teleports only the player, silently, to a tagged line
+
+* [WSG] Transfer Two-Sided MidTexture Tranmap (260)
+* [WSG] Transfer Sector Light (261 & 213) -- Floor light if front-activated, ceiling light if back activated
+* [WSG] Transfer Sector Height (242)
+* [WSG] Transfer Sky (271 & 272) -- If both upper and lower front textures, transfer upper to ceiling and bottom to floor. Texture is flipped when activated from backside
+
+Tentative ideas:
+* preset Alpha/Additive/Negative translucency properties -- alternatives to Boom action 260, and id24hacked frame Tranmap property
+
+-------------------------------------------------------------------------------
+
+Thinking less positively of the following:
+
+meh, is it really needed, or useful? like, at all?
+* [AWSG] Change the default TRANMAP lump for the whole level -- Uses the front upper texture if activated from the front, front lower if activated from the back
+* [AWSG] Change the local TRANAMP lump for the tagged sector -- Uses the front upper texture if activated from the front, front lower if activated from the back
+
+instant? :/
+perhaps a displacement-based line, like boom's, would be nicer here.
+* [WSG] Rotates floor of tagged sectors, by line angle, W.R.T origin
+* [WSG] Rotates ceiling of tagged sectors, by line angle, W.R.T origin
+* [WSG] Offsets floor of tagged sectors, by line length
+* [WSG] Offsets ceiling of tagged sectors, by line length
+
+how to even make this happen, without a dehacked control Thing, or UDMF? :/
+* [WSG] Change the tagged lines' flags -- Adds when activated from the front, removes when activated from the back
+* [WSG] Change the tagged sectors' adjacent lines' flags -- Adds when activated from the front, removes when activated from the back
+
+awkward, would work better in UDMF anyway
+* [WSG] Activate tagged lines' special -- Front side if front-activated, back-side if back activated

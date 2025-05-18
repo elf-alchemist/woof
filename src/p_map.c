@@ -432,26 +432,26 @@ static boolean PIT_CheckLine(line_t *ld) // killough 3/26/98: make static
   // set openrange, opentop, openbottom
   // these define a 'window' from one sector to another across this line
 
-  P_LineOpening (ld);
+  P_LineOpening(ld, tmthing);
 
   // adjust floor & ceiling heights
 
-  if (opentop < tmceilingz)
+  if (LineOpening.top < tmceilingz)
     {
-      tmceilingz = opentop;
+      tmceilingz = LineOpening.top;
       ceilingline = ld;
       blockline = ld;
     }
 
-  if (openbottom > tmfloorz)
+  if (LineOpening.bottom > tmfloorz)
     {
-      tmfloorz = openbottom;
-      floorline = ld;          // killough 8/1/98: remember floor linedef
+      tmfloorz = LineOpening.bottom;
+      floorline = ld; // killough 8/1/98: remember floor linedef
       blockline = ld;
     }
 
-  if (lowfloor < tmdropoffz)
-    tmdropoffz = lowfloor;
+  if (LineOpening.lowfloor < tmdropoffz)
+    tmdropoffz = LineOpening.lowfloor;
 
   // if contacted a special line, add it to the list
 
@@ -1126,9 +1126,7 @@ static boolean P_ThingHeightClip(mobj_t *thing)
 
 // killough 8/2/98: make variables static
 static fixed_t   bestslidefrac;
-static fixed_t   secondslidefrac;
 static line_t    *bestslideline;
-static line_t    *secondslideline;
 static mobj_t    *slidemo;
 static fixed_t   tmxmove;
 static fixed_t   tmymove;
@@ -1275,15 +1273,15 @@ static boolean PTR_SlideTraverse(intercept_t *in)
   // set openrange, opentop, openbottom.
   // These define a 'window' from one sector to another across a line
 
-  P_LineOpening(li);
+  P_LineOpening(li, slidemo);
 
-  if (openrange < slidemo->height)
+  if (LineOpening.range < slidemo->height)
     goto isblocking;  // doesn't fit
 
-  if (opentop - slidemo->z < slidemo->height)
+  if (LineOpening.top - slidemo->z < slidemo->height)
     goto isblocking;  // mobj is too high
 
-  if (openbottom - slidemo->z > 24*FRACUNIT )
+  if (LineOpening.bottom - slidemo->z > 24*FRACUNIT )
     goto isblocking;  // too big a step up
 
   // this line doesn't block movement
@@ -1297,8 +1295,6 @@ isblocking:
 
   if (in->frac < bestslidefrac)
     {
-      secondslidefrac = bestslidefrac;
-      secondslideline = bestslideline;
       bestslidefrac = in->frac;
       bestslideline = li;
     }
@@ -1462,10 +1458,10 @@ static boolean PTR_AimTraverse (intercept_t *in)
       // A two sided line will restrict
       // the possible target ranges.
 
-      P_LineOpening (li);
+      P_LineOpening(li, NULL);
 
-      if (openbottom >= opentop)
-	return false;   // stop
+      if (LineOpening.bottom >= LineOpening.top)
+        return false;   // stop
 
       dist = FixedMul (attackrange, in->frac);
 
@@ -1474,7 +1470,7 @@ static boolean PTR_AimTraverse (intercept_t *in)
       if (li->backsector == NULL ||
           li->frontsector->floorheight != li->backsector->floorheight)
 	{
-	  slope = FixedDiv (openbottom - shootz , dist);
+	  slope = FixedDiv (LineOpening.bottom - shootz , dist);
 	  if (slope > bottomslope)
 	    bottomslope = slope;
 	}
@@ -1482,7 +1478,7 @@ static boolean PTR_AimTraverse (intercept_t *in)
       if (li->backsector == NULL ||
           li->frontsector->ceilingheight != li->backsector->ceilingheight)
 	{
-	  slope = FixedDiv (opentop - shootz , dist);
+	  slope = FixedDiv (LineOpening.top - shootz , dist);
 	  if (slope < topslope)
 	    topslope = slope;
 	}
@@ -1554,7 +1550,7 @@ static boolean PTR_ShootTraverse(intercept_t *in)
 
       if (li->flags & ML_TWOSIDED)
 	{  // crosses a two sided (really 2s) line
-	  P_LineOpening (li);
+	  P_LineOpening(li, NULL);
 	  dist = FixedMul(attackrange, in->frac);
 
 	  // killough 11/98: simplify
@@ -1563,15 +1559,15 @@ static boolean PTR_ShootTraverse(intercept_t *in)
 	  // backsector can be NULL when emulating missing back side.
 	  if (li->backsector == NULL)
 	  {
-	    if (FixedDiv(openbottom - shootz , dist) <= aimslope &&
-	        FixedDiv(opentop - shootz , dist) >= aimslope)
+	    if (FixedDiv(LineOpening.bottom - shootz , dist) <= aimslope &&
+	        FixedDiv(LineOpening.top - shootz , dist) >= aimslope)
 	      return true;      // shot continues
 	  }
 	  else
 	  if ((li->frontsector->floorheight==li->backsector->floorheight ||
-	       FixedDiv(openbottom - shootz , dist) <= aimslope) &&
+	       FixedDiv(LineOpening.bottom - shootz , dist) <= aimslope) &&
 	      (li->frontsector->ceilingheight==li->backsector->ceilingheight ||
-	       FixedDiv (opentop - shootz , dist) >= aimslope))
+	       FixedDiv (LineOpening.top - shootz , dist) >= aimslope))
 	    return true;      // shot continues
 	}
 
@@ -1752,20 +1748,26 @@ static mobj_t *usething;
 
 static boolean PTR_UseTraverse(intercept_t *in)
 {
-  return in->d.line->special ?
-    P_UseSpecialLine(usething, in->d.line, 
-		     P_PointOnLineSide(usething->x,usething->y,in->d.line)==1, false),
-
-    //WAS can't use for than one special line in a row
-    //jff 3/21/98 NOW multiple use allowed with enabling line flag
-    
-    !demo_compatibility && in->d.line->flags & ML_PASSUSE :
-
-    (P_LineOpening(in->d.line), openrange <= 0) ?
-
-    // can't use through a wall / not a special line, but keep checking
-
-    S_StartSound (usething, sfx_noway), false : true;
+  if (!in->d.line->special)
+  {
+    P_LineOpening (in->d.line, NULL);
+    if (LineOpening.range <= 0)
+    {
+      S_StartSound (usething, sfx_noway);
+      // can't use through a wall
+      return false;
+    }
+    // not a special line, but keep checking
+    return true;
+  }
+  int side = 0;
+  if (P_PointOnLineSide(usething->x, usething->y, in->d.line) == 1)
+    side = 1;
+  P_UseSpecialLine (usething, in->d.line, side, false);
+  //WAS can't use for than one special line in a row
+  //jff 3/21/98 NOW multiple use allowed with enabling line flag
+  return (!demo_compatibility && (in->d.line->flags & ML_PASSUSE)) ? true
+                                                                   : false;
 }
 
 // Returns false if a "oof" sound should be made because of a blocking
@@ -1784,10 +1786,10 @@ static boolean PTR_NoWayTraverse(intercept_t *in)
 
   return ld->special ||                           // Ignore specials
     !(ld->flags & ML_BLOCKING ||                  // Always blocking
-      (P_LineOpening(ld),                         // Find openings
-       openrange <= 0 ||                          // No opening
-       openbottom > usething->z+24*FRACUNIT ||    // Too high it blocks
-       opentop < usething->z+usething->height));  // Too low it blocks
+      (P_LineOpening(ld, NULL),                   // Find openings
+       LineOpening.range <= 0 ||                         // No opening
+       LineOpening.bottom > usething->z+24*FRACUNIT ||   // Too high it blocks
+       LineOpening.top < usething->z+usething->height)); // Too low it blocks
 }
 
 //
@@ -1840,21 +1842,21 @@ boolean PTR_SightTraverse(intercept_t *in)
   //
   // crosses a two sided line
   //
-  P_LineOpening(li);
+  P_LineOpening(li, NULL);
 
-  if (openbottom >= opentop)  // quick test for totally closed doors
+  if (LineOpening.bottom >= LineOpening.top)  // quick test for totally closed doors
     return false;  // stop
 
   if (li->frontsector->floorheight != li->backsector->floorheight)
   {
-    slope = FixedDiv(openbottom - sightzstart , in->frac);
+    slope = FixedDiv(LineOpening.bottom - sightzstart , in->frac);
     if (slope > bottomslope)
       bottomslope = slope;
   }
 
   if (li->frontsector->ceilingheight != li->backsector->ceilingheight)
   {
-    slope = FixedDiv(opentop - sightzstart, in->frac);
+    slope = FixedDiv(LineOpening.top - sightzstart, in->frac);
     if (slope < topslope)
       topslope = slope;
   }

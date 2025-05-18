@@ -85,6 +85,26 @@ struct sector_s;
 #define DEATH_MASK            0x1000 // bit 12
 #define KILL_MONSTERS_MASK    0x2000 // bit 13
 
+// mbf2y
+#define KILL_ALL_SOUNDS_MASK 0x0400 // bit 10
+#define KILL_SEC_SOUNDS_MASK 0x0800 // bit 11
+
+typedef enum sector_flags_e
+{
+    SECF_SECRET   = (1 << 0), // Boom
+    SECF_FRICTION = (1 << 1), //
+    SECF_PUSH     = (1 << 2), //
+
+    SECF_KILL_PLAYER   = (1 << 3), // MBF21
+    SECF_KILL_MONSTERS = (1 << 4), //
+
+    SECF_KILL_SOUND      = (1 << 5), // MBF2y -- originally Boom phase 2
+    SECF_KILL_MOVE_SOUND = (1 << 6), //
+
+    SECF_ABSOLUTE_LIGHT_CEIL  = (1 << 7), // UDMF extensions
+    SECF_ABSOLUTE_LIGHT_FLOOR = (1 << 8), // UDMF extensions
+} sector_flags_t;
+
 //jff 02/04/98 Define masks, shifts, for fields in 
 // generalized linedef types
 
@@ -333,6 +353,8 @@ typedef enum
 {
   trigChangeOnly,
   numChangeOnly,
+  trigChangeOnlyCeiling,
+  numChangeOnlyCeiling,
 } change_e;
 
 // p_plats

@@ -39,6 +39,18 @@ struct line_s;
 #define PT_EARLYOUT     4
 
 typedef struct {
+  fixed_t top;
+  fixed_t bottom;
+  fixed_t range;
+  fixed_t lowfloor;
+  struct sector_s *frontsector;
+  struct sector_s *backsector;
+
+  boolean touchmidtex;
+  boolean abovemidtex;
+} line_opening_t;
+
+typedef struct {
   fixed_t     x;
   fixed_t     y;
   fixed_t     dx;
@@ -66,7 +78,7 @@ int     P_PointOnDivlineSidePrecise(fixed_t x, fixed_t y, divline_t *line);
 void    P_MakeDivline(struct line_s *li, divline_t *dl);
 fixed_t P_InterceptVector(divline_t *v2, divline_t *v1);
 int     P_BoxOnLineSide(fixed_t *tmbox, struct line_s *ld);
-void    P_LineOpening(struct line_s *linedef);
+void    P_LineOpening(struct line_s *linedef, struct mobj_s *mo);
 void    P_UnsetThingPosition(struct mobj_s *thing);
 void    P_SetThingPosition(struct mobj_s *thing);
 boolean P_BlockLinesIterator (int x, int y, boolean func(struct line_s *));
@@ -90,6 +102,8 @@ extern fixed_t opentop;
 extern fixed_t openbottom;
 extern fixed_t openrange;
 extern fixed_t lowfloor;
+
+extern line_opening_t LineOpening;
 extern divline_t trace;
 
 extern boolean blockmapfix;

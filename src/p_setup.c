@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "a_specials.h"
 #include "d_think.h"
 #include "doomdata.h"
 #include "doomdef.h"
@@ -354,9 +355,14 @@ void P_LoadSectors (int lump)
       // killough 4/11/98 sector used to get ceiling lighting:
       ss->ceilinglightsec = -1;
 
-      // ID24 per-sector colormap
       // killough 4/4/98: colormaps:
-      ss->tint = ss->bottommap = ss->midmap = ss->topmap = 0;
+      ss->bottommap = ss->midmap = ss->topmap = 0;
+
+      // ID24 per-sector colormap
+      ss->tint = 0;
+
+      // MBF2Y heightsec-less colormap
+      ss->colormap = 0;
 
       // killough 10/98: sky textures coming from sidedefs:
       ss->floorsky = ss->ceilingsky = 0;
@@ -626,6 +632,36 @@ void P_ProcessSideDefs(side_t *side, int i, char *bottomtexture, char *midtextur
   sector_t *sec = side->sector;
   switch (side->special)
   {
+    case Static_SectorColormap:
+    case W1_SectorColormap:
+    case WR_SectorColormap:
+    case S1_SectorColormap:
+    case SR_SectorColormap:
+    case G1_SectorColormap:
+    case GR_SectorColormap:
+    {
+      side->topindex = R_ColormapNumForName(toptexture);
+      side->midindex = R_ColormapNumForName(midtexture);
+      side->bottomindex = R_ColormapNumForName(bottomtexture);
+
+      side->toptexture = R_CheckTextureNumForName(toptexture);
+      side->midtexture = R_CheckTextureNumForName(midtexture);
+      side->bottomtexture = R_CheckTextureNumForName(bottomtexture);
+
+      if (side->topindex > numcolormaps) side->topindex = 0;
+      if (side->midindex > numcolormaps) side->midindex = 0;
+      if (side->bottomindex > numcolormaps) side->bottomindex = 0;
+
+      side->topindex = MAX(0, side->topindex);
+      side->midindex = MAX(0, side->midindex);
+      side->bottomindex = MAX(0, side->bottomindex);
+
+      side->toptexture = MAX(0, side->toptexture);
+      side->midtexture = MAX(0, side->midtexture);
+      side->bottomtexture = MAX(0, side->bottomtexture);
+      break;
+    }
+
     case 2057: case 2058: case 2059: case 2060: case 2061: case 2062:
     case 2063: case 2064: case 2065: case 2066: case 2067: case 2068:
     case 2087: case 2088: case 2089: case 2090: case 2091: case 2092:

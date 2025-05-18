@@ -189,36 +189,98 @@ fixed_t lowfloor;
 // moved front and back outside P-LineOpening and changed    // phares 3/7/98
 // them to these so we can pick up the new friction value
 // in PIT_CheckLine()
-sector_t *openfrontsector; // made global                    // phares
-sector_t *openbacksector;  // made global
 
-void P_LineOpening(line_t *linedef)
+line_opening_t LineOpening;
+
+boolean P_GetMidTexturePosition(const line_t *line, int sideno, fixed_t *top, fixed_t *bottom)
+{
+  if (line->sidenum[0] == NO_INDEX || line->sidenum[1] == NO_INDEX)
+  {
+    return false;
+  }
+  const side_t *side = &sides[line->sidenum[0]];
+  if (!side->midtexture)
+  {
+    return false;
+  }
+  short texnum = side->midtexture;
+  texnum = texturetranslation[texnum];
+  if (line->flags & ML_DONTPEGBOTTOM)
+  {
+      *bottom = side->rowoffset + MAX(line->frontsector->floorheight, line->backsector->floorheight);
+      *top = *bottom + textureheight[texnum];
+  }
+  else
+  {
+      *top = side->rowoffset + MIN(line->frontsector->ceilingheight, line->backsector->ceilingheight);
+      *bottom = *top - textureheight[texnum];
+  }
+  return true;
+}
+
+static void P_LineOpening_3dMidtex(const line_t *line, const mobj_t *actor)
+{
+  fixed_t bottom3d = 0, top3d = 0;
+
+  if (!P_GetMidTexturePosition(line, 0, &top3d, &bottom3d))
+  {
+    return;
+  }
+
+  if (actor->z + actor->height / 2 < (top3d + bottom3d) / 2)
+  {
+    LineOpening.top = bottom3d;
+  }
+  else
+  {
+    if (top3d > LineOpening.bottom)
+    {
+      LineOpening.bottom = top3d;
+      LineOpening.abovemidtex = true;
+    }
+    LineOpening.touchmidtex = (abs(actor->z - top3d) < 24 * FRACUNIT);
+  }
+}
+
+void P_LineOpening(line_t *linedef, mobj_t *actor)
 {
   if (linedef->sidenum[1] == NO_INDEX)      // single sided line
-    {
-      openrange = 0;
-      return;
-    }
+  {
+    LineOpening.range = 0;
+    return;
+  }
 
-  openfrontsector = linedef->frontsector;
-  openbacksector = linedef->backsector;
+  LineOpening.frontsector = linedef->frontsector;
+  LineOpening.backsector = linedef->backsector;
 
-  if (openfrontsector->ceilingheight < openbacksector->ceilingheight)
-    opentop = openfrontsector->ceilingheight;
+  if (LineOpening.frontsector->ceilingheight < LineOpening.backsector->ceilingheight)
+    LineOpening.top = LineOpening.frontsector->ceilingheight;
   else
-    opentop = openbacksector->ceilingheight;
+    LineOpening.top = LineOpening.backsector->ceilingheight;
 
-  if (openfrontsector->floorheight > openbacksector->floorheight)
+  if (LineOpening.frontsector->floorheight > LineOpening.backsector->floorheight)
     {
-      openbottom = openfrontsector->floorheight;
-      lowfloor = openbacksector->floorheight;
+      LineOpening.bottom = LineOpening.frontsector->floorheight;
+      LineOpening.lowfloor = LineOpening.backsector->floorheight;
     }
   else
     {
-      openbottom = openbacksector->floorheight;
-      lowfloor = openfrontsector->floorheight;
+      LineOpening.bottom = LineOpening.backsector->floorheight;
+      LineOpening.lowfloor = LineOpening.frontsector->floorheight;
     }
-  openrange = opentop - openbottom;
+
+  LineOpening.abovemidtex = false;
+  LineOpening.touchmidtex = false;
+
+  if (actor && linedef->frontsector && linedef->backsector
+      && linedef->flags & ML_3DMIDTEX
+      && ( !(linedef->flags & ML_3DMTPASSPROJ) || !(actor->flags & (MF_MISSILE|MF_BOUNCES) ) )
+      )
+  {
+    P_LineOpening_3dMidtex(linedef, actor);
+  }
+
+  LineOpening.range = LineOpening.top - LineOpening.bottom;
 }
 
 //

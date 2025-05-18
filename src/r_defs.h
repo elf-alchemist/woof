@@ -172,6 +172,9 @@ typedef struct sector_s
   int tint;
   angle_t floor_rotation;
   angle_t ceiling_rotation;
+
+  // MBF2Y
+  int colormap;
 } sector_t;
 
 //
@@ -185,6 +188,11 @@ typedef struct side_s
   short toptexture;      // Texture indices. We do not maintain names here. 
   short bottomtexture;
   short midtexture;
+
+  short topindex;        // Lump indexes, for certain line specials
+  short bottomindex;
+  short midindex;
+
   sector_t* sector;      // Sector the SideDef is facing.
 
   // killough 4/4/98, 4/11/98: highest referencing special linedef's type,
@@ -219,7 +227,7 @@ typedef struct line_s
   vertex_t *v1, *v2;     // Vertices, from v1 to v2.
   fixed_t dx, dy;        // Precalculated v2 - v1 for side checking.
   // [FG] extended nodes
-  uint16_t flags;        // Animation related.
+  uint32_t flags;        // Animation related.
   int16_t special;       // Special action
   int16_t id;            // Tag -> id/arg0 split
   int32_t args[5];       // Hexen-style parameterized actions
