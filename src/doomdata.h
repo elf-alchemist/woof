@@ -22,7 +22,7 @@
 #ifndef __DOOMDATA__
 #define __DOOMDATA__
 
-#include <string.h>
+#include "m_fixed.h"
 
 typedef enum {
   MFMT_Invalid,
@@ -219,13 +219,13 @@ typedef enum {
 } UDMF_Lumps_t;
 
 typedef enum {
-  UDMF_Invalid = -1,
-  UDMF_Doom,
-  UDMF_Doom_Vanilla,
-  UDMF_Doom_Boom,
-  UDMF_Doom_MBF,
-  UDMF_Doom_MBF21,
-  UDMF_Doom_ID24,
+  UDMF_Namespace_Invalid = -1,
+  UDMF_Namespace_Doom,
+  UDMF_Namespace_Doom_Vanilla,
+  UDMF_Namespace_Doom_Boom,
+  UDMF_Namespace_Doom_MBF,
+  UDMF_Namespace_Doom_MBF21,
+  UDMF_Namespace_Doom_ID24,
   UDMF_Namespace_MAX,
 } UDMF_Namespace_t;
 
@@ -240,13 +240,13 @@ const char * const UDMF_Lumps[] = {
 };
 
 const char * const UDMF_Namespaces[] = {
-  [UDMF_Doom]          = "Doom",
-  [UDMF_Doom_Vanilla]  = "Doom_Vanilla",
-  [UDMF_Doom_Boom]     = "Doom_Boom",
-  [UDMF_Doom_MBF]      = "Doom_MBF",
-  [UDMF_Doom_MBF21]    = "Doom_MBF21",
-  [UDMF_Doom_ID24]     = "Doom_ID24",
-  [UDMF_Namespace_MAX] = NULL,
+  [UDMF_Namespace_Doom]         = "Doom",
+  [UDMF_Namespace_Doom_Vanilla] = "Doom_Vanilla",
+  [UDMF_Namespace_Doom_Boom]    = "Doom_Boom",
+  [UDMF_Namespace_Doom_MBF]     = "Doom_MBF",
+  [UDMF_Namespace_Doom_MBF21]   = "Doom_MBF21",
+  [UDMF_Namespace_Doom_ID24]    = "Doom_ID24",
+  [UDMF_Namespace_MAX]          = NULL,
 };
 
 typedef enum {
@@ -278,18 +278,18 @@ typedef enum {
 } UDMF_LinedefFlags_t;
 
 typedef struct {
-  int    id;
-  int    type; // DoomEdNum
-  double x;
-  double y;
-  double height; // Floor by default -- ceiling when SPAWNCEILING is set
-  short  angle;
-  int    flags;
+  int     id;
+  int     type; // DoomEdNum
+  fixed_t x;
+  fixed_t y;
+  fixed_t height; // Floor by default -- ceiling when SPAWNCEILING is set
+  short   angle;
+  int     flags;
 } UDMF_Thing_t;
 
 typedef struct {
-  double x;
-  double y;
+  fixed_t x;
+  fixed_t y;
 } UDMF_Vertex_t;
 
 typedef struct {

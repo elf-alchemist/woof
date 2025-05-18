@@ -97,7 +97,7 @@ int      numthings;
 // MAP related LUTs, for UDMF
 //
 
-static int         udmf_ns        = UDMF_Invalid;
+static int         udmf_ns        = UDMF_Namespace_Invalid;
 static const char *udmf_namespace = NULL;
 
 int udmf_num_things;
@@ -1710,12 +1710,12 @@ static void SetupDoomFormat(int lumpnum, nodeformat_t *nodeformat,
   SC_MustGetToken(s, ';');         \
 };
 
-#define UDMF_ScanDouble(s, x)        \
-{                                    \
-  SC_MustGetToken(s, '=');           \
-  SC_MustGetToken(s, TK_FloatConst); \
-  x = SC_GetDecimal(s);              \
-  SC_MustGetToken(s, ';');           \
+#define UDMF_ScanDouble(s, x)         \
+{                                     \
+  SC_MustGetToken(s, '=');            \
+  SC_MustGetToken(s, TK_FloatConst);  \
+  x = DOUBLE2FIXED(SC_GetDecimal(s)); \
+  SC_MustGetToken(s, ';');            \
 };
 
 #define UDMF_ScanFlag(s, x, f)      \
@@ -1808,7 +1808,21 @@ static void UDMF_ParseThing(scanner_t *s)
     }
     else if (!strcasecmp(prop, "angle"))
     {
-      UDMF_ScanInt(s, udmf_thing.angle);
+      // TODO: fixme later
+      int angle;
+      UDMF_ScanInt(s, angle);
+
+      switch (angle)
+      {
+          case   0: udmf_thing.angle = 0;            break; // east
+          case  45: udmf_thing.angle = ANG45 >> 19;  break; // northest
+          case  90: udmf_thing.angle = ANG90 >> 19;  break; // north
+          case 135: udmf_thing.angle = ANG135 >> 19; break; // northwest
+          case 180: udmf_thing.angle = ANG180 >> 19; break; // west
+          case 225: udmf_thing.angle = ANG225 >> 19; break; // southest
+          case 270: udmf_thing.angle = ANG270 >> 19; break; // south
+          case 315: udmf_thing.angle = ANG315 >> 19; break; // southeast
+      }
     }
     else if (!strcasecmp(prop, "skill1"))
     {
@@ -2105,7 +2119,7 @@ static void UDMF_ParseTextMap(int lumpnum) {
   if (udmf_namespace == NULL)
     SC_Error(s, "Unknown namespace \"%s\"", udmf_namespace);
 
-  for (int i = UDMF_Doom; i < UDMF_Namespace_MAX; i++)
+  for (int i = UDMF_Namespace_Doom; i < UDMF_Namespace_MAX; i++)
     if(!strcasecmp(UDMF_Namespaces[i], udmf_namespace))
       udmf_ns = i;
 
@@ -2165,8 +2179,8 @@ static void UDMF_LoadThings()
     const UDMF_Thing_t *ut = udmf_things;
     mapthing_t *mt = &mapthings[i];
 
-    mt->x = DOUBLE2FIXED(ut->x) >> FRACBITS;
-    mt->y = DOUBLE2FIXED(ut->y) >> FRACBITS;
+    mt->x = ut->x >> FRACBITS;
+    mt->y = ut->y >> FRACBITS;
     mt->angle = ut->angle;
     mt->type = ut->type;
 
@@ -2227,10 +2241,16 @@ static void UDMF_LoadSidedefs()
 {
   numsides = udmf_num_sidedefs;
   sides = Z_Malloc(numsides * sizeof(side_t), PU_LEVEL, 0);
+  for (int i = 0; i < numsides; ++i)
+  {
+    sides[i].sector = &sectors[udmf_sidedefs[i].sector];
+  }
 }
 
 static void UDMF_LoadSector()
 {
+    numsectors = udmf_num_sectors;
+    sectors = Z_Malloc(numsectors * sizeof(sector_t), PU_LEVEL, 0);
 
 }
 
