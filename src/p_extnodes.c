@@ -111,7 +111,7 @@ mapformat_t P_CheckMapFormat(int lumpnum)
     {
         if (W_LumpExistsWithName(lumpnum + ML_BEHAVIOR, "BEHAVIOR"))
         {
-            I_Error("P_SetupLevel: Doom-in-Hexen map format not supported, aborting.");
+            I_Error("Doom-in-Hexen map format not supported in \"%s\".", lumpinfo[lumpnum].name);
         }
         format = MFMT_Doom;
     }
@@ -123,7 +123,8 @@ mapformat_t P_CheckMapFormat(int lumpnum)
 
     if (format == MFMT_Invalid)
     {
-        I_Error("P_SetupLevel: Unknown map format encountered, aborting.");
+        I_Error("Unknown map format encountered in \"%s\".",
+                lumpinfo[lumpnum].name);
     }
 
     return format;
@@ -138,12 +139,6 @@ nodeformat_t P_CheckDoomNodeFormat(int lumpnum)
     nodeformat_t format = NFMT_DOOM;
     byte *lump_data = NULL;
     int size_subs = 0, size_nodes = 0;
-
-    if (W_LumpExistsWithName(lumpnum + ML_BLOCKMAP + 1, "BEHAVIOR"))
-    {
-        I_Error("Hexen map format not supported in %s.\n",
-                lumpinfo[lumpnum].name);
-    }
 
     //!
     // @category mod
