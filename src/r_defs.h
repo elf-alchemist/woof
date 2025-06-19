@@ -171,7 +171,6 @@ typedef struct sector_s
 
   // ID24 line specials
   int tint_index;
-  lighttable_t *tint;
   angle_t floor_rotation;
   angle_t ceiling_rotation;
 } sector_t;
@@ -237,8 +236,8 @@ typedef struct line_s
   angle_t angle;
   int frontmusic; // Front upper texture -- activated from the front side
   int backmusic; // Front lower texture -- activated from the back side
-  lighttable_t *front_tinting; // Front upper texture -- activated from the front side
-  lighttable_t *back_tinting; // Front lower texture -- activated from the back side
+  int front_tinting_index; // Front upper texture -- activated from the front side
+  int back_tinting_index; // Front lower texture -- activated from the back side
 } line_t;
 
 //

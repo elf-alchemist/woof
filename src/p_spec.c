@@ -1778,10 +1778,12 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, boolean bossactio
 
     case 2077:
     {
-      int s;
-      for (s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
+      int tint_index = side ? line->back_tinting_index
+                            : line->front_tinting_index;
+
+      for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
       {
-        sectors[s].tint = colormaps(line->front_tinting);
+        sectors[s].tint_index = tint_index;
       }
       break;
     }
