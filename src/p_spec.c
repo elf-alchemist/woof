@@ -1777,6 +1777,20 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, boolean bossactio
       EV_ChangeMusic(line, side);
       break;
 
+    case 2076:
+      line->special = 0;
+      // fallthrough
+
+    case 2077:
+    {
+      int s;
+      for (s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
+      {
+        sectors[s].tint = colormaps(line->front_tinting);
+      }
+      break;
+    }
+
       // Extended walk triggers
 
       // jff 1/29/98 added new linedef types to fill all functions out so that

@@ -22,6 +22,7 @@
 
 // Some more or less basic data types
 // we depend on.
+#include "doomtype.h"
 #include "m_fixed.h"
 #include "tables.h"
 
@@ -169,8 +170,8 @@ typedef struct sector_s
   fixed_t old_ceiling_yoffs;
 
   // ID24 line specials
-  int colormap_index;
-  lighttable_t *colormap;
+  int tint_index;
+  lighttable_t *tint;
   angle_t floor_rotation;
   angle_t ceiling_rotation;
 } sector_t;
@@ -236,6 +237,8 @@ typedef struct line_s
   angle_t angle;
   int frontmusic; // Front upper texture -- activated from the front side
   int backmusic; // Front lower texture -- activated from the back side
+  lighttable_t *front_tinting; // Front upper texture -- activated from the front side
+  lighttable_t *back_tinting; // Front lower texture -- activated from the back side
 } line_t;
 
 //

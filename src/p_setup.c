@@ -637,35 +637,74 @@ void P_LoadSideDefs2(int lump)
           // from the front sidedef (reading the front upper texture).
           for (int j = 0; j < numlines; j++)
           {
-            if (lines[j].sidenum[0] == i)
+            // Back triggered
+            lines[j].backmusic = W_CheckNumForName(msd->bottomtexture);
+            if (lines[j].backmusic < 0)
             {
-              // Back triggered
-              lines[j].backmusic = W_CheckNumForName(msd->bottomtexture);
-              if (lines[j].backmusic < 0)
-              {
-                lines[j].backmusic = 0;
-                sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
-              }
-              else
-              {
-                sd->bottomtexture = 0;
-              }
+              lines[j].backmusic = 0;
+              sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+            }
+            else
+            {
+              sd->bottomtexture = 0;
+            }
 
-              // Front triggered
-              lines[j].frontmusic = W_CheckNumForName(msd->toptexture);
-              if (lines[j].frontmusic < 0)
-              {
-                lines[j].frontmusic = 0;
-                sd->toptexture = R_TextureNumForName(msd->toptexture);
-              }
-              else
-              {
-                sd->toptexture = 0;
-              }
+            // Front triggered
+            lines[j].frontmusic = W_CheckNumForName(msd->toptexture);
+            if (lines[j].frontmusic < 0)
+            {
+              lines[j].frontmusic = 0;
+              sd->toptexture = R_TextureNumForName(msd->toptexture);
+            }
+            else
+            {
+              sd->toptexture = 0;
             }
           }
           break;
 
+          case 2076: case 2077: case 2078: case 2079: case 2080: case 2081:
+            // All of the W1, WR, S1, SR, G1, GR activations can be triggered from
+            // the back sidedef (reading the front bottom texture) and triggered
+            // from the front sidedef (reading the front upper texture).
+            for (int j = 0; j < numlines; j++)
+            {
+              if (lines[j].sidenum[0] == i)
+              {
+                // Back triggered
+                lines[j].back_tinting = R_ColormapNumForName(msd->bottomtexture);
+                if (lines[j].back_tinting < 0)
+                {
+                  lines[j].back_tinting = 0;
+                  sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+                }
+                else
+                {
+                  sd->bottomtexture = 0;
+                }
+              }
+            }
+            // fallthrough
+
+          case 2075:
+            for (int j = 0; j < numlines; j++)
+            {
+              if (lines[j].sidenum[0] == i)
+              {
+                // Front triggered
+                lines[j].front_tinting = R_ColormapNumForName(msd->toptexture);
+                if (lines[j].front_tinting < 0)
+                {
+                  lines[j].front_tinting = 0;
+                  sd->toptexture = R_TextureNumForName(msd->toptexture);
+                }
+                else
+                {
+                  sd->toptexture = 0;
+                }
+              }
+            }
+            break;
 
         case 242:                       // variable colormap via 242 linedef
           sd->bottomtexture =
