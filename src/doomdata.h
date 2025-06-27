@@ -220,7 +220,6 @@ typedef enum {
 
 typedef enum {
   UDMF_Namespace_Invalid = -1,
-  UDMF_Namespace_Doom,
   UDMF_Namespace_Doom_Vanilla,
   UDMF_Namespace_Doom_Boom,
   UDMF_Namespace_Doom_MBF,
@@ -240,7 +239,6 @@ const char * const UDMF_Lumps[] = {
 };
 
 const char * const UDMF_Namespaces[] = {
-  [UDMF_Namespace_Doom]         = "Doom",
   [UDMF_Namespace_Doom_Vanilla] = "Doom_Vanilla",
   [UDMF_Namespace_Doom_Boom]    = "Doom_Boom",
   [UDMF_Namespace_Doom_MBF]     = "Doom_MBF",
@@ -278,18 +276,18 @@ typedef enum {
 } UDMF_LinedefFlags_t;
 
 typedef struct {
-  int     id;
-  int     type; // DoomEdNum
-  fixed_t x;
-  fixed_t y;
-  fixed_t height; // Floor by default -- ceiling when SPAWNCEILING is set
-  short   angle;
-  int     flags;
+  int   id;
+  int   type; // DoomEdNum
+  float x;
+  float y;
+  float height; // Floor by default -- ceiling when SPAWNCEILING is set
+  int   angle;
+  int   flags;
 } UDMF_Thing_t;
 
 typedef struct {
-  fixed_t x;
-  fixed_t y;
+  float x;
+  float y;
 } UDMF_Vertex_t;
 
 typedef struct {
