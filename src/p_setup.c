@@ -632,6 +632,7 @@ void P_LoadSideDefs2(int lump)
         case 2063: case 2064: case 2065: case 2066: case 2067: case 2068:
         case 2087: case 2088: case 2089: case 2090: case 2091: case 2092:
         case 2093: case 2094: case 2095: case 2096: case 2097: case 2098:
+          // Two-sided music changers
           // All of the W1, WR, S1, SR, G1, GR activations can be triggered from
           // the back sidedef (reading the front bottom texture) and triggered
           // from the front sidedef (reading the front upper texture).
@@ -666,40 +667,66 @@ void P_LoadSideDefs2(int lump)
           }
           break;
 
-          case 2075: case 2076: case 2077: case 2078: case 2079: case 2080: case 2081:
-            // All of the W1, WR, S1, SR, G1, GR activations can be triggered from
-            // the back sidedef (reading the front bottom texture) and triggered
-            // from the front sidedef (reading the front upper texture).
-            for (int j = 0; j < numlines; j++)
-            {
-              if (lines[j].sidenum[0] == i)
-              {
-                // Back triggered
-                lines[j].back_tinting_index = R_ColormapNumForName(msd->bottomtexture);
-                if (lines[j].back_tinting_index < 0)
-                {
-                  lines[j].back_tinting_index = 0;
-                  sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
-                }
-                else
-                {
-                  sd->bottomtexture = 0;
-                }
 
-                // Front triggered
-                lines[j].front_tinting_index = R_ColormapNumForName(msd->toptexture);
-                if (lines[j].front_tinting_index < 0)
-                {
-                  lines[j].front_tinting_index = 0;
-                  sd->toptexture = R_TextureNumForName(msd->toptexture);
-                }
-                else
-                {
-                  sd->toptexture = 0;
-                }
+        case 2075:
+          // Sector tinting
+          for (int j = 0; j < numlines; j++)
+          {
+            if (lines[j].sidenum[0] == i)
+            {
+              // Front triggered
+              lines[j].front_tinting_index = R_ColormapNumForName(msd->toptexture);
+              if (lines[j].front_tinting_index < 0)
+              {
+                lines[j].front_tinting_index = 0;
+                sd->toptexture = R_TextureNumForName(msd->toptexture);
+              }
+              else
+              {
+                // Transfer immediately
+                sd->toptexture = 0;
+                for (int s = -1; (s = P_FindSectorFromLineTag(&lines[j], s)) >= 0;)
+                  sectors[s].tint_index = lines[j].front_tinting_index;
               }
             }
-            break;
+          }
+          break;
+
+        case 2076: case 2077: case 2078: case 2079: case 2080: case 2081:
+          // Sector tinting
+          // All of the W1, WR, S1, SR, G1, GR activations can be triggered from
+          // the back sidedef (reading the front bottom texture) and triggered
+          // from the front sidedef (reading the front upper texture).
+          for (int j = 0; j < numlines; j++)
+          {
+            if (lines[j].sidenum[0] == i)
+            {
+              // Back triggered
+              lines[j].back_tinting_index = R_ColormapNumForName(msd->bottomtexture);
+              if (lines[j].back_tinting_index < 0)
+              {
+                lines[j].back_tinting_index = 0;
+                sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+              }
+              else
+              {
+                sd->bottomtexture = 0;
+              }
+
+              // Front triggered
+              lines[j].front_tinting_index = R_ColormapNumForName(msd->toptexture);
+              if (lines[j].front_tinting_index < 0)
+              {
+                lines[j].front_tinting_index = 0;
+                sd->toptexture = R_TextureNumForName(msd->toptexture);
+              }
+              else
+              {
+                sd->toptexture = 0;
+              }
+            }
+          }
+          break;
 
         case 242:                       // variable colormap via 242 linedef
           sd->bottomtexture =
