@@ -35,13 +35,38 @@ No changes from the base UDMF v1.1 specification.
 II. Implementation Semantics
 =======================================
 
-"Storage and Retrieval of Data" within the TEXTMAP lump remains largely
-unchanged from the base 1.1 spec, now requiring encoding to be only in UTF-8.
+------------------------------------
+II.A : Storage and Retrieval of Data
+------------------------------------
 
-"Storage Within Archive Files" for the MBF21 namespace requires, in addition
-to (HEADER), TEXTMAP & ENDMAP, the lumps for BLOCKMAP, REJECT and ZNODES. For
-the puposes of this namespace, the ZNODES lump requires that XGLN/ZGLN,
-XGL2/ZGL2 & XGL3/ZGL3 node formats be supported.
+Any TEXTMAP lump in the "MBF21" namespace must be encoded in UTF-8.
+
+-----------------------------------
+II.B : Storage Within Archive Files
+-----------------------------------
+
+TODO: clarify on compressed REJECT, extended BLOCKMAP formats
+
+For the purposes of demo-accurate ports, this namespace requires support for
+the lumps BLOCKMAP, REJECT and ZNODES.
+
+Ports with added (non-demo-accurate) fault tolerance for the lack of these
+lumps may optionally provide support for rebuilding the BLOCKMAP, padding the
+REJECT table and rebuilding the ZNODES.
+
+Ports that do not aim to be fully demo-accurate, may choose to ignore these
+lumps altogether.
+
+In addition, all of the XGLN/ZGLN, XGL2/ZGL2 & XGL3/ZGL3 extended node formats
+must be supported for the ZNODES lump -- the proper spec on these formats is
+not included in this document.
+
+--------------------------------
+II.C : Implementation Dependence
+--------------------------------
+
+This namespace requires only the support of classic (Doom-style) line actions.
+Parameterized (Hexen-style) line actions are NOT supported by this namespace.
 
 =======================================
 III. Standardized Fields
@@ -79,8 +104,6 @@ All boolean fields take the keyword values true and false.
 
       blocklandmonster = <bool>; // true = line blocks grounded monsters.
       blockplayer      = <bool>; // true = line blocks players.
-
-      // The MBF21 namespace uses classic-style line actions only.
 
       special = <integer>; // Special. Default = 0.
       arg0    = <integer>; // Argument 0. Default = 0.
@@ -145,6 +168,8 @@ All boolean fields take the keyword values true and false.
       type = <integer>; // DoomedNum. No valid default.
 
       // All flags default to false.
+      // Note: suggested editor defaults for all skill and gamemode
+      // flags is true rather than the UDMF default of false.
 
       skill1      = <bool>; // true = in skill 1.
       skill2      = <bool>; // true = in skill 2.
@@ -156,9 +181,6 @@ All boolean fields take the keyword values true and false.
       dm          = <bool>; // true = in DM mode.
       coop        = <bool>; // true = in Coop.
       friend      = <bool>; // true = MBF friend.
-
-      // Note: suggested editor defaults for all skill and gamemode
-      // flags is true rather than the UDMF default of false.
 
       comment = <string>; // A comment. Implementors should attach no special
                           // semantic meaning to this field.
