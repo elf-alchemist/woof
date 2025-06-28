@@ -1778,9 +1778,7 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, boolean bossactio
 
     case 2077:
     {
-      int tint_index = side ? line->back_tinting_index
-                            : line->front_tinting_index;
-
+      int tint_index = side ? line->back_tinting_index : line->front_tinting_index;
       for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
       {
         sectors[s].tint_index = tint_index;
@@ -2257,6 +2255,20 @@ void P_ShootSpecialLine(mobj_t *thing, line_t *line, int side)
     case 2062: case 2068: case 2092: case 2098:
       EV_ChangeMusic(line, side);
       break;
+
+    case 2080:
+      line->special = 0;
+      // fallthrough
+
+    case 2081:
+    {
+      int tint_index = side ? line->back_tinting_index : line->front_tinting_index;
+      for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
+      {
+        sectors[s].tint_index = tint_index;
+      }
+      break;
+    }
 
       //jff 1/30/98 added new gun linedefs here
       // killough 1/31/98: added demo_compatibility check, added inner switch

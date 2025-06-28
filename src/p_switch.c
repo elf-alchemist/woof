@@ -616,6 +616,20 @@ P_UseSpecialLine
       EV_ChangeMusic(line, side);
       return true;
 
+    case 2078:
+      line->special = 0;
+      // fallthrough
+
+    case 2079:
+    {
+      int tint_index = side ? line->back_tinting_index : line->front_tinting_index;
+      for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
+      {
+        sectors[s].tint_index = tint_index;
+      }
+      break;
+    }
+
       // killough 1/31/98: factored out compatibility check;
       // added inner switch, relaxed check to demo_compatibility
 
