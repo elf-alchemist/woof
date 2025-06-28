@@ -1710,31 +1710,28 @@ static void SetupDoomFormat(int lumpnum, nodeformat_t *nodeformat,
   SC_MustGetToken(s, ';');         \
 };
 
-#define UDMF_ScanDouble(s, x)         \
-{                                     \
-  SC_MustGetToken(s, '=');            \
-  SC_MustGetToken(s, TK_FloatConst);  \
-  x = DOUBLE2FIXED(SC_GetDecimal(s)); \
-  SC_MustGetToken(s, ';');            \
+#define UDMF_ScanDouble(s, x)        \
+{                                    \
+  SC_MustGetToken(s, '=');           \
+  SC_MustGetToken(s, TK_FloatConst); \
+  x = SC_GetDecimal(s);              \
+  SC_MustGetToken(s, ';');           \
 };
 
 #define UDMF_ScanFlag(s, x, f)      \
 {                                   \
   SC_MustGetToken(s, '=');          \
   SC_MustGetToken(s, TK_BoolConst); \
-  boolean flag = SC_GetBoolean(s);  \
-  if (flag)                         \
-    x |= f;                         \
+  if (SC_GetBoolean(s)) x |= f;     \
   SC_MustGetToken(s, ';');          \
 };
 
-#define UDMF_ScanLumpName(s, x)       \
-{                                     \
-  SC_MustGetToken(s, '=');            \
-  SC_MustGetToken(s, TK_StringConst); \
-  SC_GetNextTokenLumpName(s);         \
-  x = SC_GetString(s);                \
-  SC_MustGetToken(s, ';');            \
+#define UDMF_ScanLumpName(s, x)            \
+{                                          \
+  SC_MustGetToken(s, '=');                 \
+  SC_MustGetToken(s, TK_StringConst);      \
+  x = Z_StrDup(SC_GetString(s), PU_LEVEL); \
+  SC_MustGetToken(s, ';');                 \
 };
 
 //
@@ -2179,8 +2176,8 @@ static void UDMF_LoadThings()
     const UDMF_Thing_t *ut = udmf_things;
     mapthing_t *mt = &mapthings[i];
 
-    mt->x = ut->x >> FRACBITS;
-    mt->y = ut->y >> FRACBITS;
+    mt->x = (int)(ut->x);
+    mt->y = (int)(ut->y);
     mt->angle = ut->angle;
     mt->type = ut->type;
 
