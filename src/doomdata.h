@@ -22,7 +22,7 @@
 #ifndef __DOOMDATA__
 #define __DOOMDATA__
 
-#include "m_fixed.h"
+#include <stdlib.h>
 
 typedef enum {
   MFMT_Invalid,
@@ -220,11 +220,8 @@ typedef enum {
 
 typedef enum {
   UDMF_Namespace_Invalid = -1,
-  UDMF_Namespace_Doom_Vanilla,
-  UDMF_Namespace_Doom_Boom,
-  UDMF_Namespace_Doom_MBF,
-  UDMF_Namespace_Doom_MBF21,
-  UDMF_Namespace_Doom_ID24,
+  UDMF_Namespace_Doom,
+  UDMF_Namespace_MBF21,
   UDMF_Namespace_MAX,
 } UDMF_Namespace_t;
 
@@ -239,12 +236,9 @@ const char * const UDMF_Lumps[] = {
 };
 
 const char * const UDMF_Namespaces[] = {
-  [UDMF_Namespace_Doom_Vanilla] = "Doom_Vanilla",
-  [UDMF_Namespace_Doom_Boom]    = "Doom_Boom",
-  [UDMF_Namespace_Doom_MBF]     = "Doom_MBF",
-  [UDMF_Namespace_Doom_MBF21]   = "Doom_MBF21",
-  [UDMF_Namespace_Doom_ID24]    = "Doom_ID24",
-  [UDMF_Namespace_MAX]          = NULL,
+  [UDMF_Namespace_Doom]  = "Doom",
+  [UDMF_Namespace_MBF21] = "MBF21",
+  [UDMF_Namespace_MAX]   = NULL,
 };
 
 typedef enum {
