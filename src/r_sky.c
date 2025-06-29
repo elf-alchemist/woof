@@ -141,7 +141,7 @@ static void InitSky(void)
     array_foreach(flatmap, skydefs->flatmapping)
     {
         int flatnum = R_FlatNumForName(flatmap->flat);
-        int skytex = R_TextureNumForName(flatmap->sky);
+        int skytex = R_WallNumForName(flatmap->sky);
 
         for (int i = 0; i < numsectors; i++)
         {

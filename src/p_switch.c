@@ -88,13 +88,13 @@ void P_InitSwitchList(void)
 
       // Ignore switches referencing unknown texture names, instead of exiting.
       // Warn if either one is missing, but only add if both are valid.
-      texture1 = R_CheckTextureNumForName(alphSwitchList[i].name1);
+      texture1 = R_CheckWallNumForName(alphSwitchList[i].name1);
 
       if (texture1 == -1)
         I_Printf(VB_WARNING, "P_InitSwitchList: unknown texture %s",
             alphSwitchList[i].name1);
 
-      texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
+      texture2 = R_CheckWallNumForName(alphSwitchList[i].name2);
 
       if (texture2 == -1)
         I_Printf(VB_WARNING, "P_InitSwitchList: unknown texture %s",

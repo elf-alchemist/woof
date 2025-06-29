@@ -920,7 +920,7 @@ static void G_DoLoadLevel(void)
 
   if (gamemapinfo && gamemapinfo->skytexture[0])
   {
-    skytexture = R_TextureNumForName(gamemapinfo->skytexture);
+    skytexture = R_WallNumForName(gamemapinfo->skytexture);
   }
   else
   // DOOM determines the sky texture to be used
@@ -929,29 +929,29 @@ static void G_DoLoadLevel(void)
     // || gamemode == pack_tnt   //jff 3/27/98 sorry guys pack_tnt,pack_plut
     // || gamemode == pack_plut) //aren't gamemodes, this was matching retail
     {
-      skytexture = R_TextureNumForName ("SKY3");
+      skytexture = R_WallNumForName ("SKY3");
       if (gamemap < 12)
-        skytexture = R_TextureNumForName ("SKY1");
+        skytexture = R_WallNumForName ("SKY1");
       else
         if (gamemap < 21)
-          skytexture = R_TextureNumForName ("SKY2");
+          skytexture = R_WallNumForName ("SKY2");
     }
   else //jff 3/27/98 and lets not forget about DOOM and Ultimate DOOM huh?
     switch (gameepisode)
       {
       default:
       case 1:
-        skytexture = R_TextureNumForName ("SKY1");
+        skytexture = R_WallNumForName ("SKY1");
         break;
       case 2:
 	// killough 10/98: beta version had different sky orderings
-        skytexture = R_TextureNumForName (beta_emulation ? "SKY1" : "SKY2");
+        skytexture = R_WallNumForName (beta_emulation ? "SKY1" : "SKY2");
         break;
       case 3:
-        skytexture = R_TextureNumForName ("SKY3");
+        skytexture = R_WallNumForName ("SKY3");
         break;
       case 4: // Special Edition sky
-        skytexture = R_TextureNumForName ("SKY4");
+        skytexture = R_WallNumForName ("SKY4");
         break;
       }//jff 3/27/98 end sky setting fix
 

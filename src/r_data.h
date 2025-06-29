@@ -39,8 +39,8 @@ int R_FlatNumForName (const char* name);   // killough -- const added
 
 // Called by P_Ticker for switches and animations,
 // returns the texture number for the texture name.
-int R_TextureNumForName (const char *name);    // killough -- const added
-int R_CheckTextureNumForName (const char *name); 
+int R_WallNumForName (const char *name);    // killough -- const added
+int R_CheckWallNumForName (const char *name); 
 
 void R_InitTranMap(int);      // killough 3/6/98: translucency initialization
 int R_ColormapNumForName(const char *name);      // killough 4/4/98

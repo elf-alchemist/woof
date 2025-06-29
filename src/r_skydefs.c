@@ -53,7 +53,7 @@ static boolean ParseSkyTex(json_t *json, skytex_t *out)
     {
         return false;
     }
-    out->texture = R_TextureNumForName(name);
+    out->texture = R_WallNumForName(name);
 
     json_t *mid = JS_GetObject(json, "mid");
     json_t *scrollx = JS_GetObject(json, "scrollx");

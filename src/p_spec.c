@@ -163,11 +163,11 @@ void P_InitPicAnims (void)
       if (animdefs[i].istexture)
         {
           // different episode ?
-          if (R_CheckTextureNumForName(animdefs[i].startname) == -1)
+          if (R_CheckWallNumForName(animdefs[i].startname) == -1)
             continue;
 
-          lastanim->picnum = R_TextureNumForName (animdefs[i].endname);
-          lastanim->basepic = R_TextureNumForName (animdefs[i].startname);
+          lastanim->picnum = R_WallNumForName (animdefs[i].endname);
+          lastanim->basepic = R_WallNumForName (animdefs[i].startname);
         }
       else
         {
@@ -200,7 +200,7 @@ void P_InitPicAnims (void)
 
             for (j = lastanim->basepic; j <= lastanim->picnum; j++)
             {
-              flatterrain[j] = terrain;
+              textureterrain[j] = terrain;
             }
           }
         }
@@ -227,7 +227,7 @@ void P_InitPicAnims (void)
 void P_HitFloor (mobj_t *mo, int oof)
 {
   const short floorpic = mo->subsector->sector->floorpic;
-  terrain_t terrain = flatterrain[floorpic];
+  terrain_t terrain = textureterrain[floorpic];
 
   int hitsound[][2] = {
     {sfx_None,   sfx_oof},    // terrain_solid
@@ -2347,7 +2347,7 @@ void P_PlayerInSpecialSector (player_t *player)
 	{
 	  method_t mod = MOD_None;
 
-	  switch (flatterrain[sector->floorpic])
+	  switch (textureterrain[sector->floorpic])
 	  {
 	      case terrain_lava:
 	          mod = MOD_Lava;

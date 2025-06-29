@@ -642,7 +642,7 @@ void P_LoadSideDefs2(int lump)
               if (lines[j].backmusic < 0)
               {
                 lines[j].backmusic = 0;
-                sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+                sd->bottomtexture = R_WallNumForName(msd->bottomtexture);
               }
               else
               {
@@ -654,7 +654,7 @@ void P_LoadSideDefs2(int lump)
               if (lines[j].frontmusic < 0)
               {
                 lines[j].frontmusic = 0;
-                sd->toptexture = R_TextureNumForName(msd->toptexture);
+                sd->toptexture = R_WallNumForName(msd->toptexture);
               }
               else
               {
@@ -668,29 +668,29 @@ void P_LoadSideDefs2(int lump)
         case 242:                       // variable colormap via 242 linedef
           sd->bottomtexture =
             (sec->bottommap =   R_ColormapNumForName(msd->bottomtexture)) < 0 ?
-            sec->bottommap = 0, R_TextureNumForName(msd->bottomtexture): 0 ;
+            sec->bottommap = 0, R_WallNumForName(msd->bottomtexture): 0 ;
           sd->midtexture =
             (sec->midmap =   R_ColormapNumForName(msd->midtexture)) < 0 ?
-            sec->midmap = 0, R_TextureNumForName(msd->midtexture)  : 0 ;
+            sec->midmap = 0, R_WallNumForName(msd->midtexture)  : 0 ;
           sd->toptexture =
             (sec->topmap =   R_ColormapNumForName(msd->toptexture)) < 0 ?
-            sec->topmap = 0, R_TextureNumForName(msd->toptexture)  : 0 ;
+            sec->topmap = 0, R_WallNumForName(msd->toptexture)  : 0 ;
           break;
 
         case 260: // killough 4/11/98: apply translucency to 2s normal texture
           sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
             (sd->special = W_CheckNumForName(msd->midtexture)) < 0 ||
             W_LumpLength(sd->special) != 65536 ?
-            sd->special=0, R_TextureNumForName(msd->midtexture) :
+            sd->special=0, R_WallNumForName(msd->midtexture) :
               (sd->special++, 0) : (sd->special=0);
-          sd->toptexture = R_TextureNumForName(msd->toptexture);
-          sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+          sd->toptexture = R_WallNumForName(msd->toptexture);
+          sd->bottomtexture = R_WallNumForName(msd->bottomtexture);
           break;
 
         default:                        // normal cases
-          sd->midtexture = R_TextureNumForName(msd->midtexture);
-          sd->toptexture = R_TextureNumForName(msd->toptexture);
-          sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+          sd->midtexture = R_WallNumForName(msd->midtexture);
+          sd->toptexture = R_WallNumForName(msd->toptexture);
+          sd->bottomtexture = R_WallNumForName(msd->bottomtexture);
           break;
         }
     }

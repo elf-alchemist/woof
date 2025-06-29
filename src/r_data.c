@@ -127,7 +127,7 @@ int firstcolormaplump, lastcolormaplump;      // killough 4/17/98
 
 int       firstflat, lastflat, numflats;
 int       firstspritelump, lastspritelump, numspritelumps;
-int       numtextures;
+int       numwalls;
 texture_t **textures;
 int       *texturewidthmask;
 int       *texturewidth;
@@ -139,7 +139,7 @@ unsigned  **texturecolumnofs2;
 byte      **texturecomposite;
 byte      **texturecomposite2;
 int       *flattranslation;             // for global animation
-int       *flatterrain;
+int       *textureterrain;
 int       *texturetranslation;
 const byte **texturebrightmap; // [crispy] brightmaps
 
@@ -568,7 +568,7 @@ void R_InitTextures (void)
   int  nummappatches;
   int  offset;
   int  maxoff, maxoff2;
-  int  numtextures1, numtextures2;
+  int  numwalls1, numwalls2;
   int  *directory;
   int  errors = 0;
 
@@ -613,46 +613,46 @@ void R_InitTextures (void)
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
   maptex = maptex1 = W_CacheLumpName("TEXTURE1", PU_STATIC);
-  numtextures1 = LONG(*maptex);
+  numwalls1 = LONG(*maptex);
   maxoff = W_LumpLength(W_GetNumForName("TEXTURE1"));
   directory = maptex+1;
 
   if (W_CheckNumForName("TEXTURE2") != -1)
     {
       maptex2 = W_CacheLumpName("TEXTURE2", PU_STATIC);
-      numtextures2 = LONG(*maptex2);
+      numwalls2 = LONG(*maptex2);
       maxoff2 = W_LumpLength(W_GetNumForName("TEXTURE2"));
     }
   else
     {
       maptex2 = NULL;
-      numtextures2 = 0;
+      numwalls2 = 0;
       maxoff2 = 0;
     }
-  numtextures = numtextures1 + numtextures2;
+  numwalls = numwalls1 + numwalls2;
 
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  textures = Z_Malloc(numtextures*sizeof*textures, PU_STATIC, 0);
+  textures = Z_Malloc(numwalls*sizeof*textures, PU_STATIC, 0);
   texturecolumnlump =
-    Z_Malloc(numtextures*sizeof*texturecolumnlump, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturecolumnlump, PU_STATIC, 0);
   texturecolumnofs =
-    Z_Malloc(numtextures*sizeof*texturecolumnofs, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturecolumnofs, PU_STATIC, 0);
   texturecolumnofs2 =
-    Z_Malloc(numtextures*sizeof*texturecolumnofs2, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturecolumnofs2, PU_STATIC, 0);
   texturecomposite =
-    Z_Malloc(numtextures*sizeof*texturecomposite, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturecomposite, PU_STATIC, 0);
   texturecomposite2 =
-    Z_Malloc(numtextures*sizeof*texturecomposite2, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturecomposite2, PU_STATIC, 0);
   texturecompositesize =
-    Z_Malloc(numtextures*sizeof*texturecompositesize, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturecompositesize, PU_STATIC, 0);
   texturewidthmask =
-    Z_Malloc(numtextures*sizeof*texturewidthmask, PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturewidthmask, PU_STATIC, 0);
   texturewidth =
-    Z_Malloc(numtextures*sizeof*texturewidth, PU_STATIC, 0);
-  textureheight = Z_Malloc(numtextures*sizeof*textureheight, PU_STATIC, 0);
-  texturebrightmap = Z_Malloc (numtextures * sizeof(*texturebrightmap), PU_STATIC, 0);
+    Z_Malloc(numwalls*sizeof*texturewidth, PU_STATIC, 0);
+  textureheight = Z_Malloc(numwalls*sizeof*textureheight, PU_STATIC, 0);
+  texturebrightmap = Z_Malloc (numwalls * sizeof(*texturebrightmap), PU_STATIC, 0);
 
   {  // Really complex printing shit...
     int temp1 = W_GetNumForName("S_START");
@@ -661,7 +661,7 @@ void R_InitTextures (void)
     // 1/18/98 killough:  reduce the number of initialization dots
     // and make more accurate
 
-    int temp3 = 8+(temp2-temp1+255)/128 + (numtextures+255)/128;  // killough
+    int temp3 = 8+(temp2-temp1+255)/128 + (numwalls+255)/128;  // killough
     I_PutChar(VB_INFO, '[');
     for (i = 0; i < temp3; i++)
       I_PutChar(VB_INFO, ' ');
@@ -670,12 +670,12 @@ void R_InitTextures (void)
       I_PutChar(VB_INFO, '\x8');
   }
 
-  for (i=0 ; i<numtextures ; i++, directory++)
+  for (i=0 ; i<numwalls ; i++, directory++)
     {
       if (!(i&127))          // killough
         I_PutChar(VB_INFO, '.');
 
-      if (i == numtextures1)
+      if (i == numwalls1)
         {
           // Start looking in second texture file.
           maptex = maptex2;
@@ -758,7 +758,7 @@ void R_InitTextures (void)
     I_Error("\n\n%d errors.", errors);
     
   // Precalculate whatever possible.
-  for (i=0 ; i<numtextures ; i++)
+  for (i=0 ; i<numwalls ; i++)
     R_GenerateLookup(i, &errors);
 
   if (errors)
@@ -769,17 +769,17 @@ void R_InitTextures (void)
   // clean up malloc-ing to use sizeof
 
   texturetranslation =
-    Z_Malloc((numtextures+1)*sizeof*texturetranslation, PU_STATIC, 0);
+    Z_Malloc((numwalls+1)*sizeof*texturetranslation, PU_STATIC, 0);
 
-  for (i=0 ; i<numtextures ; i++)
+  for (i=0 ; i<numwalls ; i++)
     texturetranslation[i] = i;
 
   // killough 1/31/98: Initialize texture hash table
-  for (i = 0; i<numtextures; i++)
+  for (i = 0; i<numwalls; i++)
     textures[i]->index = -1;
   while (--i >= 0)
     {
-      int j = W_LumpNameHash(textures[i]->name) % (unsigned) numtextures;
+      int j = W_LumpNameHash(textures[i]->name) % (unsigned) numwalls;
       textures[i]->next = textures[j]->index;   // Prepend to chain
       textures[j]->index = i;
     }
@@ -803,13 +803,13 @@ void R_InitFlats(void)
   flattranslation =
     Z_Malloc((numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
 
-  flatterrain =
-    Z_Malloc((numflats+1)*sizeof(*flatterrain), PU_STATIC, 0);
+  textureterrain =
+    Z_Malloc((numflats+1)*sizeof(*textureterrain), PU_STATIC, 0);
 
   for (i=0 ; i<numflats ; i++)
   {
     flattranslation[i] = i;
-    flatterrain[i] = 0; // terrain_solid
+    textureterrain[i] = 0; // terrain_solid
   }
 }
 
@@ -1121,12 +1121,12 @@ int R_FlatNumForName(const char *name)    // killough -- const added
 // killough 1/21/98, 1/31/98
 //
 
-int R_CheckTextureNumForName(const char *name)
+int R_CheckWallNumForName(const char *name)
 {
   int i = 0;
   if (*name != '-')     // "NoTexture" marker.
     {
-      i = textures[W_LumpNameHash(name) % (unsigned) numtextures]->index;
+      i = textures[W_LumpNameHash(name) % (unsigned) numwalls]->index;
       while (i >= 0 && strncasecmp(textures[i]->name,name,8))
         i = textures[i]->next;
     }
@@ -1139,9 +1139,9 @@ int R_CheckTextureNumForName(const char *name)
 //  aborts with error message.
 //
 
-int R_TextureNumForName(const char *name)  // const added -- killough
+int R_WallNumForName(const char *name)  // const added -- killough
 {
-  int i = R_CheckTextureNumForName(name);
+  int i = R_CheckWallNumForName(name);
   if (i == -1)
   {
     // [FG] treat missing textures as non-fatal
@@ -1168,7 +1168,7 @@ void R_PrecacheLevel(void)
 
   {
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
-    hitlist = Z_Malloc(numtextures > size ? numtextures : size, PU_STATIC, 0);
+    hitlist = Z_Malloc(numwalls > size ? numwalls : size, PU_STATIC, 0);
   }
 
   // Precache flats.
@@ -1189,7 +1189,7 @@ void R_PrecacheLevel(void)
 
   // Precache textures.
 
-  memset(hitlist, 0, numtextures);
+  memset(hitlist, 0, numwalls);
 
   for (i = numsides; --i >= 0;)
     hitlist[sides[i].bottomtexture] =
@@ -1205,7 +1205,7 @@ void R_PrecacheLevel(void)
 
   hitlist[skytexture] = 1;
 
-  for (i = numtextures; --i >= 0; )
+  for (i = numwalls; --i >= 0; )
     if (hitlist[i])
       {
         texture_t *texture = textures[i];
