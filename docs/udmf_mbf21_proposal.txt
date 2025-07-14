@@ -14,7 +14,7 @@ offsety_bottom = <float>;        // Y offset for lower texture, Default = 0.0.
                                  // When global texture offsets are used they will
                                  // be added on top of these values.
 
-                                 
+
 Lighting
 -------------------------------------------------------------------------------
 light = <integer>;               // This side's light level. Default is 0.
@@ -30,7 +30,7 @@ light_bottom = <integer>;        // This side's bottom tier light level. Default
 lightabsolute_bottom = <bool>;   // true = 'light_bottom' is an absolute value. Default is
                                  // relative to the sidedef's resulting light level.
 
-                                 
+
 Scrolling
 -------------------------------------------------------------------------------
 xscroll  = <float>;              // wall scrolling X speed in map units per tic.
@@ -40,22 +40,7 @@ yscrolltop  = <float>;           // upper wall scrolling Y speed in map units pe
 xscrollmid  = <float>;           // mid wall scrolling X speed in map units per tic.
 yscrollmid  = <float>;           // mid wall scrolling Y speed in map units per tic.
 xscrollbottom  = <float>;        // lower wall scrolling X speed in map units per tic.
-yscrollbottom  = <float>;        // lower wall scrolling Y speed in map units per tic.                                 
-
-
-
-===============================================================================
-SIDEDEF - maybe
-===============================================================================
-
-
-Scaling
--------------------------------------------------------------------------------
-scaley_top = <float>;            // Y scale for upper texture, Default = 1.0.
-scalex_mid = <float>;            // X scale for mid texture, Default = 1.0.
-scaley_mid = <float>;            // Y scale for mid texture, Default = 1.0.
-scalex_bottom = <float>;         // X scale for lower texture, Default = 1.0.
-scaley_bottom = <float>;         // Y scale for lower texture, Default = 1.0.
+yscrollbottom  = <float>;        // lower wall scrolling Y speed in map units per tic.
 
 
 
@@ -81,7 +66,7 @@ lightfloorabsolute = <bool>;     // true = 'lightfloor' is an absolute value. De
 lightceilingabsolute = <bool>;   // true = 'lightceiling' is an absolute value. Default is
                                  // relative to the owning sector's light level.
 
-                                 
+
 Damage
 -------------------------------------------------------------------------------
 damageamount = <int>;            // Amount of damage inflicted by this sector, default = 0. If this is 0, all other damage properties will be ignored.
@@ -113,12 +98,8 @@ SECTOR - maybe
 ===============================================================================
 
 
-Scaling/Rotation
+Rotation
 -------------------------------------------------------------------------------
-xscalefloor = <float>;           // X texture scale of floor texture, Default = 1.0.
-yscalefloor = <float>;           // Y texture scale of floor texture, Default = 1.0.
-xscaleceiling = <float>;         // X texture scale of ceiling texture, Default = 1.0.
-yscaleceiling = <float>;         // Y texture scale of ceiling texture, Default = 1.0.
 rotationfloor = <float>;         // Rotation of floor texture in degrees, Default = 0.0.
 rotationceiling = <float>;       // Rotation of ceiling texture in degrees, Default = 0.0.
 
