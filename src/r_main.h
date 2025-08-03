@@ -72,19 +72,18 @@ extern int LIGHTSCALESHIFT;
 extern int MAXLIGHTZ;
 extern int LIGHTZSHIFT;
 
-extern int NumScaleLightEntries;
-extern int NumZLightEntries;
-
-extern int Light_NumEntries;
-extern int Light_ArraySize;
-extern double Light_MaxPercent;
-extern double Light_Step;
-
 // killough 3/20/98: Allow colormaps to be dynamic (e.g. underwater)
 extern lighttable_t **(*scalelight);
 extern lighttable_t **(*zlight);
 extern int numcolormaps;    // killough 4/4/98: dynamic number of maps
 // killough 3/20/98, 4/4/98: end dynamic colormaps
+
+extern int* zlightoffset;
+extern int* zlightindex;
+extern int* scalelightoffset;
+extern int* scalelightindex;
+extern int* planezlightoffset;
+extern int* planezlightindex;
 
 extern boolean setsmoothlight;
 void R_SmoothLight(void);

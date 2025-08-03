@@ -692,8 +692,9 @@ static void R_ProjectSprite (mobj_t* thing)
 
       int lightnum = (vis->sector->lightlevel >> LIGHTSEGSHIFT) + extralight;
       lightnum = CLAMP(lightnum, 0, LIGHTLEVELS - 1);
+      int* spritelightoffsets = &scalelightoffset[MAXLIGHTSCALE * lightnum];
 
-      vis->colormap[0] = thiscolormap + spritelightoffset[index];
+      vis->colormap[0] = thiscolormap + spritelightoffsets[index];
       vis->colormap[1] = thiscolormap;
     }
 
@@ -891,19 +892,27 @@ void R_DrawPSprite (pspdef_t *psp)
 
   vis->patch = lump;
 
-  // killough 7/11/98: beta psprites did not draw shadows
+  byte *thiscolormap = (vis->sector && vis->sector->tint_index)
+                     ? colormaps[vis->sector->tint_index]
+                     : fullcolormap;
+
+                     // killough 7/11/98: beta psprites did not draw shadows
   if ((viewplayer->powers[pw_invisibility] > 4*32
       || viewplayer->powers[pw_invisibility] & 8) && !beta_emulation)
 
     vis->colormap[0] = vis->colormap[1] = NULL;                    // shadow draw
   else if (fixedcolormap)
-    vis->colormap[0] = vis->colormap[1] = fixedcolormap;           // fixed color
+    vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapindex * 256;           // fixed color
   else if (psp->state->frame & FF_FULLBRIGHT)
-    vis->colormap[0] = vis->colormap[1] = fullcolormap;            // full bright // killough 3/20/98
+    vis->colormap[0] = vis->colormap[1] = thiscolormap;            // full bright // killough 3/20/98
   else
   {
-    vis->colormap[0] = spritelights[MAXLIGHTSCALE-1];  // local light
-    vis->colormap[1] = fullcolormap;
+    int lightnum = (vis->sector->lightlevel >> LIGHTSEGSHIFT) + extralight;
+    lightnum = CLAMP(lightnum, 0, LIGHTLEVELS - 1);
+    int* spritelightoffsets = &scalelightoffset[MAXLIGHTSCALE * lightnum];
+
+    vis->colormap[0] = thiscolormap + spritelightoffsets[MAXLIGHTSCALE - 1];
+    vis->colormap[1] = thiscolormap;
   }
   vis->brightmap = R_BrightmapForState(psp->state - states);
 
