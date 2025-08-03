@@ -653,6 +653,7 @@ static void R_ProjectSprite (mobj_t* thing)
   vis->gy = interpy;
   vis->gz = interpz;
   vis->gzt = gzt;                          // killough 3/27/98
+  vis->sector = thing->subsector->sector;
   vis->texturemid = gzt - viewz;
   vis->x1 = x1 < 0 ? 0 : x1;
   vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;
@@ -674,19 +675,26 @@ static void R_ProjectSprite (mobj_t* thing)
     vis->startfrac += vis->xiscale*(vis->x1-x1);
   vis->patch = lump;
 
+  byte *thiscolormap = (vis->sector && vis->sector->tint_index)
+                     ? colormaps[vis->sector->tint_index]
+                     : fullcolormap;
+
   // get light level
   if (thing->flags & MF_SHADOW)
     vis->colormap[0] = vis->colormap[1] = NULL;               // shadow draw
   else if (fixedcolormap)
-    vis->colormap[0] = vis->colormap[1] = fixedcolormap;      // fixed map
+    vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapindex * 256; // fixed map
   else if (thing->frame & FF_FULLBRIGHT)
-    vis->colormap[0] = vis->colormap[1] = fullcolormap;       // full bright  // killough 3/20/98
+    vis->colormap[0] = vis->colormap[1] = thiscolormap;       // full bright  // killough 3/20/98
   else
     {      // diminished light
       const int index = R_GetLightIndex(xscale);
 
-      vis->colormap[0] = spritelights[index];
-      vis->colormap[1] = fullcolormap;
+      int lightnum = (vis->sector->lightlevel >> LIGHTSEGSHIFT) + extralight;
+      lightnum = CLAMP(lightnum, 0, LIGHTLEVELS - 1);
+
+      vis->colormap[0] = thiscolormap + spritelightoffset[index];
+      vis->colormap[1] = thiscolormap;
     }
 
   vis->brightmap = R_BrightmapForState(thing->state - states);

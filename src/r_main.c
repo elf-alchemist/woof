@@ -63,6 +63,7 @@
 int viewangleoffset;
 int validcount = 1;         // increment every time a check is made
 lighttable_t *fixedcolormap;
+int           fixedcolormapindex;
 int      centerx, centery;
 fixed_t  centerxfrac, centeryfrac;
 fixed_t  projection;
@@ -109,6 +110,9 @@ int LIGHTSCALESHIFT;
 int MAXLIGHTZ;
 int LIGHTZSHIFT;
 
+int NumScaleLightEntries;
+int NumZLightEntries;
+
 // killough 3/20/98: Support dynamic colormaps, e.g. deep water
 // killough 4/4/98: support dynamic number of them as well
 
@@ -120,6 +124,13 @@ lighttable_t **scalelightfixed = NULL;
 lighttable_t **(*zlight) = NULL;
 lighttable_t *fullcolormap;
 lighttable_t **colormaps;
+
+int *zlightoffset = NULL;
+int *zlightindex = NULL;
+int *scalelightoffset = NULL;
+int *scalelightindex = NULL;
+int *planelightoffset = NULL;
+int *planelightindex = NULL;
 
 // killough 3/20/98, 4/4/98: end dynamic colormaps
 
@@ -447,6 +458,9 @@ void R_InitLightTables (void)
       MAXLIGHTZ = 128;
       LIGHTZSHIFT = 20;
   }
+
+  NumScaleLightEntries = LIGHTLEVELS * MAXLIGHTSCALE;
+  NumZLightEntries = LIGHTLEVELS * MAXLIGHTZ;
 
   scalelightfixed = Z_Malloc(MAXLIGHTSCALE * sizeof(*scalelightfixed), PU_STATIC, 0);
 
@@ -860,6 +874,7 @@ void R_SetupFrame (player_t *player)
   zlight = c_zlight[cm];
   scalelight = c_scalelight[cm];
 
+  fixedcolormapindex = player->fixedcolormap;
   if (player->fixedcolormap)
     {
       fixedcolormap = fullcolormap   // killough 3/20/98: use fullcolormap
