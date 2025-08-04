@@ -82,8 +82,6 @@ extern int* zlightoffset;
 extern int* zlightindex;
 extern int* scalelightoffset;
 extern int* scalelightindex;
-extern int* planezlightoffset;
-extern int* planezlightindex;
 
 extern boolean setsmoothlight;
 void R_SmoothLight(void);

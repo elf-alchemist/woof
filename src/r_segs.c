@@ -330,7 +330,6 @@ static boolean didsolidcol; // True if at least one column was marked solid
 
 static void R_RenderSegLoop (void)
 {
-  byte* thiscolormap = segcontext->colormap ? segcontext->colormap : rendercontext.viewpoint.colormaps;
   fixed_t  texturecolumn = 0;   // shut up compiler warning
 
   rendered_segs++;

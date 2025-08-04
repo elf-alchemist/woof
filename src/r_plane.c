@@ -95,6 +95,8 @@ static int *spanstart = NULL;                // killough 2/8/98
 
 static lighttable_t **planezlight;
 static fixed_t planeheight;
+static int *planezlightoffset = NULL;
+static int planezlightindex = 0;
 
 // killough 2/8/98: make variables static
 
@@ -226,10 +228,10 @@ static void R_MapPlane(int y, int x1, int x2)
 
   if (!(ds_colormap[0] = ds_colormap[1] = fixedcolormap))
     {
-      index = distance >> LIGHTZSHIFT;
-      if (index >= MAXLIGHTZ )
-        index = MAXLIGHTZ-1;
-      ds_colormap[0] = planezlight[index];
+      index = CLAMP((distance >> LIGHTZSHIFT), 0, MAXLIGHTZ - 1);
+      int lightindex = zlightindex[planezlightindex * MAXLIGHTZ + index];
+
+      ds_colormap[0] = thiscolormap + lightindex * 256;
       ds_colormap[1] = fullcolormap;
     }
 
@@ -588,7 +590,7 @@ static void do_draw_plane(visplane_t *pl)
     }
 
     stop = pl->maxx + 1;
-    planezlight = zlight[light];
+    planezlightoffset = &zlightoffset[light];
     pl->top[pl->minx - 1] = pl->top[stop] = USHRT_MAX;
 
     for (int x = pl->minx; x <= stop; x++)

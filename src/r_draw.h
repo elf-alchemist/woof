@@ -67,6 +67,7 @@ void R_DrawSkyColumnMasked(void);
 
 void R_DrawTranslatedColumn(void);
 
+extern int ds_tint;
 extern lighttable_t *ds_colormap[2];
 
 extern int     ds_y;

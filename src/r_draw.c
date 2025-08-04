@@ -920,6 +920,7 @@ int ds_y;
 int ds_x1;
 int ds_x2;
 
+int ds_tint;
 lighttable_t *ds_colormap[2];
 const byte *ds_brightmap;
 

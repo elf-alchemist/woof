@@ -129,8 +129,6 @@ int *zlightoffset = NULL;
 int *zlightindex = NULL;
 int *scalelightoffset = NULL;
 int *scalelightindex = NULL;
-int *planezlightoffset = NULL;
-int *planezlightindex = NULL;
 
 // killough 3/20/98, 4/4/98: end dynamic colormaps
 
@@ -502,10 +500,10 @@ void R_InitLightTables (void)
             if (level >= NUMCOLORMAPS)
               level = NUMCOLORMAPS-1;
 
-          // killough 3/20/98: Initialize multiple colormaps
-          level *= 256;
-          for (t=0; t<numcolormaps; t++)         // killough 4/4/98
-            c_zlight[t][light_level][lightz] = colormaps[t] + level;
+          // // killough 3/20/98: Initialize multiple colormaps
+          // level *= 256;
+          // for (t=0; t<numcolormaps; t++)         // killough 4/4/98
+          //   c_zlight[t][light_level][lightz] = colormaps[t] + level;
 
           zlightindex[light_level * MAXLIGHTZ + lightz] = level;
           zlightoffset[light_level * MAXLIGHTZ + lightz] = level * 256;
