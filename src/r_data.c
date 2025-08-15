@@ -624,6 +624,7 @@ static inline int ParseMapTexture(char *lumpname, int texnum, int numtextures, i
     RegisterTexture(texture, i);
   }
 
+  Z_Free(maptex);
   return i;
 }
 
@@ -715,10 +716,6 @@ void R_InitTextures (void)
 
     }
 
-  // Load the map texture definitions from textures.lmp.
-  // The data is contained in one or two lumps,
-  //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
-
   numtextures1 = LONG(* (int*)W_CacheLumpName("TEXTURE1", PU_STATIC));
 
   if (W_CheckNumForName("TEXTURE2") >= 0)
@@ -780,8 +777,9 @@ void R_InitTextures (void)
       I_PutChar(VB_INFO, '\x8');
   }
 
-  // TEXTURE1 & TEXTURE2 only. TX_ markers parsed below.
-  // TX_ marker (texture namespace) parsed here
+  // Load the map texture definitions from textures.lmp.
+  // The data is contained in one or two lumps,
+  //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
   int texnum = 0;
   texnum = ParseMapTexture("TEXTURE1", texnum, numtextures1, nummappatches, patchlookup);
   texnum = ParseMapTexture("TEXTURE2", texnum, numtextures2, nummappatches, patchlookup);
