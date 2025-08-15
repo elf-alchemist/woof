@@ -107,7 +107,6 @@ typedef PACKED_PREFIX struct
 int firstcolormaplump, lastcolormaplump;      // killough 4/17/98
 
 int       firstflat, lastflat, numflats;
-int       first_tx, last_tx, num_tx;
 int       firstspritelump, lastspritelump, numspritelumps;
 int       numtextures;
 texture_t **textures;
@@ -313,7 +312,7 @@ static void R_GenerateComposite(int texnum)
 // Rewritten by Lee Killough for performance and to fix Medusa bug
 //
 
-static void R_GenerateLookup(int texnum, int *const errors)
+static void R_GenerateLookup(int texnum)
 {
   const texture_t *texture = textures[texnum];
 
@@ -471,7 +470,6 @@ static void R_GenerateLookup(int texnum, int *const errors)
       {
 	I_Printf(VB_WARNING, "R_GenerateLookup: Column without a patch in texture %.8s",
 	       texture->name);
-	++*errors;
       }
   }
   Z_Free(count);                    // killough 4/9/98
@@ -555,36 +553,127 @@ static inline void RegisterTexture(texture_t *texture, int i)
     texturewidth[i] = texture->width;
 }
 
+static inline void ParseMapTexture(char *lumpname, int numtextures, int nummappatches, int *patchlookup)
+{
+  if (numtextures <= 0)
+  {
+    return;
+  }
+
+  int *maptex = W_CacheLumpName(lumpname, PU_STATIC);
+  int maxoff = W_LumpLength(W_GetNumForName(lumpname));
+  int *directory = maptex + 1;
+  int offset = 0;
+  maptexture_t *mtexture = NULL;
+  texture_t *texture = NULL;
+  mappatch_t *mpatch = NULL;
+  texpatch_t *patch = NULL;
+
+  for (int i = 0; i < numtextures; i++, directory++)
+  {
+    // killough
+    if (!(i&127))
+    {
+      I_PutChar(VB_INFO, '.');
+    }
+
+    offset = LONG(*directory);
+
+    if (offset > maxoff)
+    {
+      I_Error("bad texture directory");
+    }
+
+    mtexture = (maptexture_t*) ((byte*)maptex + offset);
+
+    texture = textures[i] =
+      Z_Malloc(sizeof(texture_t) +
+               sizeof(texpatch_t) * (SHORT(mtexture->patchcount) - 1),
+               PU_STATIC, 0);
+
+    texture->width = SHORT(mtexture->width);
+    texture->height = SHORT(mtexture->height);
+    texture->patchcount = SHORT(mtexture->patchcount);
+
+    M_CopyLumpName(texture->name, mtexture->name);
+    mpatch = mtexture->patches;
+    patch = texture->patches;
+
+    for (int j = 0; j < texture->patchcount; j++, mpatch++, patch++)
+    {
+      short p = SHORT(mpatch->patch);
+      patch->originx = SHORT(mpatch->originx);
+      patch->originy = SHORT(mpatch->originy);
+
+      // [crispy] catch out-of-range patches
+      if (p >= 0 && p < nummappatches)
+      {
+        patch->patch = patchlookup[p];
+      }
+      else
+      {
+        // killough 8/8/98
+        // killough 4/17/98
+        I_Printf(VB_WARNING, "R_InitTextures: Missing patch %d in texture %.8s", p, texture->name);
+        // [FG] treat missing patches as non-fatal, substitute dummy patch
+        patch->patch = (W_CheckNumForName)("TNT1A0", ns_sprites);
+      }
+    }
+    RegisterTexture(texture, i);
+  }
+}
+
+static inline void ParseMerkerTexture(int first_tx, int numtextures, int nummaptextures, int nummappatches, int *patchlookup)
+{
+  if (numtextures <= 0)
+  {
+    return;
+  }
+
+  for (int i = nummaptextures, k = 0;
+       i < (nummaptextures + numtextures);
+       i++, k++)
+  {
+
+    if (!(i&127))
+    {
+      I_PutChar(VB_INFO, '.');
+    }
+
+    patch_t* tx_patch = V_CachePatchNum(first_tx + k, PU_CACHE);
+    texture_t *texture = textures[i] = Z_Malloc(sizeof(texture_t), PU_STATIC, 0);
+
+    M_CopyLumpName(texture->name, lumpinfo[first_tx + k].name);
+    texture->width = tx_patch->width;
+    texture->height = tx_patch->height;
+    texture->patchcount = 1;
+
+    texture->patches->patch = patchlookup[nummappatches + k];
+    texture->patches->originx = 0;
+    texture->patches->originy = 0;
+
+    RegisterTexture(texture, i);
+  }
+}
+
 void R_InitTextures (void)
 {
-  maptexture_t *mtexture;
-  texture_t    *texture;
-  mappatch_t   *mpatch;
-  texpatch_t   *patch;
-  int  i, j, k;
-  int  *maptex;
-  int  *maptex1, *maptex2;
+  int  i;
   char name[9];
-  char *names;
   char *name_p;
   int  *patchlookup;
-  int  numpatches;
-  int  nummappatches;
-  int  offset;
-  int  maxoff, maxoff2;
+  int  nummappatches, numpatches;
   int  numtextures1, numtextures2, tx_numtextures;
-  int  *directory;
-  int  errors = 0;
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
-  names = W_CacheLumpName("PNAMES", PU_STATIC);
-  nummappatches = LONG(*((int *)names));
-  name_p = names+4;
+  name_p = W_CacheLumpName("PNAMES", PU_STATIC);
+  nummappatches = LONG(*((int *)name_p));
+  name_p = name_p + 4;
   numpatches = nummappatches;
 
-  first_tx = W_CheckNumForName("TX_START") + 1;
-  last_tx  = W_CheckNumForName("TX_END") - 1;
+  int first_tx = W_CheckNumForName("TX_START") + 1;
+  int last_tx  = W_CheckNumForName("TX_END") - 1;
   tx_numtextures = last_tx - first_tx + 1;
 
   if (tx_numtextures > 0)
@@ -621,29 +710,22 @@ void R_InitTextures (void)
         }
 
     }
-  Z_Free(names);
 
   // Load the map texture definitions from textures.lmp.
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
-  maptex = maptex1 = W_CacheLumpName("TEXTURE1", PU_STATIC);
-  numtextures1 = LONG(*maptex);
-  maxoff = W_LumpLength(W_GetNumForName("TEXTURE1"));
-  directory = maptex+1;
+  numtextures1 = LONG(* (int*)W_CacheLumpName("TEXTURE1", PU_STATIC));
 
-  if (W_CheckNumForName("TEXTURE2") != -1)
-    {
-      maptex2 = W_CacheLumpName("TEXTURE2", PU_STATIC);
-      numtextures2 = LONG(*maptex2);
-      maxoff2 = W_LumpLength(W_GetNumForName("TEXTURE2"));
-    }
+  if (W_CheckNumForName("TEXTURE2") > 0)
+  {
+    numtextures2 = LONG(* (int*)W_CacheLumpName("TEXTURE2", PU_STATIC));
+  }
   else
-    {
-      maptex2 = NULL;
-      numtextures2 = 0;
-      maxoff2 = 0;
-    }
+  {
+    numtextures2 = 0;
+  }
+
   numtextures = numtextures1 + numtextures2;
 
   if (tx_numtextures > 0)
@@ -695,112 +777,16 @@ void R_InitTextures (void)
   }
 
   // TEXTURE1 & TEXTURE2 only. TX_ markers parsed below.
-  for (i=0 ; i<numtextures1 + numtextures2 ; i++, directory++)
-    {
-      if (!(i&127))          // killough
-        I_PutChar(VB_INFO, '.');
-
-      if (i == numtextures1)
-        {
-          // Start looking in second texture file.
-          maptex = maptex2;
-          maxoff = maxoff2;
-          directory = maptex+1;
-        }
-
-      offset = LONG(*directory);
-
-      if (offset > maxoff)
-        I_Error("bad texture directory");
-
-      mtexture = (maptexture_t *) ( (byte *)maptex + offset);
-
-      texture = textures[i] =
-        Z_Malloc(sizeof(texture_t) +
-                 sizeof(texpatch_t)*(SHORT(mtexture->patchcount)-1),
-                 PU_STATIC, 0);
-
-      texture->width = SHORT(mtexture->width);
-      texture->height = SHORT(mtexture->height);
-      texture->patchcount = SHORT(mtexture->patchcount);
-
-      M_CopyLumpName(texture->name, mtexture->name);
-      mpatch = mtexture->patches;
-      patch = texture->patches;
-
-      for (j=0 ; j<texture->patchcount ; j++, mpatch++, patch++)
-        {
-          short p;
-          patch->originx = SHORT(mpatch->originx);
-          patch->originy = SHORT(mpatch->originy);
-          p = SHORT(mpatch->patch);
-          // [crispy] catch out-of-range patches
-          if (p >= 0 && p < nummappatches)
-          {
-          patch->patch = patchlookup[p];
-          }
-          else
-          {
-            patch->patch = -1;
-          }
-          if (patch->patch == -1)
-            {	      // killough 8/8/98
-              I_Printf(VB_WARNING, "R_InitTextures: Missing patch %d in texture %.8s",
-                     SHORT(mpatch->patch), texture->name); // killough 4/17/98
-              // [FG] treat missing patches as non-fatal, substitute dummy patch
-//            ++errors;
-              patch->patch = (W_CheckNumForName)("TNT1A0", ns_sprites);
-            }
-        }
-
-      RegisterTexture(texture, i);
-    }
- 
-
   // TX_ marker (texture namespace) parsed here
-  if (tx_numtextures > 0)
-  {
-    for (i = (numtextures1 + numtextures2), k = 0;
-        i < numtextures;
-        i++, k++)
-    {
-
-      if (!(i&127))
-      {
-        I_PutChar(VB_INFO, '.');
-      }
-      patch_t* tx_patch = V_CachePatchNum(first_tx + k, PU_CACHE);
-
-      texture = textures[i] = Z_Malloc(sizeof(texture_t), PU_STATIC, 0);
-
-      M_CopyLumpName(texture->name, lumpinfo[first_tx + k].name);
-      texture->width = tx_patch->width;
-      texture->height = tx_patch->height;
-      texture->patchcount = 1;
-
-      texture->patches->patch = patchlookup[nummappatches + k];
-      texture->patches->originx = 0;
-      texture->patches->originy = 0;
-
-      RegisterTexture(texture, i);
-    }
-  }
+  ParseMapTexture("TEXTURE1", numtextures1, nummappatches, patchlookup);
+  ParseMapTexture("TEXTURE2", numtextures2, nummappatches, patchlookup);
+  ParseMerkerTexture(first_tx, tx_numtextures, (numtextures1 + numtextures2), nummappatches, patchlookup);
 
   Z_Free(patchlookup);         // killough
 
-  Z_Free(maptex1);
-  if (maptex2)
-    Z_Free(maptex2);
-
-  if (errors)
-    I_Error("\n\n%d errors.", errors);
-    
   // Precalculate whatever possible.
-  for (i=0 ; i<numtextures ; i++)
-    R_GenerateLookup(i, &errors);
-
-  if (errors)
-    I_Error("\n\n%d errors.", errors);
+  for (int i = 0; i < numtextures; i++)
+    R_GenerateLookup(i);
 
   // Create translation table for global animation.
   // killough 4/9/98: make column offsets 32-bit;
