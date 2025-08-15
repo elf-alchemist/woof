@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "d_iwad.h"
 #include "d_think.h"
@@ -553,11 +554,11 @@ static inline void RegisterTexture(texture_t *texture, int i)
     texturewidth[i] = texture->width;
 }
 
-static inline void ParseMapTexture(char *lumpname, int numtextures, int nummappatches, int *patchlookup)
+static inline int ParseMapTexture(char *lumpname, int texnum, int numtextures, int nummappatches, int *patchlookup)
 {
-  if (numtextures <= 0)
+  if (numtextures == 0)
   {
-    return;
+    return texnum;
   }
 
   int *maptex = W_CacheLumpName(lumpname, PU_STATIC);
@@ -568,8 +569,9 @@ static inline void ParseMapTexture(char *lumpname, int numtextures, int nummappa
   texture_t *texture = NULL;
   mappatch_t *mpatch = NULL;
   texpatch_t *patch = NULL;
+  int i = 0;
 
-  for (int i = 0; i < numtextures; i++, directory++)
+  for (i = texnum; i < (texnum + numtextures); i++, directory++)
   {
     // killough
     if (!(i&127))
@@ -621,17 +623,19 @@ static inline void ParseMapTexture(char *lumpname, int numtextures, int nummappa
     }
     RegisterTexture(texture, i);
   }
+
+  return i;
 }
 
-static inline void ParseMerkerTexture(int first_tx, int numtextures, int nummaptextures, int nummappatches, int *patchlookup)
+static inline void ParseMerkerTexture(int first_tx, int texnum, int numtextures, int nummappatches, int *patchlookup)
 {
-  if (numtextures <= 0)
+  if (numtextures == 0)
   {
     return;
   }
 
-  for (int i = nummaptextures, k = 0;
-       i < (nummaptextures + numtextures);
+  for (int i = texnum, k = 0;
+       i < (texnum + numtextures);
        i++, k++)
   {
 
@@ -717,7 +721,7 @@ void R_InitTextures (void)
 
   numtextures1 = LONG(* (int*)W_CacheLumpName("TEXTURE1", PU_STATIC));
 
-  if (W_CheckNumForName("TEXTURE2") > 0)
+  if (W_CheckNumForName("TEXTURE2") >= 0)
   {
     numtextures2 = LONG(* (int*)W_CacheLumpName("TEXTURE2", PU_STATIC));
   }
@@ -778,9 +782,10 @@ void R_InitTextures (void)
 
   // TEXTURE1 & TEXTURE2 only. TX_ markers parsed below.
   // TX_ marker (texture namespace) parsed here
-  ParseMapTexture("TEXTURE1", numtextures1, nummappatches, patchlookup);
-  ParseMapTexture("TEXTURE2", numtextures2, nummappatches, patchlookup);
-  ParseMerkerTexture(first_tx, tx_numtextures, (numtextures1 + numtextures2), nummappatches, patchlookup);
+  int texnum = 0;
+  texnum = ParseMapTexture("TEXTURE1", texnum, numtextures1, nummappatches, patchlookup);
+  texnum = ParseMapTexture("TEXTURE2", texnum, numtextures2, nummappatches, patchlookup);
+        ParseMerkerTexture(first_tx, texnum, tx_numtextures, nummappatches, patchlookup);
 
   Z_Free(patchlookup);         // killough
 
