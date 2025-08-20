@@ -99,13 +99,14 @@ static struct
     const char *end_marker;
     namespace_t namespace;
 } subdirs[] = {
-    {"music",     NULL,       NULL,     ns_global   },
-    {"graphics",  NULL,       NULL,     ns_global   },
-    {"textures",  "TX_START", "TX_END", ns_textures },
-    {"sprites",   "S_START",  "S_END",  ns_sprites  },
-    {"flats",     "F_START",  "F_END",  ns_flats    },
-    {"colormaps", "C_START",  "C_END",  ns_colormaps},
-    {"voxels",    "VX_START", "VX_END", ns_voxels   },
+    {"music",        NULL,       NULL,     ns_global      },
+    {"graphics",     NULL,       NULL,     ns_global      },
+    {"textures",     "TX_START", "TX_END", ns_textures    },
+    {"sprites",      "S_START",  "S_END",  ns_sprites     },
+    {"flats",        "F_START",  "F_END",  ns_flats       },
+    {"colormaps",    "C_START",  "C_END",  ns_colormaps   },
+    {"translations", "T_START",  "T_END",  ns_translations},
+    {"voxels",       "VX_START", "VX_END", ns_voxels      },
 };
 
 static struct
