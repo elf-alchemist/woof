@@ -16,7 +16,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -50,7 +50,7 @@ boolean I_IsDebuggerAttached(void)
 #ifdef _WIN32
     return IsDebuggerPresent();
 #else
-    return true;
+    return false;
 #endif
 }
 #endif
