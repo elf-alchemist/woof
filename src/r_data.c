@@ -1156,6 +1156,24 @@ int R_FlatNumForName(const char *name)    // killough -- const added
   return i - firstflat;
 }
 
+int R_LevelFlatNumForName(const char *name, sector_t *sector)
+{
+  int i = (W_CheckNumForName)(name, ns_flats);
+  if (i == NO_TEXTURE)
+  {
+    I_Printf(VB_WARNING,
+            "R_LevelFlatNumForName: %.8s not found on sector %li",
+            name, (sector-sectors));
+
+    i = (W_CheckNumForName)("-NO_TEX-", ns_flats);
+    if (i == NO_TEXTURE)
+    {
+      I_Error("Could not find '-NO_TEX-' lump");
+    }
+  }
+  return i - firstflat;
+}
+
 //
 // R_CheckTextureNumForName
 // Check whether texture is available.
@@ -1193,6 +1211,19 @@ int R_TextureNumForName(const char *name)  // const added -- killough
   {
     // [FG] treat missing textures as non-fatal
     I_Printf(VB_WARNING, "R_TextureNumForName: %.8s not found", name);
+    return 0;
+  }
+  return i;
+}
+
+int R_LevelTextureNumForName(const char *name, side_t *side)
+{
+  int i = R_CheckTextureNumForName(name);
+  if (i == -1)
+  {
+    I_Printf(VB_WARNING,
+            "R_LevelTextureNumForName: %.8s not found on sidedef %li",
+            name, (side-sides));
     return 0;
   }
   return i;

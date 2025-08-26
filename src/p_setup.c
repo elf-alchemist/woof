@@ -316,8 +316,8 @@ void P_LoadSectors (int lump)
 
       ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
       ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
-      ss->floorpic = R_FlatNumForName(ms->floorpic);
-      ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
+      ss->floorpic = R_LevelFlatNumForName(ms->floorpic, ss);
+      ss->ceilingpic = R_LevelFlatNumForName(ms->ceilingpic, ss);
       ss->lightlevel = SHORT(ms->lightlevel);
       ss->special = SHORT(ms->special);
       ss->oldspecial = SHORT(ms->special);
@@ -648,7 +648,7 @@ void P_LoadSideDefs2(int lump)
               if ((lines[j].backmusic = W_CheckNumForName(msd->bottomtexture)) < 0)
               {
                 lines[j].backmusic = 0;
-                sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+                sd->bottomtexture = R_LevelTextureNumForName(msd->bottomtexture, sd);
               }
               else
               {
@@ -659,7 +659,7 @@ void P_LoadSideDefs2(int lump)
               if ((lines[j].frontmusic = W_CheckNumForName(msd->toptexture)) < 0)
               {
                 lines[j].frontmusic = 0;
-                sd->toptexture = R_TextureNumForName(msd->toptexture);
+                sd->toptexture = R_LevelTextureNumForName(msd->toptexture, sd);
               }
               else
               {
@@ -667,7 +667,7 @@ void P_LoadSideDefs2(int lump)
               }
             }
           }
-          sd->midtexture = R_TextureNumForName(msd->midtexture);
+          sd->midtexture = R_LevelTextureNumForName(msd->midtexture, sd);
           break;
         }
 
@@ -682,7 +682,7 @@ void P_LoadSideDefs2(int lump)
               if ((lines[j].fronttint = R_ColormapNumForName(msd->toptexture)) < 0)
               {
                 lines[j].fronttint = 0;
-                sd->toptexture = R_TextureNumForName(msd->toptexture);
+                sd->toptexture = R_LevelTextureNumForName(msd->toptexture, sd);
               }
               else
               {
@@ -690,8 +690,8 @@ void P_LoadSideDefs2(int lump)
               }
             }
           }
-          sd->midtexture = R_TextureNumForName(msd->midtexture);
-          sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+          sd->midtexture = R_LevelTextureNumForName(msd->midtexture, sd);
+          sd->bottomtexture = R_LevelTextureNumForName(msd->bottomtexture, sd);
           break;
         }
 
@@ -709,7 +709,7 @@ void P_LoadSideDefs2(int lump)
               if ((lines[j].backtint = R_ColormapNumForName(msd->bottomtexture)) < 0)
               {
                 lines[j].backtint = 0;
-                sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+                sd->bottomtexture = R_LevelTextureNumForName(msd->bottomtexture, sd);
               }
               else
               {
@@ -720,7 +720,7 @@ void P_LoadSideDefs2(int lump)
               if ((lines[j].fronttint = R_ColormapNumForName(msd->toptexture)) < 0)
               {
                 lines[j].fronttint = 0;
-                sd->toptexture = R_TextureNumForName(msd->toptexture);
+                sd->toptexture = R_LevelTextureNumForName(msd->toptexture, sd);
               }
               else
               {
@@ -728,36 +728,36 @@ void P_LoadSideDefs2(int lump)
               }
             }
           }
-          sd->midtexture = R_TextureNumForName(msd->midtexture);
+          sd->midtexture = R_LevelTextureNumForName(msd->midtexture, sd);
           break;
         }
 
         case 242:                       // variable colormap via 242 linedef
           sd->bottomtexture =
             (sec->bottommap =   R_ColormapNumForName(msd->bottomtexture)) < 0 ?
-            sec->bottommap = 0, R_TextureNumForName(msd->bottomtexture): 0 ;
+            sec->bottommap = 0, R_LevelTextureNumForName(msd->bottomtexture, sd) : 0 ;
           sd->midtexture =
             (sec->midmap =   R_ColormapNumForName(msd->midtexture)) < 0 ?
-            sec->midmap = 0, R_TextureNumForName(msd->midtexture)  : 0 ;
+            sec->midmap = 0, R_LevelTextureNumForName(msd->midtexture, sd) : 0 ;
           sd->toptexture =
             (sec->topmap =   R_ColormapNumForName(msd->toptexture)) < 0 ?
-            sec->topmap = 0, R_TextureNumForName(msd->toptexture)  : 0 ;
+            sec->topmap = 0, R_LevelTextureNumForName(msd->toptexture, sd) : 0 ;
           break;
 
         case 260: // killough 4/11/98: apply translucency to 2s normal texture
           sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
             (sd->special = W_CheckNumForName(msd->midtexture)) < 0 ||
             W_LumpLength(sd->special) != 65536 ?
-            sd->special=0, R_TextureNumForName(msd->midtexture) :
+            sd->special=0, R_LevelTextureNumForName(msd->midtexture, sd) :
               (sd->special++, 0) : (sd->special=0);
-          sd->toptexture = R_TextureNumForName(msd->toptexture);
-          sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+          sd->toptexture = R_LevelTextureNumForName(msd->toptexture, sd);
+          sd->bottomtexture = R_LevelTextureNumForName(msd->bottomtexture, sd);
           break;
 
         default:                        // normal cases
-          sd->midtexture = R_TextureNumForName(msd->midtexture);
-          sd->toptexture = R_TextureNumForName(msd->toptexture);
-          sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+          sd->midtexture = R_LevelTextureNumForName(msd->midtexture, sd);
+          sd->toptexture = R_LevelTextureNumForName(msd->toptexture, sd);
+          sd->bottomtexture = R_LevelTextureNumForName(msd->bottomtexture, sd);
           break;
         }
     }

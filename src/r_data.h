@@ -22,6 +22,7 @@
 #define __R_DATA__
 
 #include "doomtype.h"
+#include "r_defs.h"
 
 // A single patch from a texture definition, basically
 // a rectangular area within the texture rectangle.
@@ -57,11 +58,13 @@ void R_PrecacheLevel (void);
 // Floor/ceiling opaque texture tiles,
 // lookup by name. For animation?
 int R_FlatNumForName (const char* name);   // killough -- const added
+int R_LevelFlatNumForName(const char* name, sector_t* sector);
 
 // Called by P_Ticker for switches and animations,
 // returns the texture number for the texture name.
-int R_TextureNumForName (const char *name);    // killough -- const added
 int R_CheckTextureNumForName (const char *name); 
+int R_TextureNumForName (const char *name);    // killough -- const added
+int R_LevelTextureNumForName(const char *name, side_t *side);
 
 void R_InitTranMap(int);      // killough 3/6/98: translucency initialization
 int R_ColormapNumForName(const char *name);      // killough 4/4/98
