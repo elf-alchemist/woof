@@ -1558,59 +1558,6 @@ static void DrawElem(int x, int y, sbarelem_t *elem, player_t *player)
     }
 }
 
-static boolean st_solidbackground;
-
-static void DrawSolidBackground(void)
-{
-    // [FG] calculate average color of the 16px left and right of the status bar
-    const int vstep[][2] = { {0, 1}, {1, 2}, {2, ST_HEIGHT} };
-
-    patch_t *sbar = V_CachePatchName(W_CheckWidescreenPatch("STBAR"), PU_CACHE);
-    // [FG] temporarily draw status bar to background buffer
-    V_DrawPatch(-video.deltaw, 0, sbar);
-
-    byte *pal = W_CacheLumpName("PLAYPAL", PU_CACHE);
-
-    const int width = MIN(SHORT(sbar->width), video.unscaledw);
-    const int depth = 16;
-    int v;
-
-    // [FG] separate colors for the top rows
-    for (v = 0; v < arrlen(vstep); v++)
-    {
-        int x, y;
-        const int v0 = vstep[v][0], v1 = vstep[v][1];
-        unsigned r = 0, g = 0, b = 0;
-        byte col;
-
-        for (y = v0; y < v1; y++)
-        {
-            for (x = 0; x < depth; x++)
-            {
-                pixel_t *c = st_backing_screen + V_ScaleY(y) * video.pitch
-                          + V_ScaleX(x);
-                r += pal[3 * c[0] + 0];
-                g += pal[3 * c[0] + 1];
-                b += pal[3 * c[0] + 2];
-
-                c += V_ScaleX(width - 2 * x - 1);
-                r += pal[3 * c[0] + 0];
-                g += pal[3 * c[0] + 1];
-                b += pal[3 * c[0] + 2];
-            }
-        }
-
-        r /= 2 * depth * (v1 - v0);
-        g /= 2 * depth * (v1 - v0);
-        b /= 2 * depth * (v1 - v0);
-
-        // [FG] tune down to half saturation (for empiric reasons)
-        col = I_GetNearestColor(pal, r / 2, g / 2, b / 2);
-
-        V_FillRect(0, v0, video.unscaledw, v1 - v0, col);
-    }
-}
-
 boolean st_refresh_background = true;
 
 static void DrawBackground(const char *name)
@@ -1619,29 +1566,21 @@ static void DrawBackground(const char *name)
     {
         V_UseBuffer(st_backing_screen);
 
-        if (st_solidbackground)
+        if (!name)
         {
-            DrawSolidBackground();
+            name = (gamemode == commercial) ? "GRNROCK" : "FLOOR7_2";
         }
-        else
+
+        byte *flat = V_CacheFlatNum(firstflat + R_FlatNumForName(name), PU_CACHE);
+
+        V_TileBlock64(ST_Y, video.unscaledw, ST_HEIGHT, flat);
+
+        if (screenblocks == 10)
         {
-            if (!name)
+            patch_t *patch = V_CachePatchName("brdr_b", PU_CACHE);
+            for (int x = 0; x < video.unscaledw; x += 8)
             {
-                name = (gamemode == commercial) ? "GRNROCK" : "FLOOR7_2";
-            }
-
-            byte *flat =
-                V_CacheFlatNum(firstflat + R_FlatNumForName(name), PU_CACHE);
-
-            V_TileBlock64(ST_Y, video.unscaledw, ST_HEIGHT, flat);
-
-            if (screenblocks == 10)
-            {
-                patch_t *patch = V_CachePatchName("brdr_b", PU_CACHE);
-                for (int x = 0; x < video.unscaledw; x += 8)
-                {
-                    V_DrawPatch(x - video.deltaw, 0, patch);
-                }
+                V_DrawPatch(x - video.deltaw, 0, patch);
             }
         }
 
@@ -2015,9 +1954,6 @@ void ST_BindSTSVariables(void)
   M_BindBool("sts_pct_always_gray", &sts_pct_always_gray, NULL,
              false, ss_none, wad_yes,
              "Percent signs on the status bar are always gray");
-  M_BindBool("st_solidbackground", &st_solidbackground, NULL,
-             false, ss_stat, wad_no,
-             "Use solid-color borders for the status bar in widescreen mode");
   M_BindBool("hud_armor_type", &hud_armor_type, NULL, true, ss_none, wad_no,
              "Armor count is colored based on armor type");
   M_BindNum("health_red", &health_red, NULL, 25, 0, 200, ss_none, wad_yes,

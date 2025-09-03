@@ -1869,11 +1869,6 @@ static void SizeDisplayAlt(void)
     R_SetViewSize(screenblocks);
 }
 
-static void RefreshSolidBackground(void)
-{
-    st_refresh_background = true;
-}
-
 #define H_X_THRM8 (M_X_THRM8 - 14)
 #define H_X       (M_X - 14)
 
@@ -1892,9 +1887,6 @@ static setup_menu_t stat_settings1[] = {
     {"Status Bar", S_SKIP | S_TITLE, H_X, M_SPC},
 
     {"Colored Numbers", S_ONOFF | S_COSMETIC, H_X, M_SPC, {"sts_colored_numbers"}},
-
-    {"Solid Background Color", S_ONOFF, H_X, M_SPC, {"st_solidbackground"},
-     .action = RefreshSolidBackground},
 
     MI_RESET,
 
