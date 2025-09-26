@@ -31,6 +31,7 @@
 #include "m_swap.h"
 #include "p_extnodes.h"
 #include "p_setup.h"
+#include "p_udmf.h"
 #include "r_defs.h"
 #include "r_main.h"
 #include "r_state.h"

@@ -16,6 +16,7 @@
 #include "p_extnodes.h"
 #include "p_mobj.h"
 #include "p_setup.h"
+#include "p_udmf.h"
 #include "r_data.h"
 #include "r_main.h"
 #include "r_state.h"
@@ -448,23 +449,23 @@ static void UDMF_ParseThing(scanner_t *s)
     }
     else if (!strcasecmp(prop, "skill1"))
     {
-      UDMF_ScanFlag(s, thing.options, MTF_EASY);
+      UDMF_ScanFlag(s, thing.options, MTF_SKILL1);
     }
     else if (!strcasecmp(prop, "skill2"))
     {
-      UDMF_ScanFlag(s, thing.options, MTF_EASY);
+      UDMF_ScanFlag(s, thing.options, MTF_SKILL2);
     }
     else if (!strcasecmp(prop, "skill3"))
     {
-      UDMF_ScanFlag(s, thing.options, MTF_NORMAL);
+      UDMF_ScanFlag(s, thing.options, MTF_SKILL3);
     }
     else if (!strcasecmp(prop, "skill4"))
     {
-      UDMF_ScanFlag(s, thing.options, MTF_HARD);
+      UDMF_ScanFlag(s, thing.options, MTF_SKILL4);
     }
     else if (!strcasecmp(prop, "skill5"))
     {
-      UDMF_ScanFlag(s, thing.options, MTF_HARD);
+      UDMF_ScanFlag(s, thing.options, MTF_SKILL5);
     }
     else if (!strcasecmp(prop, "ambush"))
     {
@@ -542,14 +543,39 @@ void UDMF_ParseTextMap(int lumpnum)
     }
   }
 
-  if (udmf_num_things == 0
-      || udmf_num_vertexes == 0
+  if (udmf_num_vertexes == 0)
+  {
+    I_Printf(VB_WARNING, "Not enough UDMF vertexes");
+  }
+
+  if (udmf_num_linedefs == 0)
+  {
+    I_Printf(VB_WARNING, "Not enough UDMF linedefs");
+  }
+
+  if (udmf_num_sidedefs == 0)
+  {
+    I_Printf(VB_WARNING, "Not enough UDMF sidedefs");
+  }
+
+  if (udmf_num_sectors == 0)
+  {
+    I_Printf(VB_WARNING, "Not enough UDMF sectors");
+  }
+
+  if (udmf_num_things == 0)
+  {
+    I_Printf(VB_WARNING, "Not enough UDMF things");
+  }
+
+  if (udmf_num_vertexes == 0
       || udmf_num_linedefs == 0
       || udmf_num_sidedefs == 0
-      || udmf_num_sectors == 0)
-    {
-      SC_Error(s, "Not enough UDMF data");
-    }
+      || udmf_num_sectors == 0
+      || udmf_num_things == 0)
+  {
+    SC_Error(s, "Not enough UDMF data. Check your TEXTMAP.");
+  }
 
   SC_Close(s);
 }

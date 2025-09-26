@@ -182,8 +182,8 @@ static void saveg_read_mapthing_t(mapthing_t *str)
     // short type;
     str->type = saveg_read16();
 
-    // short options;
-    str->options = saveg_read16();
+    // int options;
+    str->options = saveg_read32();
 }
 
 static void saveg_write_mapthing_t(mapthing_t *str)
@@ -203,8 +203,8 @@ static void saveg_write_mapthing_t(mapthing_t *str)
     // short type;
     saveg_write16(str->type);
 
-    // short options;
-    saveg_write16(str->options);
+    // int options;
+    saveg_write32(str->options);
 }
 
 //

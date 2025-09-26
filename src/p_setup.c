@@ -1803,7 +1803,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
     nodeformat = P_CheckUDMFNodeFormat(lumpnum);
     UDMF_ParseTextMap(lumpnum);
-    UDMF_LoadMap(lumpnum, nodeformat, &gen_blockmap, &pad_reject);
+    UDMF_LoadMap(lumpnum, &nodeformat, &gen_blockmap, &pad_reject);
   }
   else if (mapformat == MFMT_Hexen)
   {

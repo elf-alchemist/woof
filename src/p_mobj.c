@@ -1212,7 +1212,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 
   if (demo_compatibility || 
       (demo_version >= DV_MBF && mthing->options & MTF_RESERVED))
-    mthing->options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
+    mthing->options &= MTF_SKILL1|MTF_SKILL2|MTF_SKILL3|MTF_SKILL4|MTF_SKILL5|MTF_AMBUSH|MTF_NOTSINGLE;
 
   // count deathmatch start positions
 
@@ -1281,12 +1281,30 @@ void P_SpawnMapThing (mapthing_t* mthing)
     return;
 
   // killough 11/98: simplify
-  if ((gameskill == sk_none && demo_compatibility) ||
-      (gameskill == sk_baby || gameskill == sk_easy ?
-      !(mthing->options & MTF_EASY) :
-      gameskill == sk_hard || gameskill == sk_nightmare ?
-      !(mthing->options & MTF_HARD) : !(mthing->options & MTF_NORMAL)))
+  if (gameskill == sk_none && demo_compatibility)
+  {
     return;
+  }
+  else if (!(mthing->options & MTF_SKILL1) && gameskill == sk_baby)
+  {
+    return;
+  }
+  else if (!(mthing->options & MTF_SKILL2) && gameskill == sk_easy)
+  {
+    return;
+  }
+  else if (!(mthing->options & MTF_SKILL3) && gameskill == sk_medium)
+  {
+    return;
+  }
+  else if (!(mthing->options & MTF_SKILL4) && gameskill == sk_hard)
+  {
+    return;
+  }
+  else if (!(mthing->options & MTF_SKILL5) && gameskill == sk_nightmare)
+  {
+    return;
+  }
 
   // [crispy] support MUSINFO lump (dynamic music changing)
   if (mthing->type >= 14100 && mthing->type <= 14164)
