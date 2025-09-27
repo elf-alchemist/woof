@@ -45,21 +45,16 @@ Any TEXTMAP lump in the "MBF21" namespace must be encoded in UTF-8.
 II.B : Storage Within Archive Files
 -----------------------------------
 
-TODO: clarify on compressed REJECT, extended BLOCKMAP formats
+In addition to the base specification's definition of the (HEADER), TEXTMAP and
+ENDMAP lumps, this specification defines support for the following lumps:
 
-For the purposes of demo-accurate ports, this namespace requires support for
-the lumps BLOCKMAP, REJECT and ZNODES.
-
-Ports with added (non-demo-accurate) fault tolerance for the lack of these
-lumps may optionally provide support for rebuilding the BLOCKMAP, padding the
-REJECT table and rebuilding the ZNODES.
-
-Ports that do not aim to be fully demo-accurate, may choose to ignore these
-lumps altogether.
-
-In addition, all of the XGLN/ZGLN, XGL2/ZGL2 & XGL3/ZGL3 extended node formats
-must be supported for the ZNODES lump -- the proper spec on these formats is
-not included in this document.
+ZNODES   = Support is required for all of the XGLN/ZGLN, XGL2/ZGL2 & XGL3/ZGL3
+           extended node formats.
+BLOCKMAP = Standard vanilla Doom blockmap structure. In order to retain demo-
+           compatibility, all demo-accurate ports must rebuild the structure
+           using the original Boom's rebuilding algorithm.
+REJECT   = Standard vanilla Doom reject matrix. If not included, or too short,
+           it must be padded with 0x00.
 
 --------------------------------
 II.C : Implementation Dependence
@@ -76,132 +71,107 @@ III. Standardized Fields
 
 All boolean fields take the keyword values true and false.
 
-   linedef
-   {
-      id = <integer>; // ID of line. Interpreted as tag or scripting id.
-                      // Default = -1. *** see below.
+  vertex
+  {
+    x = <float>; // X coordinate. No valid default.
+    y = <float>; // Y coordinate. No valid default.
+  }
 
-      v1 = <integer>; // Index of first vertex. No valid default.
-      v2 = <integer>; // Index of second vertex. No valid default.
+  linedef
+  {
+     v1 = <integer>; // Index of first vertex. No valid default.
+     v2 = <integer>; // Index of second vertex. No valid default.
 
-      // All flags default to false.
+    // All flags default to false.
 
-      blocking      = <bool>; // true = line blocks things.
-      blockmonsters = <bool>; // true = line blocks monsters.
-      twosided      = <bool>; // true = line is 2S.
-      dontpegtop    = <bool>; // true = upper texture unpegged.
-      dontpegbottom = <bool>; // true = lower texture unpegged.
-      secret        = <bool>; // true = drawn as 1S on map.
-      blocksound    = <bool>; // true = blocks sound.
-      dontdraw      = <bool>; // true = line never drawn on map.
-      mapped        = <bool>; // true = always appears on map.
+    blocking      = <bool>; // true = line blocks things.
+    blockmonsters = <bool>; // true = line blocks monsters.
+    twosided      = <bool>; // true = line is 2S.
+    dontpegtop    = <bool>; // true = upper texture unpegged.
+    dontpegbottom = <bool>; // true = lower texture unpegged.
+    secret        = <bool>; // true = drawn as 1S on map.
+    blocksound    = <bool>; // true = blocks sound.
+    dontdraw      = <bool>; // true = line never drawn on map.
+    mapped        = <bool>; // true = always appears on map.
 
-      // BOOM passuse flag.
+    // BOOM passuse flag.
 
-      passuse       = <bool>; // true = passes use action.
+    passuse       = <bool>; // true = passes use action.
 
-      // MBF21 blocking flags.
+    // MBF21 blocking flags.
 
-      blocklandmonster = <bool>; // true = line blocks grounded monsters.
-      blockplayer      = <bool>; // true = line blocks players.
+    blocklandmonster = <bool>; // true = line blocks grounded monsters.
+    blockplayer      = <bool>; // true = line blocks players.
 
-      special = <integer>; // Special. Default = 0.
-      tag     = <integer>; // Target id. Default = 0.
+    special = <integer>; // Special. Default = 0.
+    tag     = <integer>; // Target id. Default = 0.
 
-      sidefront = <integer>; // Sidedef 1 index. No valid default.
-      sideback  = <integer>; // Sidedef 2 index. Default = -1.
+    sidefront = <integer>; // Sidedef 1 index. No valid default.
+    sideback  = <integer>; // Sidedef 2 index. Default = -1.
 
-      comment = <string>; // A comment. Implementors should attach no special
-                          // semantic meaning to this field.
-   }
+    comment = <string>; // A comment. Implementors should attach no special
+                        // semantic meaning to this field.
+    }
 
-   sidedef
-   {
-      offsetx = <integer>; // X Offset. Default = 0.
-      offsety = <integer>; // Y Offset. Default = 0.
+  sidedef
+  {
+    offsetx = <integer>; // X Offset. Default = 0.
+    offsety = <integer>; // Y Offset. Default = 0.
 
-      texturetop    = <string>; // Upper texture. Default = "-".
-      texturebottom = <string>; // Lower texture. Default = "-".
-      texturemiddle = <string>; // Middle texture. Default = "-".
+    texturetop    = <string>; // Upper texture. Default = "-".
+    texturemiddle = <string>; // Middle texture. Default = "-".
+    texturebottom = <string>; // Lower texture. Default = "-".
 
-      sector = <integer>; // Sector index. No valid default.
+    sector = <integer>; // Sector index. No valid default.
 
-      comment = <string>; // A comment. Implementors should attach no special
-                          // semantic meaning to this field.
-   }
+    comment = <string>; // A comment. Implementors should attach no special
+                        // semantic meaning to this field.
+  }
 
-   vertex
-   {
-      x = <float>; // X coordinate. No valid default.
-      y = <float>; // Y coordinate. No valid default.
-   }
+  sector
+  {
+    heightfloor   = <integer>; // Floor height. Default = 0.
+    heightceiling = <integer>; // Ceiling height. Default = 0.
 
-   sector
-   {
-      heightfloor   = <integer>; // Floor height. Default = 0.
-      heightceiling = <integer>; // Ceiling height. Default = 0.
+    texturefloor   = <string>; // Floor flat. No valid default.
+    textureceiling = <string>; // Ceiling flat. No valid default.
 
-      texturefloor   = <string>; // Floor flat. No valid default.
-      textureceiling = <string>; // Ceiling flat. No valid default.
+    lightlevel = <integer>; // Light level. Default = 160.
 
-      lightlevel = <integer>; // Light level. Default = 160.
+    id = <integer>; // Sector tag/id. Default = 0.
 
-      id      = <integer>; // Sector tag/id. Default = 0.
+    comment = <string>; // A comment. Implementors should attach no special
+                        // semantic meaning to this field.
+  }
 
-      comment = <string>; // A comment. Implementors should attach no special
-                          // semantic meaning to this field.
-   }
+  thing
+  {
+    x = <float>; // X coordinate. No valid default.
+    y = <float>; // Y coordinate. No valid default.
 
-   thing
-   {
-      id = <integer>; // Thing ID. Default = 0.
+    height = <float>; // Z height relative to floor. Default = 0.
+                      // (Relative to ceiling for SPAWNCEILING items).
 
-      x = <float>; // X coordinate. No valid default.
-      y = <float>; // Y coordinate. No valid default.
+    angle = <integer>; // Map angle of thing in degrees. Default = 0 (East).
 
-      height = <float>; // Z height relative to floor. Default = 0.
-                        // (Relative to ceiling for SPAWNCEILING items).
+    type = <integer>; // DoomedNum. No valid default.
 
-      angle = <integer>; // Map angle of thing in degrees. Default = 0 (East).
+    // All flags default to false.
 
-      type = <integer>; // DoomedNum. No valid default.
+    skill1      = <bool>; // true = in skill 1.
+    skill2      = <bool>; // true = in skill 2.
+    skill3      = <bool>; // true = in skill 3.
+    skill4      = <bool>; // true = in skill 4.
+    skill5      = <bool>; // true = in skill 5.
+    ambush      = <bool>; // true = thing is deaf.
+    single      = <bool>; // true = in SP mode.
+    dm          = <bool>; // true = in DM mode.
+    coop        = <bool>; // true = in Coop.
+    friend      = <bool>; // true = MBF friend.
 
-      // All flags default to false.
-      // Note: suggested editor defaults for all skill and gamemode
-      // flags is true rather than the UDMF default of false.
-
-      skill1      = <bool>; // true = in skill 1.
-      skill2      = <bool>; // true = in skill 2.
-      skill3      = <bool>; // true = in skill 3.
-      skill4      = <bool>; // true = in skill 4.
-      skill5      = <bool>; // true = in skill 5.
-      ambush      = <bool>; // true = thing is deaf.
-      single      = <bool>; // true = in SP mode.
-      dm          = <bool>; // true = in DM mode.
-      coop        = <bool>; // true = in Coop.
-      friend      = <bool>; // true = MBF friend.
-
-      comment = <string>; // A comment. Implementors should attach no special
-                          // semantic meaning to this field.
-   }
-
-
-
-*** Tag / ID Behavior for Map Conversion:
-
-   Unlike traditional Doom maps UDMF makes a clear distinction between a line's
-   ID and the parameter which identifies the object the line's special is 
-   supposed to affect.
-
-   The id will be used to identify this line, and arg0 will be used to identify
-   the line or sector that this line is to affect or otherwise reference, i.e.
-   it is effectively a parameter to the line's special.
-
-   Boom used the linedef's tag for both due to lack of other options so in 
-   order to ensure compatibility any map converter converting maps for the 
-   Doom/Heretic/Strife namespaces must store the linedef's tag field as both
-   the id and as arg0 in each line. The default value of the id field under 
-   these namespaces is defined as 0 rather than -1.
+    comment = <string>; // A comment. Implementors should attach no special
+                        // semantic meaning to this field.
+  }
 
 ===============================================================================
 EOF

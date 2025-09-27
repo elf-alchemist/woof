@@ -22,29 +22,26 @@
 #ifndef __P_EXTNODES__
 #define __P_EXTNODES__
 
-#include "doomtype.h"
 #include "doomdata.h"
 
 struct vertex_s;
 
 typedef enum
 {
-  NFMT_DOOM,
-  NFMT_DEEP,
-  NFMT_XNOD,
-  NFMT_ZNOD,
-  NFMT_XGLN,
-  NFMT_ZGLN,
-  NFMT_XGL2,
-  NFMT_ZGL2,
-  NFMT_XGL3,
-  NFMT_ZGL3,
-  NFMT_NANO,
+    NFMT_DOOM,
+    NFMT_DEEP,
+    NFMT_XNOD,
+    NFMT_ZNOD,
+    NFMT_XGLN,
+    NFMT_ZGLN,
+    NFMT_XGL2,
+    NFMT_ZGL2,
+    NFMT_XGL3,
+    NFMT_ZGL3,
+    NFMT_NANO,
 } nodeformat_t;
 
 extern const char *const node_format_names[];
-
-extern int UDMF_FindLump(int label_lumpnum, char * lumpname);
 
 extern mapformat_t P_CheckMapFormat(int lumpnum);
 extern nodeformat_t P_CheckDoomNodeFormat(int lumpnum);

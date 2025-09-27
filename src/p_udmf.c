@@ -4,11 +4,13 @@
 #include "doomdata.h"
 #include "doomdef.h"
 #include "doomstat.h"
+#include "doomtype.h"
 #include "i_printf.h"
 #include "i_system.h"
 #include "m_argv.h"
 #include "m_array.h"
 #include "m_bbox.h"
+#include "m_fixed.h"
 #include "m_misc.h"
 #include "m_scanner.h"
 #include "m_swap.h"
@@ -20,6 +22,7 @@
 #include "r_data.h"
 #include "r_main.h"
 #include "r_state.h"
+#include "tables.h"
 #include "w_wad.h"
 
 //
@@ -29,9 +32,12 @@
 static char * const UDMF_Lumps[] = {
   [UDMF_LABEL]    = "-",
   [UDMF_TEXTMAP]  = "TEXTMAP",
+  [UDMF_ZNODES]   = "ZNODES",
   [UDMF_BLOCKMAP] = "BLOCKMAP",
   [UDMF_REJECT]   = "REJECT",
-  [UDMF_ZNODES]   = "ZNODES",
+  [UDMF_BEHAVIOR] = "BEHAVIOR",
+  [UDMF_DIALOGUE] = "DIALOGUE",
+  [UDMF_LIGHTMAP] = "LIGHTMAP",
   [UDMF_ENDMAP]   = "ENDMAP",
 };
 
@@ -43,31 +49,11 @@ static int udmf_num_sidedefs = 0;
 static int udmf_num_sectors = 0;
 static int udmf_num_things = 0;
 
-static UDMF_Vertex_t  *udmf_vertexes = NULL;
+static UDMF_Vertex_t *udmf_vertexes = NULL;
 static UDMF_Linedef_t *udmf_linedefs = NULL;
 static UDMF_Sidedef_t *udmf_sidedefs = NULL;
-static UDMF_Sector_t  *udmf_sectors = NULL;
-static UDMF_Thing_t   *udmf_things = NULL;
-
-// All UDMF lumps in between TEXTMAP and ENDMAP
-int UDMF_FindLump(int label_lumpnum, char * lumpname)
-{
-  int i = 0;
-  for (i = UDMF_LABEL; i <= UDMF_ENDMAP; i++)
-  {
-    if (W_LumpExistsWithName(label_lumpnum + i, "ENDMAP"))
-    {
-      i = UDMF_LABEL; // Return label lumpnum, if lump not found
-      break;
-    }
-
-    if (W_LumpExistsWithName(label_lumpnum + i, lumpname))
-    {
-      break;
-    }
-  }
-  return label_lumpnum + i;
-}
+static UDMF_Sector_t *udmf_sectors = NULL;
+static UDMF_Thing_t *udmf_things = NULL;
 
 //
 // UDMF parsing utils
@@ -593,6 +579,8 @@ static void UDMF_LoadVertexes(void)
 
     vertexes[i].r_x = vertexes[i].x;
     vertexes[i].r_y = vertexes[i].y;
+
+    I_Printf(VB_DEBUG, "Vertex %d -- X: %f Y: %f", i, FixedToDouble(vertexes[i].x), FixedToDouble(vertexes[i].y));
   }
 }
 
@@ -630,6 +618,10 @@ static void UDMF_LoadSectors(void)
     // [FG] inhibit sector interpolation during the 0th gametic
     sectors[i].oldceilgametic = sectors[i].oldfloorgametic = -1;
     sectors[i].old_ceil_offs_gametic = sectors[i].old_floor_offs_gametic = -1;
+    I_Printf(VB_DEBUG,
+            "Sector %d -- Floor: %f Ceiling: %f Tag: %d",
+            i, FixedToDouble(sectors[i].floorheight), FixedToDouble(sectors[i].ceilingheight), sectors[i].tag
+            );
   }
 }
 
@@ -653,6 +645,10 @@ static void UDMF_LoadSideDefs(void)
     sides[i].toptexture = R_TextureNumForName(udmf_sidedefs[i].texturetop);
     sides[i].midtexture = R_TextureNumForName(udmf_sidedefs[i].texturemiddle);
     sides[i].bottomtexture = R_TextureNumForName(udmf_sidedefs[i].texturebottom);
+    I_Printf(VB_DEBUG,
+            "Sidedef %d -- Upper: %d Middle: %d Bottom: %d",
+            i, sides[i].toptexture,  sides[i].midtexture,  sides[i].bottomtexture
+            );
   }
 }
 
@@ -662,12 +658,10 @@ static void UDMF_LoadLineDefs(void)
   lines = Z_Malloc(numlines * sizeof(line_t), PU_LEVEL, 0);
   memset(lines, 0, numlines * sizeof(line_t));
 
-  vertex_t *v1, *v2;
-
   for (int i = 0; i < numlines; i++)
   {
-    lines[i].v1 = v1 = &vertexes[udmf_linedefs[i].v1_id];
-    lines[i].v2 = v2 = &vertexes[udmf_linedefs[i].v2_id];
+    lines[i].v1 = &vertexes[udmf_linedefs[i].v1_id];
+    lines[i].v2 = &vertexes[udmf_linedefs[i].v2_id];
     lines[i].sidenum[0] = udmf_linedefs[i].sidefront;
     lines[i].sidenum[1] = udmf_linedefs[i].sideback;
 
@@ -699,6 +693,8 @@ static void UDMF_LoadLineDefs(void)
       }
     }
 
+    vertex_t *v1 = lines[i].v1;
+    vertex_t *v2 = lines[i].v2;
     lines[i].dx = v2->x - v1->x;
     lines[i].dy = v2->y - v1->y;
     lines[i].angle = R_PointToAngle2(v1->x, v1->y, v2->x, v2->y);
@@ -752,6 +748,10 @@ static void UDMF_LoadLineDefs(void)
     {
       lines[i].backsector = sides[lines[i].sidenum[1]].sector;
     }
+    I_Printf(VB_DEBUG,
+            "Linedef %d -- Slope: %d Special: %d Tag: %d",
+            i, lines[i].slopetype,  lines[i].special,  lines[i].tag
+            );
   }
 }
 
@@ -784,7 +784,7 @@ void UDMF_LoadThings(void)
     mt.x = DoubleToFixed(udmf_things[i].x);
     mt.y = DoubleToFixed(udmf_things[i].y);
     mt.height = DoubleToFixed(udmf_things[i].height);
-    mt.angle = udmf_things[i].angle;
+    mt.angle = FixedToAngle(clampi(udmf_things[i].angle, 0, 360) * FRACUNIT);
     mt.type = udmf_things[i].type;
     mt.options = udmf_things[i].options;
 
@@ -792,15 +792,9 @@ void UDMF_LoadThings(void)
   }
 }
 
-nodeformat_t UDMF_LoadNodes(int label_num)
+nodeformat_t UDMF_LoadZNodes(int znodes_num)
 {
-  nodeformat_t nodeformat = NFMT_NANO;
-  int znodes_num = UDMF_FindLump(label_num, UDMF_Lumps[UDMF_ZNODES]);
-
-  if (W_LumpExistsWithName(znodes_num, "ZNODES"))
-  {
-    P_CheckUDMFNodeFormat(znodes_num);
-  }
+  nodeformat_t nodeformat = P_CheckUDMFNodeFormat(znodes_num);
 
   // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed ZNOD/ZGLN formats, or DeePBSP format
   if (nodeformat >= NFMT_XNOD && nodeformat <= NFMT_ZGL3)
@@ -815,11 +809,10 @@ nodeformat_t UDMF_LoadNodes(int label_num)
   return nodeformat;
 }
 
-boolean UDMF_LoadBlockMap(int label_num)
+boolean UDMF_LoadBlockMap(int blockmap_num)
 {
   long count;
   boolean ret = true;
-  int lumpnum = UDMF_FindLump(label_num, UDMF_Lumps[UDMF_BLOCKMAP]);
 
   //!
   // @category mod
@@ -828,14 +821,14 @@ boolean UDMF_LoadBlockMap(int label_num)
   //
 
   // [FG] always rebuild too short blockmaps
-  if (M_CheckParm("-blockmap") || (count = W_LumpLengthWithName(lumpnum, "BLOCKMAP")/2) >= 0x10000 || count < 4)
+  if (M_CheckParm("-blockmap") || (count = W_LumpLengthWithName(blockmap_num, "BLOCKMAP")/2) >= 0x10000 || count < 4)
   {
     P_CreateBlockMap();
   }
   else
   {
     long i;
-    short *wadblockmaplump = W_CacheLumpNum(lumpnum, PU_LEVEL);
+    short *wadblockmaplump = W_CacheLumpNum(blockmap_num, PU_LEVEL);
     blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
     // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -875,84 +868,106 @@ boolean UDMF_LoadBlockMap(int label_num)
   return ret;
 }
 
-boolean UDMF_LoadReject(int label_num, int totallines)
+boolean UDMF_LoadReject(int reject_num, int totallines)
 {
-    // Calculate the size that the REJECT lump *should* be.
-    int minlength = (numsectors * numsectors + 7) / 8;
-    int lumpnum = UDMF_FindLump(label_num, UDMF_Lumps[UDMF_REJECT]);
-    int lumplen = W_LumpLengthWithName(lumpnum, "REJECT");
-    boolean ret;
+  // Calculate the size that the REJECT lump *should* be.
+  int minlength = (numsectors * numsectors + 7) / 8;
+  int lumplen = W_LumpLengthWithName(reject_num, "REJECT");
+  boolean ret;
 
-    // If the lump meets the minimum length, it can be loaded directly.
-    // Otherwise, we need to allocate a buffer of the correct size
-    // and pad it with appropriate data.
+  // If the lump meets the minimum length, it can be loaded directly.
+  // Otherwise, we need to allocate a buffer of the correct size
+  // and pad it with appropriate data.
 
-    if (lumplen >= minlength)
+  if (lumplen >= minlength)
+  {
+    rejectmatrix = W_CacheLumpNum(reject_num, PU_LEVEL);
+    ret = false;
+  }
+  else
+  {
+    unsigned int padvalue = 0x00;
+
+    rejectmatrix = Z_Malloc(minlength, PU_LEVEL, (void **) &rejectmatrix);
+    W_ReadLump(reject_num, rejectmatrix);
+
+    if (M_CheckParm("-reject_pad_with_ff"))
     {
-        rejectmatrix = W_CacheLumpNum(lumpnum, PU_LEVEL);
-        ret = false;
-    }
-    else
-    {
-        unsigned int padvalue = 0x00;
-
-        rejectmatrix = Z_Malloc(minlength, PU_LEVEL, (void **) &rejectmatrix);
-        W_ReadLump(lumpnum, rejectmatrix);
-
-        if (M_CheckParm("-reject_pad_with_ff"))
-        {
-            padvalue = 0xff;
-        }
-
-        memset(rejectmatrix + lumplen, padvalue, minlength - lumplen);
-
-        if (demo_compatibility && overflow[emu_reject].enabled)
-        {
-            unsigned int i;
-            unsigned int byte_num;
-            byte *dest;
-
-            unsigned int rejectpad[4] =
-            {
-                0,                               // Size
-                0,                               // Part of z_zone block header
-                50,                              // PU_LEVEL
-                0x1d4a11                         // DOOM_CONST_ZONEID
-            };
-
-            overflow[emu_reject].triggered = true;
-
-            rejectpad[0] = ((totallines * 4 + 3) & ~3) + 24;
-
-            // Copy values from rejectpad into the destination array.
-
-            dest = rejectmatrix + lumplen;
-
-            for (i = 0; i < (minlength - lumplen) && i < sizeof(rejectpad); ++i)
-            {
-                byte_num = i % 4;
-                *dest = (rejectpad[i / 4] >> (byte_num * 8)) & 0xff;
-                ++dest;
-            }
-        }
-
-        ret = true;
+      padvalue = 0xff;
     }
 
-    return ret;
+    memset(rejectmatrix + lumplen, padvalue, minlength - lumplen);
+
+    if (demo_compatibility && overflow[emu_reject].enabled)
+    {
+      unsigned int i;
+      unsigned int byte_num;
+      byte *dest;
+
+      unsigned int rejectpad[4] =
+      {
+        0,       // Size
+        0,       // Part of z_zone block header
+        50,      // PU_LEVEL
+        0x1d4a11 // DOOM_CONST_ZONEID
+      };
+
+      overflow[emu_reject].triggered = true;
+
+      rejectpad[0] = ((totallines * 4 + 3) & ~3) + 24;
+
+      // Copy values from rejectpad into the destination array.
+
+      dest = rejectmatrix + lumplen;
+
+      for (i = 0; i < (minlength - lumplen) && i < sizeof(rejectpad); ++i)
+      {
+        byte_num = i % 4;
+        *dest = (rejectpad[i / 4] >> (byte_num * 8)) & 0xff;
+        ++dest;
+      }
+    }
+
+    ret = true;
+  }
+
+  return ret;
 }
 
 void UDMF_LoadMap(int lumpnum, nodeformat_t *nodeformat, int *gen_blockmap, int *pad_reject)
 {
-  // note: most of this ordering is important
+  int znodes_num = -1;
+  int reject_num = -1;
+  int blockmap_num = -1;
 
+  for(int i = lumpnum + 2; i < numlumps; ++i)
+  {
+    char *name = lumpinfo[i].name;
+    if(!strcasecmp(name, UDMF_Lumps[UDMF_ZNODES]))
+    {
+      znodes_num = i;
+    }
+    else if(!strcasecmp(name, UDMF_Lumps[UDMF_REJECT]))
+    {
+      reject_num = i;
+    }
+    else if(!strcasecmp(name, UDMF_Lumps[UDMF_BLOCKMAP]))
+    {
+      blockmap_num = i;
+    }
+    else if(!strcasecmp(name, UDMF_Lumps[UDMF_ENDMAP]))
+    {
+      break;
+    }
+  }
+
+  // note: most of this ordering is important
   UDMF_LoadVertexes();
   UDMF_LoadSectors();
   UDMF_LoadSideDefs(); // <- This needs Sectors
   UDMF_LoadLineDefs(); // <- this needs Sides
 
-  
-  *gen_blockmap = UDMF_LoadBlockMap(lumpnum);
-  *nodeformat = UDMF_LoadNodes(lumpnum);
-  *pad_reject = UDMF_LoadReject(lumpnum, P_GroupLines());
+  *gen_blockmap = UDMF_LoadBlockMap(blockmap_num);
+  *nodeformat = UDMF_LoadZNodes(znodes_num);
+  *pad_reject = UDMF_LoadReject(reject_num, P_GroupLines());
 }

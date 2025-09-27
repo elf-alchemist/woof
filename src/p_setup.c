@@ -1776,12 +1776,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   lumpnum = W_GetNumForName(lumpname);
 
-  G_ApplyLevelCompatibility(lumpnum);
+  mapformat = P_CheckMapFormat(lumpnum);
+  G_ApplyLevelCompatibility(lumpnum, mapformat);
 
   leveltime = 0;
   oldleveltime = 0;
-
-  mapformat = P_CheckMapFormat(lumpnum);
 
   // [FG] check nodes format
   if (mapformat == MFMT_Doom)
@@ -1801,7 +1800,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     P_PointOnLineSide = P_PointOnLineSidePrecise;
     P_PointOnDivlineSide = P_PointOnDivlineSidePrecise;
 
-    nodeformat = P_CheckUDMFNodeFormat(lumpnum);
     UDMF_ParseTextMap(lumpnum);
     UDMF_LoadMap(lumpnum, &nodeformat, &gen_blockmap, &pad_reject);
   }

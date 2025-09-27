@@ -146,6 +146,12 @@ mapformat_t P_CheckMapFormat(int lumpnum)
         format = MFMT_Doom;
     }
 
+    if (format == MFMT_Doom
+        && W_LumpExistsWithName(lumpnum + ML_BEHAVIOR, "BEHAVIOR"))
+    {
+        format = MFMT_Hexen;
+    }
+
     if (W_LumpExistsWithName(lumpnum + UDMF_TEXTMAP, "TEXTMAP"))
     {
         format = MFMT_UDMF;

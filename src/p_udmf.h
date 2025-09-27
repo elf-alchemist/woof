@@ -10,9 +10,12 @@
 typedef enum {
   UDMF_LABEL,
   UDMF_TEXTMAP,
+  UDMF_ZNODES,
   UDMF_BLOCKMAP,
   UDMF_REJECT,
-  UDMF_ZNODES,
+  UDMF_BEHAVIOR, //
+  UDMF_DIALOGUE, // known of, but not supported
+  UDMF_LIGHTMAP, //
   UDMF_ENDMAP,
 } UDMF_Lumps_t;
 
