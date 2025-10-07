@@ -437,39 +437,66 @@ void P_LoadNodes (int lump)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_LoadThings (int lump)
+void P_LoadThings(int lump, mapformat_t mapformat)
 {
-  int  i, numthings = W_LumpLength (lump) / sizeof(mapthing_doom_t);
-  byte *data = W_CacheLumpNum (lump,PU_STATIC);
+  int numthings = (mapformat == MFMT_Hexen)
+                ? (W_LumpLength(lump) / sizeof(mapthing_hexen_t))
+                : (W_LumpLength(lump) / sizeof(mapthing_doom_t));
+  byte *data = W_CacheLumpNum(lump, PU_STATIC);
 
-  for (i=0; i<numthings; i++)
+  if (!data || !numthings)
+  {
+    I_Error("P_LoadThings: no things in level");
+  }
+
+  for (int i = 0; i < numthings; i++)
     {
       mapthing_t mt = {0};
-      mapthing_doom_t *mtd = (mapthing_doom_t *) data + i;
 
-      // Do not spawn cool, new monsters if !commercial
-      if (gamemode != commercial)
-        switch(mtd->type)
+      if (mapformat == MFMT_Doom)
+      {
+        mapthing_doom_t *mtd = (mapthing_doom_t *) data + i;
+
+        // Do not spawn cool, new monsters if !commercial
+        if (gamemode != commercial)
+          switch(mtd->type)
           {
-          case 68:  // Arachnotron
-          case 64:  // Archvile
-          case 88:  // Boss Brain
-          case 89:  // Boss Shooter
-          case 69:  // Hell Knight
-          case 67:  // Mancubus
-          case 71:  // Pain Elemental
-          case 65:  // Former Human Commando
-          case 66:  // Revenant
-          case 84:  // Wolf SS
-            continue;
+            case 68:  // Arachnotron
+            case 64:  // Archvile
+            case 88:  // Boss Brain
+            case 89:  // Boss Shooter
+            case 69:  // Hell Knight
+            case 67:  // Mancubus
+            case 71:  // Pain Elemental
+            case 65:  // Former Human Commando
+            case 66:  // Revenant
+            case 84:  // Wolf SS
+              continue;
           }
-
-      // Do spawn all other stuff.
-      mt.x = IntToFixed((int32_t)SHORT(mtd->x));
-      mt.y = IntToFixed((int32_t)SHORT(mtd->y));
-      mt.angle = SHORT(mtd->angle);
-      mt.type = SHORT(mtd->type);
-      mt.options = SHORT(mtd->options);
+        // Do spawn all other stuff.
+        mt.x = IntToFixed((int32_t)SHORT(mtd->x));
+        mt.y = IntToFixed((int32_t)SHORT(mtd->y));
+        mt.angle = SHORT(mtd->angle);
+        mt.type = SHORT(mtd->type);
+        mt.options = SHORT(mtd->options);
+      }
+      else
+      {
+        mapthing_hexen_t *mth = (mapthing_hexen_t *) data + i;
+        mt.x = IntToFixed((int32_t)SHORT(mth->x));
+        mt.y = IntToFixed((int32_t)SHORT(mth->y));
+        mt.height = IntToFixed((int32_t)SHORT(mth->height));
+        mt.angle = SHORT(mth->angle);
+        mt.type = SHORT(mth->type);
+        mt.options = SHORT(mth->options);
+        // mt.tid = SHORT(mth->tid);
+        // mt.special = mth->special;
+        // mt.args[0] = mth->arg1;
+        // mt.args[1] = mth->arg2;
+        // mt.args[2] = mth->arg3;
+        // mt.args[3] = mth->arg4;
+        // mt.args[4] = mth->arg5;
+      }
 
       if (mt.options & MTF_EASY)
       {
@@ -503,30 +530,58 @@ void P_LoadThings (int lump)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_LoadLineDefs (int lump)
+void P_LoadLineDefs (int lump, mapformat_t mapformat)
 {
-  byte *data;
-  int  i;
+  numlines = (mapformat == MFMT_Hexen)
+           ? (W_LumpLength(lump) / sizeof(maplinedef_hexen_t))
+           : (W_LumpLength(lump) / sizeof(maplinedef_doom_t));
 
-  numlines = W_LumpLength (lump) / sizeof(maplinedef_t);
-  lines = Z_Malloc (numlines*sizeof(line_t),PU_LEVEL,0);
-  memset (lines, 0, numlines*sizeof(line_t));
-  data = W_CacheLumpNum (lump,PU_STATIC);
+  lines = Z_Malloc(numlines * sizeof(line_t), PU_LEVEL,0);
+  memset(lines, 0, numlines * sizeof(line_t));
+  byte *data = W_CacheLumpNum(lump, PU_STATIC);
 
-  for (i=0; i<numlines; i++)
+  for (int i = 0; i < numlines; i++)
     {
-      maplinedef_t *mld = (maplinedef_t *) data + i;
       line_t *ld = lines+i;
       vertex_t *v1, *v2;
 
       // [FG] extended nodes
-      ld->flags = (unsigned short)SHORT(mld->flags);
-      ld->special = SHORT(mld->special);
-      ld->id = SHORT(mld->tag);
-      ld->args[0] = ld->id; // UDMF spec
+      if (mapformat == MFMT_Doom)
+      {
+        maplinedef_doom_t *mld = (maplinedef_doom_t *) data + i;
+        v1 = ld->v1 = &vertexes[(uint16_t)SHORT(mld->v1)];
+        v2 = ld->v2 = &vertexes[(uint16_t)SHORT(mld->v2)];
 
-      v1 = ld->v1 = &vertexes[(unsigned short)SHORT(mld->v1)];
-      v2 = ld->v2 = &vertexes[(unsigned short)SHORT(mld->v2)];
+        ld->flags = (uint16_t)SHORT(mld->flags);
+        ld->special = SHORT(mld->special);
+        ld->id = SHORT(mld->tag);
+        ld->args[0] = ld->id; // UDMF spec
+
+        ld->sidenum[0] = (uint16_t)SHORT(mld->sidenum[0]);
+        ld->sidenum[1] = (uint16_t)SHORT(mld->sidenum[1]);
+      }
+      else
+      {
+        maplinedef_hexen_t *mld = (maplinedef_hexen_t *) data + i;
+        v1 = ld->v1 = &vertexes[(uint16_t)SHORT(mld->v1)];
+        v2 = ld->v2 = &vertexes[(uint16_t)SHORT(mld->v2)];
+
+        ld->flags = (uint16_t)SHORT(mld->flags);
+        ld->special = SHORT(mld->special);
+
+        ld->args[0] = mld->args[0];
+        ld->args[1] = mld->args[1];
+        ld->args[2] = mld->args[2];
+        ld->args[3] = mld->args[3];
+        ld->args[4] = mld->args[4];
+
+        ld->sidenum[0] = (uint16_t)SHORT(mld->sidenum[0]);
+        ld->sidenum[1] = (uint16_t)SHORT(mld->sidenum[1]);
+      }
+
+      FIX_NO_INDEX(ld->sidenum[0]);
+      FIX_NO_INDEX(ld->sidenum[1]);
+
       ld->dx = v2->x - v1->x;
       ld->dy = v2->y - v1->y;
       ld->angle = R_PointToAngle2(lines[i].v1->x, lines[i].v1->y,
@@ -536,6 +591,22 @@ void P_LoadLineDefs (int lump)
 
       ld->slopetype = !ld->dx ? ST_VERTICAL : !ld->dy ? ST_HORIZONTAL :
         FixedDiv(ld->dy, ld->dx) > 0 ? ST_POSITIVE : ST_NEGATIVE;
+
+      // killough 11/98: fix common wad errors (missing sidedefs):
+      if (ld->sidenum[0] == NO_INDEX)
+      {
+        // Substitute dummy sidedef for missing right side
+        ld->sidenum[0] = 0;
+      }
+
+      if (ld->sidenum[1] == NO_INDEX)
+      {
+        if (!demo_compatibility || !overflow[emu_missedbackside].enabled)
+        {
+          // Clear 2s flag for missing left side
+          ld->flags &= ~ML_TWOSIDED;
+        }
+      }
 
       if (v1->x < v2->x)
         {
@@ -558,13 +629,6 @@ void P_LoadLineDefs (int lump)
           ld->bbox[BOXBOTTOM] = v2->y;
           ld->bbox[BOXTOP] = v1->y;
         }
-
-      ld->sidenum[0] = (unsigned short)SHORT(mld->sidenum[0]);
-      ld->sidenum[1] = (unsigned short)SHORT(mld->sidenum[1]);
-
-      FIX_NO_INDEX(ld->sidenum[0]);
-      FIX_NO_INDEX(ld->sidenum[1]);
-
       // killough 4/4/98: support special sidedef interpretation below
       if (ld->sidenum[0] != NO_INDEX && ld->special)
         sides[*ld->sidenum].special = ld->special;
@@ -575,30 +639,25 @@ void P_LoadLineDefs (int lump)
 // killough 4/4/98: delay using sidedefs until they are loaded
 // killough 5/3/98: reformatted, cleaned up
 
-void P_LoadLineDefs2(int lump)
+void P_LoadLineDefs2(int lump, mapformat_t mapformat)
 {
+
   int i = numlines;
   register line_t *ld = lines;
   for (;i--;ld++)
     {
-      // killough 11/98: fix common wad errors (missing sidedefs):
 
-      if (ld->sidenum[0] == NO_INDEX)
-	ld->sidenum[0] = 0;  // Substitute dummy sidedef for missing right side
-
-      if (ld->sidenum[1] == NO_INDEX)
-      {
-	if (!demo_compatibility || !overflow[emu_missedbackside].enabled)
-	ld->flags &= ~ML_TWOSIDED;  // Clear 2s flag for missing left side
-      }
+      ld->frontsector = ld->sidenum[0]!=NO_INDEX ? sides[ld->sidenum[0]].sector : 0;
+      ld->backsector  = ld->sidenum[1]!=NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
+      // no additional post-processing for Hexen-format, yet
+      if (mapformat == MFMT_Hexen)
+        continue;
 
       // haleyjd 05/02/06: Reserved line flag. If set, we must clear all
       // BOOM or later extended line flags. This is necessitated by E2M7.
       if (ld->flags & ML_RESERVED && comp[comp_reservedlineflag])
         ld->flags &= 0x1FF;
 
-      ld->frontsector = ld->sidenum[0]!=NO_INDEX ? sides[ld->sidenum[0]].sector : 0;
-      ld->backsector  = ld->sidenum[1]!=NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
       switch (ld->special)
         {                       // killough 4/11/98: handle special types
           int lump, j;
@@ -1705,7 +1764,7 @@ static boolean P_LoadReject(int lumpnum, int totallines)
     return ret;
 }
 
-static void LoadDoomFormat(int lumpnum, nodeformat_t nodeformat, boolean *gen_blockmap, boolean *pad_reject)
+static void LoadBinaryFormat(int lumpnum, mapformat_t mapformat, nodeformat_t nodeformat, boolean *gen_blockmap, boolean *pad_reject)
 {
   // note: most of this ordering is important
 
@@ -1716,9 +1775,9 @@ static void LoadDoomFormat(int lumpnum, nodeformat_t nodeformat, boolean *gen_bl
   P_LoadVertexes (lumpnum+ML_VERTEXES);
   P_LoadSectors  (lumpnum+ML_SECTORS);
   P_LoadSideDefs (lumpnum+ML_SIDEDEFS);                // killough 4/4/98
-  P_LoadLineDefs (lumpnum+ML_LINEDEFS);                //       |
+  P_LoadLineDefs (lumpnum+ML_LINEDEFS, mapformat);     //       |
   P_LoadSideDefs2(lumpnum+ML_SIDEDEFS);                //       |
-  P_LoadLineDefs2(lumpnum+ML_LINEDEFS);                // killough 4/4/98
+  P_LoadLineDefs2(lumpnum+ML_LINEDEFS, mapformat);     // killough 4/4/98
   *gen_blockmap = P_LoadBlockMap(lumpnum+ML_BLOCKMAP); // killough 3/1/98
 
   // [FG] build nodes with NanoBSP
@@ -1815,15 +1874,15 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   oldleveltime = 0;
 
   // [FG] check nodes format
-  if (mapformat == MFMT_Doom)
+  if (mapformat == MFMT_Doom || mapformat == MFMT_Hexen)
   {
     R_PointOnSide = R_PointOnSideClassic;
     R_PointOnSegSide = R_PointOnSegSideClassic;
     P_PointOnLineSide = P_PointOnLineSideClassic;
     P_PointOnDivlineSide = P_PointOnDivlineSideClassic;
 
-    nodeformat = P_CheckDoomNodeFormat(lumpnum);
-    LoadDoomFormat(lumpnum, nodeformat, &gen_blockmap, &pad_reject);
+    nodeformat = P_CheckNodeFormat(lumpnum);
+    LoadBinaryFormat(lumpnum, mapformat, nodeformat, &gen_blockmap, &pad_reject);
   }
   else if (mapformat == MFMT_UDMF)
   {
@@ -1833,10 +1892,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     P_PointOnDivlineSide = P_PointOnDivlineSidePrecise;
 
     UDMF_LoadMap(lumpnum, &nodeformat, &gen_blockmap, &pad_reject);
-  }
-  else if (mapformat == MFMT_Hexen)
-  {
-    I_Error("Unsupported Hexen level format in %s", lumpname);
   }
   else
   {
@@ -1856,9 +1911,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   deathmatch_p = deathmatchstarts;
   P_MapStart();
 
-  if (mapformat == MFMT_Doom)
+  if (mapformat == MFMT_Doom || mapformat == MFMT_Hexen)
   {
-    P_LoadThings(lumpnum+ML_THINGS);
+    P_LoadThings(lumpnum+ML_THINGS, mapformat);
   }
   else if (mapformat == MFMT_UDMF)
   {

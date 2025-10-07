@@ -44,7 +44,7 @@ typedef enum
 extern const char *const node_format_names[];
 
 extern mapformat_t P_CheckMapFormat(int lumpnum);
-extern nodeformat_t P_CheckDoomNodeFormat(int lumpnum);
+extern nodeformat_t P_CheckNodeFormat(int lumpnum);
 extern nodeformat_t P_CheckUDMFNodeFormat(int lumpnum);
 extern int P_GetOffset(struct vertex_s *v1, struct vertex_s *v2);
 

@@ -163,7 +163,7 @@ mapformat_t P_CheckMapFormat(int lumpnum)
 // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed
 // ZNOD/ZGLN formats, or DeePBSP format
 
-nodeformat_t P_CheckDoomNodeFormat(int lumpnum)
+nodeformat_t P_CheckNodeFormat(int lumpnum)
 {
     nodeformat_t format = NFMT_DOOM;
     byte *lump_data = NULL;

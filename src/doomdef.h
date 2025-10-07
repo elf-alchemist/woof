@@ -123,6 +123,17 @@ typedef enum mapthing_options_e {
   MTF_SKILL5 = (1u << 20),
 } mapthing_options_t;
 
+typedef enum mapthing_hexen_options_e {
+  // Bits 0-3 are the same as Doom-format
+  MTF_DORMANT = (1u << 4),
+  MTF_FIGHTER = (1u << 5),
+  MTF_CLERIC  = (1u << 6),
+  MTF_MAGE    = (1u << 7),
+  MTF_GSINGLE = (1u << 8),
+  MTF_GCOOP   = (1u << 9),
+  MTF_GDM     = (1u << 10),
+} mapthing_hexen_options_t;
+
 typedef enum {
   sk_default=-2,
   sk_none=-1, //jff 3/24/98 create unpicked skill setting

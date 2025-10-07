@@ -223,6 +223,7 @@ typedef struct line_s
   int16_t special;       // Special action
   int16_t id;            // Tag -> id/arg0 split
   int32_t args[5];       // Hexen-style parameterized actions
+  int32_t activation;    //
 
   // UDMF -- further extend to 32bit
   int32_t sidenum[2];    // Visual appearance: SideDefs.

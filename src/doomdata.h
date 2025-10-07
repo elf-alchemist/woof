@@ -82,7 +82,16 @@ typedef struct {
   short special;
   short tag;
   unsigned short sidenum[2];  // sidenum[1] will be -1 (NO_INDEX) if one sided
-} maplinedef_t;
+} maplinedef_doom_t;
+
+typedef struct {
+    uint16_t v1;
+    uint16_t v2;
+    uint16_t flags;
+    uint8_t  special;
+    uint8_t  args[5];
+    uint16_t sidenum[2];
+} maplinedef_hexen_t;
 
 //
 // LineDef attributes.
@@ -126,6 +135,26 @@ typedef enum linedef_flags_e
   ML_BLOCKLANDMONSTERS = (1u << 12), // mbf21
   ML_BLOCKPLAYERS      = (1u << 13), // mbf21
 } linedef_flags_t;
+
+typedef enum hexen_linedef_flags_e
+{
+  ML_REPEAT_SPECIAL = 0x0200  // special is repeatable
+} hexen_linedef_flags_t;
+#define ML_SPAC_SHIFT 10
+#define ML_SPAC_MASK  0x1c00
+
+#define GET_SPAC(flags) ( ( flags & ML_SPAC_MASK ) >> ML_SPAC_SHIFT )
+
+// Special activation types
+typedef enum hexen_activation_e
+{
+  SPAC_CROSS  = 0, // when player crosses line
+  SPAC_USE    = 1, // when player uses line
+  SPAC_MCROSS = 2, // when monster crosses line
+  SPAC_IMPACT = 3, // when projectile hits line
+  SPAC_PUSH   = 4, // when player/monster pushes line
+  SPAC_PCROSS = 5, // when projectile crosses line
+} hexen_activation_t;
 
 // Sector definition, from editing.
 typedef struct {
@@ -187,6 +216,18 @@ typedef struct {
   short type;
   short options;
 } mapthing_doom_t;
+
+typedef struct {
+  uint16_t tid;
+  uint16_t x;
+  uint16_t y;
+  uint16_t height;
+  uint16_t angle;
+  uint16_t type;
+  uint16_t options;
+  uint8_t  special;
+  uint8_t  args[5];
+} mapthing_hexen_t;
 
 typedef struct {
   fixed_t x;
