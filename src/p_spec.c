@@ -1112,7 +1112,7 @@ void EV_ChangeMusic(line_t *line, int side)
   boolean loops = false;
   boolean resets = false;
 
-  int music = side ? line->backmusic : line->frontmusic;
+  int music = side ? sides[line->sidenum[0]].bottomindex : sides[line->sidenum[0]].topindex;
 
   switch (line->special)
   {
@@ -1784,7 +1784,7 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, boolean bossactio
 
     case 2077:
     {
-      int colormap_index = side ? line->backtint : line->fronttint;
+      int colormap_index = side ? sides[line->sidenum[0]].bottomindex : sides[line->sidenum[0]].topindex;
       for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
       {
         sectors[s].tint = colormap_index;
@@ -2268,7 +2268,7 @@ void P_ShootSpecialLine(mobj_t *thing, line_t *line, int side)
 
     case 2081:
     {
-      int colormap_index = side ? line->backtint : line->fronttint;
+      int colormap_index = side ? sides[line->sidenum[0]].bottomindex : sides[line->sidenum[0]].topindex;
       for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
       {
         sectors[s].tint = colormap_index;
@@ -2853,13 +2853,38 @@ void P_SpawnSpecials (void)
       {
         int s, sec;
 
+      // killough 4/11/98: translucent 2s textures
+      case 260:
+      {
+        int lump = lines[i].tranlump; // translucency from sidedef
+        if (!lines[i].args[0])        // if tag==0,
+          lines[i].tranlump = lump;   // affect this linedef only
+        else
+          for (int j = 0; j < numlines; j++)     // if tag!=0,
+            if (lines[j].id == lines[i].args[0]) // affect all matching linedefs
+              lines[i].tranlump = lump;
+        break;
+      }
+
         // killough 3/7/98:
         // support for drawn heights coming from different sector
       case 242:
-        sec = sides[*lines[i].sidenum].sector-sectors;
+      {
+        side_t *side = &sides[*lines[i].sidenum];
+        if (side->topindex >= 0) side->toptexture = 0;
+        if (side->midindex >= 0) side->midtexture = 0;
+        if (side->bottomindex >= 0) side->bottomtexture = 0;
+
+        sec = side->sector-sectors;
         for (s = -1; (s = P_FindSectorFromLineTag(lines+i,s)) >= 0;)
+        {
           sectors[s].heightsec = sec;
+          if (side->topindex >= 0) sector[s].topmap = numcolormaps - side->topindex;
+          if (side->midindex >= 0) sector[s].midmap = numcolormaps - side->midindex;
+          if (side->bottomindex >= 0) sector[s].bottommap = numcolormaps - side->bottomindex;
+        }
         break;
+      }
 
         // killough 3/16/98: Add support for setting
         // floor lighting independently (e.g. lava)
@@ -2905,7 +2930,7 @@ void P_SpawnSpecials (void)
       case 2075:
         for (int s = -1; (s = P_FindSectorFromLineTag(&lines[i], s)) >= 0;)
         {
-          sectors[s].tint = lines[i].fronttint;
+          sectors[s].tint = sides[lines[i].sidenum[0]].topindex;
         }
         break;
       }

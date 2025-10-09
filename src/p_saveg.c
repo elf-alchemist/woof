@@ -2205,10 +2205,6 @@ void P_ArchiveWorld (void)
       saveg_write16(li->id);
 
       saveg_write32(li->angle);
-      saveg_write32(li->frontmusic);
-      saveg_write32(li->backmusic);
-      saveg_write32(li->fronttint);
-      saveg_write32(li->backtint);
 
       saveg_write32(li->args[0]);
       saveg_write32(li->args[1]);
@@ -2230,6 +2226,9 @@ void P_ArchiveWorld (void)
             saveg_write16(si->toptexture);
             saveg_write16(si->bottomtexture);
             saveg_write16(si->midtexture);
+            saveg_write16(si->topindex);
+            saveg_write16(si->bottomindex);
+            saveg_write16(si->midindex);
           }
     }
 }
@@ -2309,10 +2308,6 @@ void P_UnArchiveWorld (void)
       if (saveg_compat > saveg_woof1500)
       {
         li->angle = saveg_read32();
-        li->frontmusic = saveg_read32();
-        li->backmusic = saveg_read32();
-        li->fronttint = saveg_read32();
-        li->backtint = saveg_read32();
 
         li->args[0] = saveg_read32();
         li->args[1] = saveg_read32();
@@ -2336,6 +2331,9 @@ void P_UnArchiveWorld (void)
             si->toptexture = saveg_read16();
             si->bottomtexture = saveg_read16();
             si->midtexture = saveg_read16();
+            si->topindex = saveg_read16();
+            si->bottomindex = saveg_read16();
+            si->midindex = saveg_read16();
           }
     }
 }

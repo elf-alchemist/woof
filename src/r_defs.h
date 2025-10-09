@@ -185,6 +185,11 @@ typedef struct side_s
   short toptexture;      // Texture indices. We do not maintain names here. 
   short bottomtexture;
   short midtexture;
+
+  int16_t topindex;    // Lump indexes. For Boom-y line specials
+  int16_t bottomindex;
+  int16_t midindex;
+
   sector_t* sector;      // Sector the SideDef is facing.
 
   // killough 4/4/98, 4/11/98: highest referencing special linedef's type,
@@ -232,14 +237,11 @@ typedef struct line_s
   int validcount;        // if == validcount, already checked
   void *specialdata;     // thinker_t for reversable actions
   int tranlump;          // killough 4/11/98: translucency filter, -1 == none
+  byte *tranmap;
   int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
 
   // ID24 line specials
   angle_t angle;
-  int frontmusic; // Front upper texture -- activated from the front side
-  int backmusic; // Front lower texture -- activated from the back side
-  int fronttint; // Front upper texture -- activated from the front side
-  int backtint; // Front lower texture -- activated from the back side
 } line_t;
 
 //

@@ -339,8 +339,9 @@ int (W_CheckNumForName)(register const char *name, register int name_space) // [
   // worth the overhead, considering namespace collisions are rare in
   // Doom wads.
 
+  // Updated to support ignoring namespaces altogether
   while (i >= 0 && (strncasecmp(lumpinfo[i].name, name, 8) ||
-                    lumpinfo[i].namespace != name_space))
+                    (name_space != ns_ignore && lumpinfo[i].namespace != name_space)))
     i = lumpinfo[i].next;
 
   // Return the matching lump, or -1 if none found.
@@ -526,7 +527,7 @@ void *W_CacheLumpNum(int lump, pu_tag tag)
 {
 #ifdef RANGECHECK
   if ((unsigned)lump >= numlumps)
-    I_Error ("%i >= numlumps",lump);
+    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
 #endif
 
   if (!lumpcache[lump])      // read the lump in

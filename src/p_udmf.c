@@ -830,9 +830,7 @@ static void UDMF_LoadLineDefs(void)
 
         if (lines[i].sidenum[1] != NO_INDEX)
         {
-            side_t *backside = &sides[lines[i].sidenum[1]];
-            lines[i].backsector = backside->sector;
-            backside->special = lines[i].special;
+            lines[i].backsector = sides[lines[i].sidenum[1]].sector;
         }
     }
 }

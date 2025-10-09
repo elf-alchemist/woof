@@ -636,7 +636,7 @@ P_UseSpecialLine
 
     case 2079:
     {
-      int colormap_index = side ? line->backtint : line->fronttint;
+      int colormap_index = side ? sides[line->sidenum[0]].bottomindex : sides[line->sidenum[0]].topindex;
       for (int s = -1; (s = P_FindSectorFromLineTag(line, s)) >= 0;)
       {
         sectors[s].tint = colormap_index;

@@ -57,6 +57,7 @@ typedef PACKED_PREFIX struct
 
 typedef enum
 {
+  ns_ignore = -1,
   ns_global,
   ns_textures,
   ns_sprites,
@@ -134,6 +135,7 @@ void W_InitMultipleFiles(void);
 // one argument, pass ns_global as the default namespace
 
 #define W_CheckNumForName(name) (W_CheckNumForName)(name, ns_global)
+#define W_CheckNumForNameAll(name) (W_CheckNumForName)(name, ns_ignore)
 int     (W_CheckNumForName)(const char* name, int);   // killough 4/17/98
 int     W_GetNumForName (const char* name);
 int     W_LumpLength (int lump);
