@@ -332,7 +332,7 @@ static void UDMF_ParseNamespace(scanner_t *s)
         udmf_flags |= LINE_PASSUSE | LINE_BLOCK | LINE_ALPHA | LINE_TRANMAP;
         udmf_flags |= THING_FRIEND | THING_PARAM | THING_ALPHA | THING_TRANMAP;
         udmf_flags |= SIDE_OFFSET | SIDE_SCROLL | SIDE_LIGHT;
-        udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_SCROLL | SEC_LIGHT | SEC_COLORMAP;
+        udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_SCROLL | SEC_LIGHT | SEC_COLORMAP | SEC_TINT;
     }
     else
     {
@@ -1017,8 +1017,8 @@ static void UDMF_LoadSectors(void)
         sectors[i].ceiling_xoffs = DoubleToFixed(udmf_sectors[i].xpanningceiling);
         sectors[i].ceiling_yoffs = DoubleToFixed(udmf_sectors[i].ypanningceiling);
 
-        sectors[i].tint = R_ColormapNumForName(udmf_sectors[i].tint);
-        sectors[i].colormap = R_ColormapNumForName(udmf_sectors[i].colormap);
+        sectors[i].tint = MAX(0, R_ColormapNumForName(udmf_sectors[i].tint));
+        sectors[i].colormap = MAX(0, R_ColormapNumForName(udmf_sectors[i].colormap));
 
         if (udmf_sectors[i].scroll_floor_type && (udmf_sectors[i].scroll_floor_x || udmf_sectors[i].scroll_floor_y))
         {
