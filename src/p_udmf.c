@@ -317,10 +317,10 @@ static void UDMF_ParseNamespace(scanner_t *s)
     }
     else if (!strcasecmp(name, "woof"))
     {
-        udmf_flags |= LINE_PASSUSE | LINE_BLOCK | LINE_3DMIDTEX | LINE_ALPHA | LINE_TRANMAP;
+        udmf_flags |= LINE_PASSUSE | LINE_BLOCK | LINE_ALPHA | LINE_TRANMAP;
         udmf_flags |= THING_FRIEND | THING_PARAM | THING_ALPHA | THING_TRANMAP;
         udmf_flags |= SIDE_OFFSET | SIDE_SCROLL | SIDE_LIGHT;
-        udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_EE_SCROLL | SEC_SCROLL | SEC_LIGHT;
+        udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_SCROLL | SEC_LIGHT;
     }
     else
     {
@@ -457,10 +457,6 @@ static void UDMF_ParseLinedef(scanner_t *s)
         {
             line.flags |= UDMF_ScanFlag(s, ML_MAPPED);
         }
-        else if (PROP(tranmap, LINE_TRANMAP))
-        {
-            UDMF_ScanLumpName(s, line.tranmap);
-        }
         else if (PROP(passuse, LINE_PASSUSE))
         {
             line.flags |= UDMF_ScanFlag(s, ML_PASSUSE);
@@ -477,9 +473,13 @@ static void UDMF_ParseLinedef(scanner_t *s)
         {
             line.flags |= UDMF_ScanFlag(s, ML_3DMIDTEX);
         }
-        else if (PROP(alpha, THING_ALPHA))
+        else if (PROP(alpha, LINE_ALPHA))
         {
             line.alpha = UDMF_ScanDouble(s);
+        }
+        else if (PROP(tranmap, LINE_TRANMAP))
+        {
+            UDMF_ScanLumpName(s, line.tranmap);
         }
         else
         {
@@ -882,6 +882,10 @@ static void UDMF_ParseThing(scanner_t *s)
         else if (PROP(alpha, THING_ALPHA))
         {
             thing.alpha = UDMF_ScanDouble(s);
+        }
+        else if (PROP(tranmap, THING_TRANMAP))
+        {
+            UDMF_ScanLumpName(s, thing.tranmap);
         }
         else
         {
