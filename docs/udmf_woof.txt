@@ -57,6 +57,12 @@ III. Standardized Fields
 
 All boolean fields take the keyword values true and false.
 
+  vertex
+  {
+    x = <float>; // X coordinate. No valid default.
+    y = <float>; // Y coordinate. No valid default.
+  }
+
   linedef
   {
     id = <integer>; // ID of line. Interpreted as tag or scripting id.
@@ -75,7 +81,9 @@ All boolean fields take the keyword values true and false.
     blocksound        = <bool>; // true = blocks sound.
     dontdraw          = <bool>; // true = line never drawn on map.
     mapped            = <bool>; // true = always appears on map.
+    // Boom
     passuse           = <bool>; // true = passes use action.
+    // MBF21
     blocklandmonsters = <bool>; // true = line blocks monsters on the gound.
     blockplayers      = <bool>; // true = line blocks players.
 
@@ -85,8 +93,10 @@ All boolean fields take the keyword values true and false.
     sidefront = <integer>; // Sidedef 1 index. No valid default.
     sideback  = <integer>; // Sidedef 2 index. Default = -1.
 
-    comment = <string>; // A comment. Implementors should attach no special
-                        // semantic meaning to this field.
+    alpha   = <float>;  // Opacity percentage. Default = 1.0.
+    tranmap = <string>; // Custom translucency map lump. Overides alpha.
+
+    comment = <string>; // A comment. No special meaning is attached to it.
   }
 
   sidedef
@@ -100,14 +110,42 @@ All boolean fields take the keyword values true and false.
 
     sector = <integer>; // Sector index. No valid default.
 
-    comment = <string>; // A comment. Implementors should attach no special
-                        // semantic meaning to this field.
-  }
+    offsetx_top    = <float>; // Tiered X/Y textures offsets. Default = 0.0.
+    offsety_top    = <float>; // Additive to base offsets.
+    offsetx_mid    = <float>; //
+    offsety_mid    = <float>; //
+    offsetx_bottom = <float>; //
+    offsety_bottom = <float>; //
 
-  vertex
-  {
-    x = <float>; // X coordinate. No valid default.
-    y = <float>; // Y coordinate. No valid default.
+    xscroll = <float>; // X/Y scrolling factor. Default = 0.0.
+    yscroll = <float>; //
+
+    xscrolltop    = <float>; // Tiered X/Y scrolling factor. Default = 0.0.
+    yscrolltop    = <float>; // Additive to base scrolling factors.
+    xscrollmid    = <float>; //
+    yscrollmid    = <float>; //
+    xscrollbottom = <float>; //
+    yscrollbottom = <float>; //
+
+    light = <integer>;      // This side's own light level. Additive to the
+                            // sector's light level. Default = 0
+    lightabsolute = <bool>; // true = 'light' is considered "absolute",
+                            // overriding the sector's light level.
+
+    light_top = <integer>;         // Tiered side light levels. Default = 0.0.
+    lightabsolute_top = <bool>;    // Additive to base light level.
+    light_mid = <integer>;         // Absolute flags behave the same as above.
+    lightabsolute_mid = <bool>;    //
+    light_bottom = <integer>;      //
+    lightabsolute_bottom = <bool>; //
+
+    smoothlighting = <bool>; // Use smooth fake contrast on this sidedef.
+    nofakecontrast = <bool>; // Disables use of fake contrast on this sidedef.
+                             // The latter takes priority over the former.
+
+    clipmidtex = <bool>; // Side's mid textures are clipped to floor and ceiling.
+
+    comment = <string>; // A comment. No special meaning is attached to it.
   }
 
   sector
@@ -123,8 +161,27 @@ All boolean fields take the keyword values true and false.
     special = <integer>; // Sector special. Default = 0.
     id      = <integer>; // Sector tag/id. Default = 0.
 
-    comment = <string>; // A comment. Implementors should attach no special
-                        // semantic meaning to this field.
+    xpanningfloor = <float>;   // Plane texture offsets.
+    ypanningfloor = <float>;   // Default = 0.0.
+    xpanningceiling = <float>; //
+    ypanningceiling = <float>; //
+
+    xscrollfloor      = <float>; // Plane texture scrolling factor. Default = 0.0.
+    yscrollfloor      = <float>; // The "scroll mode" bit mask goes as follows:
+    scrollfloormode   = <int>;   //   1 = scroll textures
+    xscrollceiling    = <float>; //   2 = carry static objects
+    yscrollceiling    = <float>; //   4 = carry players
+    scrollceilingmode = <int>;   //   8 = carry monsters
+
+    rotationfloor   = <float>; // Angle of plane texture rotation.
+    rotationceiling = <float>; // Default = 0.0.
+
+    lightfloor           = <integer>; // Plane light level, addtive to the
+    lightceiling         = <integer>; // sector's light level. Default = 0.
+    lightfloorabsolute   = <bool>;    // true = 'light' is considered "absolute",
+    lightceilingabsolute = <bool>;    // overriding the sector's light level.
+
+    comment = <string>; // A comment. No special meaning is attached to it.
   }
 
   thing
@@ -151,6 +208,7 @@ All boolean fields take the keyword values true and false.
     single = <bool>; // true = in SP mode.
     dm     = <bool>; // true = in DM mode.
     coop   = <bool>; // true = in Coop.
+    // MBF
     friend = <bool>; // true = marine's best friend :)
 
     // MUSINFO Music Changers, and SNDINFO Ambient Sound sources make use of
@@ -161,8 +219,10 @@ All boolean fields take the keyword values true and false.
     arg3 = <integer>; // Argument 3.
     arg4 = <integer>; // Argument 4.
 
-    comment = <string>; // A comment. Implementors should attach no special
-                        // semantic meaning to this field.
+    alpha   = <float>;  // Opacity percentage. Default = 1.0.
+    tranmap = <string>; // Custom translucency map lump. Overides alpha.
+
+    comment = <string>; // A comment. No special meaning is attached to it.
   }
 
 
