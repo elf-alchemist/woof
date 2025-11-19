@@ -76,8 +76,8 @@ typedef enum
     SEC_EE_SCROLL = (1u << 24), // EE's original plane scrolling property
     SEC_SCROLL    = (1u << 25), // DSDA's later plane scrolling property
     SEC_LIGHT     = (1u << 26), // independent light levels
-    SEC_COLORMAP  = (1u << 27), // WIP
-    SEC_TINT      = (1u << 28), // WIP
+    SEC_COLORMAP  = (1u << 27), // viewplayer's colormap on this given frame
+    SEC_TINT      = (1u << 28), // view-agnostic colormap for the given sector
     SEC_SILENCE   = (1u << 29), // WIP
 
     // Compatibility
@@ -171,6 +171,9 @@ typedef struct
     int32_t flags;
 
     int32_t lightfloor, lightceiling;
+
+    char tint[9];
+    char colormap[9];
 
     double xpanningfloor,   ypanningfloor;
     double xpanningceiling, ypanningceiling;
@@ -329,7 +332,7 @@ static void UDMF_ParseNamespace(scanner_t *s)
         udmf_flags |= LINE_PASSUSE | LINE_BLOCK | LINE_ALPHA | LINE_TRANMAP;
         udmf_flags |= THING_FRIEND | THING_PARAM | THING_ALPHA | THING_TRANMAP;
         udmf_flags |= SIDE_OFFSET | SIDE_SCROLL | SIDE_LIGHT;
-        udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_SCROLL | SEC_LIGHT;
+        udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_SCROLL | SEC_LIGHT | SEC_COLORMAP;
     }
     else
     {
@@ -775,6 +778,14 @@ static void UDMF_ParseSector(scanner_t *s)
         {
             sector.flags |= UDMF_ScanFlag(s, SECF_ABS_LIGHT_CEIL);
         }
+        else if (PROP(tint, SEC_TINT))
+        {
+            UDMF_ScanLumpName(s, sector.tint);
+        }
+        else if (PROP(colormap, SEC_COLORMAP))
+        {
+            UDMF_ScanLumpName(s, sector.colormap);
+        }
         else
         {
             UDMF_SkipScan(s);
@@ -1005,6 +1016,9 @@ static void UDMF_LoadSectors(void)
         sectors[i].floor_yoffs = DoubleToFixed(udmf_sectors[i].ypanningfloor);
         sectors[i].ceiling_xoffs = DoubleToFixed(udmf_sectors[i].xpanningceiling);
         sectors[i].ceiling_yoffs = DoubleToFixed(udmf_sectors[i].ypanningceiling);
+
+        sectors[i].tint = R_ColormapNumForName(udmf_sectors[i].tint);
+        sectors[i].colormap = R_ColormapNumForName(udmf_sectors[i].colormap);
 
         if (udmf_sectors[i].scroll_floor_type && (udmf_sectors[i].scroll_floor_x || udmf_sectors[i].scroll_floor_y))
         {

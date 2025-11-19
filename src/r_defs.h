@@ -177,6 +177,7 @@ typedef struct sector_s
   // UDMF
   int32_t flags;
   int16_t lightfloor, lightceiling;
+  int32_t colormap;
 } sector_t;
 
 //
