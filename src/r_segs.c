@@ -90,7 +90,7 @@ static int    *maskedtexturecol; // [FG] 32-bit integer math
 // UDMF extensions, adapted from DSDA
 //
 
-static void SetLight(const int32_t lightlevel)
+inline static void SetLight(const int32_t lightlevel)
 {
     if (!fixedcolormapindex)
     {
@@ -106,7 +106,7 @@ static void SetLight(const int32_t lightlevel)
     walllightoffset = &scalelightoffset[walllightindex * MAXLIGHTSCALE];
 }
 
-static void CalculateLighting(lighttable_t *const thiscolormap, fixed_t scale)
+inline static void CalculateLighting(const lighttable_t * const thiscolormap, fixed_t scale)
 {
     // dimishing
     int32_t colormapindex = fixedcolormapindex;
@@ -124,13 +124,13 @@ static void CalculateLighting(lighttable_t *const thiscolormap, fixed_t scale)
                    : dc_colormap[0];
 }
 
-static const int32_t R_SideLightLevel(const side_t *side)
+inline static const int32_t R_SideLightLevel(const side_t *side)
 {
     return (side->flags & SF_ABS_LIGHT) ? side->light
                                         : side->light + rw_lightlevel;
 }
 
-static void SideLightLevel_Top(const side_t *side)
+inline static void SideLightLevel_Top(const side_t *side)
 {
     const int32_t light = (side->flags & SF_ABS_LIGHT_TOP)
                         ? side->light_top
@@ -138,7 +138,7 @@ static void SideLightLevel_Top(const side_t *side)
     SetLight(light);
 }
 
-static void SideLightLevel_Mid(const side_t *side)
+inline static void SideLightLevel_Mid(const side_t *side)
 {
     const int32_t light = (side->flags & SF_ABS_LIGHT_MID)
                         ? side->light_mid
@@ -146,12 +146,23 @@ static void SideLightLevel_Mid(const side_t *side)
     SetLight(light);
 }
 
-static void SideLightLevel_Bottom(const side_t *side)
+inline static void SideLightLevel_Bottom(const side_t *side)
 {
     const int32_t light = (side->flags & SF_ABS_LIGHT_BOTTOM)
                         ? side->light_bottom
                         : side->light_bottom + R_SideLightLevel(side);
     SetLight(light);
+}
+
+//
+// Woof! advanced tint control
+//
+
+inline static const lighttable_t * const GetLineTint(const line_t * const line)
+{
+    return (line->tint >= 0)              ? colormaps[line->tint]
+         : (line->frontsector->tint >= 0) ? colormaps[line->frontsector->tint]
+                                          : fullcolormap;
 }
 
 //
@@ -169,29 +180,27 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   //   for horizontal / vertical / diagonal. Diagonal?
 
   curline = ds->curline;  // OPTIMIZE: get rid of LIGHTSEGSHIFT globally
-  lighttable_t *thiscolormap = curline->sidedef->sector->tint
-                             ? colormaps[curline->sidedef->sector->tint]
-                             : fullcolormap;
+  frontsector = curline->frontsector;
+  backsector = curline->backsector;
+  const side_t * const side = curline->sidedef;
+  const line_t * const line = curline->linedef;
+  const lighttable_t * const thiscolormap = GetLineTint(line);
 
   // killough 4/11/98: draw translucent 2s normal textures
-
   colfunc = R_DrawColumn;
-  if (curline->linedef->tranmap)
+  if (line->tranmap)
   {
     colfunc = R_DrawTLColumn;
-    tranmap = curline->linedef->tranmap;
+    tranmap = line->tranmap;
   }
   // killough 4/11/98: end translucent 2s normal code
 
-  frontsector = curline->frontsector;
-  backsector = curline->backsector;
-
-  texnum = texturetranslation[curline->sidedef->midtexture];
+  texnum = texturetranslation[side->midtexture];
 
   // killough 4/13/98: get correct lightlevel for 2s normal textures
   rw_lightlevel = R_FakeFlat(frontsector, &tempsec, NULL, NULL, false)->lightlevel;
 
-  SideLightLevel_Mid(curline->sidedef);
+  SideLightLevel_Mid(side);
 
   maskedtexturecol = ds->maskedtexturecol;
 
@@ -201,7 +210,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   mceilingclip = ds->sprtopclip;
 
   // find positioning
-  if (curline->linedef->flags & ML_DONTPEGBOTTOM)
+  if (line->flags & ML_DONTPEGBOTTOM)
     {
       dc_texturemid = frontsector->interpfloorheight > backsector->interpfloorheight
         ? frontsector->interpfloorheight : backsector->interpfloorheight;
@@ -214,14 +223,13 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
       dc_texturemid = dc_texturemid - viewz;
     }
 
-  dc_texturemid += curline->sidedef->interprowoffset + curline->sidedef->offsety_mid;
+  dc_texturemid += side->interprowoffset + side->offsety_mid;
 
   // draw the columns
   for (dc_x = x1 ; dc_x <= x2 ; dc_x++, spryscale += rw_scalestep)
     if (maskedtexturecol[dc_x] != INT_MAX) // [FG] 32-bit integer math
       {
-        fixed_t column = maskedtexturecol[dc_x]
-                       + FixedToInt(curline->sidedef->offsetx_mid);
+        fixed_t column = maskedtexturecol[dc_x] + FixedToInt(side->offsetx_mid);
         // killough 11/98:
         CalculateLighting(thiscolormap, spryscale);
 
@@ -371,7 +379,7 @@ void R_FixWiggle (sector_t *sector)
 
 static boolean didsolidcol; // True if at least one column was marked solid
 
-static void R_RenderSegLoop(lighttable_t * thiscolormap)
+static void R_RenderSegLoop(const lighttable_t * const thiscolormap)
 {
   fixed_t  texturecolumn = 0;   // shut up compiler warning
 
@@ -564,9 +572,6 @@ void R_StoreWallRange(const int start, const int stop)
   // [FG] fix long wall wobble
   int64_t dx, dy, dx1, dy1, dist;
   const uint32_t len = curline->r_length; // [FG] use re-calculated seg lengths
-
-  sector_t *sec = curline->sidedef->sector;
-  lighttable_t *thiscolormap = sec->tint ? colormaps[sec->tint] : fullcolormap;
 
   if (!drawsegs || ds_p == drawsegs+maxdrawsegs) // killough 1/98 -- fix 2s line HOM
     {
@@ -909,7 +914,8 @@ void R_StoreWallRange(const int start, const int stop)
   }
 
   didsolidcol = false;
-  R_RenderSegLoop(thiscolormap);
+
+  R_RenderSegLoop(GetLineTint(linedef));
 
   // cph - if a column was made solid by this wall, we _must_ save full clipping
   // info

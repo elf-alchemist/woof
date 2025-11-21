@@ -172,8 +172,8 @@ typedef struct
 
     int32_t lightfloor, lightceiling;
 
-    char tint[9];
     char colormap[9];
+    char tint[9], tintceiling[9], tintfloor[9];
 
     double xpanningfloor,   ypanningfloor;
     double xpanningceiling, ypanningceiling;
@@ -1017,8 +1017,12 @@ static void UDMF_LoadSectors(void)
         sectors[i].ceiling_xoffs = DoubleToFixed(udmf_sectors[i].xpanningceiling);
         sectors[i].ceiling_yoffs = DoubleToFixed(udmf_sectors[i].ypanningceiling);
 
-        sectors[i].tint = MAX(0, R_ColormapNumForName(udmf_sectors[i].tint));
-        sectors[i].colormap = MAX(0, R_ColormapNumForName(udmf_sectors[i].colormap));
+        P_SectorInit(&sectors[i]);
+
+        sectors[i].colormap = R_ColormapNumForName(udmf_sectors[i].colormap);
+        sectors[i].tint = R_ColormapNumForName(udmf_sectors[i].tint);
+        sectors[i].tintceiling = R_ColormapNumForName(udmf_sectors[i].tintceiling);
+        sectors[i].tintfloor = R_ColormapNumForName(udmf_sectors[i].tintfloor);
 
         if (udmf_sectors[i].scroll_floor_type && (udmf_sectors[i].scroll_floor_x || udmf_sectors[i].scroll_floor_y))
         {
@@ -1049,8 +1053,6 @@ static void UDMF_LoadSectors(void)
                 DoubleToFixed(udmf_sectors[i].xscrollceiling),
                 DoubleToFixed(udmf_sectors[i].yscrollceiling));
         }
-
-        P_SectorInit(&sectors[i]);
     }
 }
 

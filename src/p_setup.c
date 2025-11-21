@@ -349,6 +349,8 @@ void P_SectorInit(sector_t * const sector)
   sector->floorlightsec = -1;   // sector used to get floor lighting
   sector->ceilinglightsec = -1; // sector used to get ceiling lighting:
 
+  sector->tintfloor = sector->tintceiling = -1;
+
   // killough 8/28/98: initialize all sectors to normal friction first
   sector->friction = ORIG_FRICTION;
   sector->movefactor = ORIG_FRICTION_FACTOR;
@@ -543,6 +545,9 @@ void P_LinedefInit(line_t * const linedef)
 
   // killough 4/11/98: no translucency by default
   linedef->tranmap = NULL;
+
+  // colormap-based tinting
+  linedef->tint = -1;
 
   linedef->angle = R_PointToAngle2(v1.x, v1.y, v2.x, v2.y);
 

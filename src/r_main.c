@@ -854,20 +854,21 @@ void R_SetupFrame (player_t *player)
   else if (sec->heightsec != -1)
   {
     const sector_t *heightsec = &sectors[sec->heightsec];
-
     if (viewz < heightsec->interpfloorheight)
       cm = heightsec->bottommap;
     else if (viewz > heightsec->interpceilingheight)
       cm = heightsec->topmap;
     else
       cm = heightsec->midmap;
-
-    if (cm < 0 || cm > numcolormaps)
-        cm = 0;
   }
   else
   {
     cm = 0;
+  }
+
+  if (cm < 0 || cm > numcolormaps)
+  {
+      cm = 0;
   }
 
   fullcolormap = colormaps[cm];
