@@ -58,6 +58,8 @@ void R_InitSpritesRes(void);
 
 void R_NearbySprites(void);
 
+extern inline const lighttable_t * const GetThingTint(const sector_t * const sector);
+
 #endif
 
 //----------------------------------------------------------------------------

@@ -158,11 +158,11 @@ inline static void SideLightLevel_Bottom(const side_t *side)
 // Woof! advanced tint control
 //
 
-inline static const lighttable_t * const GetLineTint(const line_t * const line)
+inline static const lighttable_t * const GetLineTint(const line_t * const line,
+                                                     const sector_t * const sect)
 {
-    return (line->tint >= 0)              ? colormaps[line->tint]
-         : (line->frontsector->tint >= 0) ? colormaps[line->frontsector->tint]
-                                          : fullcolormap;
+    return (line->tint >= 0) ? colormaps[line->tint] :
+           (sect->tint >= 0) ? colormaps[sect->tint] : fullcolormap;
 }
 
 //
@@ -184,7 +184,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   backsector = curline->backsector;
   const side_t * const side = curline->sidedef;
   const line_t * const line = curline->linedef;
-  const lighttable_t * const thiscolormap = GetLineTint(line);
+  const lighttable_t * const thiscolormap = GetLineTint(line, side->sector);
 
   // killough 4/11/98: draw translucent 2s normal textures
   colfunc = R_DrawColumn;
@@ -915,7 +915,7 @@ void R_StoreWallRange(const int start, const int stop)
 
   didsolidcol = false;
 
-  R_RenderSegLoop(GetLineTint(linedef));
+  R_RenderSegLoop(GetLineTint(linedef, sidedef->sector));
 
   // cph - if a column was made solid by this wall, we _must_ save full clipping
   // info

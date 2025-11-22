@@ -254,19 +254,15 @@ typedef struct line_s
   int16_t special;       // Special action
   int16_t id;            // Tag -> id/arg0 split
   int32_t args[5];       // Hexen-style parameterized actions
-
-  // UDMF -- further extend to 32bit
   int32_t sidenum[2];    // Visual appearance: SideDefs.
-
   fixed_t bbox[4];       // A bounding box, for the linedef's extent
   slopetype_t slopetype; // To aid move clipping.
   sector_t *frontsector; // Front and back sector.
   sector_t *backsector; 
   int validcount;        // if == validcount, already checked
   void *specialdata;     // thinker_t for reversable actions
-
   const byte *tranmap;   // better translucency handling
-  int32_t tint;
+  int32_t tint;          // colormap-based tinting
 
   int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
 
@@ -432,9 +428,6 @@ typedef struct vissprite_s
    
   // killough 3/27/98: height sector for underwater/fake ceiling support
   int heightsec;
-
-  // ID24 per-sector colormap
-  int tint;
 
   // [FG] colored blood and gibs
   int color;
