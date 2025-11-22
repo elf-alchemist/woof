@@ -62,23 +62,22 @@ typedef enum
     LINE_3DMIDTEX = (1u << 12), // EE's 3D middle texture
     LINE_ALPHA    = (1u << 13), // opacity percentage
     LINE_TRANMAP  = (1u << 14), // ditto, also customizable LUT
-    LINE_TINT     = (1u << 15), // WIP
 
-    SIDE_OFFSET  = (1u << 16), // texture X/Y alignment
-    SIDE_SCROLL  = (1u << 17), // texture scrolling property
-    SIDE_LIGHT   = (1u << 18), // independent light levels
-    SIDE_ALPHA   = (1u << 19), // WIP
-    SIDE_TRANMAP = (1u << 20), // WIP
-    SIDE_TINT    = (1u << 21), // WIP
+    SIDE_OFFSET  = (1u << 15), // texture X/Y alignment
+    SIDE_SCROLL  = (1u << 16), // texture scrolling property
+    SIDE_LIGHT   = (1u << 17), // independent light levels
+    SIDE_ALPHA   = (1u << 18), // WIP
+    SIDE_TRANMAP = (1u << 19), // WIP
+    SIDE_TINT    = (1u << 20), // WIP
 
-    SEC_ANGLE     = (1u << 22), // plane rotation
-    SEC_OFFSET    = (1u << 23), // plane X/Y alignment
-    SEC_EE_SCROLL = (1u << 24), // EE's original plane scrolling property
-    SEC_SCROLL    = (1u << 25), // DSDA's later plane scrolling property
-    SEC_LIGHT     = (1u << 26), // independent light levels
-    SEC_COLORMAP  = (1u << 27), // viewplayer's colormap on this given frame
-    SEC_TINT      = (1u << 28), // view-agnostic colormap for the given sector
-    SEC_SILENCE   = (1u << 29), // WIP
+    SEC_ANGLE     = (1u << 21), // plane rotation
+    SEC_OFFSET    = (1u << 22), // plane X/Y alignment
+    SEC_EE_SCROLL = (1u << 23), // EE's original plane scrolling property
+    SEC_SCROLL    = (1u << 24), // DSDA's later plane scrolling property
+    SEC_LIGHT     = (1u << 25), // independent light levels
+    SEC_COLORMAP  = (1u << 26), // viewplayer's colormap on this given frame
+    SEC_TINT      = (1u << 27), // view-agnostic colormap for the given sector
+    SEC_SILENCE   = (1u << 28), // WIP
 
     // Compatibility
     COMP_NO_ARG0 = (1u << 31),
@@ -146,6 +145,8 @@ typedef struct
     int32_t light_top;
     int32_t light_mid;
     int32_t light_bottom;
+
+    char tint[9];
 
     double offsetx_top,    offsety_top;
     double offsetx_mid,    offsety_mid;
@@ -331,7 +332,7 @@ static void UDMF_ParseNamespace(scanner_t *s)
     {
         udmf_flags |= LINE_PASSUSE | LINE_BLOCK | LINE_ALPHA | LINE_TRANMAP;
         udmf_flags |= THING_FRIEND | THING_PARAM | THING_ALPHA | THING_TRANMAP;
-        udmf_flags |= SIDE_OFFSET | SIDE_SCROLL | SIDE_LIGHT;
+        udmf_flags |= SIDE_OFFSET | SIDE_SCROLL | SIDE_LIGHT | SIDE_TINT;
         udmf_flags |= SEC_ANGLE | SEC_OFFSET | SEC_SCROLL | SEC_LIGHT | SEC_COLORMAP | SEC_TINT;
     }
     else
@@ -380,7 +381,7 @@ static void UDMF_ParseLinedef(scanner_t *s)
 {
     UDMF_Linedef_t line = {0};
     line.sideback = -1;
-    line.tranmap[0] = '-';
+    M_CopyLumpName(line.tranmap, "-");
     line.alpha = 1.0;
 
     SC_MustGetToken(s, '{');
@@ -511,6 +512,7 @@ static void UDMF_ParseSidedef(scanner_t *s)
     M_CopyLumpName(side.texturetop, "-");
     M_CopyLumpName(side.texturemiddle, "-");
     M_CopyLumpName(side.texturebottom, "-");
+    M_CopyLumpName(side.tint, "-");
 
     SC_MustGetToken(s, '{');
     while (!SC_CheckToken(s, '}'))
@@ -636,6 +638,10 @@ static void UDMF_ParseSidedef(scanner_t *s)
         else if (PROP(yscrollbottom, SIDE_SCROLL))
         {
             side.yscrollbottom = UDMF_ScanDouble(s);
+        }
+        else if (PROP(tint, SIDE_TINT))
+        {
+            UDMF_ScanLumpName(s, side.tint);
         }
         else
         {
@@ -778,13 +784,21 @@ static void UDMF_ParseSector(scanner_t *s)
         {
             sector.flags |= UDMF_ScanFlag(s, SECF_ABS_LIGHT_CEIL);
         }
+        else if (PROP(colormap, SEC_COLORMAP))
+        {
+            UDMF_ScanLumpName(s, sector.colormap);
+        }
         else if (PROP(tint, SEC_TINT))
         {
             UDMF_ScanLumpName(s, sector.tint);
         }
-        else if (PROP(colormap, SEC_COLORMAP))
+        else if (PROP(tintfloor, SEC_TINT))
         {
-            UDMF_ScanLumpName(s, sector.colormap);
+            UDMF_ScanLumpName(s, sector.tintfloor);
+        }
+        else if (PROP(tintceiling, SEC_TINT))
+        {
+            UDMF_ScanLumpName(s, sector.tintceiling);
         }
         else
         {
@@ -803,7 +817,7 @@ static void UDMF_ParseThing(scanner_t *s)
 {
     UDMF_Thing_t thing = {0};
     thing.options |= MTF_NOTSINGLE | MTF_NOTCOOP | MTF_NOTDM;
-    thing.tranmap[0] = '-';
+    M_CopyLumpName(thing.tranmap, "-");
     thing.alpha = 1.0;
 
     SC_MustGetToken(s, '{');
@@ -1075,11 +1089,15 @@ static void UDMF_LoadSideDefs(void)
         sides[i].offsetx_bottom = DoubleToFixed(udmf_sidedefs[i].offsetx_bottom);
         sides[i].offsety_bottom = DoubleToFixed(udmf_sidedefs[i].offsety_bottom);
 
+        P_SidedefInit(&sides[i]);
+
         sides[i].flags = udmf_sidedefs[i].flags;
         sides[i].light = udmf_sidedefs[i].light;
         sides[i].light_top = udmf_sidedefs[i].light_top;
         sides[i].light_mid = udmf_sidedefs[i].light_mid;
         sides[i].light_bottom = udmf_sidedefs[i].light_bottom;
+
+        sides[i].tint = R_ColormapNumForName(udmf_sidedefs[i].tint);
 
         if (udmf_sidedefs[i].xscroll || udmf_sidedefs[i].yscroll)
         {
@@ -1108,7 +1126,6 @@ static void UDMF_LoadSideDefs(void)
                                DoubleToFixed(udmf_sidedefs[i].xscrollbottom),
                                DoubleToFixed(udmf_sidedefs[i].yscrollbottom));
         }
-        P_SidedefInit(&sides[i]);
     }
 }
 

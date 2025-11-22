@@ -158,10 +158,10 @@ inline static void SideLightLevel_Bottom(const side_t *side)
 // Woof! advanced tint control
 //
 
-inline static const lighttable_t * const GetLineTint(const line_t * const line,
+inline static const lighttable_t * const GetSideTint(const side_t * const side,
                                                      const sector_t * const sect)
 {
-    return (line->tint >= 0) ? colormaps[line->tint] :
+    return (side->tint >= 0) ? colormaps[side->tint] :
            (sect->tint >= 0) ? colormaps[sect->tint] : fullcolormap;
 }
 
@@ -184,7 +184,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   backsector = curline->backsector;
   const side_t * const side = curline->sidedef;
   const line_t * const line = curline->linedef;
-  const lighttable_t * const thiscolormap = GetLineTint(line, side->sector);
+  const lighttable_t * const thiscolormap = GetSideTint(side, side->sector);
 
   // killough 4/11/98: draw translucent 2s normal textures
   colfunc = R_DrawColumn;
@@ -763,7 +763,10 @@ void R_StoreWallRange(const int start, const int stop)
 
         // hexen flowing water
         || backsector->special != frontsector->special
+
+        // colormap-based tinting
         || backsector->tint != frontsector->tint
+        || backsector->tintfloor != frontsector->tintfloor
 
         // Clipping flags
         || (sidedef->midtexture && (sidedef->flags & (SF_CLIP_MIDTEX|SF_WRAP_MIDTEX)))
@@ -788,7 +791,10 @@ void R_StoreWallRange(const int start, const int stop)
 
         // killough 4/17/98: draw ceilings if different light levels
         || backsector->ceilinglightsec != frontsector->ceilinglightsec
+
+        // colormap-based tinting
         || backsector->tint != frontsector->tint
+        || backsector->tintceiling != frontsector->tintceiling
 
         // Clipping flags
         || (sidedef->midtexture && (sidedef->flags & (SF_CLIP_MIDTEX|SF_WRAP_MIDTEX)))
@@ -915,7 +921,7 @@ void R_StoreWallRange(const int start, const int stop)
 
   didsolidcol = false;
 
-  R_RenderSegLoop(GetLineTint(linedef, sidedef->sector));
+  R_RenderSegLoop(GetSideTint(sidedef, sidedef->sector));
 
   // cph - if a column was made solid by this wall, we _must_ save full clipping
   // info

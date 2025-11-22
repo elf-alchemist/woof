@@ -209,7 +209,7 @@ typedef struct side_s
   short bottomtexture;
   short midtexture;
   sector_t* sector;      // Sector the SideDef is facing.
-
+  int32_t tint;          // colormap-based tinting
   sidedef_flags_t flags;
 
   // killough 4/4/98, 4/11/98: highest referencing special linedef's type,
@@ -262,8 +262,6 @@ typedef struct line_s
   int validcount;        // if == validcount, already checked
   void *specialdata;     // thinker_t for reversable actions
   const byte *tranmap;   // better translucency handling
-  int32_t tint;          // colormap-based tinting
-
   int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
 
   // ID24 line specials

@@ -546,9 +546,6 @@ void P_LinedefInit(line_t * const linedef)
   // killough 4/11/98: no translucency by default
   linedef->tranmap = NULL;
 
-  // colormap-based tinting
-  linedef->tint = -1;
-
   linedef->angle = R_PointToAngle2(v1.x, v1.y, v2.x, v2.y);
 
   linedef->slopetype = !dx                  ? ST_VERTICAL
@@ -805,6 +802,7 @@ void P_LoadSideDefs2(int lump)
 
 void P_SidedefInit(side_t * const sidedef)
 {
+  sidedef->tint = -1;
   // [crispy] smooth texture scrolling
   sidedef->oldtextureoffset = sidedef->interptextureoffset = sidedef->textureoffset;
   sidedef->oldrowoffset = sidedef->interprowoffset = sidedef->rowoffset;
