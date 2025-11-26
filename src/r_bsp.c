@@ -196,105 +196,121 @@ static const int16_t CeilingLight(const sector_t *sec)
 // killough 4/11/98, 4/13/98: fix bugs, add 'back' parameter
 //
 
-sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
-                     int *floorlightlevel, int *ceilinglightlevel,
-                     boolean back)
+sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec, int *floorlightlevel, int *ceilinglightlevel, boolean back)
 {
-  if (floorlightlevel)
-    *floorlightlevel = FloorLight(sec);
-
-  if (ceilinglightlevel)
-    *ceilinglightlevel = CeilingLight(sec); // killough 4/11/98
-
-  if (sec->heightsec != -1)
+    if (floorlightlevel)
     {
-      const sector_t *s = &sectors[sec->heightsec];
-      int heightsec = viewplayer->mo->subsector->sector->heightsec;
-      int underwater = heightsec!=-1 && viewz<=sectors[heightsec].floorheight;
+        *floorlightlevel = FloorLight(sec);
+    }
 
-      // Replace sector being drawn, with a copy to be hacked
-      *tempsec = *sec;
+    if (ceilinglightlevel)
+    {
+        *ceilinglightlevel = CeilingLight(sec); // killough 4/11/98
+    }
 
-      // Replace floor and ceiling height with other sector's heights.
-      tempsec->floorheight   = s->floorheight;
-      tempsec->ceilingheight = s->ceilingheight;
-      tempsec->interpfloorheight   = s->interpfloorheight;
-      tempsec->interpceilingheight = s->interpceilingheight;
+    if (sec->heightsec != -1)
+    {
+        const sector_t *s = &sectors[sec->heightsec];
+        int heightsec = viewplayer->mo->subsector->sector->heightsec;
+        int underwater = heightsec != -1 && viewz <= sectors[heightsec].floorheight;
+        int above_ceil = heightsec != -1 && viewz >= sectors[heightsec].ceilingheight && sec->ceilingheight > s->ceilingheight;
 
-      // killough 11/98: prevent sudden light changes from non-water sectors:
-      if (underwater && (tempsec->  floorheight = sec->floorheight,
-			 tempsec->interpfloorheight = sec->interpfloorheight,
-			 tempsec->interpceilingheight = s->interpfloorheight-1,
-			 tempsec->ceilingheight = s->floorheight-1, !back))
-        {                   // head-below-floor hack
-          tempsec->floorpic    = s->floorpic;
-          tempsec->interp_floor_xoffs = s->interp_floor_xoffs;
-          tempsec->interp_floor_yoffs = s->interp_floor_yoffs;
-          tempsec->floor_rotation = s->floor_rotation;
+        // Replace sector being drawn, with a copy to be hacked
+        *tempsec = *sec;
 
-          if (underwater)
-          {
+        // Replace floor and ceiling height with other sector's heights.
+        tempsec->floorheight         = s->floorheight;
+        tempsec->ceilingheight       = s->ceilingheight;
+        tempsec->interpfloorheight   = s->interpfloorheight;
+        tempsec->interpceilingheight = s->interpceilingheight;
+
+        boolean goUnderwater = false;
+        if (underwater)
+        {
+            tempsec->floorheight         = sec->floorheight;
+            tempsec->ceilingheight       = s->floorheight - 1;
+            tempsec->interpfloorheight   = sec->interpfloorheight;
+            tempsec->interpceilingheight = s->interpfloorheight - 1;
+
+            if (!back) goUnderwater = true;
+        }
+
+        // killough 11/98: prevent sudden light changes from non-water sectors:
+        if (goUnderwater) // head-below-floor hack
+        {
+            tempsec->floorpic           = s->floorpic;
+            tempsec->interp_floor_xoffs = s->interp_floor_xoffs;
+            tempsec->interp_floor_yoffs = s->interp_floor_yoffs;
+            tempsec->floor_rotation     = s->floor_rotation;
+            tempsec->lightlevel         = s->lightlevel;
+
             if (s->ceilingpic == skyflatnum)
-              {
-                tempsec->floorheight   = tempsec->ceilingheight+1;
-                tempsec->interpfloorheight = tempsec->interpceilingheight+1;
-                tempsec->ceilingpic    = tempsec->floorpic;
-                tempsec->interp_ceiling_xoffs = tempsec->interp_floor_xoffs;
-                tempsec->interp_ceiling_yoffs = tempsec->interp_floor_yoffs;
-                tempsec->ceiling_rotation = tempsec->ceiling_rotation;
-              }
+            {
+                tempsec->floorheight        = tempsec->ceilingheight + 1;
+                tempsec->interpfloorheight  = tempsec->interpceilingheight + 1;
+                tempsec->floorpic           = tempsec->floorpic;
+                tempsec->interp_floor_xoffs = tempsec->interp_floor_xoffs;
+                tempsec->interp_floor_yoffs = tempsec->interp_floor_yoffs;
+                tempsec->floor_rotation     = tempsec->floor_rotation;
+            }
             else
-              {
-                tempsec->ceilingpic    = s->ceilingpic;
+            {
+                tempsec->ceilingpic           = s->ceilingpic;
                 tempsec->interp_ceiling_xoffs = s->interp_ceiling_xoffs;
                 tempsec->interp_ceiling_yoffs = s->interp_ceiling_yoffs;
-                tempsec->ceiling_rotation = s->ceiling_rotation;
-              }
-          }
-
-          tempsec->lightlevel  = s->lightlevel;
-
-          if (floorlightlevel)
-            *floorlightlevel = FloorLight(s); // killough 3/16/98
-
-          if (ceilinglightlevel)
-            *ceilinglightlevel = CeilingLight(s); // killough 4/11/98
-        }
-      else
-        if (heightsec != -1 && viewz >= sectors[heightsec].ceilingheight &&
-            sec->ceilingheight > s->ceilingheight)
-          {   // Above-ceiling hack
-            tempsec->ceilingheight = s->ceilingheight;
-            tempsec->floorheight   = s->ceilingheight + 1;
-            tempsec->interpceilingheight = s->interpceilingheight;
-            tempsec->interpfloorheight   = s->interpceilingheight + 1;
-
-            tempsec->floorpic    = tempsec->ceilingpic    = s->ceilingpic;
-            tempsec->interp_floor_xoffs = tempsec->interp_ceiling_xoffs = s->interp_ceiling_xoffs;
-            tempsec->interp_floor_yoffs = tempsec->interp_ceiling_yoffs = s->interp_ceiling_yoffs;
-            tempsec->floor_rotation = tempsec->ceiling_rotation = s->ceiling_rotation;
-
-            if (s->floorpic != skyflatnum)
-              {
-                tempsec->ceilingheight = sec->ceilingheight;
-                tempsec->interpceilingheight = sec->interpceilingheight;
-                tempsec->floorpic      = s->floorpic;
-                tempsec->interp_floor_xoffs   = s->interp_floor_xoffs;
-                tempsec->interp_floor_yoffs   = s->interp_floor_yoffs;
-                tempsec->floor_rotation = s->floor_rotation;
-              }
-
-            tempsec->lightlevel  = s->lightlevel;
+                tempsec->ceiling_rotation     = s->ceiling_rotation;
+            }
 
             if (floorlightlevel)
-              *floorlightlevel = FloorLight(s); // killough 3/16/98
+            {
+                *floorlightlevel = FloorLight(s); // killough 3/16/98
+            }
 
             if (ceilinglightlevel)
-              *ceilinglightlevel = CeilingLight(s); // killough 4/11/98
-          }
-      sec = tempsec;               // Use other sector
+            {
+                *ceilinglightlevel = CeilingLight(s); // killough 4/11/98
+            }
+        }
+        else if (above_ceil) // Above-ceiling hack
+        {
+            tempsec->ceilingheight       = s->ceilingheight;
+            tempsec->floorheight         = s->ceilingheight + 1;
+            tempsec->interpfloorheight   = s->interpceilingheight + 1;
+            tempsec->interpceilingheight = s->interpceilingheight;
+            tempsec->lightlevel          = s->lightlevel;
+
+            tempsec->ceilingpic           = s->ceilingpic;
+            tempsec->floorpic             = s->ceilingpic;
+            tempsec->interp_ceiling_xoffs = s->interp_ceiling_xoffs;
+            tempsec->interp_floor_xoffs   = s->interp_ceiling_xoffs;
+            tempsec->interp_ceiling_yoffs = s->interp_ceiling_yoffs;
+            tempsec->interp_floor_yoffs   = s->interp_ceiling_yoffs;
+            tempsec->ceiling_rotation     = s->ceiling_rotation;
+            tempsec->floor_rotation       = s->ceiling_rotation;
+
+            if (s->floorpic != skyflatnum)
+            {
+                tempsec->ceilingheight        = sec->ceilingheight;
+                tempsec->interpceilingheight  = sec->interpceilingheight;
+                tempsec->floorpic             = s->floorpic;
+                tempsec->interp_floor_xoffs   = s->interp_floor_xoffs;
+                tempsec->interp_floor_yoffs   = s->interp_floor_yoffs;
+                tempsec->floor_rotation       = s->floor_rotation;
+            }
+
+            if (floorlightlevel)
+            {
+                *floorlightlevel = FloorLight(s); // killough 3/16/98
+            }
+
+            if (ceilinglightlevel)
+            {
+                *ceilinglightlevel = CeilingLight(s); // killough 4/11/98
+            }
+        }
+        sec = tempsec; // Use other sector
     }
-  return sec;
+    return sec;
 }
 
 // [AM] Interpolate the passed sector, if prudent.
@@ -689,14 +705,11 @@ static void R_Subsector(int num)
                 floor_tint
                 ) : NULL;
 
-  ceilingplane = frontsector->interpceilingheight > viewz ||
-    frontsector->ceilingpic == skyflatnum ||
-    (frontsector->heightsec != -1 &&
-     sectors[frontsector->heightsec].floorpic == skyflatnum) ?
+  ceilingplane =
+    frontsector->interpceilingheight > viewz || frontsector->ceilingpic == skyflatnum || (frontsector->heightsec != -1 && sectors[frontsector->heightsec].floorpic == skyflatnum) ?
     R_FindPlane(frontsector->interpceilingheight,     // killough 3/8/98
-		frontsector->ceilingpic == skyflatnum &&  // kilough 10/98
-		frontsector->ceilingsky & PL_SKYFLAT ? frontsector->ceilingsky :
-                frontsector->ceilingpic,
+                frontsector->ceilingpic == skyflatnum && frontsector->ceilingsky & PL_SKYFLAT ? frontsector->ceilingsky : frontsector->ceilingpic,
+		// kilough 10/98
                 ceilinglightlevel,              // killough 4/11/98
                 frontsector->interp_ceiling_xoffs,     // killough 3/7/98
                 frontsector->interp_ceiling_yoffs,
