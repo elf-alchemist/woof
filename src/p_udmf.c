@@ -1308,7 +1308,7 @@ void UDMF_LoadThings(void)
     }
 }
 
-boolean UDMF_LoadBlockMap(int blockmap_num)
+static boolean UDMF_LoadBlockMap(int blockmap_num)
 {
     long count;
     boolean ret = true;
@@ -1370,7 +1370,7 @@ boolean UDMF_LoadBlockMap(int blockmap_num)
     return ret;
 }
 
-boolean UDMF_LoadReject(int reject_num, int totallines)
+static boolean UDMF_LoadReject(int reject_num)
 {
     // Calculate the size that the REJECT lump *should* be.
     int minlength = (numsectors * numsectors + 7) / 8;
@@ -1393,7 +1393,7 @@ boolean UDMF_LoadReject(int reject_num, int totallines)
         rejectmatrix = Z_Malloc(minlength, PU_LEVEL, (void **)&rejectmatrix);
         if (reject_num >= 0)
         {
-            W_ReadLump(reject_num, rejectmatrix);
+            W_ReadLumpSize(reject_num, rejectmatrix, minlength);
         }
 
         if (M_CheckParm("-reject_pad_with_ff"))
@@ -1472,5 +1472,5 @@ void UDMF_LoadMap(int lumpnum, nodeformat_t *nodeformat, int *gen_blockmap,
 
     *gen_blockmap = UDMF_LoadBlockMap(blockmap_num);
     P_LoadNodes_ZDoom(znodes_num, *nodeformat);
-    *pad_reject = UDMF_LoadReject(reject_num, P_GroupLines());
+    *pad_reject = UDMF_LoadReject(reject_num);
 }
