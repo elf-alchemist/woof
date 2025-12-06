@@ -20,20 +20,11 @@
 //   Generation of transparency lookup tables.
 //
 
-#include <stdlib.h>
-#include <string.h>
-
-#include "d_iwad.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
-#include "i_exit.h"
-#include "i_printf.h"
 #include "i_video.h"
 #include "m_argv.h"
-#include "m_io.h"
-#include "m_misc.h"
-#include "md5.h"
 #include "r_srgb.h"
 #include "r_tranmap.h"
 #include "w_wad.h"
@@ -47,14 +38,9 @@
 // By Lee Killough 2/21/98
 //
 
-static const int playpal_base_layer = 256 * 3;    // RGB triplets
 static const int tranmap_lump_length = 256 * 256; // Plain RAW graphic
-static const int default_tranmap_alpha = 66;      // Keep it simple, only do alpha of 66
 
-static byte playpal_digest[16];
-static char playpal_string[33];
-static char *tranmap_dir, *playpal_dir;
-static byte *normal_tranmap[100];
+static byte *normal_tranmap[ALPHA_MAX];
 
 const byte *tranmap;      // translucency filter maps 256x256   // phares
 const byte *main_tranmap; // killough 4/11/98
@@ -110,51 +96,6 @@ inline static const byte ColorBlend(byte *playpal, blendfunc_t blendfunc,
 }
 
 //
-// Util functions to handle caching in the form of local tranmap file
-//
-
-static void CalculatePlaypalChecksum(void)
-{
-    const int lump = W_GetNumForName("PLAYPAL");
-    struct MD5Context md5;
-
-    MD5Init(&md5);
-    MD5Update(&md5, W_CacheLumpNum(lump, PU_STATIC), playpal_base_layer);
-    MD5Final(playpal_digest, &md5);
-    M_DigestToString(playpal_digest, playpal_string, sizeof(playpal_digest));
-}
-
-static void CreateTranMapBaseDir(void)
-{
-    const char *data_root = D_DoomPrefDir();
-    const int length = strlen(data_root) + sizeof("/tranmaps");
-
-    tranmap_dir = Z_Malloc(length, PU_STATIC, 0);
-    M_snprintf(tranmap_dir, length, "%s/tranmaps", data_root);
-
-    M_MakeDirectory(tranmap_dir);
-}
-
-static void CreateTranMapPaletteDir(void)
-{
-    if (!tranmap_dir)
-    {
-        CreateTranMapBaseDir();
-    }
-
-    if (!playpal_string[0])
-    {
-        CalculatePlaypalChecksum();
-    }
-
-    int length = strlen(tranmap_dir) + sizeof(playpal_string) + 1;
-    playpal_dir = Z_Malloc(length, PU_STATIC, 0);
-    M_snprintf(playpal_dir, length, "%s/%s", tranmap_dir, playpal_string);
-
-    M_MakeDirectory(playpal_dir);
-}
-
-//
 // The heart of it all
 //
 
@@ -195,45 +136,15 @@ static byte *GenerateTranmapData(blendfunc_t blendfunc, double alpha)
     return buffer;
 }
 
-byte *R_NormalTranMap(int alpha, boolean force)
+byte *R_NormalTranMap(int alpha)
 {
-    if (alpha > 99)
+    alpha = CLAMP(alpha, 0, 99);
+
+    if (!normal_tranmap[alpha])
     {
-        return NULL;
+        normal_tranmap[alpha] = GenerateTranmapData(BlendChannelNormal, alpha / ALPHA_FACTOR);
     }
 
-    if (force || !normal_tranmap[alpha])
-    {
-        if (!playpal_dir)
-        {
-            CreateTranMapPaletteDir();
-        }
-
-        const int length = strlen(playpal_dir) + sizeof("/tranmap_XY.dat");
-        char *filename = Z_Malloc(length, PU_STATIC, 0);
-        M_snprintf(filename, length, "%s/tranmap_%02d.dat", playpal_dir, alpha);
-
-        byte *buffer = NULL;
-        if (!force && M_FileExistsNotDir(filename))
-        {
-            const int file_length = M_ReadFile(filename, &buffer);
-            if (buffer && file_length != tranmap_lump_length)
-            {
-                Z_Free(buffer);
-                buffer = NULL;
-            }
-        }
-
-        if (force || !buffer)
-        {
-            buffer = GenerateTranmapData(BlendChannelNormal, alpha/100.0);
-            M_WriteFile(filename, buffer, tranmap_lump_length);
-        }
-
-        normal_tranmap[alpha] = buffer;
-    }
-
-    // Use cached translucency filter if it's available
     return normal_tranmap[alpha];
 }
 
@@ -253,31 +164,11 @@ void R_InitTranMap(void)
     }
     else
     {
-        main_tranmap = R_NormalTranMap(default_tranmap_alpha, true);
+        main_tranmap = R_NormalTranMap(ALPHA_DEFAULT);
     }
 
     // Some things look better with added luminosity :)
     main_addimap = strictmode ? main_tranmap
                  : GenerateTranmapData(BlendChannelAdditive, 1.0);
 
-    I_Printf(VB_INFO, "Playpal checksum: %s", playpal_string);
-
-    //!
-    // @category mod
-    // @arg <alpha> <name>
-    //
-    // Dump tranmap lump, given an alpha level (opacity percentage).
-    // Valid values are 0 through to 99.
-    //
-    const int p = M_CheckParmWithArgs("-dumptranmap", 2);
-    if (p > 0)
-    {
-        const int alpha = CLAMP(M_ParmArgToInt(p), 0, 99);
-        const byte *tranmap = R_NormalTranMap(alpha, true);
-        char *path = AddDefaultExtension(myargv[p + 2], ".lmp");
-        M_WriteFile(path, tranmap, tranmap_lump_length);
-        free(path);
-
-        I_SafeExit(0);
-    }
 }

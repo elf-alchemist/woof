@@ -29,9 +29,12 @@ extern const byte *tranmap;
 extern const byte *main_tranmap;
 extern const byte *main_addimap;
 
+#define ALPHA_FACTOR  100.0f
+#define ALPHA_MAX     100
+#define ALPHA_DEFAULT 66     // Keep it simple, only do alpha of 66
+
 // killough 3/6/98: translucency initialization
 void R_InitTranMap(void);
-byte *R_NormalTranMap(int alpha, boolean force);
-#define GetNormalTranMap(alpha) R_NormalTranMap(alpha, false)
+byte *R_NormalTranMap(int alpha);
 
 #endif

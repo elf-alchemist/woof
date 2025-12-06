@@ -44,44 +44,43 @@
 // Universal Doom Map Format (UDMF) support
 //
 
-typedef enum
-{
-    NO_FEATURES = (0), // shut compiler up, also reset when parsing new map
+typedef uint64_t UDMF_Features_t;
 
-    THING_FRIEND  = (1u << 1), // Marine's Best Friend :)
-    THING_SPECIAL = (1u << 2), // Death/Pickup/etc-activated actions
-    THING_PARAM   = (1u << 3), // ditto, also customizes some MObjs
-    THING_HEALTH  = (1u << 4), // WIP
-    THING_ALPHA   = (1u << 5), // opacity percentage
-    THING_TRANMAP = (1u << 6), // ditto, also customizable LUT
-    THING_TINT    = (1u << 7), // WIP
+#define NO_FEATURES   0x0000000000000000ull // shut compiler up, also reset when parsing new map
 
-    LINE_PARAM    = (1u << 8), // Hexen-style param actions
-    LINE_PASSUSE  = (1u << 9), // Boom's "Pass Use Through" line flag
-    LINE_BLOCK    = (1u << 10), // MBF21's entity blocking flag
-    LINE_3DMIDTEX = (1u << 12), // EE's 3D middle texture
-    LINE_ALPHA    = (1u << 13), // opacity percentage
-    LINE_TRANMAP  = (1u << 14), // ditto, also customizable LUT
+#define THING_FRIEND  0x0000000000000001ull // Marine's Best Friend :)
+#define THING_SPECIAL 0x0000000000000002ull // Death/Pickup/etc-activated actions
+#define THING_PARAM   0x0000000000000004ull // ditto, also customizes some MObjs
+#define THING_HEALTH  0x0000000000000008ull // WIP
+#define THING_ALPHA   0x0000000000000010ull // opacity percentage
+#define THING_TRANMAP 0x0000000000000020ull // ditto, also customizable LUT
+#define THING_TINT    0x0000000000000040ull // view-agnostic colormap for the given mobj
 
-    SIDE_OFFSET  = (1u << 15), // texture X/Y alignment
-    SIDE_SCROLL  = (1u << 16), // texture scrolling property
-    SIDE_LIGHT   = (1u << 17), // independent light levels
-    SIDE_ALPHA   = (1u << 18), // WIP
-    SIDE_TRANMAP = (1u << 19), // WIP
-    SIDE_TINT    = (1u << 20), // WIP
+#define LINE_PARAM    0x0000000000000080ull // Hexen-style param actions
+#define LINE_PASSUSE  0x0000000000000100ull // Boom's "Pass Use Through" line flag
+#define LINE_BLOCK    0x0000000000000200ull // MBF21's entity blocking flag
+#define LINE_3DMIDTEX 0x0000000000000400ull // EE's 3D middle texture
+#define LINE_ALPHA    0x0000000000000800ull // opacity percentage
+#define LINE_TRANMAP  0x0000000000001000ull // ditto, also customizable LUT
 
-    SEC_ANGLE     = (1u << 21), // plane rotation
-    SEC_OFFSET    = (1u << 22), // plane X/Y alignment
-    SEC_EE_SCROLL = (1u << 23), // EE's original plane scrolling property
-    SEC_SCROLL    = (1u << 24), // DSDA's later plane scrolling property
-    SEC_LIGHT     = (1u << 25), // independent light levels
-    SEC_COLORMAP  = (1u << 26), // viewplayer's colormap on this given frame
-    SEC_TINT      = (1u << 27), // view-agnostic colormap for the given sector
-    SEC_SILENCE   = (1u << 28), // WIP
+#define SIDE_OFFSET   0x0000000000002000ull // texture X/Y alignment
+#define SIDE_SCROLL   0x0000000000004000ull // texture scrolling property
+#define SIDE_LIGHT    0x0000000000008000ull // independent light levels
+#define SIDE_ALPHA    0x0000000000010000ull // WIP
+#define SIDE_TRANMAP  0x0000000000020000ull // WIP
+#define SIDE_TINT     0x0000000000040000ull // view-agnostic colormap for the given sidedef
 
-    // Compatibility
-    COMP_NO_ARG0 = (1u << 31),
-} UDMF_Features_t;
+#define SEC_ANGLE     0x0000000000080000ull // plane rotation
+#define SEC_OFFSET    0x0000000000100000ull // plane X/Y alignment
+#define SEC_EE_SCROLL 0x0000000000200000ull // EE's original plane scrolling property
+#define SEC_SCROLL    0x0000000000400000ull // DSDA's later plane scrolling property
+#define SEC_LIGHT     0x0000000000800000ull // independent light levels
+#define SEC_COLORMAP  0x0000000001000000ull // viewplayer's colormap on this given frame
+#define SEC_TINT      0x0000000002000000ull // view-agnostic colormap for the given sector
+#define SEC_SILENCE   0x0000000004000000ull // WIP
+
+// Compatibility
+#define COMP_NO_ARG0 (1u << 31)
 
 typedef struct
 {
@@ -1167,8 +1166,8 @@ static void UDMF_LoadLineDefs(void)
 
         if (udmf_linedefs[i].alpha < 1.0)
         {
-          const int32_t alpha = (int32_t)floorf(udmf_linedefs[i].alpha * 100.0);
-          lines[i].tranmap = GetNormalTranMap(alpha);
+            const int32_t alpha = (int32_t)floorf(udmf_linedefs[i].alpha * ALPHA_FACTOR);
+            lines[i].tranmap = R_NormalTranMap(alpha);
         }
 
         int32_t lump = W_CheckNumForName(udmf_linedefs[i].tranmap);
@@ -1294,8 +1293,8 @@ void UDMF_LoadThings(void)
 
         if (udmf_things[i].alpha < 1.0)
         {
-          const int32_t alpha = (int32_t)floor(udmf_things[i].alpha * 100.0);
-          mt.tranmap = GetNormalTranMap(alpha);
+            const int32_t alpha = (int32_t)floorf(udmf_things[i].alpha * ALPHA_FACTOR);
+            mt.tranmap = R_NormalTranMap(alpha);
         }
 
         int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
