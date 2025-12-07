@@ -484,9 +484,9 @@ void R_DrawVisSprite(vissprite_t *vis, int x1, int x2)
 
 inline const lighttable_t * const GetThingTint(const sector_t * const sector)
 {
-  return (sector->floorlightsec >= 0) ? colormaps[sectors[sector->floorlightsec].tint] :
-                  (sector->tint >= 0) ? colormaps[sector->tint]
-                                      : fullcolormap;
+  const int32_t tint = (sector->floorlightsec >= 0) ? sectors[sector->floorlightsec].tint
+                                                    : sector->tint;
+  return (tint >= 0) ? colormaps[tint] : fullcolormap;
 }
 
 //

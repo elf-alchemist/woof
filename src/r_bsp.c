@@ -185,16 +185,16 @@ inline static const int16_t CeilingLight(const sector_t *sec)
 
 inline static const int16_t GetCeilingTint(const sector_t *sec)
 {
-  return (sec->tintceiling >= 0)      ? sec->tintceiling
-        : (sec->ceilinglightsec >= 0) ? sectors[sec->ceilinglightsec].tint
-                                      : sec->tint;
+  return (sec->tintceiling >= 0)     ? sec->tintceiling :
+         (sec->ceilinglightsec >= 0) ? sectors[sec->ceilinglightsec].tint
+                                     : sec->tint;
 }
 
 inline static const int16_t GetFloorTint(const sector_t *sec)
 {
-  return (sec->tintfloor >= 0)      ? sec->tintfloor
-        : (sec->floorlightsec >= 0) ? sectors[sec->floorlightsec].tint
-                                    : sec->tint;
+  return (sec->tintfloor >= 0)     ? sec->tintfloor :
+         (sec->floorlightsec >= 0) ? sectors[sec->floorlightsec].tint
+                                   : sec->tint;
 }
 
 //

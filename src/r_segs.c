@@ -161,8 +161,8 @@ inline static void SideLightLevel_Bottom(const side_t *side)
 inline static const lighttable_t * const GetSideTint(const side_t * const side,
                                                      const sector_t * const sect)
 {
-    return (side->tint >= 0) ? colormaps[side->tint] :
-           (sect->tint >= 0) ? colormaps[sect->tint] : fullcolormap;
+  const int32_t tint = (side->tint >= 0) ? side->tint : sect->tint;
+  return (tint >= 0) ? colormaps[tint] : fullcolormap;
 }
 
 //
