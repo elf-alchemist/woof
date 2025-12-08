@@ -1164,14 +1164,15 @@ static void UDMF_LoadLineDefs(void)
 
         P_LinedefInit(&lines[i]);
 
-        if (udmf_linedefs[i].alpha < 1.0)
+        // Translucency and special effects support
+        int32_t lump = W_CheckNumForName(udmf_linedefs[i].tranmap);
+
+        if (lump == NO_INDEX && udmf_linedefs[i].alpha < 1.0)
         {
-            const int32_t alpha = (int32_t)floorf(udmf_linedefs[i].alpha * ALPHA_FACTOR);
-            lines[i].tranmap = R_NormalTranMap(alpha);
+            lines[i].tranmap = R_NormalTranMap(udmf_linedefs[i].alpha);
         }
 
-        int32_t lump = W_CheckNumForName(udmf_linedefs[i].tranmap);
-        if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
+        if (lump != NO_INDEX && W_LumpLength(lump) == TRANMAP_SIZE)
         {
             lines[i].tranmap = W_CacheLumpNum(lump, PU_CACHE);
         }
@@ -1291,14 +1292,15 @@ void UDMF_LoadThings(void)
         mt.args[3] = udmf_things[i].args[3];
         mt.args[4] = udmf_things[i].args[4];
 
-        if (udmf_things[i].alpha < 1.0)
+        // Translucency and special effects support
+        int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
+
+        if (lump == NO_INDEX && udmf_things[i].alpha < 1.0)
         {
-            const int32_t alpha = (int32_t)floorf(udmf_things[i].alpha * ALPHA_FACTOR);
-            mt.tranmap = R_NormalTranMap(alpha);
+            mt.tranmap = R_NormalTranMap(udmf_things[i].alpha);
         }
 
-        int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
-        if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
+        if (lump != NO_INDEX && W_LumpLength(lump) == TRANMAP_SIZE)
         {
             mt.tranmap = W_CacheLumpNum(lump, PU_CACHE);
         }

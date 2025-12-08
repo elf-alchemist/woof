@@ -868,7 +868,7 @@ void R_SetupFrame (player_t *player)
 
   if (cm < 0 || cm > numcolormaps)
   {
-      cm = 0;
+    cm = 0;
   }
 
   fullcolormap = colormaps[cm];

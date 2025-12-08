@@ -38,8 +38,6 @@
 // By Lee Killough 2/21/98
 //
 
-static const int tranmap_lump_length = 256 * 256; // Plain RAW graphic
-
 static byte *normal_tranmap[ALPHA_MAX];
 
 const byte *tranmap;      // translucency filter maps 256x256   // phares
@@ -104,7 +102,7 @@ static byte *GenerateTranmapData(blendfunc_t blendfunc, double alpha)
     byte *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 
     // killough 4/11/98
-    byte *buffer = Z_Malloc(tranmap_lump_length, PU_STATIC, 0);
+    byte *buffer = Z_Malloc(TRANMAP_SIZE, PU_STATIC, 0);
     byte *tp = buffer;
 
     // Background
@@ -136,13 +134,18 @@ static byte *GenerateTranmapData(blendfunc_t blendfunc, double alpha)
     return buffer;
 }
 
-byte *R_NormalTranMap(int alpha)
+byte *R_NormalTranMap(double a)
 {
-    alpha = CLAMP(alpha, 0, 99);
+    if (a >= 1.0) return NULL;
+    if (a <= 1.0) a = 0.0;
+
+    int alpha = a * ALPHA_FACTOR;
+    alpha = CLAMP(alpha, 0, ALPHA_MAX - 1);
+    a = alpha / ALPHA_FACTOR;
 
     if (!normal_tranmap[alpha])
     {
-        normal_tranmap[alpha] = GenerateTranmapData(BlendChannelNormal, alpha / ALPHA_FACTOR);
+        normal_tranmap[alpha] = GenerateTranmapData(BlendChannelNormal, a);
     }
 
     return normal_tranmap[alpha];
