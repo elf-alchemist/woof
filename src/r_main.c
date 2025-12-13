@@ -853,13 +853,10 @@ void R_SetupFrame (player_t *player)
   }
   else if (sec->heightsec != -1)
   {
-    const sector_t *heightsec = &sectors[sec->heightsec];
-    if (viewz < heightsec->interpfloorheight)
-      cm = heightsec->bottommap;
-    else if (viewz > heightsec->interpceilingheight)
-      cm = heightsec->topmap;
-    else
-      cm = heightsec->midmap;
+    const sector_t * const s = &sectors[sec->heightsec];
+    cm = viewz < s->interpfloorheight   ? s->bottommap
+       : viewz > s->interpceilingheight ? s->topmap
+                                        : s->midmap;
   }
   else
   {

@@ -42,8 +42,6 @@
 // Universal Doom Map Format (UDMF) support
 //
 
-// typedef uint64_t UDMF_Features_t;
-
 typedef enum
 {
     NO_FEATURES = (0), // shut compiler up, also reset when parsing new map

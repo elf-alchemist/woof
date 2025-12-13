@@ -257,6 +257,7 @@ void R_InitTranMap(void)
     // Some things look better with added luminosity :)
     main_addimap = strictmode ? main_tranmap
                  : GenerateTranmapData(BlendChannelAdditive, 1.0);
+
     I_Printf(VB_INFO, "Playpal checksum: %s", playpal_string);
 
     //!
@@ -269,7 +270,7 @@ void R_InitTranMap(void)
     const int p = M_CheckParmWithArgs("-dumptranmap", 2);
     if (p > 0)
     {
-        const double alpha = CLAMP(M_ParmArgToInt(p), 0, 99) / ALPHA_FACTOR;
+        const double alpha = CLAMP(M_ParmArgToInt(p), 0, ALPHA_MAX - 1) / ALPHA_FACTOR;
         const byte *tranmap = R_NormalTranMap(alpha);
         char *path = AddDefaultExtension(myargv[p + 2], ".lmp");
         M_WriteFile(path, tranmap, TRANMAP_SIZE);
