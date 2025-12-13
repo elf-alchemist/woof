@@ -482,10 +482,12 @@ void R_DrawVisSprite(vissprite_t *vis, int x1, int x2)
   colfunc = R_DrawColumn;         // killough 3/14/98
 }
 
-inline const lighttable_t * const GetThingTint(const sector_t * const sector)
+inline const lighttable_t *const GetThingTint(const mobj_t *const mo,
+                                              const sector_t *const s)
 {
-  const int32_t tint = (sector->floorlightsec >= 0) ? sectors[sector->floorlightsec].tint
-                                                    : sector->tint;
+  const int32_t tint = (mo->tint >= 0)         ? mo->tint
+                     : (s->floorlightsec >= 0) ? sectors[s->floorlightsec].tint
+                                               : s->tint;
   return (tint >= 0) ? colormaps[tint] : fullcolormap;
 }
 
@@ -682,7 +684,7 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
     vis->startfrac += vis->xiscale*(vis->x1-x1);
   vis->patch = lump;
 
-  const lighttable_t * const thiscolormap = GetThingTint(thing->subsector->sector);
+  const lighttable_t * const thiscolormap = GetThingTint(thing, thing->subsector->sector);
 
   // get light level
   if (thing->flags & MF_SHADOW)
@@ -912,7 +914,8 @@ void R_DrawPSprite(pspdef_t *psp, int lightlevel_override)
 
   vis->patch = lump;
 
-  const lighttable_t * const thiscolormap = GetThingTint(viewplayer->mo->subsector->sector);
+  const lighttable_t * const thiscolormap =
+      GetThingTint(viewplayer->mo, viewplayer->mo->subsector->sector);
 
   // killough 7/11/98: beta psprites did not draw shadows
   if ((viewplayer->powers[pw_invisibility] > 4*32

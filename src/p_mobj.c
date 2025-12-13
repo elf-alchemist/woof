@@ -1379,6 +1379,9 @@ spawnit:
   mobj->args[3] = mthing->args[3];
   mobj->args[4] = mthing->args[4];
 
+  // Tinting
+  mobj->tint = mthing->tint;
+
   // Translucency
   mobj->tranmap = mthing->tranmap;
 

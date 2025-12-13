@@ -681,7 +681,7 @@ boolean VX_ProjectVoxel(mobj_t *thing, int lightlevel_override)
 	vis->x2 = x2;
 
 	// get light level...
-	const lighttable_t * const thiscolormap = GetThingTint(thing->subsector->sector);
+	const lighttable_t * const thiscolormap = GetThingTint(thing, thing->subsector->sector);
 
 	if (vis->mobjflags & MF_SHADOW)
 	{
