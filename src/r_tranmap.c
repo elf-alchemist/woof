@@ -194,7 +194,7 @@ static byte *GenerateTranmapData(blendfunc_t blendfunc, double alpha)
 byte *R_NormalTranMap(double a)
 {
     if (a >= 1.0) return NULL;
-    if (a <= 1.0) a = 0.0;
+    if (a <= 0.0) a = 0.0;
 
     int alpha = a * ALPHA_FACTOR;
     alpha = CLAMP(alpha, 0, ALPHA_MAX - 1);
