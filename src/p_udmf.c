@@ -96,6 +96,7 @@ typedef struct
     // Extensions
     char tranmap[9];
     double alpha;
+    char tint[9];
 } UDMF_Thing_t;
 
 typedef struct
@@ -329,7 +330,7 @@ static void UDMF_ParseNamespace(scanner_t *s)
     else if (!strcasecmp(name, "woof"))
     {
         udmf_flags |= UDMF_LINE_PASSUSE | UDMF_LINE_BLOCK | UDMF_LINE_ALPHA | UDMF_LINE_TRANMAP;
-        udmf_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM | UDMF_THING_ALPHA | UDMF_THING_TRANMAP;
+        udmf_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM | UDMF_THING_ALPHA | UDMF_THING_TRANMAP | UDMF_THING_TINT;
         udmf_flags |= UDMF_SIDE_OFFSET | UDMF_SIDE_SCROLL | UDMF_SIDE_LIGHT | UDMF_SIDE_TINT;
         udmf_flags |= UDMF_SEC_ANGLE | UDMF_SEC_OFFSET | UDMF_SEC_SCROLL | UDMF_SEC_LIGHT | UDMF_SEC_COLORMAP | UDMF_SEC_TINT;
     }
@@ -919,6 +920,10 @@ static void UDMF_ParseThing(scanner_t *s)
         {
             UDMF_ScanLumpName(s, thing.tranmap);
         }
+        else if (PROP(tint, UDMF_THING_TINT))
+        {
+            UDMF_ScanLumpName(s, thing.tint);
+        }
         else
         {
             UDMF_SkipScan(s);
@@ -1303,6 +1308,8 @@ void UDMF_LoadThings(void)
         {
             mt.tranmap = W_CacheLumpNum(lump, PU_CACHE);
         }
+
+        mt.tint = R_ColormapNumForName(udmf_things[i].tint);
 
         P_SpawnMapThing(&mt);
     }
