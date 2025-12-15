@@ -49,30 +49,30 @@ typedef enum
     UDMF_THING_FRIEND  = (1u << 0), // Marine's Best Friend :)
     UDMF_THING_SPECIAL = (1u << 1), // Death/Pickup/etc-activated actions
     UDMF_THING_PARAM   = (1u << 2), // ditto, also customizes some MObjs
-    UDMF_THING_HEALTH  = (1u << 3), // WIP
-    UDMF_THING_ALPHA   = (1u << 4), // opacity percentage
-    UDMF_THING_TRANMAP = (1u << 5), // ditto, also customizable LUT
-    UDMF_THING_TINT    = (1u << 6), // view-agnostic colormap for the given mobj
+    UDMF_THING_HEALTH  = (1u << 3), // positive is a multiple, negative is override
+    UDMF_THING_GRAVITY = (1u << 4), // per-mobj custom gravity
+    UDMF_THING_ALPHA   = (1u << 5), // opacity percentage
+    UDMF_THING_TRANMAP = (1u << 6), // ditto, also customizable LUT
+    UDMF_THING_TINT    = (1u << 7), // view-agnostic colormap for the given mobj
 
-    UDMF_LINE_PARAM    = (1u << 7), // Hexen-style param actions
-    UDMF_LINE_PASSUSE  = (1u << 8), // Boom's "Pass Use Through" line flag
-    UDMF_LINE_BLOCK    = (1u << 9), // MBF21's entity blocking flag
-    UDMF_LINE_3DMIDTEX = (1u << 10), // EE's 3D middle texture
-    UDMF_LINE_ALPHA    = (1u << 11), // opacity percentage
-    UDMF_LINE_TRANMAP  = (1u << 12), // ditto, also customizable LUT
+    UDMF_LINE_PARAM    = (1u << 8), // Hexen-style param actions
+    UDMF_LINE_PASSUSE  = (1u << 9), // Boom's "Pass Use Through" line flag
+    UDMF_LINE_BLOCK    = (1u << 10), // MBF21's entity blocking flags
+    UDMF_LINE_3DMIDTEX = (1u << 11), // EE's 3D middle texture
+    UDMF_LINE_ALPHA    = (1u << 12), // opacity percentage
+    UDMF_LINE_TRANMAP  = (1u << 13), // ditto, also customizable LUT
 
-    UDMF_SIDE_OFFSET   = (1u << 13), // texture X/Y alignment
-    UDMF_SIDE_SCROLL   = (1u << 14), // texture scrolling property
-    UDMF_SIDE_LIGHT    = (1u << 15), // independent light levels
-    UDMF_SIDE_ALPHA    = (1u << 16), // WIP
-    UDMF_SIDE_TRANMAP  = (1u << 17), // WIP
-    UDMF_SIDE_TINT     = (1u << 18), // view-agnostic colormap for the given sidedef
+    UDMF_SIDE_OFFSET   = (1u << 14), // texture X/Y alignment
+    UDMF_SIDE_SCROLL   = (1u << 15), // texture scrolling property
+    UDMF_SIDE_LIGHT    = (1u << 16), // independent light levels
+    UDMF_SIDE_TINT     = (1u << 17), // view-agnostic colormap for the given sidedef
 
-    UDMF_SEC_ANGLE     = (1u << 19), // plane rotation
-    UDMF_SEC_OFFSET    = (1u << 20), // plane X/Y alignment
-    UDMF_SEC_EE_SCROLL = (1u << 21), // EE's original plane scrolling property
-    UDMF_SEC_SCROLL    = (1u << 22), // DSDA's later plane scrolling property
-    UDMF_SEC_LIGHT     = (1u << 23), // independent light levels
+    UDMF_SEC_ANGLE     = (1u << 18), // plane rotation
+    UDMF_SEC_OFFSET    = (1u << 19), // plane X/Y alignment
+    UDMF_SEC_EE_SCROLL = (1u << 20), // EE's original plane scrolling property
+    UDMF_SEC_SCROLL    = (1u << 21), // DSDA's later plane scrolling property
+    UDMF_SEC_LIGHT     = (1u << 22), // independent light levels
+    UDMF_SEC_GRAVITY   = (1u << 23), // WIP
     UDMF_SEC_COLORMAP  = (1u << 24), // viewplayer's colormap on this given frame
     UDMF_SEC_TINT      = (1u << 25), // view-agnostic colormap for the given sector
     UDMF_SEC_SILENCE   = (1u << 26), // WIP
@@ -94,6 +94,7 @@ typedef struct
     int32_t args[5];
 
     // Extensions
+    double health;
     char tranmap[9];
     double alpha;
     char tint[9];
@@ -330,7 +331,7 @@ static void UDMF_ParseNamespace(scanner_t *s)
     else if (!strcasecmp(name, "woof"))
     {
         udmf_flags |= UDMF_LINE_PASSUSE | UDMF_LINE_BLOCK | UDMF_LINE_ALPHA | UDMF_LINE_TRANMAP;
-        udmf_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM | UDMF_THING_ALPHA | UDMF_THING_TRANMAP | UDMF_THING_TINT;
+        udmf_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM | UDMF_THING_HEALTH | UDMF_THING_ALPHA | UDMF_THING_TRANMAP | UDMF_THING_TINT;
         udmf_flags |= UDMF_SIDE_OFFSET | UDMF_SIDE_SCROLL | UDMF_SIDE_LIGHT | UDMF_SIDE_TINT;
         udmf_flags |= UDMF_SEC_ANGLE | UDMF_SEC_OFFSET | UDMF_SEC_SCROLL | UDMF_SEC_LIGHT | UDMF_SEC_COLORMAP | UDMF_SEC_TINT;
     }
@@ -818,6 +819,7 @@ static void UDMF_ParseThing(scanner_t *s)
     thing.options |= MTF_NOTSINGLE | MTF_NOTCOOP | MTF_NOTDM;
     M_CopyLumpName(thing.tranmap, "-");
     thing.alpha = 1.0;
+    thing.health = 1.0;
 
     SC_MustGetToken(s, '{');
     while (!SC_CheckToken(s, '}'))
@@ -911,6 +913,10 @@ static void UDMF_ParseThing(scanner_t *s)
         else if (PROP(arg4, UDMF_THING_PARAM))
         {
             thing.args[4] = UDMF_ScanInt(s);
+        }
+        else if (PROP(arg4, UDMF_THING_HEALTH))
+        {
+            thing.health = UDMF_ScanDouble(s);
         }
         else if (PROP(alpha, UDMF_THING_ALPHA))
         {
@@ -1296,6 +1302,9 @@ void UDMF_LoadThings(void)
         mt.args[3] = udmf_things[i].args[3];
         mt.args[4] = udmf_things[i].args[4];
 
+        mt.health = DoubleToFixed(udmf_things[i].health);
+        mt.tint = R_ColormapNumForName(udmf_things[i].tint);
+
         // Translucency and special effects support
         int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
 
@@ -1309,7 +1318,6 @@ void UDMF_LoadThings(void)
             mt.tranmap = W_CacheLumpNum(lump, PU_CACHE);
         }
 
-        mt.tint = R_ColormapNumForName(udmf_things[i].tint);
 
         P_SpawnMapThing(&mt);
     }

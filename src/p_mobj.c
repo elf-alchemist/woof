@@ -1360,7 +1360,20 @@ spawnit:
       P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
     }
 
-  // UDMF thing height
+  // Spawn health
+  if (mthing->health != FRACUNIT)
+  {
+    if (mthing->health < 0)
+    {
+      mobj->health = FixedToInt(-mthing->health);
+    }
+    else
+    {
+      mobj->health = FixedMul(mobj->health, mthing->health);
+    }
+  }
+
+  // Vertical spawn position
   if (z == ONFLOORZ)
   {
     mobj->z += mthing->height;

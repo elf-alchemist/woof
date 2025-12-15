@@ -466,6 +466,7 @@ void P_LoadThings (int lump)
       mt.type = SHORT(mtd->type);
       mt.options = SHORT(mtd->options);
 
+      mt.health = FRACUNIT;
       mt.tint = NO_INDEX;
 
       if (mt.options & MTF_EASY)
