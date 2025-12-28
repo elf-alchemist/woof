@@ -45,6 +45,7 @@
 #include "doomtype.h"
 #include "i_system.h"
 #include "i_video.h"
+#include "m_arena.h"
 #include "m_fixed.h"
 #include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 #include "r_data.h"
@@ -133,20 +134,20 @@ void R_InitPlanes (void)
 
 void R_InitPlanesRes(void)
 {
-  floorclip = Z_Calloc(1, video.width * sizeof(*floorclip), PU_RENDERER, NULL);
-  ceilingclip = Z_Calloc(1, video.width * sizeof(*ceilingclip), PU_RENDERER, NULL);
-  spanstart = Z_Calloc(1, video.height * sizeof(*spanstart), PU_RENDERER, NULL);
+  floorclip = arena_calloc_num(renderer_arena, int, video.width);
+  ceilingclip = arena_calloc_num(renderer_arena, int, video.width);
+  spanstart = arena_calloc_num(renderer_arena, int, video.height);
 
-  cachedheight = Z_Calloc(1, video.height * sizeof(*cachedheight), PU_RENDERER, NULL);
-  cacheddistance = Z_Calloc(1, video.height * sizeof(*cacheddistance), PU_RENDERER, NULL);
-  cachedxstep = Z_Calloc(1, video.height * sizeof(*cachedxstep), PU_RENDERER, NULL);
-  cachedystep = Z_Calloc(1, video.height * sizeof(*cachedystep), PU_RENDERER, NULL);
-  cachedrotation = Z_Calloc(1, video.height * sizeof(*cachedrotation), PU_RENDERER, NULL);
+  cachedheight = arena_calloc_num(renderer_arena, fixed_t, video.height);
+  cacheddistance = arena_calloc_num(renderer_arena, fixed_t, video.height);
+  cachedxstep = arena_calloc_num(renderer_arena, fixed_t, video.height);
+  cachedystep = arena_calloc_num(renderer_arena, fixed_t, video.height);
+  cachedrotation = arena_calloc_num(renderer_arena, fixed_t, video.height);
 
-  yslope = Z_Calloc(1, video.height * sizeof(*yslope), PU_RENDERER, NULL);
+  yslope = arena_calloc_num(renderer_arena, fixed_t, video.height);
 
   maxopenings = video.width * video.height;
-  openings = Z_Calloc(1, maxopenings * sizeof(*openings), PU_RENDERER, NULL);
+  openings = arena_calloc_num(renderer_arena, int, maxopenings);
 
   R_InitPlanes();
 }

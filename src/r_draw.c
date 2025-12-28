@@ -26,6 +26,7 @@
 #include "doomtype.h"
 #include "i_system.h"
 #include "i_video.h"
+#include "m_arena.h"
 #include "m_fixed.h"
 #include "r_bsp.h"
 #include "r_defs.h"
@@ -991,9 +992,9 @@ void R_DrawSpan(void)
 
 void R_InitBufferRes(void)
 {
-    columnofs = Z_Malloc(video.width * sizeof(*columnofs), PU_RENDERER, NULL);
-    ylookup = Z_Malloc(video.height * sizeof(*ylookup), PU_RENDERER, NULL);
-    solidcol = Z_Calloc(1, video.width * sizeof(*solidcol), PU_RENDERER, NULL);
+    columnofs = arena_alloc_num(renderer_arena, int, video.width);
+    ylookup = arena_alloc_num(renderer_arena, pixel_t*, video.height);
+    solidcol = arena_calloc_num(renderer_arena, byte, video.width);
 }
 
 //

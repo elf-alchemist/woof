@@ -43,6 +43,7 @@
 #include "i_system.h"
 #include "i_timer.h"
 #include "i_video.h"
+#include "m_arena.h"
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_fixed.h"
@@ -1632,7 +1633,7 @@ static void CreateVideoBuffer(void)
     I_VideoBuffer = malloc(video.width * video.height);
     V_RestoreBuffer();
 
-    Z_FreeTag(PU_RENDERER);
+    M_ArenaClear(renderer_arena);
     R_InitAnyRes();
     ST_InitRes();
 

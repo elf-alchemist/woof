@@ -35,6 +35,7 @@
 #include "hu_obituary.h"
 #include "i_video.h"
 #include "info.h"
+#include "m_arena.h"
 #include "m_array.h"
 #include "m_cheat.h"
 #include "m_config.h"
@@ -1940,9 +1941,8 @@ void ST_Init(void)
 void ST_InitRes(void)
 {
     // killough 11/98: allocate enough for hires
-    st_backing_screen =
-        Z_Malloc(video.width * V_ScaleY(st_height) * sizeof(*st_backing_screen),
-                 PU_RENDERER, 0);
+    st_backing_screen = arena_alloc_num(renderer_arena, pixel_t, video.width * V_ScaleY(st_height));
+        // Z_Malloc(video.width * V_ScaleY(st_height) * sizeof(*st_backing_screen), PU_RENDERER, 0);
 }
 
 const char **ST_StatusbarList(void)

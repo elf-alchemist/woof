@@ -29,6 +29,7 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "info.h"
+#include "m_arena.h"
 #include "m_swap.h"
 #include "p_mobj.h"
 #include "p_pspr.h"
@@ -119,12 +120,12 @@ static int maxframe;
 
 void R_InitSpritesRes(void)
 {
-  xtoviewangle = Z_Calloc(1, (video.width + 1) * sizeof(*xtoviewangle), PU_RENDERER, NULL);
-  linearskyangle = Z_Calloc(1, (video.width + 1) * sizeof(*linearskyangle), PU_RENDERER, NULL);
-  negonearray = Z_Calloc(1, video.width * sizeof(*negonearray), PU_RENDERER, NULL);
-  screenheightarray = Z_Calloc(1, video.width * sizeof(*screenheightarray), PU_RENDERER, NULL);
+  xtoviewangle = arena_calloc_num(renderer_arena, angle_t, (video.width + 1));
+  linearskyangle = arena_calloc_num(renderer_arena, angle_t, (video.width + 1));
+  negonearray = arena_calloc_num(renderer_arena, int, video.width);
+  screenheightarray = arena_calloc_num(renderer_arena, int, video.width);
 
-  clipbot = Z_Calloc(1, 2 * video.width * sizeof(*clipbot), PU_RENDERER, NULL);
+  clipbot = arena_calloc_num(renderer_arena, int, 2 * video.width);
   cliptop = clipbot + video.width;
 }
 

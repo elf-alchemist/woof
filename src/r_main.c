@@ -20,11 +20,11 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "m_arena.h"
 #define _USE_MATH_DEFINES
 #include <limits.h>
 #include <math.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "d_loop.h"
 #include "d_player.h"
@@ -41,7 +41,6 @@
 #include "r_main.h"
 #include "r_bmaps.h"
 #include "r_plane.h"
-#include "r_segs.h"
 #include "r_sky.h"
 #include "r_state.h"
 #include "r_swirl.h"
@@ -52,6 +51,8 @@
 #include "v_flextran.h"
 #include "v_video.h"
 #include "z_zone.h"
+
+arena_t *renderer_arena = NULL;
 
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW 2048
@@ -685,6 +686,7 @@ void R_ExecuteSetViewSize (void)
 
 void R_Init (void)
 {
+  renderer_arena = M_ArenaInit(SIZE_MB(16), SIZE_KB(64));
   R_InitData();
   R_SetViewSize(screenblocks);
   R_InitPlanes();
