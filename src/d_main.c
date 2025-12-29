@@ -1182,7 +1182,7 @@ static void M_AddLooseFiles(void)
     // allocate space for up to four additional regular parameters
     // (-iwad, -merge, -deh, -playdemo)
 
-    arguments = I_Malloc((myargc + 4) * sizeof(*arguments));
+    arguments = I_Calloc((myargc + 4), sizeof(argument_t));
 
     // check the command line and make sure it does not already
     // contain any regular parameters or response files
