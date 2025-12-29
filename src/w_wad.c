@@ -147,7 +147,7 @@ static void AddDirs(w_module_t *module, w_handle_t handle, const char *base)
             char *s = M_StringJoin(base, DIR_SEPARATOR_S, subdirs[i].dir);
             module->AddDir(handle, s, subdirs[i].start_marker,
                            subdirs[i].end_marker);
-            free(s);
+            I_Free(s);
         }
     }
 }
@@ -167,6 +167,7 @@ boolean W_AddPath(const char *path)
 
         if (result == W_FILE)
         {
+            I_Free((void *)handle.p1.base_path);
             return true;
         }
         else if (result == W_DIR)
@@ -210,7 +211,7 @@ boolean W_AddPath(const char *path)
     }
     AddDirs(active_module, handle, dir);
 
-    free(dir);
+    I_Free(dir);
 
     return true;
 }
@@ -233,7 +234,7 @@ static int IsMarker(const char *marker, const char *name)
 static void W_CoalesceMarkedResource(const char *start_marker,
                                      const char *end_marker, int namespace)
 {
-  lumpinfo_t *marked = malloc(sizeof(*marked) * numlumps);
+  lumpinfo_t *marked = I_Calloc(numlumps, sizeof(lumpinfo_t));
   size_t i, num_marked = 0, num_unmarked = 0;
   int is_marked = 0, mark_end = 0;
   lumpinfo_t *lump = lumpinfo;
@@ -275,7 +276,7 @@ static void W_CoalesceMarkedResource(const char *start_marker,
   // Append marked list to end of unmarked list
   memcpy(lumpinfo + num_unmarked, marked, num_marked * sizeof(*marked));
 
-  free(marked);                                   // free marked list
+  I_Free(marked);                                 // free marked list
 
   numlumps = num_unmarked + num_marked;           // new total number of lumps
 
@@ -422,7 +423,7 @@ boolean W_InitBaseFile(const char *path)
 
     w_type_t result = w_zip_module.Open(filename, &base_handle);
 
-    free(filename);
+    I_Free(filename);
 
     if (result == W_DIR)
     {
@@ -532,7 +533,7 @@ void W_ReadLump(int lump, void *dest)
 //
 // killough 4/25/98: simplified
 
-void *W_CacheLumpNum(int lump, pu_tag tag)
+void *W_CacheLumpNumTag(int lump, pu_tag tag)
 {
 #ifdef RANGECHECK
   if ((unsigned)lump >= numlumps)
@@ -547,7 +548,74 @@ void *W_CacheLumpNum(int lump, pu_tag tag)
   return lumpcache[lump];
 }
 
-// W_CacheLumpName macroized in w_wad.h -- killough
+void *W_CacheLumpName(const char *lumpname, namespace_t ns)
+{
+    int lumpnum = (W_CheckNumForName)(lumpname, ns);
+
+#ifdef RANGECHECK
+    if ((unsigned)lumpnum >= numlumps)
+    {
+        I_Error("%i >= numlumps", lumpnum);
+    }
+#endif
+
+    if (!lumpcache[lumpnum])
+    {
+        W_ReadLump(lumpnum, I_Malloc(lumpinfo[lumpnum].size));
+    }
+    return lumpcache[lumpnum];
+}
+
+void *W_CacheLumpNum(int lumpnum)
+{
+#ifdef RANGECHECK
+    if ((unsigned)lumpnum >= numlumps)
+    {
+        I_Error("%i >= numlumps", lumpnum);
+    }
+#endif
+
+    if (!lumpcache[lumpnum])
+    {
+        lumpcache[lumpnum] = I_Malloc(lumpinfo[lumpnum].size);
+        W_ReadLump(lumpnum, lumpcache[lumpnum]);
+    }
+    return lumpcache[lumpnum];
+}
+
+void W_ReleaseLumpNum(int lumpnum)
+{
+#ifdef RANGECHECK
+    if ((unsigned)lumpnum >= numlumps)
+    {
+        I_Error("%i >= numlumps", lumpnum);
+    }
+#endif
+
+    if (lumpcache[lumpnum]) // read the lump in
+    {
+        I_Free(lumpcache[lumpnum]);
+        lumpcache[lumpnum] = NULL;
+    }
+}
+
+void W_ReleaseLumpName(const char *lumpname, namespace_t ns)
+{
+    int lumpnum = (W_CheckNumForName)(lumpname, ns);
+
+#ifdef RANGECHECK
+    if ((unsigned)lumpnum >= numlumps)
+    {
+        I_Error("%i >= numlumps", lumpnum);
+    }
+#endif
+
+    if (lumpcache[lumpnum]) // read the lump in
+    {
+        I_Free(lumpcache[lumpnum]);
+        lumpcache[lumpnum] = NULL;
+    }
+}
 
 // [FG] name of the WAD file that contains the lump
 const char *W_WadNameForLump (const int lump)

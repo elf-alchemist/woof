@@ -2547,9 +2547,9 @@ static void WI_loadData(void)
   //    {
   //  // "items"
   //  if (netgame && !deathmatch)
-  //      items = W_CacheLumpName("WIOBJ", PU_STATIC);    
+  //      items = W_CacheLumpNameTag("WIOBJ", PU_STATIC);
   //    else
-  //      items = W_CacheLumpName("WIOSTI", PU_STATIC);
+  //      items = W_CacheLumpNameTag("WIOSTI", PU_STATIC);
   //    } else
 
   items = V_CachePatchName("WIOSTI", PU_STATIC);

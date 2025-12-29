@@ -29,6 +29,7 @@
 #include "doomtype.h"
 #include "g_game.h"
 #include "g_nextweapon.h"
+#include "i_system.h"
 #include "info.h"
 #include "m_cheat.h"
 #include "p_map.h"
@@ -325,7 +326,7 @@ void P_DeathThink (player_t* player)
       {
         char *file = G_SaveGameName(savegameslot);
         G_LoadGame(file, savegameslot, false);
-        free(file);
+        I_Free(file);
       }
       else
       {

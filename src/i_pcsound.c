@@ -141,7 +141,7 @@ static boolean CachePCSLump(sfxinfo_t *sfxinfo)
 
     // Load from WAD
 
-    current_sound_lump = W_CacheLumpNum(lumpnum, PU_STATIC);
+    current_sound_lump = W_CacheLumpNumTag(lumpnum, PU_STATIC);
     lumplen = W_LumpLength(lumpnum);
 
     // Read header

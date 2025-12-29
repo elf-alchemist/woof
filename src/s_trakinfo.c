@@ -129,5 +129,5 @@ void S_GetExtra(musicinfo_t *music, extra_music_t type)
     }
     music->lumpnum = lumpnum;
     Z_Free(music->data);
-    music->data = W_CacheLumpNum(music->lumpnum, PU_STATIC);
+    music->data = W_CacheLumpNumTag(music->lumpnum, PU_STATIC);
 }

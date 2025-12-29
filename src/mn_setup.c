@@ -2439,7 +2439,7 @@ const char *gamma_strings[] = {
 
 void MN_ResetGamma(void)
 {
-    I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
+    I_SetPalette(global_playpal);
 }
 
 static setup_menu_t gen_settings1[] = {
@@ -3718,7 +3718,7 @@ static void ResetDefaults(ss_types reset_screen)
                 {
                     if (dp->type == string)
                     {
-                        free(*dp->location.s);
+                        I_Free(*dp->location.s);
                         *dp->location.s = strdup(dp->defaultvalue.string);
                     }
                     else if (dp->type == number)

@@ -23,7 +23,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "i_oalcommon.h"
 #include "i_oalequalizer.h"
@@ -37,7 +36,6 @@
 #include "m_fixed.h"
 #include "sounds.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 #define OAL_ROLLOFF_FACTOR      0.5f
 #define OAL_SPEED_OF_SOUND      343.3f
@@ -161,7 +159,7 @@ void I_OAL_ShutdownSound(void)
     if (oal->sources)
     {
         alDeleteSources(MAX_CHANNELS, oal->sources);
-        free(oal->sources);
+        I_Free(oal->sources);
     }
 
     alcMakeContextCurrent(NULL);
@@ -175,7 +173,7 @@ void I_OAL_ShutdownSound(void)
         alcCloseDevice(oal->device);
     }
 
-    free(oal);
+    I_Free(oal);
     oal = NULL;
 }
 
@@ -463,12 +461,12 @@ boolean I_OAL_InitSound(int snd_module)
         I_OAL_ShutdownSound();
     }
 
-    oal = calloc(1, sizeof(*oal));
+    oal = I_Malloc(sizeof(oal_system_t));
     oal->device = alcOpenDevice(NULL);
     if (!oal->device)
     {
         I_Printf(VB_ERROR, "I_OAL_InitSound: Failed to open device.");
-        free(oal);
+        I_Free(oal);
         oal = NULL;
         return false;
     }
@@ -484,7 +482,7 @@ boolean I_OAL_InitSound(int snd_module)
     }
     PrintDeviceInfo(oal->device);
 
-    oal->sources = malloc(sizeof(*oal->sources) * MAX_CHANNELS);
+    oal->sources = I_Calloc(MAX_CHANNELS, sizeof(ALuint));
     alGetError();
     alGenSources(MAX_CHANNELS, oal->sources);
     if (!oal->sources || alGetError() != AL_NO_ERROR)
@@ -647,7 +645,7 @@ boolean I_OAL_CacheSound(sfxinfo_t *sfx)
 
         // haleyjd: this should always be called (if lump is already loaded,
         // W_CacheLumpNum handles that for us).
-        lumpdata = (byte *)W_CacheLumpNum(lumpnum, PU_STATIC);
+        lumpdata = (byte *)W_CacheLumpNum(lumpnum);
 
         lumplen = W_LumpLength(lumpnum);
 
@@ -731,14 +729,8 @@ boolean I_OAL_CacheSound(sfxinfo_t *sfx)
     }
 
     // don't need original lump data any more
-    if (lumpdata)
-    {
-        Z_Free(lumpdata);
-    }
-    if (wavdata)
-    {
-        free(wavdata);
-    }
+    W_ReleaseLumpNum(lumpnum);
+    I_Free(wavdata);
 
     if (sfx->cached == false)
     {

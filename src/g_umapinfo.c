@@ -174,7 +174,7 @@ static void ReplaceString(char **to, const char *from)
 {
     if (*to != NULL)
     {
-        free(*to);
+        I_Free(*to);
     }
     *to = M_StringDuplicate(from);
 }
@@ -183,23 +183,23 @@ static void FreeMapEntry(mapentry_t *mape)
 {
     if (mape->levelname)
     {
-        free(mape->levelname);
+        I_Free(mape->levelname);
     }
     if (mape->label)
     {
-        free(mape->label);
+        I_Free(mape->label);
     }
     if (mape->intertext)
     {
-        free(mape->intertext);
+        I_Free(mape->intertext);
     }
     if (mape->intertextsecret)
     {
-        free(mape->intertextsecret);
+        I_Free(mape->intertextsecret);
     }
     if (mape->author)
     {
-        free(mape->author);
+        I_Free(mape->author);
     }
     array_free(mape->bossactions);
     memset(mape, 0, sizeof(*mape));
@@ -223,7 +223,7 @@ static char *ParseMultiString(scanner_t *s)
         {
             char *tmp = build;
             build = M_StringJoin(tmp, "\n", SC_GetString(s));
-            free(tmp);
+            I_Free(tmp);
         }
     } while (SC_CheckToken(s, ','));
 
@@ -320,7 +320,7 @@ static void ParseStandardProperty(scanner_t *s, mapentry_t *mape)
 
             if (alttext)
             {
-                free(alttext);
+                I_Free(alttext);
             }
         }
     }
@@ -454,7 +454,7 @@ static void ParseStandardProperty(scanner_t *s, mapentry_t *mape)
             mape->flags &= ~MapInfo_InterTextClear;
             if (mape->intertext)
             {
-                free(mape->intertext);
+                I_Free(mape->intertext);
             }
             mape->intertext = ParseMultiString(s);
         }
@@ -477,7 +477,7 @@ static void ParseStandardProperty(scanner_t *s, mapentry_t *mape)
             mape->flags &= ~MapInfo_InterTextSecretClear;
             if (mape->intertextsecret)
             {
-                free(mape->intertextsecret);
+                I_Free(mape->intertextsecret);
             }
             mape->intertextsecret = ParseMultiString(s);
         }
@@ -541,7 +541,7 @@ static void ParseStandardProperty(scanner_t *s, mapentry_t *mape)
         } while (SC_CheckToken(s, ','));
     }
 
-    free(prop);
+    I_Free(prop);
 }
 
 static void ParseMapEntry(scanner_t *s, mapentry_t *entry)
@@ -568,7 +568,7 @@ static void ParseMapEntry(scanner_t *s, mapentry_t *entry)
 
 void G_ParseMapInfo(int lumpnum)
 {
-    scanner_t *s = SC_Open("UMAPINFO", W_CacheLumpNum(lumpnum, PU_CACHE),
+    scanner_t *s = SC_Open("UMAPINFO", W_CacheLumpNumTag(lumpnum, PU_CACHE),
                            W_LumpLength(lumpnum));
     while (SC_TokensLeft(s))
     {

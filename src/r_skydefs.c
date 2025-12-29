@@ -157,7 +157,7 @@ skydefs_t *R_ParseSkyDefs(void)
         return NULL;
     }
 
-    skydefs_t *out = calloc(1, sizeof(*out));
+    skydefs_t *out = I_Malloc(sizeof(skydefs_t));
 
     json_t *js_skies = JS_GetObject(data, "skies");
     json_t *js_sky = NULL;

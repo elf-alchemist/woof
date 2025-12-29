@@ -152,7 +152,7 @@ static void GetSoundFonts(void)
     }
     else
     {
-        free(path);
+        I_Free(path);
     }
 #endif
 
@@ -183,7 +183,7 @@ static void GetSoundFonts(void)
 
         ScanDir(left, false);
 
-        free(dup_path);
+        I_Free(dup_path);
     }
     else
     {
@@ -217,7 +217,7 @@ static void GetSoundFonts(void)
             {
                 char *dir = M_StringJoin(d.func(), DIR_SEPARATOR_S, d.dir);
                 ScanDir(dir, d.makedir);
-                free(dir);
+                I_Free(dir);
             }
             else if (d.dir)
             {
@@ -318,7 +318,7 @@ static boolean I_FL_InitStream(int device)
     {
         fluid_sfloader_t *sfloader;
 
-        lump = W_CacheLumpNum(lumpnum, PU_STATIC);
+        lump = W_CacheLumpNumTag(lumpnum, PU_STATIC);
         lumplen = W_LumpLength(lumpnum);
 
         sfloader = new_fluid_defsfloader(settings);
@@ -496,7 +496,7 @@ static const char **I_FL_DeviceList(void)
             name[NAME_MAX_LENGTH] = '\0';
         }
         array_push(devices, M_StringJoin("FluidSynth: ", name));
-        free(name);
+        I_Free(name);
     }
 
     return devices;

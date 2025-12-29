@@ -15,6 +15,7 @@
 #include "doomstat.h"
 #include "doomtype.h"
 #include "g_game.h"
+#include "i_system.h"
 #include "i_timer.h"
 #include "m_config.h"
 #include "p_dirty.h"
@@ -72,12 +73,12 @@ static void Push(keyframe_t *keyframe)
                 queue.top = NULL;
             }
             P_FreeKeyframe(oldtail->keyframe);
-            free(oldtail);
+            I_Free(oldtail);
             --queue.count;
         }
     }
 
-    elem_t *newelem = calloc(1, sizeof(*newelem));    
+    elem_t *newelem = I_Malloc(sizeof(elem_t));
     newelem->keyframe = keyframe;
     
     if (IsEmpty())
@@ -113,7 +114,7 @@ static keyframe_t *Pop(void)
     {
         queue.tail = NULL;
     }
-    free(temp);
+    I_Free(temp);
     --queue.count;
 
     return keyframe;
@@ -226,7 +227,7 @@ static void FreeKeyframeQueue(void)
         elem_t* temp = current;
         current = current->next;
         P_FreeKeyframe(temp->keyframe);
-        free(temp);
+        I_Free(temp);
     }
     memset(&queue, 0, sizeof(queue));
 }

@@ -16,6 +16,7 @@
 //
 
 #include "alext.h"
+#include "i_system.h"
 #include "pffft/pffft.h"
 
 #include <math.h>
@@ -249,12 +250,12 @@ void I_ShutdownRumble(void)
 
         if (sfx->name && sfx->cached)
         {
-            free(sfx->rumble.low);
-            free(sfx->rumble.high);
+            I_Free(sfx->rumble.low);
+            I_Free(sfx->rumble.high);
         }
     }
 
-    free(rumble.channels);
+    I_Free(rumble.channels);
     FreeFFT();
 }
 
@@ -266,7 +267,7 @@ void I_InitRumble(void)
     }
 
     last_rumble = joy_rumble;
-    rumble.channels = malloc(sizeof(*rumble.channels) * MAX_CHANNELS);
+    rumble.channels = I_Calloc(MAX_CHANNELS, sizeof(rumble_channel_t));
     ResetAllChannels();
 }
 
@@ -393,8 +394,8 @@ static void SfxToRumble(const byte *data, int rate, int length,
                         float **low, float **high, int *ticlength)
 {
     const int ticlen = *ticlength - 1;
-    *low = malloc(sizeof(float) * (ticlen + 1));
-    *high = malloc(sizeof(float) * (ticlen + 1));
+    *low = I_Calloc(ticlen + 1, sizeof(float));
+    *high = I_Calloc(ticlen + 1, sizeof(float));
     (*low)[ticlen] = 0.0f;
     (*high)[ticlen] = 0.0f;
 
@@ -434,8 +435,8 @@ static void SfxToRumble(const byte *data, int rate, int length,
         }
     }
 
-    free(*low);
-    free(*high);
+    I_Free(*low);
+    I_Free(*high);
     *low = NULL;
     *high = NULL;
     *ticlength = 0;

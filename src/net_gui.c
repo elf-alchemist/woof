@@ -70,7 +70,7 @@ static void OpenWaitDialog(void)
 
     TXT_SetDesktopTitle(title);
 
-    free(title);
+    I_Free(title);
 
     window = TXT_NewWindow("Waiting for game start...");
 

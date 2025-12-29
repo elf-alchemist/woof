@@ -125,7 +125,7 @@ static boolean ParseProperty(scanner_t *s, elem_t *elem)
     if (idx < 0)
     {
         SC_Error(s, "brightmap '%s' not found", SC_GetString(s));
-        free(name);
+        I_Free(name);
         return false;
     }
     if (SC_CheckToken(s, TK_Identifier))
@@ -160,7 +160,7 @@ static boolean ParseProperty(scanner_t *s, elem_t *elem)
     if ((gamemission == doom && game == DOOM2ONLY)
         || (gamemission == doom2 && game == DOOM1ONLY))
     {
-        free(name);
+        I_Free(name);
         return false;
     }
 
@@ -260,7 +260,7 @@ void R_ParseBrightmaps(int lumpnum)
         array_push(brightmaps_array, brightmap);
     }
 
-    scanner_t *s = SC_Open("BRGHTMPS", W_CacheLumpNum(lumpnum, PU_CACHE),
+    scanner_t *s = SC_Open("BRGHTMPS", W_CacheLumpNumTag(lumpnum, PU_CACHE),
                            W_LumpLength(lumpnum));
 
     while (SC_TokensLeft(s))

@@ -29,11 +29,13 @@
 #include "doomtype.h"
 #include "i_exit.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "i_video.h"
 #include "m_argv.h"
 #include "m_io.h"
 #include "m_misc.h"
 #include "md5.h"
+#include "r_main.h"
 #include "r_srgb.h"
 #include "r_tranmap.h"
 #include "w_wad.h"
@@ -115,11 +117,10 @@ inline static const byte ColorBlend(byte *playpal, blendfunc_t blendfunc,
 
 static void CalculatePlaypalChecksum(void)
 {
-    const int lump = W_GetNumForName("PLAYPAL");
     struct MD5Context md5;
 
     MD5Init(&md5);
-    MD5Update(&md5, W_CacheLumpNum(lump, PU_STATIC), playpal_base_layer);
+    MD5Update(&md5, global_playpal, playpal_base_layer);
     MD5Final(playpal_digest, &md5);
     M_DigestToString(playpal_digest, playpal_string, sizeof(playpal_digest));
 }
@@ -129,7 +130,7 @@ static void CreateTranMapBaseDir(void)
     const char *data_root = D_DoomPrefDir();
     const int length = strlen(data_root) + sizeof("/tranmaps");
 
-    tranmap_dir = Z_Malloc(length, PU_STATIC, 0);
+    tranmap_dir = I_Malloc(length);
     M_snprintf(tranmap_dir, length, "%s/tranmaps", data_root);
 
     M_MakeDirectory(tranmap_dir);
@@ -148,7 +149,7 @@ static void CreateTranMapPaletteDir(void)
     }
 
     int length = strlen(tranmap_dir) + sizeof(playpal_string) + 1;
-    playpal_dir = Z_Malloc(length, PU_STATIC, 0);
+    playpal_dir = I_Malloc(length);
     M_snprintf(playpal_dir, length, "%s/%s", tranmap_dir, playpal_string);
 
     M_MakeDirectory(playpal_dir);
@@ -160,10 +161,8 @@ static void CreateTranMapPaletteDir(void)
 
 static byte *GenerateTranmapData(blendfunc_t blendfunc, double alpha)
 {
-    byte *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
-
     // killough 4/11/98
-    byte *buffer = Z_Malloc(tranmap_lump_length, PU_STATIC, 0);
+    byte *buffer = I_Malloc(tranmap_lump_length);
     byte *tp = buffer;
 
     // Background
@@ -185,10 +184,10 @@ static byte *GenerateTranmapData(blendfunc_t blendfunc, double alpha)
         // Foreground
         for (int j = 0; j < 256; j++)
         {
-            const byte *bg = playpal + 3 * i;
-            const byte *fg = playpal + 3 * j;
+            const byte *bg = global_playpal + 3 * i;
+            const byte *fg = global_playpal + 3 * j;
 
-            *tp++ = ColorBlend(playpal, blendfunc, bg, fg, alpha);
+            *tp++ = ColorBlend(global_playpal, blendfunc, bg, fg, alpha);
         }
     }
 
@@ -210,7 +209,7 @@ byte *R_NormalTranMap(int alpha, boolean force)
         }
 
         const int length = strlen(playpal_dir) + sizeof("/tranmap_XY.dat");
-        char *filename = Z_Malloc(length, PU_STATIC, 0);
+        char *filename = I_Malloc(length);
         M_snprintf(filename, length, "%s/tranmap_%02d.dat", playpal_dir, alpha);
 
         byte *buffer = NULL;
@@ -231,6 +230,10 @@ byte *R_NormalTranMap(int alpha, boolean force)
         }
 
         normal_tranmap[alpha] = buffer;
+
+        I_Free(filename);
+        I_Free(playpal_dir);
+        I_Free(tranmap_dir);
     }
 
     // Use cached translucency filter if it's available
@@ -249,7 +252,7 @@ void R_InitTranMap(void)
 
     if (lump != -1 && !force_rebuild)
     {
-        main_tranmap = W_CacheLumpNum(lump, PU_STATIC);
+        main_tranmap = W_CacheLumpNumTag(lump, PU_STATIC);
     }
     else
     {
@@ -276,7 +279,7 @@ void R_InitTranMap(void)
         const byte *tranmap = R_NormalTranMap(alpha, true);
         char *path = AddDefaultExtension(myargv[p + 2], ".lmp");
         M_WriteFile(path, tranmap, tranmap_lump_length);
-        free(path);
+        I_Free(path);
 
         I_SafeExit(0);
     }

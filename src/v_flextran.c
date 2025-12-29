@@ -31,6 +31,7 @@
 #include "v_flextran.h"
 
 #include "i_video.h"
+#include "r_main.h"
 #include "w_wad.h"
 #include "z_zone.h"
 
@@ -53,11 +54,9 @@ void V_InitFlexTranTable(void)
     tpalcol_t *tempRGBpal;
     const byte *palRover;
 
-    byte *palette = W_CacheLumpName("PLAYPAL", PU_STATIC);
-
     tempRGBpal = Z_Malloc(256 * sizeof(*tempRGBpal), PU_STATIC, 0);
 
-    for (i = 0, palRover = palette; i < 256; i++, palRover += 3)
+    for (i = 0, palRover = global_playpal; i < 256; i++, palRover += 3)
     {
         tempRGBpal[i].r = palRover[0];
         tempRGBpal[i].g = palRover[1];
@@ -71,7 +70,7 @@ void V_InitFlexTranTable(void)
         {
             for (b = 0; b < 32; ++b)
             {
-                RGB32k[r][g][b] = I_GetNearestColor(palette, MAKECOLOR(r),
+                RGB32k[r][g][b] = I_GetNearestColor(global_playpal, MAKECOLOR(r),
                                                     MAKECOLOR(g), MAKECOLOR(b));
             }
         }
@@ -104,5 +103,4 @@ void V_InitFlexTranTable(void)
     Col2RGB8_LessPrecision[64] = Col2RGB8[64];
 
     Z_Free(tempRGBpal);
-    Z_ChangeTag(palette, PU_CACHE);
 }

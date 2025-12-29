@@ -985,7 +985,7 @@ void S_ChangeMusic(int musicnum, int looping)
     int old_lumpnum = music->lumpnum;
 
     // load & register it
-    music->data = W_CacheLumpNum(music->lumpnum, PU_STATIC);
+    music->data = W_CacheLumpNumTag(music->lumpnum, PU_STATIC);
     if (extra_music)
     {
         S_GetExtra(music, extra_music);
@@ -1042,7 +1042,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
 
     music->lumpnum = lumpnum;
 
-    music->data = W_CacheLumpNum(music->lumpnum, PU_STATIC);
+    music->data = W_CacheLumpNumTag(music->lumpnum, PU_STATIC);
     if (extra_music)
     {
         S_GetExtra(music, extra_music);

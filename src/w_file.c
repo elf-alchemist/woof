@@ -53,7 +53,7 @@ static boolean W_FILE_AddDir(w_handle_t handle, const char *path,
     {
         char *s = M_StringJoin(handle.p1.base_path, DIR_SEPARATOR_S, path);
         glob = I_StartGlob(s, "*.*", GLOB_FLAG_NOCASE | GLOB_FLAG_SORTED);
-        free(s);
+        I_Free(s);
     }
 
     if (!glob)
@@ -99,6 +99,8 @@ static boolean W_FILE_AddDir(w_handle_t handle, const char *path,
         array_push(lumpinfo, item);
         numlumps++;
     }
+
+    I_EndGlob(glob);
 
     if (numlumps > startlump && end_marker)
     {
@@ -173,7 +175,7 @@ static w_type_t W_FILE_Open(const char *path, w_handle_t *handle)
     }
 
     int length = header.numlumps * sizeof(filelump_t);
-    filelump_t *fileinfo = malloc(length);
+    filelump_t *fileinfo = I_Malloc(length);
     if (fileinfo == NULL)
     {
         I_Error("Failed to allocate file table from %s", path);
@@ -185,7 +187,7 @@ static w_type_t W_FILE_Open(const char *path, w_handle_t *handle)
         I_Printf(VB_WARNING, "Error seeking offset from %s (%s)", path,
                  strerror(errno));
         close(descriptor);
-        free(fileinfo);
+        I_Free(fileinfo);
         return W_NONE;
     }
 
@@ -194,7 +196,7 @@ static w_type_t W_FILE_Open(const char *path, w_handle_t *handle)
         I_Printf(VB_WARNING, "Error reading lump directory from %s (%s)", path,
                  strerror(errno));
         close(descriptor);
-        free(fileinfo);
+        I_Free(fileinfo);
         return W_NONE;
     }
 
@@ -220,7 +222,7 @@ static w_type_t W_FILE_Open(const char *path, w_handle_t *handle)
         array_push(lumpinfo, item);
     }
 
-    free(fileinfo);
+    I_Free(fileinfo);
     return W_FILE;
 }
 

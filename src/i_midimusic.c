@@ -1279,7 +1279,7 @@ static boolean RegisterSong(void)
     us_per_beat = MIDI_DEFAULT_TEMPO;
 
     song.num_tracks = MIDI_NumTracks(song.file);
-    song.tracks = calloc(song.num_tracks, sizeof(midi_track_t));
+    song.tracks = I_Calloc(song.num_tracks, sizeof(midi_track_t));
     for (uint16_t i = 0; i < song.num_tracks; i++)
     {
         song.tracks[i].iter = MIDI_IterateTrack(song.file, i);
@@ -1555,7 +1555,7 @@ static void I_MID_UnRegisterSong(void *handle)
             MIDI_FreeIterator(song.tracks[i].iter);
             song.tracks[i].iter = NULL;
         }
-        free(song.tracks);
+        I_Free(song.tracks);
         song.tracks = NULL;
     }
     if (song.file)

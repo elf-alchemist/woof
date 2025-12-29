@@ -40,7 +40,6 @@
 #include "r_defs.h"
 #include "r_main.h"
 #include "r_state.h"
-#include "r_things.h"
 #include "st_stuff.h"
 #include "st_widgets.h"
 #include "tables.h"
@@ -2386,19 +2385,19 @@ void AM_ApplyColors(boolean force)
     }
     first_time = false;
 
-    byte *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
     byte *iwad_playpal = NULL;
 
-    for (int i = 0; i < numlumps; i++)
+    int i;
+    for (i = 0; i < numlumps; i++)
     {
         if (strcasecmp(lumpinfo[i].name, "PLAYPAL") == 0)
         {
-            iwad_playpal = W_CacheLumpNum(i, PU_STATIC);
+            iwad_playpal = W_CacheLumpNum(i);
             break;
         }
     }
 
-    if (iwad_playpal == NULL || playpal == iwad_playpal
+    if (iwad_playpal == NULL || global_playpal == iwad_playpal
         || M_CheckIfDisabled("mapcolor_preset"))
     {
         for (int i = 0; mapcolors[i].cur_var; i++)
@@ -2415,12 +2414,14 @@ void AM_ApplyColors(boolean force)
                  g = iwad_playpal[3 * j + 1],
                  b = iwad_playpal[3 * j + 2];
 
-            *mapcolors[i].cur_var = I_GetNearestColor(playpal, r, g, b);
+            *mapcolors[i].cur_var = I_GetNearestColor(global_playpal, r, g, b);
         }
     }
 
-    Z_ChangeTag(playpal, PU_CACHE);
-    Z_ChangeTag(iwad_playpal, PU_CACHE);
+    if (global_playpal != iwad_playpal)
+    {
+        W_ReleaseLumpNum(i);
+    }
 }
 
 void AM_ColorPreset(void)

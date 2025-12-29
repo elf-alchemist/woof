@@ -363,7 +363,7 @@ static net_addr_t *NETLIB_ResolveAddress(const char *address)
 
     result = netlib_resolve_host(&ip, addr_hostname, addr_port);
 
-    free(addr_hostname);
+    I_Free(addr_hostname);
 
     if (result)
     {

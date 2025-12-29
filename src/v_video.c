@@ -161,7 +161,7 @@ void V_InitColorTranslation(void)
     register const crdef_t *p;
 
     int playpal_lump = W_GetNumForName("PLAYPAL");
-    byte *playpal = W_CacheLumpNum(playpal_lump, PU_STATIC);
+    byte *playpal = W_CacheLumpNum(playpal_lump);
     boolean iwad_playpal = W_IsIWADLump(playpal_lump);
 
     int force_rebuild = M_CheckParm("-tranmap");
@@ -171,9 +171,9 @@ void V_InitColorTranslation(void)
 
     for (p = crdefs; p->name; p++)
     {
-        int i, lumpnum = W_GetNumForName(p->name);
+        int lumpnum = W_GetNumForName(p->name);
 
-        *p->map_orig = W_CacheLumpNum(lumpnum, PU_STATIC);
+        *p->map_orig = W_CacheLumpNum(lumpnum);
 
         // [FG] color translation table provided by PWAD
         if (W_IsWADLump(lumpnum) && !force_rebuild)
@@ -183,10 +183,10 @@ void V_InitColorTranslation(void)
         }
 
         // [FG] allocate new color translation table
-        *p->map2 = malloc(256);
+        *p->map2 = I_Malloc(256);
 
         // [FG] translate all colors to target color
-        for (i = 0; i < 256; i++)
+        for (int i = 0; i < 256; i++)
         {
             (*p->map2)[i] = V_Colorize(playpal, p - crdefs, (byte)i);
         }
@@ -194,7 +194,7 @@ void V_InitColorTranslation(void)
         // [FG] override with original color translations
         if (iwad_playpal && !force_rebuild)
         {
-            for (i = 0; i < 256; i++)
+            for (int i = 0; i < 256; i++)
             {
                 if (((*p->map_orig)[i] != (byte)i) || (keepgray && i == 109))
                 {
@@ -206,7 +206,7 @@ void V_InitColorTranslation(void)
         *p->map1 = *p->map2;
     }
 
-    cr_bright = malloc(256);
+    cr_bright = I_Malloc(256);
     for (int i = 0; i < 256; ++i)
     {
         cr_bright[i] = V_Colorize(playpal, CR_BRIGHT, (byte)i);
@@ -1130,7 +1130,7 @@ void V_ScreenShot(void)
             M_snprintf(lbmname, sizeof(lbmname), "%.4s%04d.png",
                        D_DoomExeName(), shot++); // [FG] PNG
             if (screenshotname)
-              free(screenshotname);
+              I_Free(screenshotname);
             screenshotname = M_StringJoin(screenshotdir, DIR_SEPARATOR_S,
                                           lbmname);
         }
@@ -1149,7 +1149,7 @@ void V_ScreenShot(void)
         }
         if (screenshotname)
         {
-            free(screenshotname);
+            I_Free(screenshotname);
         }
     }
 

@@ -24,6 +24,7 @@
 #include "m_swap.h"
 #include "r_data.h"
 #include "r_defs.h"
+#include "r_main.h"
 #include "v_video.h"
 #include "w_wad.h"
 #include "z_zone.h"
@@ -400,11 +401,11 @@ static void FreePNG(png_t *png)
     spng_ctx_free(png->ctx);
     if (png->image)
     {
-        free(png->image);
+        I_Free(png->image);
     }
     if (png->translate)
     {
-        free(png->translate);
+        I_Free(png->translate);
     }
 }
 
@@ -447,23 +448,21 @@ static boolean DecodePNG(png_t *png)
         return false;
     }
 
-    byte *image = malloc(image_size);
+    byte *image = I_Malloc(image_size);
     ret = spng_decode_image(png->ctx, image, image_size, fmt, 0);
 
     if (ret)
     {
         I_Printf(VB_ERROR, "DecodePNG: spng_decode_image %s",
                  spng_strerror(ret));
-        free(image);
+        I_Free(image);
         return false;
     }
-
-    byte *playpal = W_CacheLumpName("PLAYPAL", PU_CACHE);
 
     if (fmt == SPNG_FMT_RGB8)
     {
         int indexed_size = image_size / 3;
-        byte *indexed_image = malloc(indexed_size);
+        byte *indexed_image = I_Malloc(indexed_size);
 
         uniform_quantizer_t q = {0};
 
@@ -488,7 +487,7 @@ static boolean DecodePNG(png_t *png)
             int g = *palette++;
             int b = *palette++;
 
-            translate[i] = I_GetNearestColor(playpal, r, g, b);
+            translate[i] = I_GetNearestColor(global_playpal, r, g, b);
         }
 
         roller = image;
@@ -502,7 +501,7 @@ static boolean DecodePNG(png_t *png)
             indexed_image[i] = translate[GetPaletteIndex(r, g, b)];
         }
 
-        free(image);
+        I_Free(image);
 
         png->image = indexed_image;
         png->image_size = indexed_size;
@@ -510,7 +509,7 @@ static boolean DecodePNG(png_t *png)
     else if (fmt == SPNG_FMT_RGBA8)
     {
         int indexed_size = image_size / 4;
-        byte *indexed_image = malloc(indexed_size);
+        byte *indexed_image = I_Malloc(indexed_size);
 
         uniform_quantizer_t q = {0};
 
@@ -544,7 +543,7 @@ static boolean DecodePNG(png_t *png)
             int g = *palette++;
             int b = *palette++;
 
-            byte c = I_GetNearestColor(playpal, r, g, b);
+            byte c = I_GetNearestColor(global_playpal, r, g, b);
             used_colors[c] = 1;
             translate[i] = c;
         }
@@ -581,7 +580,7 @@ static boolean DecodePNG(png_t *png)
             indexed_image[i] = translate[GetPaletteIndex(r, g, b)];
         }
 
-        free(image);
+        I_Free(image);
 
         png->image = indexed_image;
         png->image_size = indexed_size;
@@ -598,9 +597,9 @@ static boolean DecodePNG(png_t *png)
             return false;
         }
 
-        byte *translate = malloc(plte.n_entries);
+        byte *translate = I_Malloc(plte.n_entries);
         boolean need_translation = false;
-        byte *palette = playpal;
+        byte *palette = global_playpal;
 
         for (int i = 0; i < plte.n_entries; ++i)
         {
@@ -618,7 +617,7 @@ static boolean DecodePNG(png_t *png)
 
             need_translation = true;
             translate[i] =
-                I_GetNearestColor(playpal, e->red, e->green, e->blue);
+                I_GetNearestColor(global_playpal, e->red, e->green, e->blue);
         }
 
         if (need_translation)
@@ -627,7 +626,7 @@ static boolean DecodePNG(png_t *png)
         }
         else
         {
-            free(translate);
+            I_Free(translate);
         }
 
         png->image = image;
@@ -675,7 +674,7 @@ patch_t *V_CachePatchNum(int lump, pu_tag tag)
         return lumpcache[lump];
     }
 
-    void *buffer = W_CacheLumpNum(lump, tag);
+    void *buffer = W_CacheLumpNumTag(lump, tag);
     int buffer_length = W_LumpLength(lump);
 
     if (buffer_length < 8 || memcmp(buffer, "\211PNG\r\n\032\n", 8))
@@ -731,7 +730,7 @@ patch_t *V_CachePatchNum(int lump, pu_tag tag)
 
     if (n_chunks > 0)
     {
-        struct spng_unknown_chunk *chunks = malloc(n_chunks * sizeof(*chunks));
+        struct spng_unknown_chunk *chunks = I_Calloc(n_chunks, sizeof(struct spng_unknown_chunk));
         spng_get_unknown_chunks(png.ctx, chunks, &n_chunks);
         for (int i = 0; i < n_chunks; ++i)
         {
@@ -743,7 +742,7 @@ patch_t *V_CachePatchNum(int lump, pu_tag tag)
                 break;
             }
         }
-        free(chunks);
+        I_Free(chunks);
     }
 
     Z_Free(buffer);
@@ -782,7 +781,7 @@ void *V_CacheFlatNum(int lump, pu_tag tag)
         return lumpcache[lump];
     }
 
-    void *buffer = W_CacheLumpNum(lump, tag);
+    void *buffer = W_CacheLumpNumTag(lump, tag);
     int buffer_length = W_LumpLength(lump);
 
     if (buffer_length < 8 || memcmp(buffer, "\211PNG\r\n\032\n", 8))

@@ -83,14 +83,17 @@ void I_MessageBox(const char *message, ...) PRINTF_ATTR(1, 2);
 
 void I_ErrorMsg(void);
 
-void *I_Realloc(void *ptr, size_t size);
-
 boolean I_GetMemoryValue(unsigned int offset, void *value, int size);
 
 const char *I_GetPlatform(void);
 
 void I_SetMetadata(const char *appname, const char *appversion,
                    const char *appidentifier);
+
+void *I_Malloc(size_t size);
+void *I_Calloc(size_t num, size_t size);
+void *I_Realloc(void* ptr, size_t new_size);
+void I_Free(void* ptr);
 
 #endif
 

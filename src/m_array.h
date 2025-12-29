@@ -33,7 +33,7 @@
 #endif
 
 #ifndef M_ARRAY_MALLOC
-#  define M_ARRAY_MALLOC(size) malloc(size)
+#  define M_ARRAY_MALLOC(size) I_Malloc(size)
 #endif
 
 #ifndef M_ARRAY_REALLOC
@@ -41,7 +41,7 @@
 #endif
 
 #ifndef M_ARRAY_FREE
-#  define M_ARRAY_FREE(ptr) free(ptr)
+#  define M_ARRAY_FREE(ptr) I_Free(ptr)
 #endif
 
 typedef struct

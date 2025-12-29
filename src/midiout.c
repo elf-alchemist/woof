@@ -30,6 +30,7 @@
 #include <mmreg.h>
 
 #include "m_io.h"
+#include "i_system.h"
 
 static HMIDIOUT hMidiOut;
 static HANDLE hCallbackEvent;
@@ -43,7 +44,7 @@ static void MidiErrorInternal(const char *prefix, MMRESULT result)
     {
         char *error = M_ConvertWideToUtf8(werror);
         I_Printf(VB_ERROR, "%s: %s", prefix, error);
-        free(error);
+        I_Free(error);
     }
     else
     {
@@ -439,7 +440,7 @@ static void Init(void)
             CFStringGetBytes(name, range, kCFStringEncodingASCII, '?', false,
                              NULL, INT_MAX, &length);
 
-            char *buffer = malloc(length + 1);
+            char *buffer = I_Malloc(length + 1);
 
             CFStringGetBytes(name, range, kCFStringEncodingASCII, '?', false,
                              (UInt8 *)buffer, length, NULL);
@@ -473,7 +474,7 @@ static void Cleanup(void)
     }
     if (packet_buffer)
     {
-        free(packet_buffer);
+        I_Free(packet_buffer);
         packet_buffer = NULL;
     }
 }
@@ -631,7 +632,7 @@ boolean MIDI_OpenDevice(int device)
     CHECK_ERR(MIDIClientCreate(CFSTR(PROJECT_NAME), NULL, NULL, &client));
     CHECK_ERR(MIDIOutputPortCreate(client, CFSTR(PROJECT_NAME"Port"), &port));
 
-    packet_buffer = malloc(PACKET_BUFFER_SIZE);
+    packet_buffer = I_Malloc(PACKET_BUFFER_SIZE);
 
     return true;
 

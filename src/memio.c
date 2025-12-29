@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "doomtype.h"
+#include "i_system.h"
 #include "memio.h"
 
 typedef enum
@@ -45,7 +46,7 @@ MEMFILE *mem_fopen_read(void *buf, size_t buflen)
 {
     MEMFILE *file;
 
-    file = malloc(sizeof(MEMFILE));
+    file = I_Malloc(sizeof(MEMFILE));
 
     file->buf = (unsigned char *)buf;
     file->buflen = buflen;
@@ -108,10 +109,10 @@ MEMFILE *mem_fopen_write(void)
 {
     MEMFILE *file;
 
-    file = malloc(sizeof(MEMFILE));
+    file = I_Malloc(sizeof(MEMFILE));
 
     file->alloced = 1024;
-    file->buf = malloc(file->alloced);
+    file->buf = I_Malloc(file->alloced);
     file->buflen = 0;
     file->position = 0;
     file->read_eof = false;
@@ -141,9 +142,9 @@ size_t mem_fwrite(const void *ptr, size_t size, size_t nmemb, MEMFILE *stream)
     {
         unsigned char *newbuf;
 
-        newbuf = malloc(stream->alloced * 2);
+        newbuf = I_Malloc(stream->alloced * 2);
         memcpy(newbuf, stream->buf, stream->alloced);
-        free(stream->buf);
+        I_Free(stream->buf);
         stream->buf = newbuf;
         stream->alloced *= 2;
     }
@@ -233,10 +234,10 @@ void mem_fclose(MEMFILE *stream)
 {
     if (stream->mode == MODE_WRITE)
     {
-        free(stream->buf);
+        I_Free(stream->buf);
     }
 
-    free(stream);
+    I_Free(stream);
 }
 
 long mem_ftell(MEMFILE *stream)

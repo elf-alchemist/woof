@@ -102,16 +102,13 @@ static int VX_PaletteIndex (byte * pal, int r, int g, int b)
 
 static void VX_CreateRemapTable (byte * p, byte * table)
 {
-	byte * pal = W_CacheLumpName ("PLAYPAL", PU_CACHE);
-
-	int c;
-	for (c = 0 ; c < 256 ; c++)
+	for (int c = 0 ; c < 256 ; c++)
 	{
 		int r = (int)*p++ << 2;
 		int g = (int)*p++ << 2;
 		int b = (int)*p++ << 2;
 
-		table[c] = VX_PaletteIndex (pal, r, g, b);
+		table[c] = VX_PaletteIndex(global_playpal, r, g, b);
 	}
 }
 
@@ -254,7 +251,7 @@ static boolean VX_Load (int spr, int frame)
 		return false;
 	}
 
-	byte *buf = W_CacheLumpNum(lumpnum, PU_STATIC);
+	byte *buf = W_CacheLumpNumTag(lumpnum, PU_STATIC);
 	int len   = W_LumpLength(lumpnum);
 
 	// Note: this may return NULL

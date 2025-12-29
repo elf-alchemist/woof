@@ -1537,7 +1537,7 @@ static void G_JoinDemo(void)
     G_RecordDemo(defdemoname);
 
     // [crispy] discard the newly allocated demo buffer
-    Z_Free(demobuffer);
+    I_Free(demobuffer);
     demobuffer = actualbuffer;
     maxdemosize = actualsize;
   }
@@ -1592,7 +1592,7 @@ static void CheckDemoBuffer(size_t size)
   if (position + size > maxdemosize)
   {
     maxdemosize += size + 128 * 1024; // add another 128K
-    demobuffer = Z_Realloc(demobuffer, maxdemosize, PU_STATIC, 0);
+    demobuffer = I_Realloc(demobuffer, maxdemosize);
     demo_p = position + demobuffer;
   }
 }
@@ -2036,7 +2036,7 @@ static void G_DoPlayDemo(void)
   // of size 'maxdemosize' previously allocated in G_RecordDemo()
   if (demorecording)
   {
-      Z_Free(demobuffer);
+      I_Free(demobuffer);
   }
 
   char *filename = NULL;
@@ -2058,7 +2058,7 @@ static void G_DoPlayDemo(void)
       W_ExtractFileBase(defdemoname, lumpname);           // killough
       int lumpnum = W_GetNumForName(lumpname);
       demolength = W_LumpLength(lumpnum);
-      demobuffer = demo_p = W_CacheLumpNum(lumpnum, PU_STATIC);  // killough
+      demobuffer = demo_p = W_CacheLumpNumTag(lumpnum, PU_STATIC);  // killough
       I_Printf(VB_DEMO, "G_DoPlayDemo: %s (%s)", lumpname, W_WadNameForLump(lumpnum));
   }
 
@@ -2336,7 +2336,7 @@ void G_ForcedLoadGame(void)
 
 void G_LoadAutoSave(char *name, boolean command)
 {
-  free(savename);
+  I_Free(savename);
   savename = M_StringDuplicate(name);
   gameaction = ga_loadautosave;
   forced_loadgame = false;
@@ -2345,7 +2345,7 @@ void G_LoadAutoSave(char *name, boolean command)
 
 void G_LoadGame(char *name, int slot, boolean command)
 {
-  if (savename) free(savename);
+  if (savename) I_Free(savename);
   savename = M_StringDuplicate(name);
   savegameslot = slot;
   gameaction = ga_loadgame;
@@ -2358,7 +2358,7 @@ void G_LoadGame(char *name, int slot, boolean command)
 
 static void G_LoadAutoSaveErr(const char *msg)
 {
-  Z_Free(savebuffer);
+  I_Free(savebuffer);
   MN_ForcedLoadAutoSave(msg);
 
   if (command_loadgame)
@@ -2371,7 +2371,7 @@ static void G_LoadAutoSaveErr(const char *msg)
 
 static void G_LoadGameErr(const char *msg)
 {
-  Z_Free(savebuffer);                // Free the savegame buffer
+  I_Free(savebuffer);                // Free the savegame buffer
   MN_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
   if (command_loadgame)              // If this was a command-line -loadgame
     {
@@ -2412,7 +2412,7 @@ static char *SaveGameName(const char *buf)
 
   if (existing)
   {
-    free(filepath);
+    I_Free(filepath);
     return existing;
   }
   else
@@ -2447,7 +2447,7 @@ char* G_MBFSaveGameName(int slot)
 
   if (existing)
   {
-    free(filepath);
+    I_Free(filepath);
     return existing;
   }
   else
@@ -2490,7 +2490,7 @@ static void DoSaveGame(char *name)
 {
   S_MarkSounds();
 
-  save_p = savebuffer = Z_Malloc(savegamesize, PU_STATIC, 0);
+  save_p = savebuffer = I_Malloc(savegamesize);
 
   saveg_grow(SAVESTRINGSIZE + VERSIONSIZE);
   memcpy(save_p, savedescription, SAVESTRINGSIZE);
@@ -2594,7 +2594,7 @@ static void DoSaveGame(char *name)
       displaymsg("%s", s_GGSAVED); // Ty 03/27/98 - externalized
   }
 
-  Z_Free(savebuffer);  // killough
+  I_Free(savebuffer);  // killough
   savebuffer = save_p = NULL;
 
   gameaction = ga_nothing;
@@ -2608,14 +2608,14 @@ static void G_DoSaveGame(void)
   char *name = G_SaveGameName(savegameslot);
   DoSaveGame(name);
   MN_SetQuickSaveSlot(savegameslot);
-  free(name);
+  I_Free(name);
 }
 
 static void G_DoSaveAutoSave(void)
 {
   char *name = G_AutoSaveName();
   DoSaveGame(name);
-  free(name);
+  I_Free(name);
 }
 
 static byte *LoadCustomSkillOptions(byte *opt_p)
@@ -2707,7 +2707,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
    {  // killough 3/16/98, 12/98: check lump name checksum
      if (checksum != G_Signature(tmp_episode, tmp_map))
        {
-	 char *msg = malloc(strlen((char *) save_p) + 128);
+	 char *msg = I_Malloc(strlen((char *) save_p) + 128);
 	 strcpy(msg,"Incompatible Savegame!!!\n");
 	 if (save_p[sizeof checksum])
 	   strcat(strcat(msg,"Wads expected:\n\n"), (char *) save_p);
@@ -2716,7 +2716,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
 	   G_LoadAutoSaveErr(msg);
 	 else
 	   G_LoadGameErr(msg);
-	 free(msg);
+	 I_Free(msg);
 	 return false;
        }
    }
@@ -2834,7 +2834,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
   }
 
   // done
-  Z_Free(savebuffer);
+  I_Free(savebuffer);
   savegamesize = SAVEGAMESIZE;
 
   if (setsizeneeded)
@@ -2917,7 +2917,7 @@ boolean G_LoadAutoSaveDeathUse(void)
     {
       char *save_path = G_SaveGameName(savegameslot);
       time_t save_time = (M_stat(save_path, &st) != -1 ? st.st_mtime : 0);
-      free(save_path);
+      I_Free(save_path);
       result = (auto_time > save_time);
     }
 
@@ -2927,7 +2927,7 @@ boolean G_LoadAutoSaveDeathUse(void)
     }
   }
 
-  free(auto_path);
+  I_Free(auto_path);
   return result;
 }
 
@@ -3295,7 +3295,7 @@ static boolean G_CheckSpot(int playernum, mapthing_t *mthing)
       static size_t queuesize;
       if (queuesize < bodyquesize)
 	{
-	  bodyque = Z_Realloc(bodyque, bodyquesize*sizeof*bodyque, PU_STATIC, 0);
+	  bodyque = I_Realloc(bodyque, bodyquesize * sizeof(*bodyque));
 	  memset(bodyque+queuesize, 0, 
 		 (bodyquesize-queuesize)*sizeof*bodyque);
 	  queuesize = bodyquesize;
@@ -3705,7 +3705,7 @@ static GameVersion_t GetWadGameVersion(void)
     }
 
     int length = W_LumpLength(lumpnum);
-    char *data = W_CacheLumpNum(lumpnum, PU_CACHE);
+    char *data = W_CacheLumpNumTag(lumpnum, PU_CACHE);
 
     if (length >= 5 && !strncasecmp("1.666", data, 5))
     {
@@ -3737,7 +3737,7 @@ static demo_version_t GetWadDemover(void)
     }
 
     int length = W_LumpLength(lumpnum);
-    char *data = W_CacheLumpNum(lumpnum, PU_CACHE);
+    char *data = W_CacheLumpNumTag(lumpnum, PU_CACHE);
 
     if (length == 7 && !strncasecmp("vanilla", data, 7))
     {
@@ -4266,7 +4266,7 @@ void G_RecordDemo(const char *name)
     maxdemosize = M_ParmArgToInt(i) * 1024;
   if (maxdemosize < 0x20000)  // killough
     maxdemosize = 0x20000;
-  demobuffer = Z_Malloc(maxdemosize, PU_STATIC, 0); // killough
+  demobuffer = I_Malloc(maxdemosize); // killough
   demorecording = true;
 }
 
@@ -4698,7 +4698,7 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
 
   tmp = M_StringJoin("-iwad \"", M_BaseName(wadfiles[0]), "\"");
   mem_fputs(tmp, stream);
-  free(tmp);
+  I_Free(tmp);
 
   for (i = 1; i < array_size(wadfiles); i++)
   {
@@ -4718,7 +4718,7 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
 
     tmp = M_StringJoin(" \"", basename, "\"");
     mem_fputs(tmp, stream);
-    free(tmp);
+    I_Free(tmp);
   }
 
   if (dehfiles)
@@ -4728,7 +4728,7 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
     {
       tmp = M_StringJoin(" \"", M_BaseName(dehfiles[i]), "\"");
       mem_fputs(tmp, stream);
-      free(tmp);
+      I_Free(tmp);
     }
   }
 
@@ -4872,7 +4872,7 @@ boolean G_CheckDemoStatus(void)
       // [FG] ignore empty demo lumps
       if (demobuffer)
       {
-        Z_ChangeTag(demobuffer, PU_CACHE);
+        I_Free(demobuffer);
       }
 
       G_ReloadDefaults(false); // killough 3/1/98
@@ -4898,7 +4898,7 @@ boolean G_CheckDemoStatus(void)
 	I_Error("Error recording demo %s: %s", demoname,  // killough 11/98
 		errno ? strerror(errno) : "(Unknown Error)");
 
-      Z_Free(demobuffer);
+      I_Free(demobuffer);
       demobuffer = NULL;  // killough
       I_Printf(VB_ALWAYS, "Demo %s recorded", demoname);
       // [crispy] if a new game is started during demo recording, start a new demo
@@ -4943,7 +4943,7 @@ const char *G_GetLevelTitle(void)
             static char *string;
             if (string)
             {
-                free(string);
+                I_Free(string);
             }
             string = M_StringJoin(gamemapinfo->label ? gamemapinfo->label
                                                      : gamemapinfo->mapname,

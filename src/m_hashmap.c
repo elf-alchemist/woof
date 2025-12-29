@@ -14,6 +14,7 @@
 #include "m_hashmap.h"
 
 #include "doomtype.h"
+#include "i_system.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -48,7 +49,7 @@ struct hashmap_s
 
 hashmap_t *hashmap_init(int initial_capacity)
 {
-    hashmap_t *map = calloc(1, sizeof(hashmap_t));
+    hashmap_t *map = I_Malloc(sizeof(hashmap_t));
 
     // Round up to nearest power of 2 for efficient modulo
     int capacity = 16;
@@ -57,20 +58,20 @@ hashmap_t *hashmap_init(int initial_capacity)
         capacity <<= 1;
     }
 
-    map->entries = calloc(capacity, sizeof(hashmap_entry_t));
+    map->entries = I_Calloc(capacity, sizeof(hashmap_entry_t));
     map->capacity = capacity;
     return map;
 }
 
 void hashmap_free(hashmap_t *map)
 {
-    free(map->entries);
-    free(map);
+    I_Free(map->entries);
+    I_Free(map);
 }
 
 static void resize(hashmap_t *map, int new_capacity)
 {
-    hashmap_entry_t *new_entries = calloc(new_capacity, sizeof(hashmap_entry_t));
+    hashmap_entry_t *new_entries = I_Calloc(new_capacity, sizeof(hashmap_entry_t));
 
     for (int i = 0; i < map->capacity; ++i)
     {
@@ -86,7 +87,7 @@ static void resize(hashmap_t *map, int new_capacity)
         }
     }
 
-    free(map->entries);
+    I_Free(map->entries);
     map->entries = new_entries;
     map->capacity = new_capacity;
 }
@@ -194,10 +195,10 @@ boolean hashmap_next(hashmap_iterator_t *iter, uintptr_t *key, int *index)
 
 hashmap_t *M_HashMapCopy(const hashmap_t *from)
 {
-    hashmap_t *to = calloc(1, sizeof(hashmap_t));
+    hashmap_t *to = I_Malloc(sizeof(hashmap_t));
     to->capacity = from->capacity;
     to->size = from->size;
-    to->entries = malloc(from->capacity * sizeof(hashmap_entry_t));
+    to->entries = I_Calloc(from->capacity, sizeof(hashmap_entry_t));
     memcpy(to->entries, from->entries, from->capacity * sizeof(hashmap_entry_t));
     return to;
 }

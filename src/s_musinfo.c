@@ -45,7 +45,7 @@ void S_ParseMusInfo(const char *mapid)
         return;
     }
 
-    scanner_t *s = SC_Open("MUSINFO", W_CacheLumpNum(lumpnum, PU_CACHE),
+    scanner_t *s = SC_Open("MUSINFO", W_CacheLumpNumTag(lumpnum, PU_CACHE),
                            W_LumpLength(lumpnum));
 
     while (SC_TokensLeft(s))

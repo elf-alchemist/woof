@@ -71,7 +71,7 @@ static void ParseSoundDefinition(scanner_t *s, sound_def_t **sound_defs)
     if (!SC_SameLine(s))
     {
         SC_Warning(s, "expected lump name");
-        free(def.sound_name);
+        I_Free(def.sound_name);
         return;
     }
 
@@ -82,8 +82,8 @@ static void ParseSoundDefinition(scanner_t *s, sound_def_t **sound_defs)
     if (def.lumpnum < 0)
     {
         SC_Warning(s, "lump not found: %s", def.lump_name);
-        free(def.sound_name);
-        free(def.lump_name);
+        I_Free(def.sound_name);
+        I_Free(def.lump_name);
         if (SC_SameLine(s))
         {
             SC_GetNextLineToken(s);
@@ -254,7 +254,7 @@ static void ParseAmbientSoundCommand(scanner_t *s, char ***sound_names,
     if ((*sound_names)[array_index])
     {
         I_Printf(VB_WARNING, "SNDINFO: duplicate $ambient index: %d", index);
-        free((*sound_names)[array_index]);
+        I_Free((*sound_names)[array_index]);
     }
 
     (*sound_names)[array_index] = sound_name;
@@ -346,12 +346,12 @@ static void FreeSoundDefinitions(sound_def_t **sound_defs)
 
         if (def->sound_name)
         {
-            free(def->sound_name);
+            I_Free(def->sound_name);
         }
 
         if (def->lump_name)
         {
-            free(def->lump_name);
+            I_Free(def->lump_name);
         }
     }
 
@@ -364,21 +364,21 @@ static void FreeSoundNames(char ***sound_names)
     {
         if ((*sound_names)[i])
         {
-            free((*sound_names)[i]);
+            I_Free((*sound_names)[i]);
         }
     }
 
-    free(*sound_names);
+    I_Free(*sound_names);
 }
 
 void S_ParseSndInfo(int lumpnum)
 {
-    const char *lump_data = W_CacheLumpNum(lumpnum, PU_CACHE);
+    const char *lump_data = W_CacheLumpNumTag(lumpnum, PU_CACHE);
     const int lump_length = W_LumpLength(lumpnum);
     scanner_t *s = SC_Open("SNDINFO", lump_data, lump_length);
     sound_def_t *sound_defs = NULL;
-    char **sound_names = calloc(MAX_AMBIENT_DATA, sizeof(*sound_names));
-    ambient_data = calloc(MAX_AMBIENT_DATA, sizeof(*ambient_data));
+    char **sound_names = I_Calloc(MAX_AMBIENT_DATA, sizeof(char*));
+    ambient_data = I_Calloc(MAX_AMBIENT_DATA, sizeof(ambient_data_t));
 
     while (SC_TokensLeft(s))
     {
@@ -408,7 +408,7 @@ void S_ParseSndInfo(int lumpnum)
 
     if (!ResolveAmbientSounds(sound_defs, sound_names, ambient_data))
     {
-        free(ambient_data);
+        I_Free(ambient_data);
         ambient_data = NULL;
     }
 

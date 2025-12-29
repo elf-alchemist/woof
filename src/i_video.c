@@ -1093,7 +1093,7 @@ boolean I_WritePNGfile(char *filename)
     }
     int pitch = surface->w * 3;
     int size = surface->h * pitch;
-    void *pixels = malloc(size);
+    void *pixels = I_Malloc(size);
     if (!SDL_ConvertPixels(surface->w, surface->h,
                            surface->format, surface->pixels,
                            surface->pitch, SDL_PIXELFORMAT_RGB24, pixels,
@@ -1101,7 +1101,7 @@ boolean I_WritePNGfile(char *filename)
     {
         I_Printf(VB_ERROR, "I_WritePNGfile: SDL_ConvertPixels failed: %s",
                  SDL_GetError());
-        free(pixels);
+        I_Free(pixels);
         SDL_DestroySurface(surface);
         return false;
     }
@@ -1109,7 +1109,7 @@ boolean I_WritePNGfile(char *filename)
     FILE *file = M_fopen(filename, "wb");
     if (!file)
     {
-        free(pixels);
+        I_Free(pixels);
         SDL_DestroySurface(surface);
         return false;
     }
@@ -1140,7 +1140,7 @@ boolean I_WritePNGfile(char *filename)
     fclose(file);
 
     spng_ctx_free(ctx);
-    free(pixels);
+    I_Free(pixels);
     SDL_DestroySurface(surface);
 
     I_ResetDRS();
@@ -1539,7 +1539,7 @@ static void I_InitGraphicsMode(void)
 
     char *title = M_StringJoin(gamedescription, " - ", PROJECT_STRING);
     screen = SDL_CreateWindow(title, window_width, window_height, flags);
-    free(title);
+    I_Free(title);
 
     if (screen == NULL)
     {
@@ -1566,7 +1566,7 @@ static void I_InitGraphicsMode(void)
 
     palette = SDL_CreatePalette(256);
 
-    I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
+    I_SetPalette(global_playpal);
 
     // Blank out the full screen area in case there is any junk in
     // the borders that won't otherwise be overwritten.
@@ -1628,9 +1628,9 @@ static void CreateVideoBuffer(void)
 
     if (I_VideoBuffer)
     {
-        free(I_VideoBuffer);
+        I_Free(I_VideoBuffer);
     }
-    I_VideoBuffer = malloc(video.width * video.height);
+    I_VideoBuffer = I_Malloc(video.width * video.height);
     V_RestoreBuffer();
 
     M_ArenaClear(renderer_arena);

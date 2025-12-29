@@ -20,13 +20,14 @@
 #include <string.h>
 
 #include "doomtype.h"
+#include "i_system.h"
 #include "i_video.h"
 #include "m_misc.h"
 #include "m_swap.h"
 #include "r_defs.h"
+#include "r_main.h"
 #include "v_patch.h"
 #include "v_video.h"
-#include "w_wad.h"
 #include "z_zone.h"
 
 typedef struct
@@ -89,7 +90,7 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
         upper = true;
     }
     numchars = header->lastc - header->firstc + 1;
-    chars = malloc(numchars * sizeof(*chars));
+    chars = I_Calloc(numchars, sizeof(fon2_char_t));
 
     for (int i = 0; i < numchars; ++i)
     {
@@ -104,14 +105,13 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
     }
 
     // Build translation table for palette.
-    byte *playpal = W_CacheLumpName("PLAYPAL", PU_CACHE);
-    byte *translate = malloc(header->palsize + 1);
+    byte *translate = I_Malloc(header->palsize + 1);
     for (int i = 0; i < header->palsize + 1; ++i)
     {
         int r = *p++;
         int g = *p++;
         int b = *p++;
-        translate[i] = I_GetNearestColor(playpal, r, g, b);
+        translate[i] = I_GetNearestColor(global_playpal, r, g, b);
     }
 
     // 0 is transparent, last is border color
@@ -128,7 +128,7 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
         }
 
         int numpixels = chars[i].width * height;
-        byte *data = malloc(numpixels);
+        byte *data = I_Malloc(numpixels);
         byte *d = data;
         byte code = 0;
         int length = 0;
@@ -159,10 +159,10 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
 
         chars[i].patch = V_LinearToTransPatch(data, chars[i].width, height, NULL,
                                               color_key, PU_STATIC, NULL);
-        free(data);
+        I_Free(data);
     }
 
-    free(translate);
+    I_Free(translate);
     return true;
 }
 

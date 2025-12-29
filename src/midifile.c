@@ -22,6 +22,7 @@
 
 #include "doomtype.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "memio.h"
 #include "midifile.h"
 
@@ -172,13 +173,7 @@ static void *ReadByteSequence(unsigned int num_bytes, MEMFILE *stream)
     // Allocate a buffer. Allocate one extra byte, as malloc(0) is
     // non-portable.
 
-    result = malloc(num_bytes + 1);
-
-    if (result == NULL)
-    {
-        I_Printf(VB_ERROR, "ReadByteSequence: Failed to allocate buffer");
-        return NULL;
-    }
+    result = I_Malloc(num_bytes + 1);
 
     // Read the data:
 
@@ -188,7 +183,7 @@ static void *ReadByteSequence(unsigned int num_bytes, MEMFILE *stream)
         {
             I_Printf(VB_ERROR, "ReadByteSequence: Error while reading byte %u",
                      i);
-            free(result);
+            I_Free(result);
             return NULL;
         }
     }
@@ -259,7 +254,7 @@ static boolean ReadSysExEvent(midi_event_t *event, int event_type,
     // Read the byte sequence:
 
     event->data.sysex.length++; // Extra byte for event type.
-    event->data.sysex.data = malloc(event->data.sysex.length);
+    event->data.sysex.data = I_Malloc(event->data.sysex.length);
 
     if (event->data.sysex.data == NULL)
     {
@@ -274,7 +269,7 @@ static boolean ReadSysExEvent(midi_event_t *event, int event_type,
         if (!ReadByte(&event->data.sysex.data[i], stream))
         {
             I_Printf(VB_ERROR, "ReadSysExEvent: Failed to read event");
-            free(event->data.sysex.data);
+            I_Free(event->data.sysex.data);
             return false;
         }
     }
@@ -413,11 +408,11 @@ static void FreeEvent(midi_event_t *event)
     {
         case MIDI_EVENT_SYSEX:
         case MIDI_EVENT_SYSEX_SPLIT:
-            free(event->data.sysex.data);
+            I_Free(event->data.sysex.data);
             break;
 
         case MIDI_EVENT_META:
-            free(event->data.meta.data);
+            I_Free(event->data.meta.data);
             break;
 
         default:
@@ -511,7 +506,7 @@ static boolean ReadTrack(midi_file_t *file, midi_track_t *track,
         if (track->num_events == track->num_events_mem)
         {
             track->num_events_mem += 100;
-            new_events = realloc(track->events,
+            new_events = I_Realloc(track->events,
                                  sizeof(midi_event_t) * track->num_events_mem);
         }
 
@@ -556,7 +551,7 @@ static void FreeTrack(midi_track_t *track)
         FreeEvent(&track->events[i]);
     }
 
-    free(track->events);
+    I_Free(track->events);
 }
 
 static boolean ReadAllTracks(midi_file_t *file, MEMFILE *stream)
@@ -565,7 +560,7 @@ static boolean ReadAllTracks(midi_file_t *file, MEMFILE *stream)
 
     // Allocate list of tracks and read each track:
 
-    file->tracks = malloc(sizeof(midi_track_t) * file->num_tracks);
+    file->tracks = I_Calloc(file->num_tracks, sizeof(midi_track_t));
 
     if (file->tracks == NULL)
     {
@@ -635,10 +630,10 @@ void MIDI_FreeFile(midi_file_t *file)
             FreeTrack(&file->tracks[i]);
         }
 
-        free(file->tracks);
+        I_Free(file->tracks);
     }
 
-    free(file);
+    I_Free(file);
 }
 
 midi_file_t *MIDI_LoadFile(void *buf, size_t buflen)
@@ -646,12 +641,7 @@ midi_file_t *MIDI_LoadFile(void *buf, size_t buflen)
     midi_file_t *file;
     MEMFILE *stream;
 
-    file = malloc(sizeof(midi_file_t));
-
-    if (file == NULL)
-    {
-        return NULL;
-    }
+    file = I_Malloc(sizeof(midi_file_t));
 
     file->tracks = NULL;
     file->num_tracks = 0;
@@ -703,9 +693,7 @@ unsigned int MIDI_NumTracks(midi_file_t *file)
 
 midi_track_iter_t *MIDI_IterateTrack(midi_file_t *file, unsigned int track)
 {
-    midi_track_iter_t *iter;
-
-    iter = malloc(sizeof(*iter));
+    midi_track_iter_t *iter = I_Malloc(sizeof(midi_track_iter_t));
     iter->track = &file->tracks[track];
     iter->position = 0;
     iter->loop_point = 0;
@@ -715,7 +703,7 @@ midi_track_iter_t *MIDI_IterateTrack(midi_file_t *file, unsigned int track)
 
 void MIDI_FreeIterator(midi_track_iter_t *iter)
 {
-    free(iter);
+    I_Free(iter);
 }
 
 // Get the time until the next MIDI event in a track.

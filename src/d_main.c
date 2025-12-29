@@ -356,7 +356,7 @@ void D_Display (void)
 
   // clean up border stuff
   if (gamestate != oldgamestate && gamestate != GS_LEVEL)
-    I_SetPalette (W_CacheLumpName ("PLAYPAL",PU_CACHE));
+    I_SetPalette(global_playpal);
 
   // see if the border needs to be initially drawn
   if (gamestate == GS_LEVEL && oldgamestate != GS_LEVEL)
@@ -569,6 +569,7 @@ void D_AddFile(const char *file)
   {
     I_Error("Failed to load %s", file);
   }
+  I_Free(path);
 }
 
 // killough 10/98: return the name of the program the exe was invoked as
@@ -604,7 +605,7 @@ static void LoadBaseFile(void)
         {
             char *s = M_StringJoin(d.func(), DIR_SEPARATOR_S, d.dir);
             result = W_InitBaseFile(s);
-            free(s);
+            I_Free(s);
         }
         else if (d.dir)
         {
@@ -634,7 +635,7 @@ static char *GetAutoloadDir(const char *base, const char *iwadname, boolean crea
     lower = M_StringDuplicate(iwadname);
     M_StringToLower(lower);
     result = M_StringJoin(base, DIR_SEPARATOR_S, lower);
-    free(lower);
+    I_Free(lower);
 
     if (createdir)
     {
@@ -829,6 +830,7 @@ void IdentifyVersion(void)
     }
 
     D_AddFile(iwadfile);
+    I_Free(iwadfile);
 
     D_GetModeAndMissionByIWADName(M_BaseName(wadfiles[0]), &gamemode, &gamemission);
 
@@ -950,17 +952,17 @@ void FindResponseFile (void)
           I_Error("No such response file!");          // killough 10/98
 
         I_Printf(VB_INFO, "Found response file %s!",filename);
-        free(filename);
+        I_Free(filename);
 
         fseek(handle,0,SEEK_END);
         size = ftell(handle);
         fseek(handle,0,SEEK_SET);
-        file = malloc(size);
+        file = I_Malloc(size);
         // [FG] check return value
         if (!fread(file,size,1,handle))
         {
           fclose(handle);
-          free(file);
+          I_Free(file);
           return;
         }
         fclose(handle);
@@ -970,7 +972,7 @@ void FindResponseFile (void)
           moreargs[index++] = myargv[k];
 
         firstargv = myargv[0];
-        myargv = calloc(sizeof(char *),MAXARGVS);
+        myargv = I_Calloc(MAXARGVS, sizeof(char*));
         myargv[0] = firstargv;
 
         infile = file;
@@ -1145,7 +1147,7 @@ static int GuessFileType(const char *name)
         ret = FILETYPE_DEH;
     }
 
-    free(lower);
+    I_Free(lower);
 
     return ret;
 }
@@ -1180,8 +1182,7 @@ static void M_AddLooseFiles(void)
     // allocate space for up to four additional regular parameters
     // (-iwad, -merge, -deh, -playdemo)
 
-    arguments = malloc((myargc + 4) * sizeof(*arguments));
-    memset(arguments, 0, (myargc + 4) * sizeof(*arguments));
+    arguments = I_Malloc((myargc + 4) * sizeof(*arguments));
 
     // check the command line and make sure it does not already
     // contain any regular parameters or response files
@@ -1203,7 +1204,7 @@ static void M_AddLooseFiles(void)
 #endif
           )
         {
-            free(arguments);
+            I_Free(arguments);
             return;
         }
 
@@ -1243,7 +1244,7 @@ static void M_AddLooseFiles(void)
         myargc++;
     }
 
-    newargv = malloc(myargc * sizeof(*newargv));
+    newargv = I_Calloc(myargc, sizeof(char*));
 
     // sort the argument list by file type, except for the zeroth argument
     // which is the executable invocation itself
@@ -1257,7 +1258,7 @@ static void M_AddLooseFiles(void)
         newargv[i] = arguments[i].str;
     }
 
-    free(arguments);
+    I_Free(arguments);
 
     myargv = newargv;
 }
@@ -1307,16 +1308,16 @@ static void D_ProcessDehCommandLine(void)
               char *probe;
               char *file = AddDefaultExtension(myargv[p], ".bex");
               probe = D_TryFindWADByName(file);
-              free(file);
+              I_Free(file);
               if (M_access(probe, F_OK))  // nope
                 {
-                  free(probe);
+                  I_Free(probe);
                   file = AddDefaultExtension(myargv[p], ".deh");
                   probe = D_TryFindWADByName(file);
-                  free(file);
+                  I_Free(file);
                   if (M_access(probe, F_OK))  // still nope
                   {
-                    free(probe);
+                    I_Free(probe);
                     I_Error("Cannot find .deh or .bex file named %s",
                             myargv[p]);
                   }
@@ -1324,7 +1325,7 @@ static void D_ProcessDehCommandLine(void)
               // during the beta we have debug output to dehout.txt
               // (apparently, this was never removed after Boom beta-killough)
               ProcessDehFile(probe, D_dehout(), 0);  // killough 10/98
-              free(probe);
+              I_Free(probe);
             }
     }
   // ty 03/09/98 end of do dehacked stuff
@@ -1418,7 +1419,7 @@ static void AutoloadIWadDir(void (*AutoLoadFunc)(const char *path))
         {
             char *dir = GetAutoloadDir(autoload_paths[j], "all-all", true);
             AutoLoadFunc(dir);
-            free(dir);
+            I_Free(dir);
 
             // common auto-loaded files for all Doom flavors
             if (local_gamemission != none)
@@ -1427,58 +1428,58 @@ static void AutoloadIWadDir(void (*AutoLoadFunc)(const char *path))
                 {
                     dir = GetAutoloadDir(autoload_paths[j], "doom-all", true);
                     AutoLoadFunc(dir);
-                    free(dir);
+                    I_Free(dir);
                 }
                 else if (local_gamemission == pack_chex || local_gamemission == pack_chex3v)
                 {
                     dir = GetAutoloadDir(autoload_paths[j], "chex-all", true);
                     AutoLoadFunc(dir);
-                    free(dir);
+                    I_Free(dir);
                 }
 
                 if (local_gamemission == doom)
                 {
                     dir = GetAutoloadDir(autoload_paths[j], "doom1-all", true);
                     AutoLoadFunc(dir);
-                    free(dir);
+                    I_Free(dir);
                 }
                 else if (local_gamemission >= doom2
                          && local_gamemission <= pack_plut)
                 {
                     dir = GetAutoloadDir(autoload_paths[j], "doom2-all", true);
                     AutoLoadFunc(dir);
-                    free(dir);
+                    I_Free(dir);
                 }
                 else if (local_gamemission == pack_freedoom)
                 {
                     dir = GetAutoloadDir(autoload_paths[j], "freedoom-all", true);
                     AutoLoadFunc(dir);
-                    free(dir);
+                    I_Free(dir);
                     if (local_gamemode == commercial)
                     {
                         dir = GetAutoloadDir(autoload_paths[j], "freedoom2-all", true);
                         AutoLoadFunc(dir);
-                        free(dir);
+                        I_Free(dir);
                     }
                     else
                     {
                         dir = GetAutoloadDir(autoload_paths[j], "freedoom1-all", true);
                         AutoLoadFunc(dir);
-                        free(dir);
+                        I_Free(dir);
                     }
                 }
                 else if (local_gamemission == pack_rekkr)
                 {
                     dir = GetAutoloadDir(autoload_paths[j], "rekkr-all", true);
                     AutoLoadFunc(dir);
-                    free(dir);
+                    I_Free(dir);
                 }
             }
 
             // auto-loaded files per IWAD
             dir = GetAutoloadDir(autoload_paths[j], M_BaseName(wadfiles[i]), true);
             AutoLoadFunc(dir);
-            free(dir);
+            I_Free(dir);
         }
     }
 }
@@ -1500,7 +1501,7 @@ static void AutoloadPWadDir(void (*AutoLoadFunc)(const char *path))
             char *dir = GetAutoloadDir(autoload_paths[j],
                                        M_BaseName(wadfiles[i]), false);
             AutoLoadFunc(dir);
-            free(dir);
+            I_Free(dir);
         }
     }
 }
@@ -1650,8 +1651,7 @@ static endoom_t show_endoom;
 static void D_ShowEndDoom(void)
 {
   int lumpnum = W_CheckNumForName("ENDOOM");
-  byte *endoom = W_CacheLumpNum(lumpnum, PU_STATIC);
-
+  byte *endoom = W_CacheLumpNum(lumpnum);
   I_Endoom(endoom);
 }
 
@@ -1694,7 +1694,7 @@ static int mainwadfile;
 #define SET_DIR(a, b) \
     if ((a)) \
     { \
-        free((a)); \
+        I_Free((a)); \
     } \
     (a) = (b);
 
@@ -1752,14 +1752,14 @@ void D_SetSavegameDirectory(void)
             char *oldsavegame = basesavegame;
             basesavegame =
                 M_StringJoin(oldsavegame, DIR_SEPARATOR_S, "savegames");
-            free(oldsavegame);
+            I_Free(oldsavegame);
 
             M_MakeDirectory(basesavegame);
 
             oldsavegame = basesavegame;
             basesavegame = M_StringJoin(oldsavegame, DIR_SEPARATOR_S,
                 M_BaseName(wadname));
-            free(oldsavegame);
+            I_Free(oldsavegame);
         }
     }
 
@@ -1853,7 +1853,7 @@ void D_DoomMain(void)
   }
 
   // killough 10/98: set default savename based on executable's name
-  sprintf(savegamename = malloc(16), "%.4ssav", D_DoomExeName());
+  sprintf(savegamename = I_Malloc(16), "%.4ssav", D_DoomExeName());
 
   I_Printf(VB_INFO, "W_Init: Init WADfiles.");
 
@@ -2432,6 +2432,8 @@ void D_DoomMain(void)
   W_ProcessInWads("TRAKINFO", S_ParseTrakInfo, PROCESS_IWAD | PROCESS_PWAD);
   D_SetupDemoLoop();
 
+  global_playpal = W_CacheLumpName("PLAYPAL", ns_global);
+
   I_Printf(VB_INFO, "M_Init: Init miscellaneous info.");
   M_Init();
 
@@ -2651,14 +2653,14 @@ void D_DoomMain(void)
   {
     char *file = G_AutoSaveName();
     G_LoadAutoSave(file, true);
-    free(file);
+    I_Free(file);
   }
   else if (startloadgame >= 0 && startloadgame <= 77) // Page 0-7, slot 0-7.
   {
     char *file;
     file = G_SaveGameName(startloadgame);
     G_LoadGame(file, startloadgame, true); // killough 5/15/98: add command flag
-    free(file);
+    I_Free(file);
   }
   else
     if (!singledemo)                    // killough 12/98

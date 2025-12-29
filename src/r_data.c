@@ -575,7 +575,7 @@ void R_InitTextures (void)
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
-  names = W_CacheLumpName("PNAMES", PU_STATIC);
+  names = W_CacheLumpNameTag("PNAMES", PU_STATIC);
   nummappatches = LONG(*((int *)names));
   name_p = names+4;
   numpatches = nummappatches;
@@ -629,14 +629,14 @@ void R_InitTextures (void)
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
-  maptex = maptex1 = W_CacheLumpName("TEXTURE1", PU_STATIC);
+  maptex = maptex1 = W_CacheLumpNameTag("TEXTURE1", PU_STATIC);
   numtextures1 = LONG(*maptex);
   maxoff = W_LumpLength(W_GetNumForName("TEXTURE1"));
   directory = maptex+1;
 
   if (W_CheckNumForName("TEXTURE2") != -1)
     {
-      maptex2 = W_CacheLumpName("TEXTURE2", PU_STATIC);
+      maptex2 = W_CacheLumpNameTag("TEXTURE2", PU_STATIC);
       numtextures2 = LONG(*maptex2);
       maxoff2 = W_LumpLength(W_GetNumForName("TEXTURE2"));
     }
@@ -922,10 +922,10 @@ void R_InitColormaps(void)
   numcolormaps = lastcolormaplump - firstcolormaplump;
   colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC, 0);
 
-  colormaps[0] = W_CacheLumpNum(W_GetNumForName("COLORMAP"), PU_STATIC);
+  colormaps[0] = W_CacheLumpNumTag(W_GetNumForName("COLORMAP"), PU_STATIC);
 
   for (i=1; i<numcolormaps; i++)
-    colormaps[i] = W_CacheLumpNum(i+firstcolormaplump, PU_STATIC);
+    colormaps[i] = W_CacheLumpNumTag(i+firstcolormaplump, PU_STATIC);
 
   // [FG] dark/shaded color translation table
   cr_dark = &colormaps[0][256*15];

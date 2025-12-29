@@ -901,7 +901,7 @@ static void UDMF_ParseThing(scanner_t *s)
 static void UDMF_ParseTextMap(int lumpnum)
 {
     scanner_t *s =
-        SC_Open("TEXTMAP", W_CacheLumpNum(lumpnum + UDMF_TEXTMAP, PU_CACHE),
+        SC_Open("TEXTMAP", W_CacheLumpNumTag(lumpnum + UDMF_TEXTMAP, PU_CACHE),
                 W_LumpLength(lumpnum + UDMF_TEXTMAP));
 
     const char *toplevel = NULL;
@@ -1130,7 +1130,7 @@ static void UDMF_LoadLineDefs(void)
         int32_t lump = W_CheckNumForName(udmf_linedefs[i].tranmap);
         if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
         {
-            lines[i].tranmap = W_CacheLumpNum(lump, PU_CACHE);
+            lines[i].tranmap = W_CacheLumpNumTag(lump, PU_CACHE);
         }
 
         // killough 11/98: fix common wad errors (missing sidedefs):
@@ -1184,7 +1184,7 @@ static void UDMF_LoadLineDefs_Post(void)
                 // translucency from sidedef
                 int32_t lump = sides[*lines[i].sidenum].special;
                 const byte *tranmap =
-                    !lump ? main_tranmap : W_CacheLumpNum(lump - 1, PU_STATIC);
+                    !lump ? main_tranmap : W_CacheLumpNumTag(lump - 1, PU_STATIC);
                 if (!lines[i].args[0])
                 {
                     // if tag==0, affect this linedef only
@@ -1257,7 +1257,7 @@ void UDMF_LoadThings(void)
         int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
         if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
         {
-            mt.tranmap = W_CacheLumpNum(lump, PU_CACHE);
+            mt.tranmap = W_CacheLumpNumTag(lump, PU_CACHE);
         }
 
         P_SpawnMapThing(&mt);
@@ -1286,7 +1286,7 @@ static boolean UDMF_LoadBlockMap(int blockmap_num)
     else
     {
         long i;
-        short *wadblockmaplump = W_CacheLumpNum(blockmap_num, PU_LEVEL);
+        short *wadblockmaplump = W_CacheLumpNumTag(blockmap_num, PU_LEVEL);
         blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
         // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -1339,7 +1339,7 @@ static boolean UDMF_LoadReject(int reject_num)
 
     if (lumplen >= minlength)
     {
-        rejectmatrix = W_CacheLumpNum(reject_num, PU_LEVEL);
+        rejectmatrix = W_CacheLumpNumTag(reject_num, PU_LEVEL);
         ret = false;
     }
     else

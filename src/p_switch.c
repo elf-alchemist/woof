@@ -71,7 +71,7 @@ void P_InitSwitchList(void)
   switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch table
 
   //jff 3/23/98 read the switch table from a predefined lump             
-  alphSwitchList = (switchlist_t *)W_CacheLumpName("SWITCHES",PU_STATIC);
+  alphSwitchList = (switchlist_t *)W_CacheLumpNameTag("SWITCHES",PU_STATIC);
 
   for (i=0;;i++)
   {

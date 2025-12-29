@@ -48,7 +48,6 @@
 #include "p_mobj.h"
 #include "sounds.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 static boolean bfgcells_modified = false;
 
@@ -1712,7 +1711,7 @@ void ProcessDehFile(const char *filename, char *outfilename, int lumpnum)
     }
     else // DEH file comes from lump indicated by third argument
     {
-        void *buf = W_CacheLumpNum(lumpnum, PU_STATIC);
+        void *buf = W_CacheLumpNum(lumpnum);
 
         filename = W_WadNameForLump(lumpnum);
 
@@ -2379,7 +2378,7 @@ static void deh_procFrame(DEHFILE *fpin, char *line)
                 deh_log("Bad length for Tranmap lump name '%s'\n", candidate);
                 continue;
             }
-            states[indexnum].tranmap = W_CacheLumpName(candidate, PU_STATIC);
+            states[indexnum].tranmap = W_CacheLumpName(candidate, ns_global);
         }
         else
         {
@@ -3208,7 +3207,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
 
         deh_procStringSub(NULL, inbuffer, line2);
     }
-    free(line2); // may be NULL, ignored by free()
+    I_Free(line2); // may be NULL, ignored by free()
     return;
 }
 
@@ -3277,7 +3276,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
 
     if (!holdstring)
     {
-        holdstring = malloc(maxstrlen * sizeof(*holdstring));
+        holdstring = I_Malloc(maxstrlen);
     }
 
     *holdstring = '\0'; // empty string to start with

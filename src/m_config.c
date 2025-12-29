@@ -449,7 +449,7 @@ void M_SaveDefaults(void)
                 errno ? strerror(errno) : "(Unknown Error)");
     }
 
-    free(tmpfile);
+    I_Free(tmpfile);
 }
 
 //
@@ -519,14 +519,14 @@ boolean M_ParseOption(const char *p, boolean wad)
         }
         else
         {
-            free(*dp->location.s); // Free old value
+            I_Free(*dp->location.s); // Free old value
         }
 
         *dp->location.s = strdup(strparm + 1); // Change default value
 
         if (dp->current.s) // Current value
         {
-            free(*dp->current.s);                 // Free old value
+            I_Free(*dp->current.s);                 // Free old value
             *dp->current.s = strdup(strparm + 1); // Change current value
         }
     }
@@ -646,7 +646,7 @@ void M_LoadOptions(void)
         {
             int size = W_LumpLength(lump), buflen = 0;
             char *buf = NULL, *p,
-                 *options = p = W_CacheLumpNum(lump, PU_STATIC);
+                 *options = p = W_CacheLumpNumTag(lump, PU_STATIC);
             while (size > 0)
             {
                 int len = 0;
@@ -662,7 +662,7 @@ void M_LoadOptions(void)
                 size -= len;
                 M_ParseOption(buf, true);
             }
-            free(buf);
+            I_Free(buf);
             Z_ChangeTag(options, PU_CACHE);
         }
     }

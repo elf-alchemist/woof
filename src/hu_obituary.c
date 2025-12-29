@@ -24,6 +24,7 @@
 #include "doomstat.h"
 #include "doomtype.h"
 #include "hu_obituary.h"
+#include "i_system.h"
 #include "info.h"
 #include "m_misc.h"
 #include "net_client.h"
@@ -98,7 +99,7 @@ static inline char *StrReplace(char *str, const char *from, const char *to)
     {
         char *newstr;
         newstr = M_StringReplace(str, from, to);
-        free(str);
+        I_Free(str);
         str = newstr;
     }
 
@@ -226,5 +227,5 @@ void HU_Obituary(mobj_t *target, mobj_t *inflictor, mobj_t *source, method_t mod
                    '0' + hudcolor_obituary, str);
     }
 
-    free(str);
+    I_Free(str);
 }

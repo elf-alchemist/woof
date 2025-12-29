@@ -33,6 +33,7 @@
 #include "m_fixed.h"
 #include "m_random.h"
 #include "r_data.h"
+#include "r_main.h"
 #include "r_plane.h"
 #include "r_sky.h"
 #include "r_skydefs.h"
@@ -395,19 +396,19 @@ static int CompareSkyColors(const void *a, const void *b)
 
 static byte R_SkyBlendColor(int tex)
 {
-    byte *pal = W_CacheLumpName("PLAYPAL", PU_STATIC);
-    int i, r = 0, g = 0, b = 0;
+    int r = 0, g = 0, b = 0;
 
     const int width = texturewidth[tex];
 
     rgb_t *colors = Z_Malloc(sizeof(rgb_t) * width, PU_STATIC, 0);
 
     // [FG] count colors
-    for (i = 0; i < width; i++)
+    for (int i = 0; i < width; i++)
     {
         byte *c = R_GetColumn(tex, i);
-        colors[i] =
-            (rgb_t){pal[3 * c[0] + 0], pal[3 * c[0] + 1], pal[3 * c[0] + 2]};
+        colors[i] = (rgb_t){global_playpal[3 * c[0] + 0],
+                            global_playpal[3 * c[0] + 1],
+                            global_playpal[3 * c[0] + 2]};
     }
 
     qsort(colors, width, sizeof(rgb_t), CompareSkyColors);
@@ -417,7 +418,7 @@ static byte R_SkyBlendColor(int tex)
     b = colors[width / 3].b;
     Z_Free(colors);
 
-    return I_GetNearestColor(pal, r, g, b);
+    return I_GetNearestColor(global_playpal, r, g, b);
 }
 
 typedef struct skycolor_s

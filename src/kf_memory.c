@@ -444,11 +444,11 @@ static void UnArchiveAutomap(void)
 
 keyframe_t *P_SaveKeyframe(int tic)
 {
-    keyframe_t *keyframe = calloc(1, sizeof(*keyframe));
-    keyframe->data = calloc(1, sizeof(*keyframe->data));
+    keyframe_t *keyframe = I_Malloc(sizeof(keyframe_t));
+    keyframe->data = I_Malloc(sizeof(keyframe_data_t));
 
     buffer_size = KEYFRAME_BUFFER_SIZE;
-    buffer = malloc(buffer_size);
+    buffer = I_Malloc(buffer_size);
     curr_p = buffer;
 
     write8((gametic - boom_basetic) & 255);
@@ -499,11 +499,11 @@ void P_LoadKeyframe(const keyframe_t *keyframe)
 void P_FreeKeyframe(keyframe_t *keyframe)
 {
     keyframe_data_t *data = keyframe->data;
-    free(data->buffer);
+    I_Free(data->buffer);
     M_ArenaFreeCopy(data->thinkers);
     M_ArenaFreeCopy(data->msecnodes);
     M_ArenaFreeCopy(data->activeceilings);
     M_ArenaFreeCopy(data->activeplats);
-    free(data);
-    free(keyframe);
+    I_Free(data);
+    I_Free(keyframe);
 }

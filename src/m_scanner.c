@@ -177,9 +177,9 @@ static void CopyString(parserstate_t *state, const char *string, int length)
     {
         if (state->string)
         {
-            free(state->string);
+            I_Free(state->string);
         }
-        state->string = malloc(length + 1);
+        state->string = I_Malloc(length + 1);
         state->length = length;
     }
     memcpy(state->string, string, length);
@@ -740,13 +740,13 @@ double SC_GetDecimal(scanner_t *s)
 
 scanner_t *SC_Open(const char *scriptname, const char *data, int length)
 {
-    scanner_t *s = calloc(1, sizeof(*s));
+    scanner_t *s = I_Malloc(sizeof(scanner_t));
 
     s->line = 1;
     s->neednext = true;
 
     s->length = length;
-    s->data = malloc(length);
+    s->data = I_Malloc(length);
     memcpy(s->data, data, length);
 
     CheckForWhitespace(s);
@@ -759,20 +759,20 @@ void SC_Close(scanner_t *s)
 {
     if (s->state.string)
     {
-        free(s->state.string);
+        I_Free(s->state.string);
     }
     if (s->prevstate.string)
     {
-        free(s->prevstate.string);
+        I_Free(s->prevstate.string);
     }
     if (s->nextstate.string)
     {
-        free(s->nextstate.string);
+        I_Free(s->nextstate.string);
     }
     if (s->scriptname)
     {
-        free((char *)s->scriptname);
+        I_Free((char *)s->scriptname);
     }
-    free(s->data);
-    free(s);
+    I_Free(s->data);
+    I_Free(s);
 }

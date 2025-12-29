@@ -309,13 +309,13 @@ static char *GetRegistryString(registry_value_t *reg_val)
     {
         // Allocate a buffer for the value and read the value
 
-        result = malloc(len + 1);
+        result = I_Malloc(len + 1);
 
         if (RegQueryValueEx(key, reg_val->value, NULL, &valtype,
                             (unsigned char *)result, &len)
             != ERROR_SUCCESS)
         {
-            free(result);
+            I_Free(result);
             result = NULL;
         }
         else
@@ -355,7 +355,7 @@ static void CheckUninstallStrings(void)
 
         if (unstr == NULL)
         {
-            free(val);
+            I_Free(val);
         }
         else
         {
@@ -393,7 +393,7 @@ static void CheckInstallRootPaths(const root_path_t *root_paths, int length)
             array_push(iwad_dirs, subpath);
         }
 
-        free(install_path);
+        I_Free(install_path);
     }
 }
 
@@ -450,7 +450,7 @@ static void AddIWADPath(const char *path, const char *suffix)
         array_push(iwad_dirs, M_StringJoin(left, suffix));
     }
 
-    free(dup_path);
+    I_Free(dup_path);
 }
 
 #if !defined(_WIN32)
@@ -550,10 +550,11 @@ static void AddSteamDirs(void)
             subpath = M_StringJoin(DIR_SEPARATOR_S, steam_paths[i].basedir,
                                    DIR_SEPARATOR_S, steam_paths[i].subdirs[j]);
             AddIWADPath(steampath, subpath);
+            I_Free(subpath);
         }
     }
 
-    free(steampath);
+    I_Free(steampath);
 }
 #  endif // __MACOSX__
 #endif   // !_WIN32
@@ -652,19 +653,19 @@ char *D_FindWADByName(const char *name)
         {
             return probe;
         }
-        free(probe);
+        I_Free(probe);
 
         // Construct a string for the full path
 
         char *path = M_StringJoin(*dir, DIR_SEPARATOR_S, name);
 
         probe = M_FileCaseExists(path);
+        I_Free(path);
+
         if (probe != NULL)
         {
             return probe;
         }
-
-        free(path);
     }
 
     // File not found
@@ -686,7 +687,7 @@ static char *FindWithExtensionsInternal(const char *filename,
     {
         char *s = M_StringJoin(filename, ext[i]);
         path = D_FindWADByName(s);
-        free(s);
+        I_Free(s);
         if (path != NULL)
         {
             break;
@@ -775,7 +776,7 @@ char *D_FindIWADFile(void)
             array_push(iwad_dirs_append, iwad_dir);
         }
 
-        free(file);
+        I_Free(file);
     }
     else
     {
@@ -816,7 +817,7 @@ const iwad_t **D_GetIwads(void)
     char *filename;
     int i;
 
-    result = malloc(sizeof(iwad_t *) * (arrlen(iwads) + 1));
+    result = I_Calloc(arrlen(iwads) + 1, sizeof(iwad_t*));
     result_len = 0;
 
     // Try to find all IWADs

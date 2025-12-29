@@ -155,7 +155,7 @@ void P_LoadVertexes (int lump)
   vertexes = arena_alloc_num(world_arena, vertex_t, numvertexes);
 
   // Load data into cache.
-  data = W_CacheLumpNum(lump, PU_STATIC);
+  data = W_CacheLumpNum(lump);
 
   // Copy and convert vertex coordinates,
   // internal representation as fixed.
@@ -170,7 +170,7 @@ void P_LoadVertexes (int lump)
     }
 
   // Free buffer memory.
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 // GetSectorAtNullAddress
@@ -209,9 +209,8 @@ void P_LoadSegs (int lump)
   byte *data;
 
   numsegs = W_LumpLength(lump) / sizeof(mapseg_t);
-  segs = arena_alloc_num(world_arena, seg_t, numsegs);
-  memset(segs, 0, numsegs*sizeof(seg_t));
-  data = W_CacheLumpNum(lump,PU_STATIC);
+  segs = arena_calloc_num(world_arena, seg_t, numsegs);
+  data = W_CacheLumpNum(lump);
 
   for (i=0; i<numsegs; i++)
     {
@@ -264,7 +263,7 @@ void P_LoadSegs (int lump)
       }
     }
 
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 //
@@ -278,10 +277,8 @@ void P_LoadSubsectors (int lump)
   int  i;
 
   numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
-  subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
-  data = W_CacheLumpNum(lump, PU_STATIC);
-
-  memset(subsectors, 0, numsubsectors*sizeof(subsector_t));
+  subsectors = arena_calloc_num(world_arena, subsector_t, numsubsectors);
+  data = W_CacheLumpNum(lump);
 
   for (i=0; i<numsubsectors; i++)
     {
@@ -290,7 +287,7 @@ void P_LoadSubsectors (int lump)
       subsectors[i].firstline = (unsigned short)SHORT(((mapsubsector_t *) data)[i].firstseg);
     }
 
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 //
@@ -314,9 +311,8 @@ void P_LoadSectors (int lump)
   }
 
   numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
-  sectors = arena_alloc_num(world_arena, sector_t, numsectors);
-  memset (sectors, 0, numsectors*sizeof(sector_t));
-  data = W_CacheLumpNum (lump,PU_STATIC);
+  sectors = arena_calloc_num(world_arena, sector_t, numsectors);
+  data = W_CacheLumpNum(lump);
 
   for (i=0; i<numsectors; i++)
     {
@@ -334,7 +330,7 @@ void P_LoadSectors (int lump)
       P_SectorInit(ss);
     }
 
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 //
@@ -384,7 +380,7 @@ void P_LoadNodes (int lump)
 
   numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
   nodes = Z_Malloc (numnodes*sizeof(node_t),PU_LEVEL,0);
-  data = W_CacheLumpNum (lump, PU_STATIC);
+  data = W_CacheLumpNum(lump);
 
   for (i=0; i<numnodes; i++)
     {
@@ -421,7 +417,7 @@ void P_LoadNodes (int lump)
         }
     }
 
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 
@@ -433,7 +429,7 @@ void P_LoadNodes (int lump)
 void P_LoadThings (int lump)
 {
   int  i, numthings = W_LumpLength (lump) / sizeof(mapthing_doom_t);
-  byte *data = W_CacheLumpNum (lump,PU_STATIC);
+  byte *data = W_CacheLumpNum(lump);
 
   for (i=0; i<numthings; i++)
     {
@@ -482,7 +478,7 @@ void P_LoadThings (int lump)
       P_SpawnMapThing(&mt);
     }
 
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 //
@@ -502,9 +498,8 @@ void P_LoadLineDefs (int lump)
   int  i;
 
   numlines = W_LumpLength (lump) / sizeof(maplinedef_t);
-  lines = arena_alloc_num(world_arena, line_t, numlines);
-  memset (lines, 0, numlines*sizeof(line_t));
-  data = W_CacheLumpNum (lump,PU_STATIC);
+  lines = arena_calloc_num(world_arena, line_t, numlines);
+  data = W_CacheLumpNum(lump);
 
   for (i=0; i<numlines; i++)
     {
@@ -531,7 +526,7 @@ void P_LoadLineDefs (int lump)
       if (ld->sidenum[0] != NO_INDEX && ld->special)
         sides[*ld->sidenum].special = ld->special;
     }
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 void P_LinedefInit(line_t * const linedef)
@@ -607,7 +602,7 @@ void P_LoadLineDefs2(int lump)
         {
           int32_t lump = sides[*ld->sidenum].special; // translucency from sidedef
           const byte *tranmap =
-              !lump ? main_tranmap : W_CacheLumpNum(lump - 1, PU_STATIC);
+              !lump ? main_tranmap : W_CacheLumpNumTag(lump - 1, PU_STATIC);
           if (!ld->args[0])
             // if tag==0, affect this linedef only
             ld->tranmap = tranmap;
@@ -767,8 +762,7 @@ void P_ProcessSideDefs(side_t *side, int i, char *bottomtexture, char *midtextur
 void P_LoadSideDefs (int lump)
 {
   numsides = W_LumpLength(lump) / sizeof(mapsidedef_t);
-  sides = arena_alloc_num(world_arena, side_t, numsides);
-  memset(sides, 0, numsides*sizeof(side_t));
+  sides = arena_calloc_num(world_arena, side_t, numsides);
 }
 
 // killough 4/4/98: delay using texture names until
@@ -777,7 +771,7 @@ void P_LoadSideDefs (int lump)
 
 void P_LoadSideDefs2(int lump)
 {
-  byte *data = W_CacheLumpNum(lump,PU_STATIC);
+  byte *data = W_CacheLumpNum(lump);
   int  i;
 
   for (i=0; i<numsides; i++)
@@ -795,7 +789,7 @@ void P_LoadSideDefs2(int lump)
       // textures if invalid as colormaps but valid as textures.
       P_ProcessSideDefs(sd, i, msd->bottomtexture, msd->midtexture, msd->toptexture);
     }
-  Z_Free (data);
+  W_ReleaseLumpNum(lump);
 }
 
 void P_SidedefInit(side_t * const sidedef)
@@ -844,7 +838,7 @@ static void AddBlockLine
   if (done[blockno])
     return;
 
-  l = Z_Malloc(sizeof(linelist_t), PU_STATIC, 0);
+  l = I_Malloc(sizeof(linelist_t));
   l->num = lineno;
   l->next = lists[blockno];
   lists[blockno] = l;
@@ -907,17 +901,16 @@ void P_CreateBlockMap(void)
   // also create an array of linelist counts on NBlocks
   // finally make an array in which we can mark blocks done per line
 
-  // CPhipps - calloc's
-  blocklists = Z_Calloc(NBlocks,sizeof(linelist_t *), PU_STATIC, 0);
-  blockcount = Z_Calloc(NBlocks,sizeof(int), PU_STATIC, 0);
-  blockdone = Z_Malloc(NBlocks*sizeof(int), PU_STATIC, 0);
+  blocklists = I_Calloc(NBlocks, sizeof(linelist_t *));
+  blockcount = I_Calloc(NBlocks, sizeof(int));
+  blockdone = I_Calloc(NBlocks, sizeof(int));
 
   // initialize each blocklist, and enter the trailing -1 in all blocklists
   // note the linked list of lines grows backwards
 
   for (i=0;i<NBlocks;i++)
   {
-    blocklists[i] = Z_Malloc(sizeof(linelist_t), PU_STATIC, 0);
+    blocklists[i] = I_Malloc(sizeof(linelist_t));
     blocklists[i]->num = -1;
     blocklists[i]->next = NULL;
     blockcount[i]++;
@@ -1108,16 +1101,16 @@ void P_CreateBlockMap(void)
     {
       linelist_t *tmp = bl->next;
       blockmaplump[offs++] = bl->num;
-      Z_Free(bl);
+      I_Free(bl);
       bl = tmp;
     }
   }
 
   // free all temporary storage
 
-  Z_Free(blocklists);
-  Z_Free(blockcount);
-  Z_Free(blockdone);
+  I_Free(blocklists);
+  I_Free(blockcount);
+  I_Free(blockdone);
 }
 
 #else // MBF_STRICT
@@ -1183,7 +1176,7 @@ static void P_CreateBlockMap(void)
   {
     typedef struct { int n, nalloc, *list; } bmap_t;  // blocklist structure
     unsigned tot = bmapwidth * bmapheight;            // size of blockmap
-    bmap_t *bmap = Z_Calloc(sizeof *bmap, tot, PU_STATIC, 0); // array of blocklists
+    bmap_t *bmap = I_Calloc(tot, sizeof(bmap_t)); // array of blocklists
 
     for (i=0; i < numlines; i++)
       {
@@ -1221,7 +1214,7 @@ static void P_CreateBlockMap(void)
 	  {
 	    // Increase size of allocated list if necessary
 	    if (bmap[b].n >= bmap[b].nalloc)
-	      bmap[b].list = realloc(bmap[b].list, 
+	      bmap[b].list = I_Realloc(bmap[b].list, 
 				     (bmap[b].nalloc = bmap[b].nalloc ? 
 				      bmap[b].nalloc*2 : 8)*sizeof*bmap->list);
 
@@ -1274,12 +1267,12 @@ static void P_CreateBlockMap(void)
 	      blockmaplump[ndx++] = bp->list[--bp->n];  // Copy linedef list
 	    while (bp->n);
 	    blockmaplump[ndx++] = -1;                   // Store trailer
-	    Z_Free(bp->list);                           // Free linedef list
+	    I_Free(bp->list);                           // Free linedef list
 	  }
 	else            // Empty blocklist: point to reserved empty blocklist
 	  blockmaplump[i] = tot;
 
-      Z_Free(bmap);    // Free uncompressed blockmap
+      I_Free(bmap);    // Free uncompressed blockmap
     }
   }
 }
@@ -1340,7 +1333,7 @@ boolean P_LoadBlockMap (int lump)
   else
     {
       long i;
-      short *wadblockmaplump = W_CacheLumpNum (lump, PU_LEVEL);
+      short *wadblockmaplump = W_CacheLumpNumTag (lump, PU_LEVEL);
       blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
       // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -1525,7 +1518,7 @@ int P_GroupLines (void)
 
 void P_RemoveSlimeTrails(void)                // killough 10/98
 {
-  byte *hit = Z_Calloc(1, numvertexes, PU_STATIC, 0);         // Hitlist for vertices
+  byte *hit = I_Malloc(numvertexes);         // Hitlist for vertices
   int i;
   for (i=0; i<numsegs; i++)                   // Go through each seg
     {
@@ -1571,7 +1564,7 @@ void P_RemoveSlimeTrails(void)                // killough 10/98
 	  while ((v != segs[i].v2) && (v = segs[i].v2));
 	}
     }
-  Z_Free(hit);
+  I_Free(hit);
 }
 
 // [crispy] fix long wall wobble
@@ -1659,7 +1652,7 @@ static boolean P_LoadReject(int lumpnum, int totallines)
 
     if (lumplen >= minlength)
     {
-        rejectmatrix = W_CacheLumpNum(lumpnum, PU_LEVEL);
+        rejectmatrix = W_CacheLumpNumTag(lumpnum, PU_LEVEL);
         ret = false;
     }
     else

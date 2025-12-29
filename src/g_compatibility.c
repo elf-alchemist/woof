@@ -161,7 +161,9 @@ void G_ParseCompDatabase(void)
 
 static void MD5UpdateLump(int lump, struct MD5Context *md5)
 {
-    MD5Update(md5, W_CacheLumpNum(lump, PU_CACHE), W_LumpLength(lump));
+    byte* data = W_CacheLumpNum(lump);
+    MD5Update(md5, data, W_LumpLength(lump));
+    W_ReleaseLumpNum(lump);
 }
 
 static void GetLevelCheckSum(int lump, md5_checksum_t* cksum)

@@ -22,6 +22,7 @@
 #include "d_ticcmd.h"
 #include "doomtype.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "i_timer.h"
 #include "m_fixed.h"
 #include "m_misc.h"
@@ -459,7 +460,7 @@ static void NET_CL_ParseSYN(net_packet_t *packet)
 
 static void SetRejectReason(const char *s)
 {
-    free(net_client_reject_reason);
+    I_Free(net_client_reject_reason);
     if (s != NULL)
     {
         net_client_reject_reason = strdup(s);

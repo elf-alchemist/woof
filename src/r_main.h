@@ -26,6 +26,7 @@
 #include "tables.h"
 
 extern arena_t *renderer_arena;
+extern byte *global_playpal;
 
 struct node_s;
 struct player_s;

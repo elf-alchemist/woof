@@ -51,7 +51,7 @@ static doc_t *docs;
 
 json_t *JS_OpenOptions(int lumpnum, boolean comments)
 {
-    char *string = W_CacheLumpNum(lumpnum, PU_CACHE);
+    char *string = W_CacheLumpNumTag(lumpnum, PU_CACHE);
     int length = W_LumpLength(lumpnum);
 
     yyjson_read_flag flag = comments ? YYJSON_READ_ALLOW_COMMENTS : 0;
@@ -200,7 +200,7 @@ json_t *JS_GetArrayItem(json_t *json, int index)
 
 json_arr_iter_t *JS_ArrayIterator(json_t *json)
 {
-    json_arr_iter_t *iter = malloc(sizeof(*iter));
+    json_arr_iter_t *iter = I_Malloc(sizeof(json_arr_iter_t));
     yyjson_arr_iter_init(json, iter);
     return iter;
 }
@@ -210,7 +210,7 @@ json_t *JS_ArrayNext(json_arr_iter_t *iter)
     json_t *value = yyjson_arr_iter_next(iter);
     if (!value)
     {
-        free(iter);
+        I_Free(iter);
     }
     return value;
 }
@@ -277,12 +277,12 @@ const char *JS_GetStringValue(json_t *json, const char *string)
 
 json_obj_iter_t *JS_ObjectIterator(json_t *json)
 {
-    yyjson_obj_iter *iter = malloc(sizeof(*iter));
+    yyjson_obj_iter *iter = I_Malloc(sizeof(yyjson_obj_iter));
     if (yyjson_obj_iter_init(json, iter))
     {
         return iter;
     }
-    free(iter);
+    I_Free(iter);
     return NULL;
 }
 
@@ -291,7 +291,7 @@ boolean JS_ObjectNext(json_obj_iter_t *iter, json_t **key, json_t **value)
     *key = yyjson_obj_iter_next(iter);
     if (*key == NULL)
     {
-        free(iter);
+        I_Free(iter);
         return false;
     }
     *value = yyjson_obj_iter_get_val(*key);

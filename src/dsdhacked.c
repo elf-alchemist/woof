@@ -164,7 +164,7 @@ static void FreeSprites(void)
     {
         if (deh_spritenames[i])
         {
-            free(deh_spritenames[i]);
+            I_Free(deh_spritenames[i]);
         }
     }
     array_free(deh_spritenames);
@@ -247,7 +247,7 @@ static void FreeSFX(void)
     {
         if (deh_soundnames[i])
         {
-            free(deh_soundnames[i]);
+            I_Free(deh_soundnames[i]);
         }
     }
     array_free(deh_soundnames);

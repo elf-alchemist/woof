@@ -376,7 +376,7 @@ static byte *lump;
 
 static boolean LoadInstrumentTable(const char *lumpname)
 {
-    lump = W_CacheLumpName(lumpname, PU_STATIC);
+    lump = W_CacheLumpNameTag(lumpname, PU_STATIC);
 
     // DMX does not check header
 
@@ -1592,7 +1592,7 @@ static void I_OPL_PlayStream(boolean looping)
 
     // Allocate track data.
 
-    tracks = malloc(MIDI_NumTracks(midifile) * sizeof(opl_track_data_t));
+    tracks = I_Calloc(MIDI_NumTracks(midifile), sizeof(opl_track_data_t));
 
     num_tracks = MIDI_NumTracks(midifile);
     running_tracks = num_tracks;
@@ -1650,7 +1650,7 @@ static void I_OPL_CloseStream(void)
         MIDI_FreeIterator(tracks[i].iter);
     }
 
-    free(tracks);
+    I_Free(tracks);
 
     tracks = NULL;
     num_tracks = 0;

@@ -24,6 +24,7 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
+#include "i_system.h"
 #include "m_fixed.h"
 #include "m_io.h"
 #include "r_main.h"
@@ -46,7 +47,7 @@ void MN_ResetSnapshot(int i)
 {
     if (snapshots[i])
     {
-        free(snapshots[i]);
+        I_Free(snapshots[i]);
         snapshots[i] = NULL;
     }
 }
@@ -74,7 +75,7 @@ boolean MN_ReadSnapshot(int i, FILE *fp)
         return false;
     }
 
-    if ((snapshots[i] = malloc(snapshot_size * sizeof(**snapshots))) == NULL)
+    if ((snapshots[i] = I_Malloc(snapshot_size * sizeof(**snapshots))) == NULL)
     {
         return false;
     }
@@ -129,7 +130,7 @@ static void TakeSnapshot(void)
 
     if (!current_snapshot)
     {
-        current_snapshot = malloc(snapshot_size * sizeof(**snapshots));
+        current_snapshot = I_Malloc(snapshot_size * sizeof(**snapshots));
     }
 
     pixel_t *p = current_snapshot;

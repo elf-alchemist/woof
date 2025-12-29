@@ -193,7 +193,7 @@ nodeformat_t P_CheckDoomNodeFormat(int lumpnum)
 
         if (size_subs >= sizeof(mapsubsector_t))
         {
-            lump_data = W_CacheLumpNum(lumpnum + ML_SSECTORS, PU_STATIC);
+            lump_data = W_CacheLumpNumTag(lumpnum + ML_SSECTORS, PU_STATIC);
 
             if (!memcmp(lump_data, "XGLN", 4))
             {
@@ -238,7 +238,7 @@ nodeformat_t P_CheckDoomNodeFormat(int lumpnum)
 
         if (size_nodes >= sizeof(mapnode_t))
         {
-            lump_data = W_CacheLumpNum(lumpnum + ML_NODES, PU_STATIC);
+            lump_data = W_CacheLumpNumTag(lumpnum + ML_NODES, PU_STATIC);
 
             if (!memcmp(lump_data, "xNd4\0\0\0\0", 8))
             {
@@ -278,7 +278,7 @@ nodeformat_t P_CheckUDMFNodeFormat(int lumpnum)
 {
     nodeformat_t format = NFMT_NANO;
 
-    byte *lump_data = W_CacheLumpNum(lumpnum, PU_STATIC);
+    byte *lump_data = W_CacheLumpNumTag(lumpnum, PU_STATIC);
     if (!memcmp(lump_data, "XGLN", 4))
     {
         format = NFMT_XGLN;
@@ -331,7 +331,7 @@ void P_LoadSegs_DEEP(int lump)
     numsegs = W_LumpLength(lump) / sizeof(mapseg_deep_t);
     segs = arena_alloc_num(world_arena, seg_t, numsegs);
     memset(segs, 0, numsegs * sizeof(seg_t));
-    data = W_CacheLumpNum(lump, PU_STATIC);
+    data = W_CacheLumpNumTag(lump, PU_STATIC);
 
     for (i = 0; i < numsegs; i++)
     {
@@ -399,7 +399,7 @@ void P_LoadSubsectors_DEEP(int lump)
 
     numsubsectors = W_LumpLength(lump) / sizeof(mapsubsector_deep_t);
     subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
-    data = (mapsubsector_deep_t *)W_CacheLumpNum(lump, PU_STATIC);
+    data = (mapsubsector_deep_t *)W_CacheLumpNumTag(lump, PU_STATIC);
 
     memset(subsectors, 0, numsubsectors * sizeof(subsector_t));
 
@@ -420,7 +420,7 @@ void P_LoadNodes_DEEP(int lump)
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_deep_t);
     nodes = Z_Malloc(numnodes * sizeof(node_t), PU_LEVEL, 0);
-    data = W_CacheLumpNum(lump, PU_STATIC);
+    data = W_CacheLumpNumTag(lump, PU_STATIC);
 
     // [FG] skip header
     data += 8;
@@ -450,7 +450,7 @@ void P_LoadNodes_DEEP(int lump)
         }
     }
 
-    W_CacheLumpNum(lump, PU_CACHE);
+    W_CacheLumpNumTag(lump, PU_CACHE);
 }
 
 // [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed
@@ -676,7 +676,7 @@ void P_LoadNodes_ZDoom(int lump, nodeformat_t format)
     unsigned int numNodes;
     vertex_t *newvertarray = NULL;
 
-    data = W_CacheLumpNum(lump, PU_LEVEL);
+    data = W_CacheLumpNumTag(lump, PU_LEVEL);
 
     // 0. Uncompress nodes lump (or simply skip header)
     boolean compressed = format == NFMT_ZNOD || format == NFMT_ZGLN
@@ -733,7 +733,7 @@ void P_LoadNodes_ZDoom(int lump, nodeformat_t format)
         }
 
         // release the original data lump
-        W_CacheLumpNum(lump, PU_CACHE);
+        W_CacheLumpNumTag(lump, PU_CACHE);
         Z_Free(zstream);
     }
     else
@@ -895,6 +895,6 @@ void P_LoadNodes_ZDoom(int lump, nodeformat_t format)
     }
     else
     {
-        W_CacheLumpNum(lump, PU_CACHE);
+        W_CacheLumpNumTag(lump, PU_CACHE);
     }
 }

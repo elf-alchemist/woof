@@ -624,7 +624,7 @@ static void cheat_clev0(void)
   else
     displaymsg("Current: %s", cur);
 
-  free(cur);
+  I_Free(cur);
 }
 
 static void cheat_clev(char *buf)

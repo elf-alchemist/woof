@@ -800,7 +800,7 @@ static void EndFinaleCast_CalleeDead(void)
 static void EndFinaleCast_SetupCall(void)
 {
     S_ChangeMusInfoMusic(W_GetNumForName(endfinale->music), endfinale->musicloops);
-    W_CacheLumpName(endfinale->background, PU_LEVEL);
+    W_CacheLumpNameTag(endfinale->background, PU_LEVEL);
     ef_callee_count = endfinale->cast_animscount;
 
     cast_anim_t *callee;
@@ -811,20 +811,20 @@ static void EndFinaleCast_SetupCall(void)
         {
             W_CacheSpriteName(frame->frame_lump, PU_LEVEL);
             frame->tranmap = (W_CheckNumForName(frame->tran_lump) >= 0)
-                           ? W_CacheLumpName(frame->tran_lump, PU_LEVEL)
+                           ? W_CacheLumpNameTag(frame->tran_lump, PU_LEVEL)
                            : NULL;
             frame->xlat = (W_CheckNumForName(frame->xlat_lump) >= 0)
-                        ? W_CacheLumpName(frame->xlat_lump, PU_LEVEL)
+                        ? W_CacheLumpNameTag(frame->xlat_lump, PU_LEVEL)
                         : NULL;
         }
         array_foreach(frame, callee->deathframes)
         {
             W_CacheSpriteName(frame->frame_lump, PU_LEVEL);
             frame->tranmap = (W_CheckNumForName(frame->tran_lump) >= 0)
-                           ? W_CacheLumpName(frame->tran_lump, PU_LEVEL)
+                           ? W_CacheLumpNameTag(frame->tran_lump, PU_LEVEL)
                            : NULL;
             frame->xlat = (W_CheckNumForName(frame->xlat_lump) >= 0)
-                        ? W_CacheLumpName(frame->xlat_lump, PU_LEVEL)
+                        ? W_CacheLumpNameTag(frame->xlat_lump, PU_LEVEL)
                         : NULL;
         }
     }
@@ -891,7 +891,7 @@ static void F_CastPrint(const char *text);
 
 void EndFinaleCast_Drawer(void)
 {
-    V_DrawPatchFullScreen(W_CacheLumpName(endfinale->background, PU_LEVEL));
+    V_DrawPatchFullScreen(W_CacheLumpNameTag(endfinale->background, PU_LEVEL));
     F_CastPrint(ef_current_callee->name);
     patch_t *frame = W_CacheSpriteName(ef_current_frame->frame_lump, PU_LEVEL);
     const byte *tranmap = ef_current_frame->tranmap;

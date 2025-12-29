@@ -896,14 +896,14 @@ static void DeleteAutoSave(void)
 {
     char *name = G_AutoSaveName();
     M_remove(name);
-    free(name);
+    I_Free(name);
 }
 
 static void DeleteSaveGame(int slot)
 {
     char *name = G_SaveGameName(slot);
     M_remove(name);
-    free(name);
+    I_Free(name);
 
     if (slot == quickSaveSlot)
     {
@@ -1032,7 +1032,7 @@ static void M_LoadAutoSaveSelect(int choice)
     saveg_compat = saveg_woof510;
     char *name = G_AutoSaveName();
     G_LoadAutoSave(name, false);
-    free(name);
+    I_Free(name);
     MN_ClearMenus();
     // Auto save slot doesn't exist for save menu, so don't change lastOn.
     //SaveDef.lastOn = choice;
@@ -1055,7 +1055,7 @@ static void M_LoadSelect(int choice)
     {
         if (name)
         {
-            free(name);
+            I_Free(name);
         }
         name = G_MBFSaveGameName(slot);
         saveg_compat = saveg_mbf;
@@ -1066,7 +1066,7 @@ static void M_LoadSelect(int choice)
     MN_ClearMenus();
     if (name)
     {
-        free(name);
+        I_Free(name);
     }
 
     // [crispy] save the last game you loaded
@@ -1083,7 +1083,7 @@ static void M_VerifyForcedLoadAutoSave(int ch)
     {
         G_ForcedLoadAutoSave();
     }
-    free(messageString);
+    I_Free(messageString);
     MN_ClearMenus();
 }
 
@@ -1093,7 +1093,7 @@ static void M_VerifyForcedLoadGame(int ch)
     {
         G_ForcedLoadGame();
     }
-    free(messageString); // free the message strdup()'ed below
+    I_Free(messageString); // free the message strdup()'ed below
     MN_ClearMenus();
 }
 
@@ -1104,7 +1104,7 @@ void MN_ForcedLoadAutoSave(const char *msg)
 
 void MN_ForcedLoadGame(const char *msg)
 {
-    M_StartMessage(strdup(msg), M_VerifyForcedLoadGame, true); // free()'d above
+    M_StartMessage(strdup(msg), M_VerifyForcedLoadGame, true); // I_Free()'d above
 }
 
 //
@@ -1207,7 +1207,7 @@ static void M_ReadSaveString(char *name, int menu_slot, int save_slot,
 {
     FILE *fp = M_fopen(name, "rb");
     MN_ReadSavegameTime(menu_slot, name);
-    free(name);
+    I_Free(name);
 
     MN_ResetSnapshot(menu_slot);
 
@@ -1218,7 +1218,7 @@ static void M_ReadSaveString(char *name, int menu_slot, int save_slot,
             // Ty 03/27/98 - externalized:
             name = G_MBFSaveGameName(save_slot);
             fp = M_fopen(name, "rb");
-            free(name);
+            I_Free(name);
         }
 
         if (!fp)
@@ -1374,7 +1374,7 @@ static void SetDefaultSaveName(char *name, const char *append)
             M_snprintf(name, SAVESTRINGSIZE, "%s (%s)", maplump, wadname);
         }
 
-        free(wadname);
+        I_Free(wadname);
     }
     else
     {
@@ -2309,7 +2309,7 @@ void M_Init(void)
     if (lumpnum >= 0)
     {
         bigfont_priority = lumpinfo[lumpnum].handle.priority;
-        MN_LoadFon2(W_CacheLumpNum(lumpnum, PU_CACHE), W_LumpLength(lumpnum));
+        MN_LoadFon2(W_CacheLumpNumTag(lumpnum, PU_CACHE), W_LumpLength(lumpnum));
     }
 
     // Here we could catch other version dependencies,
@@ -2398,7 +2398,7 @@ void M_Init(void)
             string = M_StringReplace(replace, "prompt", "desktop");
         }
 #endif
-        free(replace);
+        I_Free(replace);
         *endmsg[9] = string;
     }
 
@@ -3510,7 +3510,7 @@ void M_Drawer(void)
         }
 
         // haleyjd 11/11/04: free duplicate string
-        free(d);
+        I_Free(d);
         return;
     }
 

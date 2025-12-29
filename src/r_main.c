@@ -53,6 +53,7 @@
 #include "z_zone.h"
 
 arena_t *renderer_arena = NULL;
+byte *global_playpal;
 
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW 2048

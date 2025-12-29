@@ -18,6 +18,7 @@
 
 #include "al.h"
 #include "alext.h"
+#include "i_system.h"
 #include "sndfile.h"
 
 #include "i_sndfile.h"
@@ -144,17 +145,17 @@ static void ParseVorbisComments(loop_metadata_t *metadata, MEMFILE *fs)
         comment_len = LONG(buf);
 
         // Read actual comment data into string buffer.
-        comment = calloc(1, comment_len + 1);
+        comment = I_Malloc(comment_len + 1);
         if (comment == NULL
             || mem_fread(comment, 1, comment_len, fs) < comment_len)
         {
-            free(comment);
+            I_Free(comment);
             break;
         }
 
         // Parse comment string.
         ParseVorbisComment(metadata, comment);
-        free(comment);
+        I_Free(comment);
     }
 }
 
@@ -591,7 +592,7 @@ boolean I_SND_LoadFile(void *data, ALenum *format, byte **wavdata,
     }
 
     local_wavdata =
-        malloc(file.sfinfo.frames * file.frame_size / file.sfinfo.channels);
+        I_Malloc(file.sfinfo.frames * file.frame_size / file.sfinfo.channels);
 
     if (file.sample_format == Int16)
     {
@@ -610,7 +611,7 @@ boolean I_SND_LoadFile(void *data, ALenum *format, byte **wavdata,
     {
         I_Printf(VB_ERROR, "sf_readf: %s", sf_strerror(file.sndfile));
         CloseFile(&file);
-        free(local_wavdata);
+        I_Free(local_wavdata);
         return false;
     }
 

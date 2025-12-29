@@ -63,7 +63,7 @@ void *Z_Malloc(size_t size, pu_tag tag, void **user)
   if (!size)
     return user ? *user = NULL : NULL;           // malloc(0) returns NULL
 
-  while (!(block = malloc(size + HEADER_SIZE)))
+  while (!(block = I_Malloc(size + HEADER_SIZE)))
   {
     if (!blockbytag[PU_CACHE])
       I_Error ("Failure trying to allocate %lu bytes", (unsigned long) size);
@@ -118,7 +118,7 @@ void Z_Free(void *p)
   block->prev->next = block->next;
   block->next->prev = block->prev;
 
-  free(block);
+  I_Free(block);
 }
 
 void Z_FreeTag(pu_tag tag)

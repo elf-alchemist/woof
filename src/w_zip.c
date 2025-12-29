@@ -55,7 +55,7 @@ static void AddWadInMem(w_handle_t handle, const char *name, int index,
 
     mz_zip_archive *zip = handle.p1.archive->zip;
 
-    byte *data = malloc(data_size);
+    byte *data = I_Malloc(data_size);
 
     if (!mz_zip_reader_extract_to_mem(zip, index, data, data_size, 0))
     {
@@ -81,7 +81,7 @@ static void AddWadInMem(w_handle_t handle, const char *name, int index,
     if (header.numlumps == 0)
     {
         I_Printf(VB_WARNING, "Wad file %s is empty", name);
-        free(data);
+        I_Free(data);
         return;
     }
 
@@ -89,7 +89,7 @@ static void AddWadInMem(w_handle_t handle, const char *name, int index,
     if (header.infotableofs + header.numlumps * sizeof(filelump_t) > data_size)
     {
         I_Printf(VB_WARNING, "Error seeking offset from %s", name);
-        free(data);
+        I_Free(data);
         return;
     }
 
@@ -148,12 +148,12 @@ static boolean W_ZIP_AddDir(w_handle_t handle, const char *path,
         }
 
         char *name = M_DirName(record.filename);
-        if (strcasecmp(name, dir))
+        const int result = strcasecmp(name, dir);
+        I_Free(name);
+        if (result)
         {
-            free(name);
             continue;
         }
-        free(name);
 
         if (is_root && M_StringCaseEndsWith(record.filename, ".wad"))
         {
@@ -192,7 +192,7 @@ static boolean W_ZIP_AddDir(w_handle_t handle, const char *path,
         W_AddMarker(end_marker);
     }
 
-    free(dir);
+    I_Free(dir);
     return true;
 }
 
@@ -206,21 +206,21 @@ static int compare_records(const void *a, const void *b)
 
 static w_type_t W_ZIP_Open(const char *path, w_handle_t *handle)
 {
-    mz_zip_archive *zip = calloc(1, sizeof(*zip));
+    mz_zip_archive *zip = I_Malloc(sizeof(mz_zip_archive));
 
     if (!mz_zip_reader_init_file(zip, path, MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY))
     {
-        free(zip);
+        I_Free(zip);
         return W_NONE;
     }
 
     const int num_files = mz_zip_reader_get_num_files(zip);
-    record_t *directory = malloc(num_files * sizeof(*directory));
+    record_t *directory = I_Malloc(num_files * sizeof(*directory));
     for (int i = 0; i < num_files; ++i)
     {
         directory[i].index = i;
         int size = mz_zip_reader_get_filename(zip, i, NULL, 0);
-        char *filename = malloc(size);
+        char *filename = I_Malloc(size);
         mz_zip_reader_get_filename(zip, i, filename, size);
         directory[i].filename = filename;
     }

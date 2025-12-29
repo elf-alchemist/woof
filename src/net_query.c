@@ -249,7 +249,7 @@ static void FreeTargets(void)
     {
         NET_ReleaseAddress(targets[i].addr);
     }
-    free(targets);
+    I_Free(targets);
     targets = NULL;
     num_targets = 0;
 }
@@ -591,7 +591,7 @@ void NET_Query_Init(void)
         netlib_module.InitClient();
     }
 
-    free(targets);
+    I_Free(targets);
     targets = NULL;
     num_targets = 0;
 

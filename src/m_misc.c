@@ -171,7 +171,7 @@ char *M_FileCaseExists(const char *path)
     }
 
     // 5. no luck
-    free(path_dup);
+    I_Free(path_dup);
     return NULL;
 }
 
@@ -394,7 +394,7 @@ static char *M_StringReplaceEx(const char *haystack, const char *needle,
 
     // Construct new string.
 
-    result = malloc(result_len);
+    result = I_Malloc(result_len);
     if (result == NULL)
     {
         I_Error("Failed to allocate new string");
@@ -523,11 +523,7 @@ char *M_StringJoinInternal(const char *s[], size_t n)
         length += strlen(s[i]);
     }
 
-    char *result = malloc(length);
-    if (result == NULL)
-    {
-        I_Error("Failed to allocate new string");
-    }
+    char *result = I_Malloc(length);
 
     int pos = 0;
     for (int i = 0; i < n; ++i)

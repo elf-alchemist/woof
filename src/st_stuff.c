@@ -1617,7 +1617,7 @@ static void DrawSolidBackground(void)
     crop_t crop = {.width = SHORT(sbar->width), .height = st_height};
     V_DrawPatchCropped(-video.deltaw, 0, sbar, crop);
 
-    byte *pal = W_CacheLumpName("PLAYPAL", PU_CACHE);
+    byte *pal = global_playpal;
 
     const int width = MIN(SHORT(sbar->width), video.unscaledw);
     const int depth = 16;
@@ -1849,7 +1849,7 @@ static void DoPaletteStuff(player_t *player)
         oldpalette = palette;
         // haleyjd: must cast to byte *, arith. on void pointer is
         // a GNU C extension
-        I_SetPalette((byte *)W_CacheLumpName("PLAYPAL", PU_CACHE)
+        I_SetPalette((byte *)global_playpal
                      + palette * 768);
     }
 }
@@ -1976,7 +1976,7 @@ const char **ST_StatusbarList(void)
 
 void ST_ResetPalette(void)
 {
-    I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
+    I_SetPalette(global_playpal);
 }
 
 // [FG] draw Time widget on intermission screen

@@ -53,7 +53,7 @@ static wchar_t *ConvertMultiByteToWide(const char *str, UINT code_page)
         return NULL;
     }
 
-    wstr = malloc(sizeof(wchar_t) * wlen);
+    wstr = I_Calloc(wlen, sizeof(wchar_t));
 
     if (!wstr)
     {
@@ -66,7 +66,7 @@ static wchar_t *ConvertMultiByteToWide(const char *str, UINT code_page)
         errno = EINVAL;
         I_Printf(VB_WARNING,
                  "Warning: Failed to convert path to wide encoding");
-        free(wstr);
+        I_Free(wstr);
         return NULL;
     }
 
@@ -88,7 +88,7 @@ static char *ConvertWideToMultiByte(const wchar_t *wstr, UINT code_page)
         return NULL;
     }
 
-    str = malloc(sizeof(char) * len);
+    str = I_Calloc(len, sizeof(char));
 
     if (!str)
     {
@@ -101,7 +101,7 @@ static char *ConvertWideToMultiByte(const wchar_t *wstr, UINT code_page)
         errno = EINVAL;
         I_Printf(VB_WARNING,
                  "Warning: Failed to convert path to multi byte encoding");
-        free(str);
+        I_Free(str);
         return NULL;
     }
 
@@ -137,14 +137,14 @@ FILE *M_fopen(const char *filename, const char *mode)
 
     if (!wmode)
     {
-        free(wname);
+        I_Free(wname);
         return NULL;
     }
 
     file = _wfopen(wname, wmode);
 
-    free(wname);
-    free(wmode);
+    I_Free(wname);
+    I_Free(wmode);
 
     return file;
 #else
@@ -167,7 +167,7 @@ int M_remove(const char *path)
 
     ret = _wremove(wpath);
 
-    free(wpath);
+    I_Free(wpath);
 
     return ret;
 #else
@@ -190,7 +190,7 @@ int M_rmdir(const char *dirname)
 
     ret = _wrmdir(wdirname);
 
-    free(wdirname);
+    I_Free(wdirname);
 
     return ret;
 #else
@@ -216,14 +216,14 @@ int M_rename(const char *oldname, const char *newname)
 
     if (!wnew)
     {
-        free(wold);
+        I_Free(wold);
         return 0;
     }
 
     ret = _wrename(wold, wnew);
 
-    free(wold);
-    free(wnew);
+    I_Free(wold);
+    I_Free(wnew);
 
     return ret;
 #else
@@ -254,7 +254,7 @@ int M_stat(const char *path, struct stat *buf)
     buf->st_mtime = wbuf.st_mtime;
     buf->st_size = wbuf.st_size;
 
-    free(wpath);
+    I_Free(wpath);
 
     return ret;
 #else
@@ -277,7 +277,7 @@ int M_open(const char *filename, int oflag)
 
     ret = _wopen(wname, oflag);
 
-    free(wname);
+    I_Free(wname);
 
     return ret;
 #else
@@ -300,7 +300,7 @@ int M_access(const char *path, int mode)
 
     ret = _waccess(wpath, mode);
 
-    free(wpath);
+    I_Free(wpath);
 
     return ret;
 #else
@@ -322,7 +322,7 @@ void M_MakeDirectory(const char *path)
 
     _wmkdir(wdir);
 
-    free(wdir);
+    I_Free(wdir);
 #else
     mkdir(path, 0755);
 #endif
@@ -362,7 +362,7 @@ char *M_getenv(const char *name)
 
     wenv = _wgetenv(wname);
 
-    free(wname);
+    I_Free(wname);
 
     if (wenv)
     {

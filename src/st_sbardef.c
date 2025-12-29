@@ -130,7 +130,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
     const char *tranmap = JS_GetStringValue(json, "tranmap");
     if (tranmap)
     {
-        out->tranmap = W_CacheLumpName(tranmap, PU_STATIC);
+        out->tranmap = W_CacheLumpNameTag(tranmap, PU_STATIC);
     }
 
     const char *translation = JS_GetStringValue(json, "translation");
@@ -163,11 +163,11 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
     {
         case sbe_graphic:
             {
-                sbe_graphic_t *graphic = calloc(1, sizeof(*graphic));
+                sbe_graphic_t *graphic = I_Malloc(sizeof(sbe_graphic_t));
                 const char *patch = JS_GetStringValue(json, "patch");
                 if (!patch)
                 {
-                    free(graphic);
+                    I_Free(graphic);
                     return false;
                 }
                 graphic->patch_name = M_StringDuplicate(patch);
@@ -178,7 +178,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_animation:
             {
-                sbe_animation_t *animation = calloc(1, sizeof(*animation));
+                sbe_animation_t *animation = I_Malloc(sizeof(sbe_animation_t));
                 json_t *js_frames = JS_GetObject(json, "frames");
                 json_t *js_frame = NULL;
                 JS_ArrayForEach(js_frame, js_frames)
@@ -196,11 +196,11 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
         case sbe_number:
         case sbe_percent:
             {
-                sbe_number_t *number = calloc(1, sizeof(*number));
+                sbe_number_t *number = I_Malloc(sizeof(sbe_number_t));
                 const char *font_name = JS_GetStringValue(json, "font");
                 if (!font_name)
                 {
-                    free(number);
+                    I_Free(number);
                     return false;
                 }
                 json_t *type = JS_GetObject(json, "type");
@@ -209,7 +209,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
                 if (!JS_IsNumber(type) || !JS_IsNumber(param)
                     || !JS_IsNumber(maxlength))
                 {
-                    free(number);
+                    I_Free(number);
                     return false;
                 }
 
@@ -231,18 +231,18 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_widget:
              {
-                sbe_widget_t *widget = calloc(1, sizeof(*widget));
+                sbe_widget_t *widget = I_Malloc(sizeof(sbe_widget_t));
                 const char *font_name = JS_GetStringValue(json, "font");
                 if (!font_name)
                 {
-                    free(widget);
+                    I_Free(widget);
                     return false;
                 }
 
                 json_t *type = JS_GetObject(json, "type");
                 if (!JS_IsString(type))
                 {
-                    free(widget);
+                    I_Free(widget);
                     return false;
                 }
                 const char *name = JS_GetString(type);
@@ -257,7 +257,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
                 }
                 if (i == arrlen(sbw_names))
                 {
-                    free(widget);
+                    I_Free(widget);
                     return false;
                 }
 
@@ -298,14 +298,14 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_face:
             {
-                sbe_face_t *face = calloc(1, sizeof(*face));
+                sbe_face_t *face = I_Malloc(sizeof(sbe_face_t));
                 face->crop = ParseCrop(json);
                 out->subtype.face = face;
             }
             break;
         case sbe_facebackground:
             {
-                sbe_facebackground_t *facebackground = calloc(1, sizeof(*facebackground));
+                sbe_facebackground_t *facebackground = I_Malloc(sizeof(sbe_facebackground_t));
                 facebackground->crop = ParseCrop(json);
                 out->subtype.facebackground = facebackground;
             }
@@ -492,7 +492,7 @@ hudfont_t *LoadSTCFN(void)
             return font;
         }
     }
-    font = calloc(1, sizeof(*font));
+    font = I_Malloc(sizeof(hudfont_t));
     font->stem = "STCFN";
     font->type = sbf_proportional;
     LoadHUDFont(font);
@@ -556,7 +556,7 @@ sbardef_t *ST_ParseSbarDef(void)
         return NULL;
     }
 
-    sbardef_t *out = calloc(1, sizeof(*out));
+    sbardef_t *out = I_Malloc(sizeof(sbardef_t));
 
     json_t *js_numberfonts = JS_GetObject(data, "numberfonts");
     json_t *js_numberfont = NULL;
@@ -604,7 +604,7 @@ sbardef_t *ST_ParseSbarDef(void)
     json = JS_Open("SBHUDDEF", "hud", (version_t){1, 0, 0});
     if (json == NULL)
     {
-        free(out);
+        I_Free(out);
         return NULL;
     }
 

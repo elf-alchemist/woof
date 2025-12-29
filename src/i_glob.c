@@ -37,14 +37,13 @@ struct glob_s
     int next_index;
 };
 
-static void FreeStringList(char **globs, int num_globs)
+static inline void FreeStringList(char **globs, int num_globs)
 {
-    int i;
-    for (i = 0; i < num_globs; ++i)
+    for (int i = 0; i < num_globs; ++i)
     {
-        free(globs[i]);
+        I_Free(globs[i]);
     }
-    free(globs);
+    I_Free(globs);
 }
 
 glob_t *I_StartMultiGlobInternal(const char *directory, int flags,
@@ -53,28 +52,19 @@ glob_t *I_StartMultiGlobInternal(const char *directory, int flags,
     char **globs;
     glob_t *result;
 
-    globs = malloc(num_globs * sizeof(*globs));
-    if (globs == NULL)
-    {
-        return NULL;
-    }
+    globs = I_Calloc(num_globs, sizeof(char*));
 
     for (int i = 0; i < num_globs; ++i)
     {
         globs[i] = M_StringDuplicate(glob[i]);
     }
 
-    result = malloc(sizeof(glob_t));
-    if (result == NULL)
-    {
-        FreeStringList(globs, num_globs);
-        return NULL;
-    }
+    result = I_Malloc(sizeof(glob_t));
 
     if (!M_DirExists(directory))
     {
         FreeStringList(globs, num_globs);
-        free(result);
+        I_Free(result);
         return NULL;
     }
 
@@ -103,8 +93,8 @@ void I_EndGlob(glob_t *glob)
     FreeStringList(glob->globs, glob->num_globs);
     FreeStringList(glob->filenames, glob->filenames_len);
 
-    free(glob->directory);
-    free(glob);
+    I_Free(glob->directory);
+    I_Free(glob);
 }
 
 static boolean MatchesGlob(const char *name, const char *glob, int flags)
@@ -174,14 +164,14 @@ static SDL_EnumerationResult Callback(void *userdata, const char *dirname,
 
     if (!M_DirExists(path) && MatchesAnyGlob(fname, glob))
     {
-        glob->filenames = realloc(glob->filenames,
+        glob->filenames = I_Realloc(glob->filenames,
                                   (glob->filenames_len + 1) * sizeof(char *));
         glob->filenames[glob->filenames_len] = path;
         ++glob->filenames_len;
     }
     else
     {
-        free(path);
+        I_Free(path);
     }
 
     return SDL_ENUM_CONTINUE;

@@ -75,7 +75,7 @@ void *M_ArenaAlloc(arena_t *arena, int size, int align)
             I_Error("Out of memory");
         }
 
-        void *buffer = malloc(buffer_size);
+        void *buffer = I_Malloc(buffer_size);
         memcpy(buffer, arena->buffer, buffer_size);
         if (!I_DecommitRegion(arena->buffer, buffer_size))
         {
@@ -86,7 +86,7 @@ void *M_ArenaAlloc(arena_t *arena, int size, int align)
             I_Error("Failed to commit region.");
         }
         memcpy(arena->buffer, buffer, buffer_size);
-        free(buffer);
+        I_Free(buffer);
 
         arena->end = arena->buffer + new_buffer_size;
         available = arena->end - arena->beg - padding;
@@ -131,7 +131,7 @@ void arena_free(arena_t *arena, void *ptr)
 
 arena_t *M_ArenaInit(int reserve, int commit)
 {
-    arena_t *arena = calloc(1, sizeof(*arena));
+    arena_t *arena = I_Malloc(sizeof(arena_t));
 
     arena->reserve = reserve;
     arena->buffer = I_ReserveRegion(reserve);
@@ -205,11 +205,11 @@ static block_t *CopyBlocks(const block_t *from)
 
 arena_copy_t *M_ArenaCopy(const arena_t *arena)
 {
-    arena_copy_t *copy = calloc(1, sizeof(*copy));
+    arena_copy_t *copy = I_Malloc(sizeof(arena_copy_t));
 
     ptrdiff_t size = arena->beg - arena->buffer;
     copy->size = size;
-    copy->buffer = malloc(size);
+    copy->buffer = I_Malloc(size);
     memcpy(copy->buffer, arena->buffer, size);
 
     copy->deleted = CopyBlocks(arena->deleted);
@@ -233,8 +233,8 @@ void M_ArenaFreeCopy(arena_copy_t *copy)
 {
     FreeBlocks(copy->deleted);
     hashmap_free(copy->hashmap);
-    free(copy->buffer);
-    free(copy);
+    I_Free(copy->buffer);
+    I_Free(copy);
 }
 
 hashmap_t *M_ArenaHashMap(const arena_t *arena)

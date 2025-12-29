@@ -295,7 +295,7 @@ static boolean StartPlayer(void)
 {
     int i;
 
-    player.data = malloc(BUFFER_SAMPLES * player.frame_size);
+    player.data = I_Calloc(BUFFER_SAMPLES, player.frame_size);
 
     // Rewind the source position and clear the buffer queue.
     alSourceRewind(player.source);
@@ -547,7 +547,7 @@ static void I_OAL_UnRegisterSong(void *handle)
 
     if (player.data)
     {
-        free(player.data);
+        I_Free(player.data);
         player.data = NULL;
     }
 }
