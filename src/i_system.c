@@ -120,50 +120,6 @@ void I_MessageBox(const char *message, ...)
 }
 
 //
-// Minor abstractions over memory stuffs
-//
-
-inline void *I_Malloc(size_t size)
-{
-    void *ptr = malloc(size);
-    if (ptr == NULL)
-    {
-        I_Error("Failed to mallocate memory.");
-    }
-    memset(ptr, 0, size);
-    return ptr;
-}
-
-inline void *I_Calloc(size_t num, size_t size)
-{
-    void *ptr = calloc(num, size);
-    if (ptr == NULL)
-    {
-        I_Error("Failed to callocate memory.");
-    }
-    return ptr;
-}
-
-inline void *I_Realloc(void* old_ptr, size_t new_size)
-{
-    void *ptr = realloc(old_ptr, new_size);
-    if (ptr == NULL)
-    {
-        I_Error("Failed to reallocate memory.");
-    }
-    return ptr;
-}
-
-inline void I_Free(void* ptr)
-{
-    if (ptr == NULL)
-    {
-        I_Printf(VB_DEBUG, "Tried to free a nullptr.");
-    }
-    free(ptr);
-}
-
-//
 // Read Access Violation emulation.
 //
 // From PrBoom+, by entryway.

@@ -21,6 +21,9 @@
 #define __I_SYSTEM__
 
 #include "doomtype.h"
+#include "i_printf.h"
+#include <stdlib.h>
+#include <string.h>
 
 //
 // Called by D_DoomLoop,
@@ -90,10 +93,33 @@ const char *I_GetPlatform(void);
 void I_SetMetadata(const char *appname, const char *appversion,
                    const char *appidentifier);
 
-void *I_Malloc(size_t size);
-void *I_Calloc(size_t num, size_t size);
-void *I_Realloc(void* ptr, size_t new_size);
-void I_Free(void* ptr);
+static inline void *I_Malloc(size_t size)
+{
+    void *ptr = malloc(size);
+    if (ptr == NULL) I_Error("Failed to mallocate memory.");
+    memset(ptr, 0, size);
+    return ptr;
+}
+
+static inline void *I_Calloc(size_t num, size_t size)
+{
+    void *ptr = calloc(num, size);
+    if (ptr == NULL) I_Error("Failed to callocate memory.");
+    return ptr;
+}
+
+static inline void *I_Realloc(void* old_ptr, size_t new_size)
+{
+    void *ptr = realloc(old_ptr, new_size);
+    if (ptr == NULL) I_Error("Failed to reallocate memory.");
+    return ptr;
+}
+
+static inline void I_Free(void* ptr)
+{
+    if (ptr == NULL) I_Printf(VB_DEBUG, "Tried to free a nullptr.");
+    free(ptr);
+}
 
 #endif
 
