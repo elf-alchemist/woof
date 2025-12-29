@@ -39,8 +39,6 @@ typedef enum {
   PU_MAX
 } pu_tag;
 
-#define PU_LEVSPEC PU_LEVEL
-
 void *Z_Malloc(size_t size, pu_tag tag, void **ptr);
 void Z_Free(void *ptr);
 void Z_FreeTag(pu_tag tag);
