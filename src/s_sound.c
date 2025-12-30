@@ -20,7 +20,6 @@
 // killough 3/7/98: modified to allow arbitrary listeners in spy mode
 // killough 5/2/98: reindented, removed useless code, beautified
 
-#include <math.h>
 #include <string.h>
 
 #include "doomdef.h"
@@ -40,7 +39,6 @@
 #include "s_trakinfo.h"
 #include "sounds.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 // jff end sound enabling variables readable here
 
@@ -985,7 +983,7 @@ void S_ChangeMusic(int musicnum, int looping)
     int old_lumpnum = music->lumpnum;
 
     // load & register it
-    music->data = W_CacheLumpNumTag(music->lumpnum, PU_STATIC);
+    music->data = W_CacheLumpNum(music->lumpnum);
     if (extra_music)
     {
         S_GetExtra(music, extra_music);
@@ -1042,7 +1040,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
 
     music->lumpnum = lumpnum;
 
-    music->data = W_CacheLumpNumTag(music->lumpnum, PU_STATIC);
+    music->data = W_CacheLumpNum(music->lumpnum);
     if (extra_music)
     {
         S_GetExtra(music, extra_music);
@@ -1098,12 +1096,6 @@ void S_StopMusic(void)
 
     I_StopSong((void *)mus_playing->handle);
     I_UnRegisterSong((void *)mus_playing->handle);
-
-    // for wads with "empty" music lumps (Nihility.wad)
-    if (mus_playing->data!= NULL)
-    {
-        Z_ChangeTag(mus_playing->data, PU_CACHE);
-    }
 
     mus_playing->data = NULL;
     mus_playing = NULL;

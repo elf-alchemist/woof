@@ -564,29 +564,13 @@ void AM_initVariables(void)
 //
 static void AM_loadPics(void)
 {
-  int i;
   char namebuf[9];
 
-  for (i=0;i<10;i++)
+  for (int i = 0; i < 10; i++)
   {
     M_snprintf(namebuf, sizeof(namebuf), "AMMNUM%d", i);
-    marknums[i] = V_CachePatchName(namebuf, PU_STATIC);
+    marknums[i] = V_CachePatchNameTag(namebuf, PU_STATIC);
   }
-}
-
-//
-// AM_unloadPics()
-//
-// Makes the mark patches purgable
-//
-// Passed nothing, returns nothing
-//
-static void AM_unloadPics(void)
-{
-  int i;
-
-  for (i=0;i<10;i++)
-    Z_ChangeTag(marknums[i], PU_CACHE);
 }
 
 //
@@ -698,7 +682,6 @@ void AM_Stop (void)
 
   memset(buttons_state, 0, sizeof(buttons_state));
 
-  AM_unloadPics();
   automapactive = false;
   ST_Responder(&st_notify);
   stopped = true;
@@ -2574,4 +2557,3 @@ void AM_BindAutomapVariables(void)
 //
 //
 //----------------------------------------------------------------------------
-

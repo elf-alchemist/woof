@@ -260,8 +260,7 @@ void R_ParseBrightmaps(int lumpnum)
         array_push(brightmaps_array, brightmap);
     }
 
-    scanner_t *s = SC_Open("BRGHTMPS", W_CacheLumpNumTag(lumpnum, PU_CACHE),
-                           W_LumpLength(lumpnum));
+    scanner_t *s = SC_Open("BRGHTMPS", lumpnum);
 
     while (SC_TokensLeft(s))
     {

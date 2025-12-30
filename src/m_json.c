@@ -19,7 +19,6 @@
 #include "m_array.h"
 #include "m_misc.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 #include "yyjson.h"
 
@@ -51,7 +50,7 @@ static doc_t *docs;
 
 json_t *JS_OpenOptions(int lumpnum, boolean comments)
 {
-    char *string = W_CacheLumpNumTag(lumpnum, PU_CACHE);
+    char *string = W_CacheLumpNum(lumpnum);
     int length = W_LumpLength(lumpnum);
 
     yyjson_read_flag flag = comments ? YYJSON_READ_ALLOW_COMMENTS : 0;
@@ -140,6 +139,7 @@ void JS_CloseOptions(int lumpnum)
             break;
         }
     }
+    W_ReleaseLumpNum(lumpnum);
 }
 
 void JS_Close(const char *lump)

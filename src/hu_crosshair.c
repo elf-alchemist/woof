@@ -23,7 +23,6 @@
 #include "m_swap.h"
 #include "p_map.h"
 #include "p_mobj.h"
-#include "r_data.h"
 #include "r_main.h"
 #include "r_state.h"
 #include "st_stuff.h"
@@ -82,7 +81,7 @@ void HU_StartCrosshair(void)
     if (crosshair_lumps[hud_crosshair])
     {
         crosshair.patch =
-            V_CachePatchName(crosshair_lumps[hud_crosshair], PU_STATIC);
+            V_CachePatchNameTag(crosshair_lumps[hud_crosshair], PU_STATIC);
 
         crosshair.w = SHORT(crosshair.patch->width) / 2;
         crosshair.h = SHORT(crosshair.patch->height) / 2;

@@ -41,7 +41,6 @@ typedef fluid_long_long_t fluid_int_t;
 #include "memio.h"
 #include "mus2mid.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 static const char *soundfont_dirs = "";
 static int fl_polyphony;
@@ -68,6 +67,7 @@ static int interp_method;
 // Load SNDFONT lump
 
 static byte *lump;
+static int sndfont_lumpnum = -1;
 static int lumplen;
 
 static void *FL_sfopen(const char *path)
@@ -100,7 +100,7 @@ static int FL_sfseek(void *handle, fluid_long_long_t offset, int origin)
 static int FL_sfclose(void *handle)
 {
     mem_fclose((MEMFILE *)handle);
-    Z_ChangeTag(lump, PU_CACHE);
+    W_ReleaseLumpNum(sndfont_lumpnum);
     return FLUID_OK;
 }
 
@@ -260,7 +260,6 @@ static void I_FL_Log_Debug(int level, const char *message, void *data)
 static boolean I_FL_InitStream(int device)
 {
     int sf_id;
-    int lumpnum;
 
     fluid_set_log_function(FLUID_PANIC, I_FL_Log_Error, NULL);
     fluid_set_log_function(FLUID_ERR,   I_FL_Log_Error, NULL);
@@ -313,13 +312,13 @@ static boolean I_FL_InitStream(int device)
         return false;
     }
 
-    lumpnum = W_CheckNumForName("SNDFONT");
-    if (lumpnum >= 0)
+    sndfont_lumpnum = W_CheckNumForName("SNDFONT");
+    if (sndfont_lumpnum >= 0)
     {
         fluid_sfloader_t *sfloader;
 
-        lump = W_CacheLumpNumTag(lumpnum, PU_STATIC);
-        lumplen = W_LumpLength(lumpnum);
+        lump = W_CacheLumpNum(sndfont_lumpnum);
+        lumplen = W_LumpLength(sndfont_lumpnum);
 
         sfloader = new_fluid_defsfloader(settings);
         fluid_sfloader_set_callbacks(sfloader, FL_sfopen, FL_sfread, FL_sfseek,
@@ -343,13 +342,13 @@ static boolean I_FL_InitStream(int device)
     if (sf_id == FLUID_FAILED)
     {
         I_MessageBox("Error loading FluidSynth soundfont: %s",
-                     lumpnum >= 0 ? "SNDFONT lump" : soundfonts[device]);
+                     sndfont_lumpnum >= 0 ? "SNDFONT lump" : soundfonts[device]);
         FreeSynthAndSettings();
         return false;
     }
 
     I_Printf(VB_INFO, "FluidSynth Init: Using '%s'.",
-             lumpnum >= 0 ? "SNDFONT lump" : soundfonts[device]);
+             sndfont_lumpnum >= 0 ? "SNDFONT lump" : soundfonts[device]);
 
     return true;
 }

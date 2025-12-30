@@ -1007,8 +1007,6 @@ void R_InitBufferRes(void)
 
 void R_InitBuffer(void)
 {
-    int i;
-
     linesize = video.width; // killough 11/98
 
     // Handle resize,
@@ -1017,7 +1015,7 @@ void R_InitBuffer(void)
 
     // Column offset. For windows.
 
-    for (i = viewwidth; i--;) // killough 11/98
+    for (int i = viewwidth; i--;) // killough 11/98
     {
         columnofs[i] = viewwindowx + i;
     }
@@ -1026,60 +1024,55 @@ void R_InitBuffer(void)
 
     // Preclaculate all row offsets.
 
-    for (i = viewheight; i--;)
+    for (int i = viewheight; i--;)
     {
         ylookup[i] =
             I_VideoBuffer + (i + viewwindowy) * linesize; // killough 11/98
     }
 
-    if (background_buffer != NULL)
-    {
-        Z_Free(background_buffer);
-        background_buffer = NULL;
-    }
+    I_Free(background_buffer);
 }
 
 void R_DrawBorder(int x, int y, int w, int h)
 {
-    int i, j;
     patch_t *patch;
 
-    patch = V_CachePatchName("brdr_t", PU_CACHE);
-    for (i = 0; i < w; i += 8)
+    patch = V_CachePatchNameTag("brdr_t", PU_CACHE);
+    for (int i = 0; i < w; i += 8)
     {
         V_DrawPatch(x + i - video.deltaw, y - 8, patch);
     }
 
-    patch = V_CachePatchName("brdr_b", PU_CACHE);
-    for (i = 0; i < w; i += 8)
+    patch = V_CachePatchNameTag("brdr_b", PU_CACHE);
+    for (int i = 0; i < w; i += 8)
     {
         V_DrawPatch(x + i - video.deltaw, y + h, patch);
     }
 
-    patch = V_CachePatchName("brdr_l", PU_CACHE);
-    for (j = 0; j < h; j += 8)
+    patch = V_CachePatchNameTag("brdr_l", PU_CACHE);
+    for (int j = 0; j < h; j += 8)
     {
         V_DrawPatch(x - 8 - video.deltaw, y + j, patch);
     }
 
-    patch = V_CachePatchName("brdr_r", PU_CACHE);
-    for (j = 0; j < h; j += 8)
+    patch = V_CachePatchNameTag("brdr_r", PU_CACHE);
+    for (int j = 0; j < h; j += 8)
     {
         V_DrawPatch(x + w - video.deltaw, y + j, patch);
     }
 
     // Draw beveled edge.
     V_DrawPatch(x - 8 - video.deltaw, y - 8,
-                V_CachePatchName("brdr_tl", PU_CACHE));
+                V_CachePatchNameTag("brdr_tl", PU_CACHE));
 
     V_DrawPatch(x + w - video.deltaw, y - 8,
-                V_CachePatchName("brdr_tr", PU_CACHE));
+                V_CachePatchNameTag("brdr_tr", PU_CACHE));
 
     V_DrawPatch(x - 8 - video.deltaw, y + h,
-                V_CachePatchName("brdr_bl", PU_CACHE));
+                V_CachePatchNameTag("brdr_bl", PU_CACHE));
 
     V_DrawPatch(x + w - video.deltaw, y + h,
-                V_CachePatchName("brdr_br", PU_CACHE));
+                V_CachePatchNameTag("brdr_br", PU_CACHE));
 }
 
 void R_FillBackScreen(void)
@@ -1092,9 +1085,7 @@ void R_FillBackScreen(void)
     // Allocate the background buffer if necessary
     if (background_buffer == NULL)
     {
-        int size = video.width * video.height;
-        background_buffer =
-            Z_Malloc(size * sizeof(*background_buffer), PU_STATIC, NULL);
+        background_buffer = I_Calloc(video.width * video.height, sizeof(pixel_t));
     }
 
     V_UseBuffer(background_buffer);

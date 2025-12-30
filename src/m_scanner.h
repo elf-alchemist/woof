@@ -54,7 +54,7 @@ enum
     TK_NoToken = -1
 };
 
-scanner_t *SC_Open(const char *scriptname, const char *data, int length);
+scanner_t *SC_Open(const char *scriptname, const int lumpnum);
 void SC_Close(scanner_t *s);
 
 const char *SC_GetString(scanner_t *s);

@@ -209,7 +209,8 @@ static void R_GenerateComposite(int texnum)
   unsigned *colofs2 = texturecolumnofs2[texnum];
   int i = texture->patchcount;
   // killough 4/9/98: marks to identify transparent regions in merged textures
-  byte *marks = Z_Calloc(texture->width, texture->height, PU_STATIC, 0), *source;
+  byte *marks = I_Calloc(texture->width, texture->height);
+  byte *source;
 
   // [FG] memory block for opaque textures
   byte *block2 = Z_Malloc(texture->width * texture->height, PU_STATIC,
@@ -219,7 +220,7 @@ static void R_GenerateComposite(int texnum)
 
   for (; --i >=0; patch++)
     {
-      patch_t *realpatch = V_CachePatchNum(patch->patch, PU_CACHE);
+      patch_t *realpatch = V_CachePatchNumTag(patch->patch, PU_CACHE);
       int x, x1 = patch->originx, x2 = x1 + SHORT(realpatch->width);
       const int *cofs = realpatch->columnofs - x1;
 
@@ -241,7 +242,7 @@ static void R_GenerateComposite(int texnum)
   // killough 4/9/98: Next, convert multipatched columns into true columns,
   // to fix Medusa bug while still allowing for transparent regions.
 
-  source = Z_Malloc(texture->height, PU_STATIC, 0);       // temporary column
+  source = I_Malloc(texture->height);       // temporary column
   for (i=0; i < texture->width; i++)
     // [FG] generate composites for all columns
 //  if (collump[i] == -1)                 // process only multipatched columns
@@ -294,8 +295,8 @@ static void R_GenerateComposite(int texnum)
             col = (column_t *)((byte *) col + len + 4); // next post
           }
       }
-  Z_Free(source);         // free temporary column
-  Z_Free(marks);          // free transparency marks
+  I_Free(source);         // free temporary column
+  I_Free(marks);          // free transparency marks
 
   // Now that the texture has been built in column cache,
   // it is purgable from zone memory.
@@ -335,7 +336,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
   while (--i >= 0)
     {
       int pat = patch->patch;
-      const patch_t *realpatch = V_CachePatchNum(pat, PU_CACHE);
+      const patch_t *realpatch = V_CachePatchNumTag(pat, PU_CACHE);
       int x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
       const int *cofs = realpatch->columnofs - x1;
       
@@ -373,7 +374,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
       for (i = texture->patchcount, patch = texture->patches; --i >= 0;)
 	{
 	  int pat = patch->patch;
-	  const patch_t *realpatch = V_CachePatchNum(pat, PU_CACHE);
+	  const patch_t *realpatch = V_CachePatchNumTag(pat, PU_CACHE);
 	  int x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
 	  const int *cofs = realpatch->columnofs - x1;
 	  
@@ -762,7 +763,7 @@ void R_InitTextures (void)
         tx_lump = (W_CheckNumForName)("TNT1A0", ns_sprites);
       }
 
-      patch_t* tx_patch = V_CachePatchNum(tx_lump, PU_CACHE);
+      patch_t* tx_patch = V_CachePatchNumTag(tx_lump, PU_CACHE);
       texture->width = tx_patch->width;
       texture->height = tx_patch->height;
       texture->patchcount = 1;
@@ -871,7 +872,7 @@ void R_InitSpriteLumps(void)
     {
       M_ProgressBarMove(i); // killough
 
-      patch = V_CachePatchNum(firstspritelump+i, PU_CACHE);
+      patch = V_CachePatchNumTag(firstspritelump+i, PU_CACHE);
       spritewidth[i] = SHORT(patch->width)<<FRACBITS;
       spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
       spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
@@ -1084,7 +1085,7 @@ void R_PrecacheLevel(void)
 
   for (i = numflats; --i >= 0; )
     if (hitlist[i])
-      V_CacheFlatNum(firstflat + i, PU_CACHE);
+      V_CacheFlatNumTag(firstflat + i, PU_CACHE);
 
   // Precache textures.
 
@@ -1114,7 +1115,7 @@ void R_PrecacheLevel(void)
         texture_t *texture = textures[i];
         int j = texture->patchcount;
         while (--j >= 0)
-          V_CachePatchNum(texture->patches[j].patch, PU_CACHE);
+          V_CachePatchNumTag(texture->patches[j].patch, PU_CACHE);
       }
 
   // Precache sprites.
@@ -1136,7 +1137,7 @@ void R_PrecacheLevel(void)
             short *sflump = sprites[i].spriteframes[j].lump;
             int k = 7;
             do
-              V_CachePatchNum(firstspritelump + sflump[k], PU_CACHE);
+              V_CachePatchNumTag(firstspritelump + sflump[k], PU_CACHE);
             while (--k >= 0);
           }
       }

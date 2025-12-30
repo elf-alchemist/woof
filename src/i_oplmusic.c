@@ -373,10 +373,12 @@ static boolean opl_stereo_correct = false;
 // Load instrument table from GENMIDI lump:
 
 static byte *lump;
+static int opl_table_lumpnum = -1;
 
 static boolean LoadInstrumentTable(const char *lumpname)
 {
-    lump = W_CacheLumpNameTag(lumpname, PU_STATIC);
+    opl_table_lumpnum = W_GetNumForName(lumpname);
+    lump = W_CacheLumpNum(opl_table_lumpnum);
 
     // DMX does not check header
 
@@ -1670,9 +1672,7 @@ static void I_OPL_ShutdownStream(void)
     {
         OPL_Shutdown();
 
-        // Release GENMIDI lump
-
-        Z_ChangeTag(lump, PU_CACHE);
+        W_ReleaseLumpNum(opl_table_lumpnum);
 
         music_initialized = false;
     }

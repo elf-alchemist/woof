@@ -28,7 +28,6 @@
 #include "s_sound.h"
 #include "m_scanner.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 musinfo_t musinfo = {0};
 
@@ -45,8 +44,7 @@ void S_ParseMusInfo(const char *mapid)
         return;
     }
 
-    scanner_t *s = SC_Open("MUSINFO", W_CacheLumpNumTag(lumpnum, PU_CACHE),
-                           W_LumpLength(lumpnum));
+    scanner_t *s = SC_Open("MUSINFO", lumpnum);
 
     while (SC_TokensLeft(s))
     {

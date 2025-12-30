@@ -117,7 +117,7 @@ byte *R_DistortedFlat(int flatnum)
         char *normalflat;
         int i;
 
-        normalflat = V_CacheFlatNum(flatnum, PU_STATIC);
+        normalflat = V_CacheFlatNumTag(flatnum, PU_STATIC);
 
         for (i = 0; i < FLATSIZE; i++)
         {

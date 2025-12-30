@@ -25,7 +25,6 @@
 #include "r_data.h"
 #include "r_defs.h"
 #include "r_main.h"
-#include "v_video.h"
 #include "w_wad.h"
 #include "z_zone.h"
 
@@ -254,7 +253,7 @@ static patch_t *DummyPatch(int lump, pu_tag tag)
 {
     int num = (W_CheckNumForName)("TNT1A0", ns_sprites);
     int len = W_LumpLength(num);
-    patch_t *dummy = V_CachePatchNum(num, PU_CACHE);
+    patch_t *dummy = V_CachePatchNumTag(num, PU_CACHE);
 
     Z_Malloc(len, tag, &lumpcache[lump]);
     memcpy(lumpcache[lump], dummy, len);
@@ -661,7 +660,7 @@ static void TranslatePatch(patch_t *patch, const byte *translate)
     }
 }
 
-patch_t *V_CachePatchNum(int lump, pu_tag tag)
+patch_t *V_CachePatchNumTag(int lump, pu_tag tag)
 {
     if (lump >= numlumps)
     {
@@ -768,7 +767,7 @@ error:
     return DummyPatch(lump, tag);
 }
 
-void *V_CacheFlatNum(int lump, pu_tag tag)
+void *V_CacheFlatNumTag(int lump, pu_tag tag)
 {
     if (lump >= numlumps)
     {
@@ -855,7 +854,7 @@ boolean V_LumpIsPatch(const int lump)
         return false;
     }
 
-    const patch_t *patch = V_CachePatchNum(lump, PU_CACHE);
+    const patch_t *patch = V_CachePatchNumTag(lump, PU_CACHE);
 
     int width = SHORT(patch->width);
     int height = SHORT(patch->height);
@@ -893,7 +892,7 @@ boolean V_PatchIsEmpty(const int lump)
         return true;
     }
 
-    const patch_t *patch = V_CachePatchNum(lump, PU_CACHE);
+    const patch_t *patch = V_CachePatchNumTag(lump, PU_CACHE);
 
     int width = SHORT(patch->width);
 

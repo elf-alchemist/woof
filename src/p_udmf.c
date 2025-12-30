@@ -900,9 +900,7 @@ static void UDMF_ParseThing(scanner_t *s)
 
 static void UDMF_ParseTextMap(int lumpnum)
 {
-    scanner_t *s =
-        SC_Open("TEXTMAP", W_CacheLumpNumTag(lumpnum + UDMF_TEXTMAP, PU_CACHE),
-                W_LumpLength(lumpnum + UDMF_TEXTMAP));
+    scanner_t *s = SC_Open("TEXTMAP", lumpnum + UDMF_TEXTMAP);
 
     const char *toplevel = NULL;
     while (SC_TokensLeft(s))

@@ -36,6 +36,7 @@
 #include "i_printf.h"
 #include "i_system.h"
 #include "m_misc.h"
+#include "w_wad.h"
 
 static const char* const token_names[] =
 {
@@ -67,6 +68,7 @@ struct scanner_s
     parserstate_t state;
     parserstate_t nextstate, prevstate;
 
+    int lumpnum;
     char *data;
     size_t length;
 
@@ -738,16 +740,18 @@ double SC_GetDecimal(scanner_t *s)
     return s->state.decimal;
 }
 
-scanner_t *SC_Open(const char *scriptname, const char *data, int length)
+scanner_t *SC_Open(const char *scriptname, const int lumpnum)
 {
     scanner_t *s = I_Malloc(sizeof(scanner_t));
 
     s->line = 1;
     s->neednext = true;
+    s->lumpnum = lumpnum;
 
-    s->length = length;
-    s->data = I_Malloc(length);
-    memcpy(s->data, data, length);
+    byte * data = W_CacheLumpNum(s->lumpnum);
+    s->length = W_LumpLength(s->lumpnum);
+    s->data = I_Malloc(s->length);
+    memcpy(s->data, data, s->length);
 
     CheckForWhitespace(s);
     s->state.scanpos = s->scanpos;
@@ -773,6 +777,7 @@ void SC_Close(scanner_t *s)
     {
         I_Free((char *)s->scriptname);
     }
+    W_ReleaseLumpNum(s->lumpnum);
     I_Free(s->data);
     I_Free(s);
 }

@@ -340,9 +340,7 @@ void M_StringToLower(char *str)
 
 char *M_StringDuplicate(const char *orig)
 {
-    char *result;
-
-    result = strdup(orig);
+    char *result = strdup(orig);
 
     if (result == NULL)
     {

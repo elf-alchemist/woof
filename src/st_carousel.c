@@ -177,7 +177,7 @@ static void DrawIcon(int x, int y, sbarelem_t *elem, weapon_icon_t icon)
 
     M_snprintf(lump, sizeof(lump), "%s%d", name, icon.state == wpi_selected);
 
-    patch_t *patch = V_CachePatchName(lump, PU_CACHE);
+    patch_t *patch = V_CachePatchNameTag(lump, PU_CACHE);
 
     byte *cr = icon.state == wpi_disabled ? cr_dark : NULL;
 

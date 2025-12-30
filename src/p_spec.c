@@ -142,16 +142,15 @@ static void P_SpawnPushers(void);     // phares 3/20/98
 //
 void P_InitPicAnims (void)
 {
-  int         i;
-  animdef_t   *animdefs; //jff 3/23/98 pointer to animation lump
   //  Init animation
 
   //jff 3/23/98 read from predefined or wad lump instead of table
-  animdefs = W_CacheLumpNameTag("ANIMATED",PU_STATIC);
+  int lumpnum = W_GetNumForName("ANIMATED");
+  animdef_t *animdefs = W_CacheLumpNum(lumpnum);
 
   lastanim = anims;
-  for (i=0 ; animdefs[i].istexture != -1 ; i++)
-    {
+  for (int i = 0; animdefs[i].istexture != -1; i++)
+  {
       // 1/11/98 killough -- removed limit by array-doubling
       if (!anims || lastanim >= anims + maxanims)
         {
@@ -226,7 +225,7 @@ void P_InitPicAnims (void)
 
       lastanim++;
     }
-  Z_ChangeTag (animdefs,PU_CACHE); //jff 3/23/98 allow table to be freed
+  W_ReleaseLumpNum(lumpnum);
 }
 
 // [FG] play sound when hitting animated floor

@@ -165,7 +165,7 @@ static patch_t *CachePatchName(const char *name)
             return NULL;
         }
     }
-    return V_CachePatchNum(lumpnum, PU_STATIC);
+    return V_CachePatchNumTag(lumpnum, PU_STATIC);
 }
 
 static void LoadFacePatches(void)
@@ -180,30 +180,30 @@ static void LoadFacePatches(void)
              ++straightface)
         {
             M_snprintf(lump, sizeof(lump), "STFST%d%d", count, straightface);
-            array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+            array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
         }
 
         M_snprintf(lump, sizeof(lump), "STFTR%d0", count); // turn right
-        array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
 
         M_snprintf(lump, sizeof(lump), "STFTL%d0", count); // turn left
-        array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
 
         M_snprintf(lump, sizeof(lump), "STFOUCH%d", count); // ouch!
-        array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
 
         M_snprintf(lump, sizeof(lump), "STFEVL%d", count); // evil grin ;)
-        array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
 
         M_snprintf(lump, sizeof(lump), "STFKILL%d", count); // pissed off
-        array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
     }
 
     M_snprintf(lump, sizeof(lump), "STFGOD0");
-    array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+    array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
 
     M_snprintf(lump, sizeof(lump), "STFDEAD0");
-    array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+    array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
 
     // [FG] support face gib animations as in the 3DO/Jaguar/PSX ports
     for (count = 0; count < ST_NUMXDTHFACES; ++count)
@@ -212,7 +212,7 @@ static void LoadFacePatches(void)
 
         if (W_CheckNumForName(lump) != -1)
         {
-            array_push(facepatches, V_CachePatchName(lump, PU_STATIC));
+            array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
         }
         else
         {
@@ -224,7 +224,7 @@ static void LoadFacePatches(void)
     for (count = 0; count < MAXPLAYERS; ++count)
     {
         M_snprintf(lump, sizeof(lump), "STFB%d", count);
-        array_push(facebackpatches, V_CachePatchName(lump, PU_STATIC));
+        array_push(facebackpatches, V_CachePatchNameTag(lump, PU_STATIC));
     }
 }
 
@@ -1612,7 +1612,7 @@ static void DrawSolidBackground(void)
     // [FG] calculate average color of the 16px left and right of the status bar
     const int vstep[][2] = { {0, 1}, {1, 2}, {2, st_height} };
 
-    patch_t *sbar = V_CachePatchName(W_CheckWidescreenPatch("STBAR"), PU_CACHE);
+    patch_t *sbar = V_CachePatchNameTag(W_CheckWidescreenPatch("STBAR"), PU_CACHE);
     // [FG] temporarily draw status bar to background buffer
     crop_t crop = {.width = SHORT(sbar->width), .height = st_height};
     V_DrawPatchCropped(-video.deltaw, 0, sbar, crop);
@@ -1679,14 +1679,14 @@ static void DrawBackground(const char *name)
             }
 
             byte *flat =
-                V_CacheFlatNum(firstflat + R_FlatNumForName(name), PU_CACHE);
+                V_CacheFlatNumTag(firstflat + R_FlatNumForName(name), PU_CACHE);
 
             V_TileBlock64(ST_Y, video.unscaledw, st_height, flat);
 
             if ((!statusbar->fullscreenrender && screenblocks >= 10)
                 || (automapactive && automapoverlay == AM_OVERLAY_OFF))
             {
-                patch_t *patch = V_CachePatchName("brdr_b", PU_CACHE);
+                patch_t *patch = V_CachePatchNameTag("brdr_b", PU_CACHE);
                 crop_t crop = {.width = SHORT(patch->width), .height = st_height};
                 for (int x = 0; x < video.unscaledw; x += 8)
                 {

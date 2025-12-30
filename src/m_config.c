@@ -522,12 +522,12 @@ boolean M_ParseOption(const char *p, boolean wad)
             I_Free(*dp->location.s); // Free old value
         }
 
-        *dp->location.s = strdup(strparm + 1); // Change default value
+        *dp->location.s = M_StringDuplicate(strparm + 1); // Change default value
 
         if (dp->current.s) // Current value
         {
             I_Free(*dp->current.s);                 // Free old value
-            *dp->current.s = strdup(strparm + 1); // Change current value
+            *dp->current.s = M_StringDuplicate(strparm + 1); // Change current value
         }
     }
     else if (dp->type == number)
@@ -645,8 +645,8 @@ void M_LoadOptions(void)
         if (lump != -1)
         {
             int size = W_LumpLength(lump), buflen = 0;
-            char *buf = NULL, *p,
-                 *options = p = W_CacheLumpNumTag(lump, PU_STATIC);
+            char *buf = NULL;
+            char *p = W_CacheLumpNum(lump);
             while (size > 0)
             {
                 int len = 0;
@@ -663,7 +663,7 @@ void M_LoadOptions(void)
                 M_ParseOption(buf, true);
             }
             I_Free(buf);
-            Z_ChangeTag(options, PU_CACHE);
+            W_ReleaseLumpNum(lump);
         }
     }
 }

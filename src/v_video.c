@@ -1030,7 +1030,7 @@ void V_PutBlock(int x, int y, int width, int height, pixel_t *src)
 void V_DrawBackground(const char *patchname)
 {
     const byte *src =
-        V_CacheFlatNum(firstflat + R_FlatNumForName(patchname), PU_CACHE);
+        V_CacheFlatNumTag(firstflat + R_FlatNumForName(patchname), PU_CACHE);
 
     V_TileBlock64(0, video.unscaledw, SCREENHEIGHT, src);
 }

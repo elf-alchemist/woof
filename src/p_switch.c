@@ -68,10 +68,10 @@ void P_InitSwitchList(void)
   int i, index = 0;
   int episode = (gamemode == registered || gamemode==retail) ?
                  2 : gamemode == commercial ? 3 : 1;
-  switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch table
 
-  //jff 3/23/98 read the switch table from a predefined lump             
-  alphSwitchList = (switchlist_t *)W_CacheLumpNameTag("SWITCHES",PU_STATIC);
+  //jff 3/23/98 read the switch table from a predefined lump
+  int lumpnum = W_GetNumForName("SWITCHES");
+  switchlist_t *alphSwitchList = W_CacheLumpNum(lumpnum);
 
   for (i=0;;i++)
   {
@@ -110,7 +110,7 @@ void P_InitSwitchList(void)
 
   numswitches = index/2;
   switchlist[index] = -1;
-  Z_ChangeTag(alphSwitchList,PU_CACHE); //jff 3/23/98 allow table to be freed
+  W_ReleaseLumpNum(lumpnum);
 }
 
 //

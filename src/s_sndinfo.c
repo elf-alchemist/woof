@@ -343,16 +343,8 @@ static void FreeSoundDefinitions(sound_def_t **sound_defs)
     for (int i = 0; i < array_size(*sound_defs); i++)
     {
         sound_def_t *def = &(*sound_defs)[i];
-
-        if (def->sound_name)
-        {
-            I_Free(def->sound_name);
-        }
-
-        if (def->lump_name)
-        {
-            I_Free(def->lump_name);
-        }
+        I_Free(def->sound_name);
+        I_Free(def->lump_name);
     }
 
     array_free(*sound_defs);
@@ -362,10 +354,7 @@ static void FreeSoundNames(char ***sound_names)
 {
     for (int i = 0; i < MAX_AMBIENT_DATA; i++)
     {
-        if ((*sound_names)[i])
-        {
-            I_Free((*sound_names)[i]);
-        }
+        I_Free((*sound_names)[i]);
     }
 
     I_Free(*sound_names);
@@ -373,9 +362,7 @@ static void FreeSoundNames(char ***sound_names)
 
 void S_ParseSndInfo(int lumpnum)
 {
-    const char *lump_data = W_CacheLumpNumTag(lumpnum, PU_CACHE);
-    const int lump_length = W_LumpLength(lumpnum);
-    scanner_t *s = SC_Open("SNDINFO", lump_data, lump_length);
+    scanner_t *s = SC_Open("SNDINFO", lumpnum);
     sound_def_t *sound_defs = NULL;
     char **sound_names = I_Calloc(MAX_AMBIENT_DATA, sizeof(char*));
     ambient_data = I_Calloc(MAX_AMBIENT_DATA, sizeof(ambient_data_t));

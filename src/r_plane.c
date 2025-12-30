@@ -569,7 +569,7 @@ static void do_draw_plane(visplane_t *pl)
         }
         else
         {
-            ds_source = V_CacheFlatNum(firstflat + flattranslation[pl->picnum],
+            ds_source = V_CacheFlatNumTag(firstflat + flattranslation[pl->picnum],
                                        PU_STATIC);
             ds_brightmap = R_BrightmapForFlatNum(flattranslation[pl->picnum]);
         }

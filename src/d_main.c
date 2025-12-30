@@ -20,7 +20,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -399,7 +398,7 @@ void D_Display (void)
     {
       int x = scaledviewx;
       int y = 4;
-      patch_t *patch = V_CachePatchName("M_PAUSE", PU_CACHE);
+      patch_t *patch = V_CachePatchNameTag("M_PAUSE", PU_STATIC);
 
       x += (scaledviewwidth - SHORT(patch->width)) / 2 - video.deltaw;
 
@@ -481,7 +480,7 @@ void D_PageTicker(void)
 void D_PageDrawer(void)
 {
   V_DrawPatchFullScreen(
-    V_CachePatchName(W_CheckWidescreenPatch(pagename), PU_CACHE));
+    V_CachePatchNameTag(W_CheckWidescreenPatch(pagename), PU_CACHE));
 }
 
 //
@@ -1650,8 +1649,7 @@ static endoom_t show_endoom;
 
 static void D_ShowEndDoom(void)
 {
-  int lumpnum = W_CheckNumForName("ENDOOM");
-  byte *endoom = W_CacheLumpNum(lumpnum);
+  byte *endoom = W_CacheLumpName("ENDOOM", ns_global);
   I_Endoom(endoom);
 }
 

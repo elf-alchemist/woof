@@ -18,8 +18,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <string.h>
-
 #include "d_event.h"
 #include "d_deh.h"
 #include "d_player.h"
@@ -559,7 +557,7 @@ static boolean DrawAnimation(void)
     if (animation->background_lump)
     {
         V_DrawPatchFullScreen(
-            V_CachePatchName(animation->background_lump, PU_CACHE));
+            V_CachePatchNameTag(animation->background_lump, PU_LEVEL));
     }
 
     wi_animationstate_t *state;
@@ -572,7 +570,7 @@ static boolean DrawAnimation(void)
             lumpnum = (W_CheckNumForName)(frame->image_lump, ns_sprites);
         }
         V_DrawPatch(state->x_pos, state->y_pos,
-                    V_CachePatchNum(lumpnum, PU_CACHE));
+                    V_CachePatchNumTag(lumpnum, PU_LEVEL));
     }
 
     return true;
@@ -720,7 +718,7 @@ void WI_slamBackground(void)
     }
 
     V_DrawPatchFullScreen(
-      V_CachePatchName(W_CheckWidescreenPatch(name), PU_CACHE));
+      V_CachePatchNameTag(W_CheckWidescreenPatch(name), PU_LEVEL));
 }
 
 // ====================================================================
@@ -770,7 +768,7 @@ static void WI_drawLF(void)
     }
     else if (mapinfo && mapinfo->levelpic[0])
     {
-        patch_t *patch = V_CachePatchName(mapinfo->levelpic, PU_CACHE);
+        patch_t *patch = V_CachePatchNameTag(mapinfo->levelpic, PU_LEVEL);
 
         V_DrawPatch((SCREENWIDTH - SHORT(patch->width)) / 2, y, patch);
 
@@ -821,7 +819,7 @@ static void WI_drawEL(void)
     }
     else if (mapinfo && mapinfo->levelpic[0])
     {
-        patch_t *patch = V_CachePatchName(mapinfo->levelpic, PU_CACHE);
+        patch_t *patch = V_CachePatchNameTag(mapinfo->levelpic, PU_LEVEL);
 
         // If the levelpic graphics lump is not fullscreen,
         // draw it right below the "entering" graphics lump
@@ -1202,97 +1200,6 @@ static void WI_drawTime(int x, int y, int seconds, boolean suck)
 }
 
 // ====================================================================
-// WI_unloadData
-// Purpose: Free up the space allocated during WI_loadData
-// Args:    none
-// Returns: void
-//
-
-static boolean wi_inited = false;
-
-static void WI_unloadData(void)
-{
-  int   i;
-  int   j;
-
-  wi_inited = false;
-
-  if (wiminus)
-  Z_ChangeTag(wiminus, PU_CACHE);
-
-  for (i=0 ; i<10 ; i++)
-    Z_ChangeTag(num[i], PU_CACHE);
-    
-  if (gamemode == commercial)
-    {
-      for (i=0 ; i<NUMCMAPS ; i++)
-       if (lnames[i])
-        Z_ChangeTag(lnames[i], PU_CACHE);
-    }
-  else
-    {
-      Z_ChangeTag(yah[0], PU_CACHE);
-      Z_ChangeTag(yah[1], PU_CACHE);
-
-      Z_ChangeTag(splat[0], PU_CACHE);
-
-      for (i=0 ; i<NUMMAPS ; i++)
-       if (lnames[i])
-        Z_ChangeTag(lnames[i], PU_CACHE);
-  
-      if (wbs->epsd < 3)
-        {
-          for (j=0;j<NUMANIMS[wbs->epsd];j++)
-            {
-              if (wbs->epsd != 1 || j != 8)
-                for (i=0;i<anims[wbs->epsd][j].nanims;i++)
-                  Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE);
-            }
-        }
-    }
-    
-  //  Z_Free(lnames);    // killough 4/26/98: this free is too early!!!
-
-  Z_ChangeTag(percent, PU_CACHE);
-  Z_ChangeTag(colon, PU_CACHE);
-  Z_ChangeTag(finished, PU_CACHE);
-  Z_ChangeTag(entering, PU_CACHE);
-  Z_ChangeTag(kills, PU_CACHE);
-  Z_ChangeTag(secret, PU_CACHE);
-  Z_ChangeTag(sp_secret, PU_CACHE);
-  Z_ChangeTag(items, PU_CACHE);
-  Z_ChangeTag(frags, PU_CACHE);
-  Z_ChangeTag(witime, PU_CACHE);
-  Z_ChangeTag(sucks, PU_CACHE);
-  Z_ChangeTag(par, PU_CACHE);
-
-  Z_ChangeTag(victims, PU_CACHE);
-  Z_ChangeTag(killers, PU_CACHE);
-  Z_ChangeTag(total, PU_CACHE);
-  //  Z_ChangeTag(star, PU_CACHE);
-  //  Z_ChangeTag(bstar, PU_CACHE);
-  
-  for (i=0 ; i<MAXPLAYERS ; i++)
-    Z_ChangeTag(p[i], PU_CACHE);
-
-  for (i=0 ; i<MAXPLAYERS ; i++)
-    Z_ChangeTag(bp[i], PU_CACHE);
-}
-
-
-// ====================================================================
-// WI_End
-// Purpose: Unloads data structures (inverse of WI_Start)
-// Args:    none
-// Returns: void
-//
-static void WI_End(void)
-{
-  WI_unloadData();
-}
-
-
-// ====================================================================
 // WI_initNoState
 // Purpose: Clear state, ready for end of level activity
 // Args:    none
@@ -1305,6 +1212,7 @@ static void WI_initNoState(void)
   cnt = 10;
 }
 
+static boolean wi_inited = false;
 
 // ====================================================================
 // WI_updateNoState
@@ -1318,7 +1226,7 @@ static void WI_updateNoState(void)
 
   if (!--cnt)
     {
-      WI_End();
+      wi_inited = false;
       G_WorldDone();
     }
 }
@@ -2453,7 +2361,7 @@ static void WI_loadData(void)
           M_snprintf(name, sizeof(name), "CWILV%2.2d", i);
           if (W_CheckNumForName(name) != -1)
           {
-          lnames[i] = V_CachePatchName(name, PU_STATIC);
+          lnames[i] = V_CachePatchNameTag(name, PU_STATIC);
           }
           else
           {
@@ -2470,7 +2378,7 @@ static void WI_loadData(void)
           M_snprintf(name, sizeof(name), "WILV%d%d", wbs->epsd, i);
           if (W_CheckNumForName(name) != -1)
           {
-          lnames[i] = V_CachePatchName(name, PU_STATIC);
+            lnames[i] = V_CachePatchNameTag(name, PU_STATIC);
           }
           else
           {
@@ -2479,14 +2387,14 @@ static void WI_loadData(void)
         }
 
       // you are here
-      yah[0] = V_CachePatchName("WIURH0", PU_STATIC);
+      yah[0] = V_CachePatchNameTag("WIURH0", PU_LEVEL);
 
       // you are here (alt.)
-      yah[1] = V_CachePatchName("WIURH1", PU_STATIC);
+      yah[1] = V_CachePatchNameTag("WIURH1", PU_LEVEL);
 
       // splat
-      splat[0] = V_CachePatchName("WISPLAT", PU_STATIC); 
-  
+      splat[0] = V_CachePatchNameTag("WISPLAT", PU_LEVEL);
+
       if (wbs->epsd < 3)
         {
           for (j=0;j<NUMANIMS[wbs->epsd];j++)
@@ -2499,7 +2407,7 @@ static void WI_loadData(void)
                     {
                       // animations
                       M_snprintf(name, sizeof(name), "WIA%d%.2d%.2d", wbs->epsd, j, i);
-                      a->p[i] = V_CachePatchName(name, PU_STATIC);
+                      a->p[i] = V_CachePatchNameTag(name, PU_LEVEL);
                     }
                   else
                     {
@@ -2514,86 +2422,78 @@ static void WI_loadData(void)
   // More hacks on minus sign.
   // [FG] allow playing with the Doom v1.2 IWAD which is missing the WIMINUS lump
   if (W_CheckNumForName("WIMINUS") >= 0)
-  wiminus = V_CachePatchName("WIMINUS", PU_STATIC); 
+  {
+    wiminus = V_CachePatchNameTag("WIMINUS", PU_LEVEL);
+  }
 
   for (i=0;i<10;i++)
     {
       // numbers 0-9
       M_snprintf(name, sizeof(name), "WINUM%d", i);
-      num[i] = V_CachePatchName(name, PU_STATIC);
+      num[i] = V_CachePatchNameTag(name, PU_LEVEL);
     }
 
   // percent sign
-  percent = V_CachePatchName("WIPCNT", PU_STATIC);
+  percent = V_CachePatchNameTag("WIPCNT", PU_LEVEL);
 
   // "finished"
-  finished = V_CachePatchName("WIF", PU_STATIC);
+  finished = V_CachePatchNameTag("WIF", PU_LEVEL);
 
   // "entering"
-  entering = V_CachePatchName("WIENTER", PU_STATIC);
+  entering = V_CachePatchNameTag("WIENTER", PU_LEVEL);
 
   // "kills"
-  kills = V_CachePatchName("WIOSTK", PU_STATIC);   
+  kills = V_CachePatchNameTag("WIOSTK", PU_LEVEL);
 
   // "scrt"
-  secret = V_CachePatchName("WIOSTS", PU_STATIC);
+  secret = V_CachePatchNameTag("WIOSTS", PU_LEVEL);
 
   // "secret"
-  sp_secret = V_CachePatchName("WISCRT2", PU_STATIC);
+  sp_secret = V_CachePatchNameTag("WISCRT2", PU_LEVEL);
 
-  // Yuck. // Ty 03/27/98 - got that right :)  
-  // french is an enum=1 always true.
-  //    if (french)
-  //    {
-  //  // "items"
-  //  if (netgame && !deathmatch)
-  //      items = W_CacheLumpNameTag("WIOBJ", PU_STATIC);
-  //    else
-  //      items = W_CacheLumpNameTag("WIOSTI", PU_STATIC);
-  //    } else
-
-  items = V_CachePatchName("WIOSTI", PU_STATIC);
+  // "items"
+  items = V_CachePatchNameTag("WIOSTI", PU_LEVEL);
 
   // "frgs"
-  frags = V_CachePatchName("WIFRGS", PU_STATIC);    
+  frags = V_CachePatchNameTag("WIFRGS", PU_LEVEL);
 
   // ":"
-  colon = V_CachePatchName("WICOLON", PU_STATIC); 
+  colon = V_CachePatchNameTag("WICOLON", PU_LEVEL);
 
   // "time"
-  witime = V_CachePatchName("WITIME", PU_STATIC);
+  witime = V_CachePatchNameTag("WITIME", PU_LEVEL);
 
   // "sucks"
-  sucks = V_CachePatchName("WISUCKS", PU_STATIC);  
+  sucks = V_CachePatchNameTag("WISUCKS", PU_LEVEL);
 
   // "par"
-  par = V_CachePatchName("WIPAR", PU_STATIC);   
+  par = V_CachePatchNameTag("WIPAR", PU_LEVEL);
 
   // "killers" (vertical)
-  killers = V_CachePatchName("WIKILRS", PU_STATIC);
+  killers = V_CachePatchNameTag("WIKILRS", PU_LEVEL);
   
   // "victims" (horiz)
-  victims = V_CachePatchName("WIVCTMS", PU_STATIC);
+  victims = V_CachePatchNameTag("WIVCTMS", PU_LEVEL);
 
   // "total"
-  total = V_CachePatchName("WIMSTT", PU_STATIC);   
+  total = V_CachePatchNameTag("WIMSTT", PU_LEVEL);
 
   // your face
-  star = V_CachePatchName("STFST01", PU_STATIC);
+  star = V_CachePatchNameTag("STFST01", PU_STATIC);
 
   // dead face
-  bstar = V_CachePatchName("STFDEAD0", PU_STATIC);    
+  bstar = V_CachePatchNameTag("STFDEAD0", PU_STATIC);
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
-    {
+  for (i = 0; i < MAXPLAYERS; i++)
+  {
       // "1,2,3,4"
       M_snprintf(name, sizeof(name), "STPB%d", i);
-      p[i] = V_CachePatchName(name, PU_STATIC);
+      p[i] = V_CachePatchNameTag(name, PU_LEVEL);
 
       // "1,2,3,4"
       M_snprintf(name, sizeof(name), "WIBP%d", i + 1);
-      bp[i] = V_CachePatchName(name, PU_STATIC);
-    }
+      bp[i] = V_CachePatchNameTag(name, PU_LEVEL);
+  }
 
   wi_inited = true;
 }

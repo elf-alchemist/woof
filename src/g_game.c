@@ -17,7 +17,6 @@
 //-----------------------------------------------------------------------------
 
 #include <errno.h>
-#include <math.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -3705,7 +3704,7 @@ static GameVersion_t GetWadGameVersion(void)
     }
 
     int length = W_LumpLength(lumpnum);
-    char *data = W_CacheLumpNumTag(lumpnum, PU_CACHE);
+    char *data = W_CacheLumpNum(lumpnum);
 
     if (length >= 5 && !strncasecmp("1.666", data, 5))
     {
@@ -3724,6 +3723,8 @@ static GameVersion_t GetWadGameVersion(void)
         return exe_final;
     }
 
+    W_ReleaseLumpNum(lumpnum);
+
     return exe_indetermined;
 }
 
@@ -3737,7 +3738,7 @@ static demo_version_t GetWadDemover(void)
     }
 
     int length = W_LumpLength(lumpnum);
-    char *data = W_CacheLumpNumTag(lumpnum, PU_CACHE);
+    char *data = W_CacheLumpNum(lumpnum);
 
     if (length == 7 && !strncasecmp("vanilla", data, 7))
     {
@@ -3759,6 +3760,8 @@ static demo_version_t GetWadDemover(void)
     {
         return DV_ID24;
     }
+
+    W_ReleaseLumpNum(lumpnum);
 
     return DV_NONE;
 }

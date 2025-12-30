@@ -568,8 +568,7 @@ static void ParseMapEntry(scanner_t *s, mapentry_t *entry)
 
 void G_ParseMapInfo(int lumpnum)
 {
-    scanner_t *s = SC_Open("UMAPINFO", W_CacheLumpNumTag(lumpnum, PU_CACHE),
-                           W_LumpLength(lumpnum));
+    scanner_t *s = SC_Open("UMAPINFO", lumpnum);
     while (SC_TokensLeft(s))
     {
         mapentry_t parsed = {0};
