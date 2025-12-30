@@ -19,6 +19,7 @@
 #include "doomtype.h"
 #include "hu_crosshair.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "i_video.h"
 #include "info.h"
 #include "m_fixed.h"
@@ -150,7 +151,7 @@ static struct Voxel * VX_Decode (byte * p, int length)
 
 	byte * orig_p = p;
 
-	struct Voxel * v = Z_Malloc (sizeof(struct Voxel), PU_STATIC, NULL);
+	struct Voxel * v = I_Malloc(sizeof(struct Voxel));
 
 	// skip num_bytes
 	p += 4;
@@ -181,7 +182,7 @@ static struct Voxel * VX_Decode (byte * p, int length)
 	int min_offset = (1 << 30);
 	int max_offset = 0;
 
-	v->offsets = Z_Malloc (sizeof(int) * num_offsets, PU_STATIC, NULL);
+	v->offsets = I_Calloc(num_offsets, sizeof(int));
 
 	for (x = 0 ; x < v->x_size ; x++)
 	{
@@ -210,7 +211,7 @@ static struct Voxel * VX_Decode (byte * p, int length)
 	// copy the slab data
 	p = orig_p + (7 * 4) + min_offset;
 
-	v->data = Z_Malloc (data_size, PU_STATIC, NULL);
+	v->data = I_Malloc(data_size);
 
 	memcpy (v->data, p, data_size);
 
@@ -262,7 +263,7 @@ static boolean VX_Load (int spr, int frame)
 
 	all_voxels[spr][frame] = v;
 
-	Z_Free (buf);
+	I_Free(buf);
 
 	return true;
 }
@@ -272,11 +273,10 @@ void VX_Init (void)
 {
 	int spr, frame;
 
-	all_voxels = Z_Malloc(num_sprites * sizeof(*all_voxels), PU_STATIC, NULL);
+	all_voxels = I_Calloc(num_sprites, sizeof(*all_voxels));
 	for (spr = 0 ; spr < num_sprites ; spr++)
 	{
-		all_voxels[spr] = Z_Malloc (MAX_FRAMES * sizeof(**all_voxels),
-					    PU_STATIC, NULL);
+		all_voxels[spr] = I_Calloc(MAX_FRAMES, sizeof(**all_voxels));
 		for (frame = 0 ; frame < MAX_FRAMES ; frame++)
 		{
 			all_voxels[spr][frame] = NULL;
@@ -358,8 +358,7 @@ static int VX_NewVisVoxel (void)
 	if (num_visvoxels >= size)
 	{
 		size = (size ? size * 2 : 128);
-		visvoxels = Z_Realloc (visvoxels, size * sizeof(*visvoxels),
-				       PU_STATIC, 0);
+		visvoxels = I_Realloc(visvoxels, size * sizeof(*visvoxels));
 	}
 
 	return num_visvoxels++;

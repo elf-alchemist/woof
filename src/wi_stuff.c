@@ -2348,14 +2348,13 @@ static void WI_loadData(void)
 #endif
 
   // killough 4/26/98: free lnames here (it was freed too early in Doom)
-  Z_Free(lnames);
+  I_Free(lnames);
 
   if (gamemode == commercial)
     {
       NUMCMAPS = 32;
 
-      lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * (num_lnames = NUMCMAPS),
-                                     PU_STATIC, 0);
+      lnames = I_Calloc((num_lnames = NUMCMAPS), sizeof(patch_t*));
       for (i=0 ; i<NUMCMAPS ; i++)
         { 
           M_snprintf(name, sizeof(name), "CWILV%2.2d", i);
@@ -2371,8 +2370,7 @@ static void WI_loadData(void)
     }
   else
     {
-      lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * (num_lnames = NUMMAPS),
-                                     PU_STATIC, 0);
+      lnames = I_Calloc((num_lnames = NUMMAPS), sizeof(patch_t*));
       for (i=0 ; i<NUMMAPS ; i++)
         {
           M_snprintf(name, sizeof(name), "WILV%d%d", wbs->epsd, i);

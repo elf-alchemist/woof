@@ -26,8 +26,6 @@
 #include "m_misc.h"
 #include "m_scanner.h"
 #include "mn_menu.h"
-#include "w_wad.h"
-#include "z_zone.h"
 
 mapentry_t *umapinfo = NULL;
 

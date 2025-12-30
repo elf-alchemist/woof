@@ -24,6 +24,7 @@
 #include "doomtype.h"
 #include "g_game.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "m_swap.h"
 #include "p_dirty.h"
 #include "p_mobj.h"
@@ -34,7 +35,6 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 // killough 2/8/98: Remove switch limit
 
@@ -76,9 +76,11 @@ void P_InitSwitchList(void)
   for (i=0;;i++)
   {
     if (index+1 >= max_numswitches)
-      switchlist = Z_Realloc(switchlist, sizeof *switchlist *
-          (max_numswitches = max_numswitches ? max_numswitches*2 : 8),
-          PU_STATIC, 0);
+    {
+      max_numswitches = max_numswitches ? max_numswitches*2 : 8;
+      switchlist = I_Realloc(switchlist, max_numswitches * sizeof(switchlist_t));
+    }
+
     if (SHORT(alphSwitchList[i].episode) <= episode) //jff 5/11/98 endianess
     {
       int texture1, texture2;

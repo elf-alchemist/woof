@@ -27,12 +27,12 @@
 #include "i_oalsound.h"
 #include "i_printf.h"
 #include "i_sound.h"
+#include "i_system.h"
 #include "m_fixed.h"
 #include "m_misc.h"
 #include "p_mobj.h"
 #include "sounds.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 static LPALBUFFERCALLBACKSOFT alBufferCallbackSOFT;
 static ALuint callback_buffer;
@@ -129,7 +129,7 @@ static boolean CachePCSLump(sfxinfo_t *sfxinfo)
 
     if (current_sound_lump != NULL)
     {
-        Z_Free(current_sound_lump);
+        I_Free(current_sound_lump);
         current_sound_lump = NULL;
     }
 
@@ -141,7 +141,7 @@ static boolean CachePCSLump(sfxinfo_t *sfxinfo)
 
     // Load from WAD
 
-    current_sound_lump = W_CacheLumpNumTag(lumpnum, PU_STATIC);
+    current_sound_lump = W_CacheLumpNum(lumpnum);
     lumplen = W_LumpLength(lumpnum);
 
     // Read header

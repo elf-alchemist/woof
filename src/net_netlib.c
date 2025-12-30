@@ -26,7 +26,6 @@
 #include "net_io.h"
 #include "net_packet.h"
 #include "net_netlib.h"
-#include "z_zone.h"
 
 //
 // NETWORKING
@@ -56,8 +55,7 @@ static void InitAddrTable(void)
 {
     addr_table_size = 16;
 
-    addr_table = Z_Malloc(sizeof(addrpair_t *) * addr_table_size, PU_STATIC, 0);
-    memset(addr_table, 0, sizeof(addrpair_t *) * addr_table_size);
+    addr_table = I_Calloc(addr_table_size, sizeof(addrpair_t *));
 }
 
 static boolean AddressesEqual(ip_address_t *a, ip_address_t *b)
@@ -111,19 +109,16 @@ static net_addr_t *FindAddress(ip_address_t *addr)
         // the existing table in.  replace the old table.
 
         new_addr_table_size = addr_table_size * 2;
-        new_addr_table =
-            Z_Malloc(sizeof(addrpair_t *) * new_addr_table_size, PU_STATIC, 0);
-        memset(new_addr_table, 0, sizeof(addrpair_t *) * new_addr_table_size);
-        memcpy(new_addr_table, addr_table,
-               sizeof(addrpair_t *) * addr_table_size);
-        Z_Free(addr_table);
+        new_addr_table = I_Calloc(new_addr_table_size, sizeof(addrpair_t*));
+        memcpy(new_addr_table, addr_table, addr_table_size * sizeof(addrpair_t*));
+        I_Free(addr_table);
         addr_table = new_addr_table;
         addr_table_size = new_addr_table_size;
     }
 
     // Add a new entry
 
-    new_entry = Z_Malloc(sizeof(addrpair_t), PU_STATIC, 0);
+    new_entry = I_Malloc(sizeof(addrpair_t));
 
     new_entry->netlib_addr = *addr;
     new_entry->net_addr.refcount = 0;
@@ -143,8 +138,7 @@ static void NETLIB_FreeAddress(net_addr_t *addr)
     {
         if (addr == &addr_table[i]->net_addr)
         {
-            Z_Free(addr_table[i]);
-            addr_table[i] = NULL;
+            addr_table[i] = I_Free(addr_table[i]);
             return;
         }
     }

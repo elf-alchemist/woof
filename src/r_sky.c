@@ -38,8 +38,6 @@
 #include "r_sky.h"
 #include "r_skydefs.h"
 #include "r_state.h"
-#include "w_wad.h"
-#include "z_zone.h"
 
 // [FG] stretch short skies
 boolean stretchsky;
@@ -116,7 +114,7 @@ static void R_InitFireSky(sky_t *sky)
     size_t size = tex->width * tex->height;
     int arr_size = array_size(sky->palette);
 
-    sky->fire = Z_Calloc(1, size, PU_STATIC, NULL);
+    sky->fire = I_Malloc(size);
 
     for (int i = 0; i < tex->width; i++)
     {
@@ -244,7 +242,7 @@ void R_ClearLevelskies(void)
     {
         if (sky->fire)
         {
-            Z_Free(sky->fire);
+            I_Free(sky->fire);
         }
     }
     array_free(levelskies);
@@ -400,7 +398,7 @@ static byte R_SkyBlendColor(int tex)
 
     const int width = texturewidth[tex];
 
-    rgb_t *colors = Z_Malloc(sizeof(rgb_t) * width, PU_STATIC, 0);
+    rgb_t *colors = I_Calloc(width, sizeof(rgb_t));
 
     // [FG] count colors
     for (int i = 0; i < width; i++)
@@ -416,7 +414,7 @@ static byte R_SkyBlendColor(int tex)
     r = colors[width / 3].r;
     g = colors[width / 3].g;
     b = colors[width / 3].b;
-    Z_Free(colors);
+    I_Free(colors);
 
     return I_GetNearestColor(global_playpal, r, g, b);
 }
@@ -459,7 +457,7 @@ byte R_GetSkyColor(int texturenum)
 
     if (target == NULL)
     {
-        target = Z_Malloc(sizeof(skycolor_t), PU_STATIC, 0);
+        target = I_Malloc(sizeof(skycolor_t));
 
         target->texturenum = texturenum;
         target->color = R_SkyBlendColor(texturenum);

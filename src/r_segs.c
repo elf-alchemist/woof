@@ -39,8 +39,6 @@
 #include "r_things.h"
 #include "tables.h"
 #include "v_video.h"
-#include "w_wad.h"
-#include "z_zone.h"
 
 // OPTIMIZE: closed two sided lines as single sided
 
@@ -571,7 +569,7 @@ void R_StoreWallRange(const int start, const int stop)
   if (!drawsegs || ds_p == drawsegs+maxdrawsegs) // killough 1/98 -- fix 2s line HOM
     {
       unsigned newmax = maxdrawsegs ? maxdrawsegs*2 : 128; // killough
-      drawsegs = Z_Realloc(drawsegs,newmax*sizeof(*drawsegs),PU_STATIC,0);
+      drawsegs = I_Realloc(drawsegs,newmax * sizeof(drawseg_t));
       ds_p = drawsegs+maxdrawsegs;
       maxdrawsegs = newmax;
     }

@@ -21,12 +21,12 @@
 
 #include "doomtype.h"
 #include "f_wipe.h"
+#include "i_system.h"
 #include "i_video.h"
 #include "m_random.h"
 #include "r_main.h"
 #include "v_flextran.h"
 #include "v_video.h"
-#include "z_zone.h"
 
 // Even in hires mode, we simulate what happens on a 320x200 screen; ie.
 // the screen is vertically sliced into 160 columns that fall to the bottom
@@ -91,8 +91,8 @@ static int wipe_doColorXForm(int width, int height, int ticks)
 
 static int wipe_exit(int width, int height, int ticks)
 {
-    Z_Free(wipe_scr_start);
-    Z_Free(wipe_scr_end);
+    I_Free(wipe_scr_start);
+    I_Free(wipe_scr_end);
     return 0;
 }
 
@@ -103,8 +103,8 @@ static int wipe_initMelt(int width, int height, int ticks)
 {
     wipe_columns = video.unscaledw / 2;
 
-    ybuff1 = Z_Malloc(wipe_columns * sizeof(*ybuff1), PU_STATIC, NULL);
-    ybuff2 = Z_Malloc(wipe_columns * sizeof(*ybuff2), PU_STATIC, NULL);
+    ybuff1 = I_Calloc(wipe_columns, sizeof(int));
+    ybuff2 = I_Calloc(wipe_columns, sizeof(int));
 
     curry = ybuff1;
     prevy = ybuff2;
@@ -262,8 +262,8 @@ int wipe_renderMelt(int width, int height, int ticks)
 
 static int wipe_exitMelt(int width, int height, int ticks)
 {
-    Z_Free(ybuff1);
-    Z_Free(ybuff2);
+    I_Free(ybuff1);
+    I_Free(ybuff2);
     wipe_exit(width, height, ticks);
     return 0;
 }
@@ -271,7 +271,7 @@ static int wipe_exitMelt(int width, int height, int ticks)
 int wipe_StartScreen(int x, int y, int width, int height)
 {
     int size = width * height;
-    wipe_scr_start = Z_Malloc(size * sizeof(*wipe_scr_start), PU_STATIC, NULL);
+    wipe_scr_start = I_Calloc(size, sizeof(pixel_t));
     I_ReadScreen(wipe_scr_start);
     return 0;
 }
@@ -279,7 +279,7 @@ int wipe_StartScreen(int x, int y, int width, int height)
 int wipe_EndScreen(int x, int y, int width, int height)
 {
     int size = width * height;
-    wipe_scr_end = Z_Malloc(size * sizeof(*wipe_scr_end), PU_STATIC, NULL);
+    wipe_scr_end = I_Calloc(size, sizeof(pixel_t));
     I_ReadScreen(wipe_scr_end);
     V_DrawBlock(x, y, width, height, wipe_scr_start); // restore start scr.
     return 0;

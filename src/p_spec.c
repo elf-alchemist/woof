@@ -65,7 +65,6 @@
 #include "st_widgets.h"
 #include "tables.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 //
 // Animating textures and planes
@@ -155,7 +154,7 @@ void P_InitPicAnims (void)
       if (!anims || lastanim >= anims + maxanims)
         {
           size_t newmax = maxanims ? maxanims*2 : MAXANIMS;
-          anims = Z_Realloc(anims, newmax*sizeof(*anims), PU_STATIC, 0);   // killough
+          anims = I_Realloc(anims, newmax * sizeof(anim_t));   // killough
           lastanim = anims + maxanims;
           maxanims = newmax;
         }

@@ -26,6 +26,7 @@
 #include "dsdhacked.h"
 #include "g_game.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "info.h"
 #include "m_fixed.h"
 #include "m_random.h"
@@ -46,7 +47,6 @@
 #include "st_stuff.h"
 #include "tables.h"
 #include "v_video.h"
-#include "z_zone.h"
 
 boolean direct_vertical_aiming, default_direct_vertical_aiming;
 int max_pitch_angle = 32 * ANG1, default_max_pitch_angle;
@@ -95,7 +95,7 @@ boolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   statenum_t* tempstate = NULL;               // for use with recursion
 
   if (recursion++)                            // if recursion detected,
-    seenstate = tempstate = Z_Calloc(num_states, sizeof(statenum_t), PU_STATIC, 0); // allocate state table
+    seenstate = tempstate = I_Calloc(num_states, sizeof(statenum_t)); // allocate state table
 
   do
     {
@@ -133,7 +133,7 @@ boolean P_SetMobjState(mobj_t* mobj,statenum_t state)
       seenstate[i] = 0;  // killough 4/9/98: erase memory of states
 
   if (tempstate)
-    Z_Free(tempstate);
+    I_Free(tempstate);
 
   // [FG] update object's actual height
   if (ret)
@@ -1047,7 +1047,7 @@ int P_FindDoomedNum(unsigned type)
 
   if (!hash)
     {
-      hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
+      hash = I_Calloc(num_mobj_types, sizeof(*hash));
       for (i=0; i<num_mobj_types; i++)
 	hash[i].first = num_mobj_types;
       for (i=0; i<num_mobj_types; i++)
@@ -1213,7 +1213,6 @@ void P_SpawnMapThing (mapthing_t* mthing)
   if (mthing->type == 11)
     {
       // 1/11/98 killough -- new code removes limit on deathmatch starts:
-
       size_t offset = deathmatch_p - deathmatchstarts;
 
       // doom2.exe has at most 10 deathmatch starts
@@ -1221,16 +1220,12 @@ void P_SpawnMapThing (mapthing_t* mthing)
         return;
 
       if (offset >= num_deathmatchstarts)
-	{
-	  num_deathmatchstarts = num_deathmatchstarts ?
-	    num_deathmatchstarts*2 : 16;
-	  deathmatchstarts = Z_Realloc(deathmatchstarts,
-				     num_deathmatchstarts *
-				     sizeof(*deathmatchstarts),
-				     PU_STATIC, 0);
-	  deathmatch_p = deathmatchstarts + offset;
-	}
-      memcpy(deathmatch_p++, mthing, sizeof*mthing);
+      {
+          num_deathmatchstarts = num_deathmatchstarts ? num_deathmatchstarts * 2 : 16;
+          deathmatchstarts = I_Realloc(deathmatchstarts, num_deathmatchstarts * sizeof(mapthing_t));
+          deathmatch_p = deathmatchstarts + offset;
+      }
+      memcpy(deathmatch_p++, mthing, sizeof(mapthing_t));
       return;
     }
 

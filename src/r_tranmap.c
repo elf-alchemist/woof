@@ -20,7 +20,6 @@
 //   Generation of transparency lookup tables.
 //
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "d_iwad.h"
@@ -218,7 +217,7 @@ byte *R_NormalTranMap(int alpha, boolean force)
             const int file_length = M_ReadFile(filename, &buffer);
             if (buffer && file_length != tranmap_lump_length)
             {
-                Z_Free(buffer);
+                I_Free(buffer);
                 buffer = NULL;
             }
         }

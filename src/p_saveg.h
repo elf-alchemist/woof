@@ -21,7 +21,7 @@
 #define __P_SAVEG__
 
 #include "doomtype.h"
-#include "z_zone.h"
+#include "i_system.h"
 
 // Persistent storage/archiving.
 // These are the load / save game routines.
@@ -64,7 +64,7 @@ inline static void saveg_grow(size_t size)
         savegamesize *= 2;
     }
 
-    savebuffer = Z_Realloc(savebuffer, savegamesize, PU_STATIC, NULL);
+    savebuffer = I_Realloc(savebuffer, savegamesize);
     save_p = savebuffer + offset;
 }
 

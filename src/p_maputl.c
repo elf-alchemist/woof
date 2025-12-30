@@ -26,6 +26,7 @@
 #include "doomdata.h"
 #include "doomstat.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "m_bbox.h"
 #include "p_map.h"
 #include "p_maputl.h"
@@ -34,7 +35,6 @@
 #include "r_defs.h"
 #include "r_main.h"
 #include "r_state.h"
-#include "z_zone.h"
 
 //
 // P_AproxDistance
@@ -579,7 +579,7 @@ static void check_intercept(void)
   if (offset >= num_intercepts)
     {
       num_intercepts = num_intercepts ? num_intercepts*2 : MAXINTERCEPTS_ORIGINAL;
-      intercepts = Z_Realloc(intercepts, sizeof(*intercepts)*num_intercepts, PU_STATIC, 0);
+      intercepts = I_Realloc(intercepts, num_intercepts * sizeof(intercept_t));
       intercept_p = intercepts + offset;
     }
 }

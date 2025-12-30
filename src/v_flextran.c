@@ -30,10 +30,9 @@
 
 #include "v_flextran.h"
 
+#include "i_system.h"
 #include "i_video.h"
 #include "r_main.h"
-#include "w_wad.h"
-#include "z_zone.h"
 
 unsigned int Col2RGB8[65][256];
 unsigned int *Col2RGB8_LessPrecision[65];
@@ -54,7 +53,7 @@ void V_InitFlexTranTable(void)
     tpalcol_t *tempRGBpal;
     const byte *palRover;
 
-    tempRGBpal = Z_Malloc(256 * sizeof(*tempRGBpal), PU_STATIC, 0);
+    tempRGBpal = I_Calloc(256, sizeof(tpalcol_t));
 
     for (i = 0, palRover = global_playpal; i < 256; i++, palRover += 3)
     {
@@ -102,5 +101,5 @@ void V_InitFlexTranTable(void)
     Col2RGB8_LessPrecision[0] = Col2RGB8[0];
     Col2RGB8_LessPrecision[64] = Col2RGB8[64];
 
-    Z_Free(tempRGBpal);
+    I_Free(tempRGBpal);
 }

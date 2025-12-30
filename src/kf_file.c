@@ -1957,9 +1957,7 @@ static void UnArchiveAutoMap(void)
         while (markpointnum >= markpointnum_max)
         {
             markpointnum_max = markpointnum_max ? markpointnum_max * 2 : 16;
-            markpoints =
-                Z_Realloc(markpoints, sizeof(*markpoints) * markpointnum_max,
-                          PU_STATIC, 0);
+            markpoints = I_Realloc(markpoints, markpointnum_max * sizeof(mpoint_t));
         }
 
         for (int i = 0; i < markpointnum; ++i)

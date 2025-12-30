@@ -28,6 +28,7 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
+#include "i_system.h"
 #include "i_video.h"
 #include "m_config.h"
 #include "m_input.h"
@@ -392,10 +393,10 @@ static void AM_addMark(void)
   // remove limit on automap marks
 
   if (markpointnum >= markpointnum_max)
-    markpoints = Z_Realloc(markpoints,
-                           (markpointnum_max = markpointnum_max ?
-                            markpointnum_max*2 : 16) * sizeof(*markpoints),
-                           PU_STATIC, 0);
+  {
+    markpointnum_max = markpointnum_max ? markpointnum_max * 2 : 16;
+    markpoints = I_Realloc(markpoints, markpointnum_max * sizeof(mpoint_t));
+  }
 
   markpoints[markpointnum].x = m_x + m_w/2;
   markpoints[markpointnum].y = m_y + m_h/2;

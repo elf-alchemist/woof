@@ -16,8 +16,8 @@
 //
 
 #include "net_packet.h"
+#include "i_system.h"
 #include "m_misc.h"
-#include "z_zone.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -27,7 +27,7 @@ net_packet_t *NET_NewPacket(int initial_size)
 {
     net_packet_t *packet;
 
-    packet = (net_packet_t *)Z_Malloc(sizeof(net_packet_t), PU_STATIC, 0);
+    packet = I_Malloc(sizeof(net_packet_t));
 
     if (initial_size == 0)
     {
@@ -35,7 +35,7 @@ net_packet_t *NET_NewPacket(int initial_size)
     }
 
     packet->alloced = initial_size;
-    packet->data = Z_Malloc(initial_size, PU_STATIC, 0);
+    packet->data = I_Malloc(initial_size);
     packet->len = 0;
     packet->pos = 0;
 
@@ -65,8 +65,8 @@ void NET_FreePacket(net_packet_t *packet)
     // printf("%p: destroyed\n", packet);
 
     total_packet_memory -= sizeof(net_packet_t) + packet->alloced;
-    Z_Free(packet->data);
-    Z_Free(packet);
+    I_Free(packet->data);
+    I_Free(packet);
 }
 
 // Read a byte from the packet, returning true if read
@@ -252,11 +252,11 @@ static void NET_IncreasePacket(net_packet_t *packet)
 
     packet->alloced *= 2;
 
-    newdata = Z_Malloc(packet->alloced, PU_STATIC, 0);
+    newdata = I_Malloc(packet->alloced);
 
     memcpy(newdata, packet->data, packet->len);
 
-    Z_Free(packet->data);
+    I_Free(packet->data);
     packet->data = newdata;
 
     total_packet_memory += packet->alloced;

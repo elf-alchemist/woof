@@ -55,7 +55,6 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "tables.h"
-#include "z_zone.h"
 
 static mobj_t *current_actor;
 
@@ -2562,10 +2561,10 @@ void P_SpawnBrainTargets(void)  // killough 3/26/98: renamed old function
         if (m->type == MT_BOSSTARGET )
           {   // killough 2/7/98: remove limit on icon landings:
             if (numbraintargets >= numbraintargets_alloc)
-              braintargets = Z_Realloc(braintargets,
-                      (numbraintargets_alloc = numbraintargets_alloc ?
-                       numbraintargets_alloc*2 : 32) *sizeof *braintargets,
-                      PU_STATIC, 0);
+            {
+              numbraintargets_alloc = numbraintargets_alloc ? numbraintargets_alloc * 2 : 32;
+              braintargets = I_Realloc(braintargets, numbraintargets_alloc * sizeof(mobj_t));
+            }
             braintargets[numbraintargets++] = m;
           }
       }

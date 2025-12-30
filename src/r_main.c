@@ -20,6 +20,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_system.h"
 #include "m_arena.h"
 #define _USE_MATH_DEFINES
 #include <limits.h>
@@ -50,7 +51,6 @@
 #include "st_stuff.h"
 #include "v_flextran.h"
 #include "v_video.h"
-#include "z_zone.h"
 
 arena_t *renderer_arena = NULL;
 byte *global_playpal;
@@ -472,9 +472,12 @@ void R_InitLightTables (void)
 
   // killough 4/4/98: dynamic colormaps
   // ScaleLight calculated below
-  int NumZLightEntries = LIGHTLEVELS * MAXLIGHTZ;
-  zlightoffset = (int*)Z_Malloc(sizeof(int) * NumZLightEntries, PU_STATIC, NULL);
-  zlightindex  = (int*)Z_Malloc(sizeof(int) * NumZLightEntries, PU_STATIC, NULL);
+  if (zlightoffset == NULL && zlightindex == NULL)
+  {
+    int NumZLightEntries = LIGHTLEVELS * MAXLIGHTZ;
+    zlightoffset = I_Calloc(NumZLightEntries, sizeof(int));
+    zlightindex  = I_Calloc(NumZLightEntries, sizeof(int));
+  }
 
   // Calculate the light levels to use
   //  for each level / distance combination.
@@ -655,9 +658,12 @@ void R_ExecuteSetViewSize (void)
     }
 
   // Lightz calculated above
-  int NumScaleLightEntries = LIGHTLEVELS * MAXLIGHTSCALE;
-  scalelightindex  = (int*)Z_Malloc(sizeof(int) * NumScaleLightEntries, PU_STATIC, NULL);
-  scalelightoffset = (int*)Z_Malloc(sizeof(int) * NumScaleLightEntries, PU_STATIC, NULL);
+  if (scalelightindex == NULL && scalelightoffset == NULL)
+  {
+    int NumScaleLightEntries = LIGHTLEVELS * MAXLIGHTSCALE;
+    scalelightindex  = I_Calloc(NumScaleLightEntries, sizeof(int));
+    scalelightoffset = I_Calloc(NumScaleLightEntries, sizeof(int));
+  }
 
   // Calculate the light levels to use
   //  for each level / scale combination.

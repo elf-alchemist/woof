@@ -326,7 +326,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
 
   struct {
     unsigned patches, posts;
-  } *count = Z_Calloc(sizeof *count, texture->width, PU_STATIC, 0);
+  } *count = I_Calloc(texture->width, sizeof(*count));
 
   // killough 12/98: First count the number of patches per column.
 
@@ -472,7 +472,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
 	++*errors;
       }
   }
-  Z_Free(count);                    // killough 4/9/98
+  I_Free(count);                    // killough 4/9/98
 }
 
 //
@@ -538,12 +538,9 @@ static inline void RegisterTexture(texture_t *texture, int i)
     // killough 4/9/98: make column offsets 32-bit;
     // clean up malloc-ing to use sizeof
     // killough 12/98: fix sizeofs
-    texturecolumnlump[i] =
-        Z_Malloc(texture->width * sizeof(**texturecolumnlump), PU_STATIC, 0);
-    texturecolumnofs[i] =
-        Z_Malloc(texture->width * sizeof(**texturecolumnofs), PU_STATIC, 0);
-    texturecolumnofs2[i] =
-        Z_Malloc(texture->width * sizeof(**texturecolumnofs2), PU_STATIC, 0);
+    texturecolumnlump[i] = I_Calloc(texture->width, sizeof(**texturecolumnlump));
+    texturecolumnofs[i] = I_Calloc(texture->width, sizeof(**texturecolumnofs));
+    texturecolumnofs2[i] = I_Calloc(texture->width, sizeof(**texturecolumnofs2));
 
     int j;
     for (j = 1; j * 2 <= texture->width; j <<= 1)
@@ -576,7 +573,7 @@ void R_InitTextures (void)
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
-  names = W_CacheLumpNameTag("PNAMES", PU_STATIC);
+  names = W_CacheLumpName("PNAMES", ns_global);
   nummappatches = LONG(*((int *)names));
   name_p = names+4;
   numpatches = nummappatches;
@@ -590,7 +587,7 @@ void R_InitTextures (void)
     numpatches += tx_numtextures;
   }
 
-  patchlookup = Z_Malloc(numpatches*sizeof(*patchlookup), PU_STATIC, 0);  // killough
+  patchlookup = I_Calloc(numpatches, sizeof(*patchlookup));
 
   for (i=0 ; i<nummappatches ; i++)
     {
@@ -624,20 +621,20 @@ void R_InitTextures (void)
         }
 
     }
-  Z_Free(names);
+  W_ReleaseLumpName("PNAMES", ns_global);
 
   // Load the map texture definitions from textures.lmp.
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
-  maptex = maptex1 = W_CacheLumpNameTag("TEXTURE1", PU_STATIC);
+  maptex = maptex1 = W_CacheLumpName("TEXTURE1", ns_global);
   numtextures1 = LONG(*maptex);
   maxoff = W_LumpLength(W_GetNumForName("TEXTURE1"));
   directory = maptex+1;
 
   if (W_CheckNumForName("TEXTURE2") != -1)
     {
-      maptex2 = W_CacheLumpNameTag("TEXTURE2", PU_STATIC);
+      maptex2 = W_CacheLumpName("TEXTURE2", ns_global);
       numtextures2 = LONG(*maptex2);
       maxoff2 = W_LumpLength(W_GetNumForName("TEXTURE2"));
     }
@@ -661,25 +658,17 @@ void R_InitTextures (void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  textures = Z_Malloc(numtextures*sizeof*textures, PU_STATIC, 0);
-  texturecolumnlump =
-    Z_Malloc(numtextures*sizeof*texturecolumnlump, PU_STATIC, 0);
-  texturecolumnofs =
-    Z_Malloc(numtextures*sizeof*texturecolumnofs, PU_STATIC, 0);
-  texturecolumnofs2 =
-    Z_Malloc(numtextures*sizeof*texturecolumnofs2, PU_STATIC, 0);
-  texturecomposite =
-    Z_Malloc(numtextures*sizeof*texturecomposite, PU_STATIC, 0);
-  texturecomposite2 =
-    Z_Malloc(numtextures*sizeof*texturecomposite2, PU_STATIC, 0);
-  texturecompositesize =
-    Z_Malloc(numtextures*sizeof*texturecompositesize, PU_STATIC, 0);
-  texturewidthmask =
-    Z_Malloc(numtextures*sizeof*texturewidthmask, PU_STATIC, 0);
-  texturewidth =
-    Z_Malloc(numtextures*sizeof*texturewidth, PU_STATIC, 0);
-  textureheight = Z_Malloc(numtextures*sizeof*textureheight, PU_STATIC, 0);
-  texturebrightmap = Z_Malloc (numtextures * sizeof(*texturebrightmap), PU_STATIC, 0);
+  textures = I_Calloc(numtextures, sizeof(*textures));
+  texturecolumnlump = I_Calloc(numtextures, sizeof(*texturecolumnlump));
+  texturecolumnofs = I_Calloc(numtextures, sizeof(*texturecolumnofs));
+  texturecolumnofs2 = I_Calloc(numtextures, sizeof(*texturecolumnofs2));
+  texturecomposite = I_Calloc(numtextures, sizeof(*texturecomposite));
+  texturecomposite2 = I_Calloc(numtextures, sizeof(*texturecomposite2));
+  texturecompositesize = I_Calloc(numtextures, sizeof(*texturecompositesize));
+  texturewidthmask = I_Calloc(numtextures, sizeof(*texturewidthmask));
+  texturewidth = I_Calloc(numtextures, sizeof(*texturewidth));
+  textureheight = I_Calloc(numtextures, sizeof(*textureheight));
+  texturebrightmap = I_Calloc(numtextures, sizeof(*texturebrightmap));
 
   // Complex printing shit factored out
   M_ProgressBarStart(numtextures, __func__);
@@ -704,10 +693,7 @@ void R_InitTextures (void)
 
       mtexture = (maptexture_t *) ( (byte *)maptex + offset);
 
-      texture = textures[i] =
-        Z_Malloc(sizeof(texture_t) +
-                 sizeof(texpatch_t)*(SHORT(mtexture->patchcount)-1),
-                 PU_STATIC, 0);
+      texture = textures[i] = I_Malloc(sizeof(texture_t) + sizeof(texpatch_t)*(SHORT(mtexture->patchcount)-1));
 
       texture->width = SHORT(mtexture->width);
       texture->height = SHORT(mtexture->height);
@@ -753,7 +739,7 @@ void R_InitTextures (void)
       M_ProgressBarMove(i);
 
       int tx_lump = first_tx + k;
-      texture = textures[i] = Z_Malloc(sizeof(texture_t), PU_STATIC, 0);
+      texture = textures[i] = I_Malloc(sizeof(texture_t));
       M_CopyLumpName(texture->name, lumpinfo[tx_lump].name);
 
       if (!V_LumpIsPatch(tx_lump))
@@ -778,11 +764,9 @@ void R_InitTextures (void)
 
   M_ProgressBarEnd();
 
-  Z_Free(patchlookup);         // killough
-
-  Z_Free(maptex1);
-  if (maptex2)
-    Z_Free(maptex2);
+  I_Free(patchlookup);         // killough
+  I_Free(maptex1);
+  I_Free(maptex2);
 
   if (errors)
     I_Error("\n\n%d errors.", errors);
@@ -798,8 +782,7 @@ void R_InitTextures (void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  texturetranslation =
-    Z_Malloc((numtextures+1)*sizeof*texturetranslation, PU_STATIC, 0);
+  texturetranslation = I_Calloc((numtextures+1), sizeof(*texturetranslation));
 
   for (i=0 ; i<numtextures ; i++)
     texturetranslation[i] = i;
@@ -830,11 +813,9 @@ void R_InitFlats(void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  flattranslation =
-    Z_Malloc((numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
+  flattranslation = I_Calloc((numflats+1), sizeof(*flattranslation));
 
-  flatterrain =
-    Z_Malloc((numflats+1)*sizeof(*flatterrain), PU_STATIC, 0);
+  flatterrain = I_Calloc((numflats+1), sizeof(*flatterrain));
 
   for (i=0 ; i<numflats ; i++)
   {
@@ -861,10 +842,9 @@ void R_InitSpriteLumps(void)
   // killough 4/9/98: make columnd offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  spritewidth = Z_Malloc(numspritelumps*sizeof*spritewidth, PU_STATIC, 0);
-  spriteoffset = Z_Malloc(numspritelumps*sizeof*spriteoffset, PU_STATIC, 0);
-  spritetopoffset =
-    Z_Malloc(numspritelumps*sizeof*spritetopoffset, PU_STATIC, 0);
+  spritewidth = I_Calloc(numspritelumps, sizeof(*spritewidth));
+  spriteoffset = I_Calloc(numspritelumps, sizeof(*spriteoffset));
+  spritetopoffset = I_Calloc(numspritelumps, sizeof(*spritetopoffset));
 
   M_ProgressBarStart(numspritelumps, __func__);
 
@@ -921,7 +901,7 @@ void R_InitColormaps(void)
   firstcolormaplump = W_GetNumForName("C_START");
   lastcolormaplump  = W_GetNumForName("C_END");
   numcolormaps = lastcolormaplump - firstcolormaplump;
-  colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC, 0);
+  colormaps = I_Calloc(numcolormaps, sizeof(lighttable_t*));
 
   colormaps[0] = W_CacheLumpNumTag(W_GetNumForName("COLORMAP"), PU_STATIC);
 
@@ -1068,7 +1048,7 @@ void R_PrecacheLevel(void)
 
   {
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
-    hitlist = Z_Malloc(numtextures > size ? numtextures : size, PU_STATIC, 0);
+    hitlist = I_Malloc(numtextures > size ? numtextures : size);
   }
 
   // Precache flats.
@@ -1141,7 +1121,7 @@ void R_PrecacheLevel(void)
             while (--k >= 0);
           }
       }
-  Z_Free(hitlist);
+  I_Free(hitlist);
 }
 
 //-----------------------------------------------------------------------------

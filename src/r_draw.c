@@ -882,7 +882,7 @@ void R_InitTranslationTables(void)
     // killough 5/2/98:
     // Remove dependency of colormaps aligned on 256-byte boundary
 
-    translationtables = Z_Malloc(256 * 3, PU_STATIC, 0);
+    translationtables = I_Malloc(256 * 3);
 
     // translate just the 16 green colors
     for (i = 0; i < 256; i++)
@@ -1030,7 +1030,7 @@ void R_InitBuffer(void)
             I_VideoBuffer + (i + viewwindowy) * linesize; // killough 11/98
     }
 
-    I_Free(background_buffer);
+    background_buffer = I_Free(background_buffer);
 }
 
 void R_DrawBorder(int x, int y, int w, int h)

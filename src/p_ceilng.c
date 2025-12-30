@@ -28,7 +28,6 @@
 #include "r_state.h"
 #include "s_sound.h"
 #include "sounds.h"
-#include "z_zone.h"
 
 // the list of ceilings moving currently, including crushers
 ceilinglist_t *activeceilings;

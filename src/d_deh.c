@@ -3314,7 +3314,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
                         + strlen(inbuffer); // [FG] fix buffer size calculation
             deh_log("* increased buffer from to %d for buffer size %d\n",
                     maxstrlen, (int)strlen(inbuffer));
-            holdstring = I_Realloc(holdstring, maxstrlen * sizeof(*holdstring));
+            holdstring = I_Realloc(holdstring, maxstrlen);
         }
         // concatenate the whole buffer if continuation or the value iffirst
         strcat(holdstring, ptr_lstrip(((*holdstring) ? inbuffer : strval)));

@@ -1333,7 +1333,7 @@ boolean P_LoadBlockMap (int lump)
   else
     {
       long i;
-      short *wadblockmaplump = W_CacheLumpNumTag (lump, PU_LEVEL);
+      short *wadblockmaplump = W_CacheLumpNum(lump);
       blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
       // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -1352,7 +1352,7 @@ boolean P_LoadBlockMap (int lump)
           blockmaplump[i] = t == -1 ? -1l : (long) t & FRACMASK;
         }
 
-      Z_Free(wadblockmaplump);
+      W_ReleaseLumpNum(lump);
 
       bmaporgx = blockmaplump[0]<<FRACBITS;
       bmaporgy = blockmaplump[1]<<FRACBITS;

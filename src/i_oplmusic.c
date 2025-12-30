@@ -33,7 +33,6 @@
 #include "midifile.h"
 #include "mus2mid.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 // #define OPL_MIDI_DEBUG
 

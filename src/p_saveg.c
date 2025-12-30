@@ -41,7 +41,6 @@
 #include "r_defs.h"
 #include "r_state.h"
 #include "w_wad.h" // [FG] W_LumpLength()
-#include "z_zone.h"
 
 byte *save_p;
 
@@ -1197,7 +1196,7 @@ void P_UnArchiveThinkers(void)
         }
 
         // first table entry special: 0 maps to NULL
-        *(mobj_p = Z_Malloc(size * sizeof *mobj_p, PU_STATIC, 0)) = 0; // table of pointers
+        *(mobj_p = I_Malloc(size * sizeof(mobj_t*))) = 0; // table of pointers
         save_p = sp; // restore save pointer
     }
 
@@ -1280,7 +1279,7 @@ void P_UnArchiveThinkers(void)
         }
     }
 
-    Z_Free(mobj_p); // free translation table
+    I_Free(mobj_p); // free translation table
 
     // killough 3/26/98: Spawn icon landings:
     if (gamemode == commercial)
@@ -1531,9 +1530,7 @@ void P_UnArchiveMap(void)
         while (markpointnum >= markpointnum_max)
         {
             markpointnum_max = markpointnum_max ? markpointnum_max * 2 : 16;
-            markpoints =
-                Z_Realloc(markpoints, sizeof(*markpoints) * markpointnum_max,
-                          PU_STATIC, 0);
+            markpoints = I_Realloc(markpoints, markpointnum_max * sizeof(mpoint_t));
         }
 
         for (int i = 0; i < markpointnum; ++i)

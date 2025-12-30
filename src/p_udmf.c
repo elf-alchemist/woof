@@ -951,8 +951,7 @@ static void UDMF_ParseTextMap(int lumpnum)
 static void UDMF_LoadVertexes(void)
 {
     numvertexes = array_size(udmf_vertexes);
-    vertexes = arena_alloc_num(world_arena, vertex_t, numvertexes);
-    memset(vertexes, 0, numvertexes * sizeof(vertex_t));
+    vertexes = arena_calloc_num(world_arena, vertex_t, numvertexes);
 
     for (int i = 0; i < numvertexes; i++)
     {
@@ -967,8 +966,7 @@ static void UDMF_LoadVertexes(void)
 static void UDMF_LoadSectors(void)
 {
     numsectors = array_size(udmf_sectors);
-    sectors = arena_alloc_num(world_arena, sector_t, numsectors);
-    memset(sectors, 0, numsectors * sizeof(sector_t));
+    sectors = arena_calloc_num(world_arena, sector_t, numsectors);
 
     for (int i = 0; i < numsectors; i++)
     {
@@ -1030,8 +1028,7 @@ static void UDMF_LoadSectors(void)
 static void UDMF_LoadSideDefs(void)
 {
     numsides = array_size(udmf_sidedefs);
-    sides = arena_alloc_num(world_arena, side_t, numsides);
-    memset(sides, 0, numsides * sizeof(side_t));
+    sides = arena_calloc_num(world_arena, side_t, numsides);
 
     for (int i = 0; i < numsides; i++)
     {
@@ -1086,8 +1083,7 @@ static void UDMF_LoadSideDefs(void)
 static void UDMF_LoadLineDefs(void)
 {
     numlines = array_size(udmf_linedefs);
-    lines = arena_alloc_num(world_arena, line_t, numlines);
-    memset(lines, 0, numlines * sizeof(line_t));
+    lines = arena_calloc_num(world_arena, line_t, numlines);
 
     for (int i = 0; i < numlines; i++)
     {
@@ -1284,7 +1280,7 @@ static boolean UDMF_LoadBlockMap(int blockmap_num)
     else
     {
         long i;
-        short *wadblockmaplump = W_CacheLumpNumTag(blockmap_num, PU_LEVEL);
+        short *wadblockmaplump = W_CacheLumpNum(blockmap_num);
         blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
         // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -1303,7 +1299,7 @@ static boolean UDMF_LoadBlockMap(int blockmap_num)
             blockmaplump[i] = t == -1 ? -1l : (long)t & FRACMASK;
         }
 
-        Z_Free(wadblockmaplump);
+        W_ReleaseLumpNum(blockmap_num);
 
         bmaporgx = blockmaplump[0] << FRACBITS;
         bmaporgy = blockmaplump[1] << FRACBITS;

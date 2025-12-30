@@ -115,9 +115,10 @@ static inline void *I_Realloc(void* old_ptr, size_t new_size)
     return ptr;
 }
 
-static inline void I_Free(void* ptr)
+static inline void* I_Free(void* ptr)
 {
     free(ptr);
+    return NULL;
 }
 
 #endif

@@ -31,7 +31,6 @@
 #include "r_data.h"
 #include "m_scanner.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 boolean brightmaps;
 boolean brightmaps_found;

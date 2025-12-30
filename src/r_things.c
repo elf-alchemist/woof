@@ -35,6 +35,7 @@
 #include "p_pspr.h"
 #include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 #include "r_bsp.h"
+#include "r_defs.h"
 #include "r_draw.h"
 #include "r_main.h"
 #include "r_segs.h"
@@ -206,12 +207,12 @@ void R_InitSpriteDefs(char **namelist)
   if (!numentries || !*namelist)
     return;
 
-  sprites = Z_Calloc(num_sprites, sizeof(*sprites), PU_STATIC, NULL);
+  sprites = I_Calloc(num_sprites, sizeof(spritedef_t));
 
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
 
-  hash = Z_Malloc(sizeof(*hash)*numentries,PU_STATIC,0); // allocate hash table
+  hash = I_Calloc(numentries, sizeof(*hash)); // allocate hash table
 
   for (i=0; i<numentries; i++)             // initialize hash table as empty
     hash[i].index = -1;
@@ -295,14 +296,13 @@ void R_InitSpriteDefs(char **namelist)
                     }
                   }
               // allocate space for the frames present and copy sprtemp to it
-              sprites[i].spriteframes =
-                Z_Malloc (maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
+              sprites[i].spriteframes = I_Calloc(maxframe, sizeof(spriteframe_t));
               memcpy (sprites[i].spriteframes, sprtemp,
                       maxframe*sizeof(spriteframe_t));
             }
         }
     }
-  Z_Free(hash);             // free hash table
+  I_Free(hash);             // free hash table
 }
 
 //
@@ -349,8 +349,8 @@ vissprite_t *R_NewVisSprite(void)
 {
   if (num_vissprite >= num_vissprite_alloc)             // killough
     {
-      num_vissprite_alloc = num_vissprite_alloc ? num_vissprite_alloc*2 : 128;
-      vissprites = Z_Realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites),PU_STATIC,0);
+      num_vissprite_alloc = num_vissprite_alloc ? num_vissprite_alloc * 2 : 128;
+      vissprites = I_Realloc(vissprites, num_vissprite_alloc * sizeof(vissprite_t));
     }
  return vissprites + num_vissprite++;
 }
@@ -1083,9 +1083,8 @@ void R_SortVisSprites (void)
 
       if (num_vissprite_ptrs < num_vissprite*2)
         {
-          Z_Free(vissprite_ptrs);  // better than realloc -- no preserving needed
-          vissprite_ptrs = Z_Malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
-                                  * sizeof *vissprite_ptrs, PU_STATIC, 0);
+          num_vissprite_ptrs = num_vissprite_alloc * 2;
+          vissprite_ptrs = I_Realloc(vissprite_ptrs, num_vissprite_ptrs * sizeof(vissprite_t));
         }
 
       // Sprites of equal distance need to be sorted in inverse order.
@@ -1273,10 +1272,9 @@ void R_DrawMasked(void)
       drawsegs_xrange_size = 2 * maxdrawsegs;
       for(i = 0; i < DS_RANGES_COUNT; i++)
       {
-        drawsegs_xranges[i].items = Z_Realloc(
-          drawsegs_xranges[i].items,
-          drawsegs_xrange_size * sizeof(drawsegs_xranges[i].items[0]),
-          PU_STATIC, 0);
+        drawsegs_xranges[i].items =
+          I_Realloc(drawsegs_xranges[i].items,
+                    drawsegs_xrange_size * sizeof(drawseg_xrange_item_t));
       }
     }
     for (ds = ds_p; ds-- > drawsegs;)

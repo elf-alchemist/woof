@@ -463,10 +463,7 @@ void W_InitMultipleFiles(void)
   W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
 
   // set up caching
-  lumpcache = Z_Calloc(sizeof *lumpcache, numlumps, PU_STATIC, 0); // killough
-
-  if (!lumpcache)
-    I_Error ("Couldn't allocate lumpcache");
+  lumpcache = I_Calloc(numlumps, sizeof(void*));
 
   // killough 1/31/98: initialize lump hash table
   W_InitLumpHash();
@@ -561,7 +558,8 @@ void *W_CacheLumpName(const char *lumpname, namespace_t ns)
 
     if (!lumpcache[lumpnum])
     {
-        W_ReadLump(lumpnum, I_Malloc(lumpinfo[lumpnum].size));
+        lumpcache[lumpnum] = I_Malloc(lumpinfo[lumpnum].size);
+        W_ReadLump(lumpnum, lumpcache[lumpnum]);
     }
     return lumpcache[lumpnum];
 }
@@ -592,7 +590,7 @@ void W_ReleaseLumpNum(int lumpnum)
     }
 #endif
 
-    if (lumpcache[lumpnum]) // read the lump in
+    if (lumpcache[lumpnum])
     {
         I_Free(lumpcache[lumpnum]);
         lumpcache[lumpnum] = NULL;
@@ -610,7 +608,7 @@ void W_ReleaseLumpName(const char *lumpname, namespace_t ns)
     }
 #endif
 
-    if (lumpcache[lumpnum]) // read the lump in
+    if (lumpcache[lumpnum])
     {
         I_Free(lumpcache[lumpnum]);
         lumpcache[lumpnum] = NULL;

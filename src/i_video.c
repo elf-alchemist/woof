@@ -28,7 +28,6 @@
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "am_map.h"
 #include "config.h"
@@ -928,8 +927,6 @@ static vrect_t disk;
 
 static void I_InitDiskFlash(void)
 {
-    pixel_t *temp;
-
     disk.x = 0;
     disk.y = 0;
     disk.w = 16;
@@ -937,23 +934,23 @@ static void I_InitDiskFlash(void)
 
     V_ScaleRect(&disk);
 
-    temp = Z_Malloc(disk.sw * disk.sh * sizeof(*temp), PU_STATIC, 0);
+    pixel_t *temp = I_Calloc(disk.sw * disk.sh, sizeof(pixel_t));
 
     if (diskflash)
     {
-        Z_Free(diskflash);
-        Z_Free(old_data);
+        I_Free(diskflash);
+        I_Free(old_data);
     }
 
-    diskflash = Z_Malloc(disk.sw * disk.sh * sizeof(*diskflash), PU_STATIC, 0);
-    old_data = Z_Malloc(disk.sw * disk.sh * sizeof(*old_data), PU_STATIC, 0);
+    diskflash = I_Calloc(disk.sw * disk.sh, sizeof(pixel_t));
+    old_data = I_Calloc(disk.sw * disk.sh, sizeof(pixel_t));
 
     V_GetBlock(0, 0, disk.sw, disk.sh, temp);
     V_DrawPatch(-video.deltaw, 0, V_CachePatchNameTag("STDISK", PU_CACHE));
     V_GetBlock(0, 0, disk.sw, disk.sh, diskflash);
     V_PutBlock(0, 0, disk.sw, disk.sh, temp);
 
-    Z_Free(temp);
+    I_Free(temp);
 }
 
 //

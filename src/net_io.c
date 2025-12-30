@@ -21,7 +21,6 @@
 #include "i_system.h"
 #include "net_defs.h"
 #include "net_io.h"
-#include "z_zone.h"
 
 #define MAX_MODULES 16
 
@@ -37,7 +36,7 @@ net_context_t *NET_NewContext(void)
 {
     net_context_t *context;
 
-    context = Z_Malloc(sizeof(net_context_t), PU_STATIC, 0);
+    context = I_Malloc(sizeof(net_context_t));
     context->num_modules = 0;
 
     return context;
