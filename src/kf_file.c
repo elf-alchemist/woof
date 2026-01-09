@@ -24,6 +24,7 @@
 #include "m_array.h"
 #include "m_fixed.h"
 #include "m_hashmap.h"
+#include "m_misc.h"
 #include "m_random.h"
 #include "p_ambient.h"
 #include "p_dirty.h"
@@ -36,7 +37,10 @@
 #include "p_tick.h"
 #include "r_defs.h"
 #include "r_state.h"
+#include "r_tranmap.h"
 #include "s_sndinfo.h"
+#include "w_wad.h"
+#include "z_zone.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -96,20 +100,38 @@ inline static void write32_internal(const int32_t data[], int count)
 #define read_enum read32
 #define write_enum write32
 
-#define write_lumpname(name) write8_internal(name, 8)
-#define read_lumpname(name) \
-do { \
-    char lump[8] = {0}; \
-    lump[0] = saveg_read8(); \
-    lump[1] = saveg_read8(); \
-    lump[2] = saveg_read8(); \
-    lump[3] = saveg_read8(); \
-    lump[4] = saveg_read8(); \
-    lump[5] = saveg_read8(); \
-    lump[6] = saveg_read8(); \
-    lump[7] = saveg_read8(); \
-    M_CopyLumpName(name, lump); \
-} while (0)
+static inline void write_lumpname(const char * lump_name)
+{
+    saveg_grow(sizeof(int8_t) * 8);
+    char buffer[8] = {0};
+    M_CopyLumpName(buffer, lump_name ? lump_name : buffer);
+
+    for (int i = 0; i < 8; ++i)
+    {
+        savep_putbyte(buffer[i]);
+    }
+    return;
+}
+
+static inline const char* read_lumpname(void)
+{
+    char lump[9] = {0};
+    lump[0] = saveg_read8();
+    lump[1] = saveg_read8();
+    lump[2] = saveg_read8();
+    lump[3] = saveg_read8();
+    lump[4] = saveg_read8();
+    lump[5] = saveg_read8();
+    lump[6] = saveg_read8();
+    lump[7] = saveg_read8();
+    lump[8] = '\0';
+
+    if (lump[0] == 0)
+    {
+        return NULL;
+    }
+    return Z_StrDup(lump, PU_STATIC);
+}
 
 enum
 {
@@ -513,6 +535,17 @@ static void read_mobj_t(mobj_t *str, thinker_class_t tc)
     str->oldz = read32();
     str->oldangle = read32();
     str->bloodcolor = read32();
+
+    if (str->tranmap_alpha < 100)
+    {
+        str->tranmap = GetNormalTranMap(str->tranmap_alpha);
+    }
+
+    int lumpnum = W_CheckNumForName(str->tranmap_lump);
+    if (lumpnum >= 0)
+    {
+        str->tranmap = W_CacheLumpNum(lumpnum, PU_STATIC);
+    }
 
     // TODO
     // P_SetActualHeight(str);

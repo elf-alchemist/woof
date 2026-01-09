@@ -1249,6 +1249,7 @@ void UDMF_LoadThings(void)
         mt.args[3] = udmf_things[i].args[3];
         mt.args[4] = udmf_things[i].args[4];
 
+        mt.tranmap_alpha = 100;
         if (udmf_things[i].alpha < 1.0)
         {
           const int32_t alpha = (int32_t)floor(udmf_things[i].alpha * 100.0);
