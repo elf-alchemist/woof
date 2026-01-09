@@ -1767,8 +1767,8 @@ static boolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sfx
 		  if (STRICTMODE(ghost_monsters) && corpsehit->height == 0
 		      && corpsehit->radius == 0)
 		  {
-		      corpsehit->tranmap_type = 66 | (1u << 31);
-		      corpsehit->tranmap = GetNormalTranMap(66);
+		      corpsehit->tranmap_alpha = 66;
+		      corpsehit->tranmap = GetNormalTranMap(corpsehit->tranmap_alpha);
 		      I_Printf(VB_WARNING, "A_VileChase: Resurrected ghost monster (%d) at (%d/%d)!",
 		              corpsehit->type, corpsehit->x>>FRACBITS, corpsehit->y>>FRACBITS);
 		  }

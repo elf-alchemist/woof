@@ -38,6 +38,7 @@
 #include "r_tranmap.h"
 #include "tables.h"
 #include "w_wad.h"
+#include "z_zone.h"
 #include <math.h>
 
 //
@@ -1251,12 +1252,14 @@ void UDMF_LoadThings(void)
         if (udmf_things[i].alpha < 1.0)
         {
           const int32_t alpha = (int32_t)floor(udmf_things[i].alpha * 100.0);
-          mt.tranmap = GetNormalTranMap(alpha);
+          mt.tranmap_alpha = alpha;
+          mt.tranmap = GetNormalTranMap(mt.tranmap_alpha);
         }
 
         int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
         if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
         {
+            mt.tranmap_lump = Z_StrDup(udmf_things[i].tranmap, PU_STATIC);
             mt.tranmap = W_CacheLumpNum(lump, PU_CACHE);
         }
 

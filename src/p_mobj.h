@@ -325,7 +325,8 @@ typedef struct mobj_s
     int32_t             args[5];
 
     // Translucency
-    int32_t             tranmap_type;
+    int32_t             tranmap_alpha;
+    const char*         tranmap_lump;
     const byte*         tranmap;
 
     // Movement direction, movement generation (zig-zagging).

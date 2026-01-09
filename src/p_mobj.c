@@ -1380,6 +1380,8 @@ spawnit:
   mobj->args[4] = mthing->args[4];
 
   // Translucency
+  mobj->tranmap_alpha = mthing->tranmap_alpha;
+  mobj->tranmap_lump = mthing->tranmap_lump;
   mobj->tranmap = mthing->tranmap;
 
   // killough 7/20/98: exclude friends

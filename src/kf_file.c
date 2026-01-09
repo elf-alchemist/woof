@@ -487,7 +487,8 @@ static void read_mobj_t(mobj_t *str, thinker_class_t tc)
     str->args[2] = read32();
     str->args[3] = read32();
     str->args[4] = read32();
-    str->tranmap_type = read32();
+    str->tranmap_lump = read_lumpname();
+    str->tranmap_alpha = read32();
     str->movedir = read16();
     str->movecount = read16();
     str->strafecount = read16();
@@ -562,7 +563,8 @@ static void write_mobj_t(mobj_t *str)
     write32(str->args[2]);
     write32(str->args[3]);
     write32(str->args[4]);
-    write32(str->tranmap_type);
+    write_lumpname(str->tranmap_lump);
+    write32(str->tranmap_alpha);
     write16(str->movedir);
     write16(str->movecount);
     write16(str->strafecount);
