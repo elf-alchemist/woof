@@ -96,6 +96,21 @@ inline static void write32_internal(const int32_t data[], int count)
 #define read_enum read32
 #define write_enum write32
 
+#define write_lumpname(name) write8_internal(name, 8)
+#define read_lumpname(name) \
+do { \
+    char lump[8] = {0}; \
+    lump[0] = saveg_read8(); \
+    lump[1] = saveg_read8(); \
+    lump[2] = saveg_read8(); \
+    lump[3] = saveg_read8(); \
+    lump[4] = saveg_read8(); \
+    lump[5] = saveg_read8(); \
+    lump[6] = saveg_read8(); \
+    lump[7] = saveg_read8(); \
+    M_CopyLumpName(name, lump); \
+} while (0)
+
 enum
 {
     null_index = -1,
@@ -472,6 +487,7 @@ static void read_mobj_t(mobj_t *str, thinker_class_t tc)
     str->args[2] = read32();
     str->args[3] = read32();
     str->args[4] = read32();
+    str->tranmap_type = read32();
     str->movedir = read16();
     str->movecount = read16();
     str->strafecount = read16();
@@ -546,6 +562,7 @@ static void write_mobj_t(mobj_t *str)
     write32(str->args[2]);
     write32(str->args[3]);
     write32(str->args[4]);
+    write32(str->tranmap_type);
     write16(str->movedir);
     write16(str->movecount);
     write16(str->strafecount);
