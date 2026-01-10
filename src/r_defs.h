@@ -46,22 +46,11 @@ struct mobj_s;
 #define FLATSIZE (64 * 64)
 
 //
-// Translation/palette-swap data
+// Palette translations
 //
 
-typedef enum xlats_flags_e
+typedef struct xlat_s
 {
-  XLAT_VANILLA  = (1 << 0), // Original hard-coded xlats
-  XLAT_BOOM     = (1 << 1), // Boom's CR* lumps, RAW format
-  XLAT_ETERNITY = (1 << 2), // Translation lump namespace, RAW format
-  XLAT_ID24     = (1 << 3), // JSON lumps
-  XLAT_PLAYER   = (1 << 4), // Defined in Gameconf, changes HUD graphics
-  XLAT_WAD      = (1 << 5), // Affects everything
-} xlats_flags_t;
-
-typedef struct translation_s
-{
-  xlats_flags_t   flags;
   const char     *name;
   const char     *lumpname;
   struct patch_s *sbarback;
@@ -69,7 +58,7 @@ typedef struct translation_s
   boolean         sbartranslate;
   boolean         intertranslate;
   byte            table[256];
-} translation_t;
+} xlat_t;
 
 //
 // INTERNAL MAP TYPES

@@ -112,12 +112,8 @@ const crdef_t crdefs[] =
     {NULL}
 };
 
-// enhanced translation support, including:
-// * Vanilla player translation
-// * Boom hardcoded translation lumps
-// * Eternity translation lump namespace
-// * TODO: ID24 translation JSON lumps
-translation_t *xlats = NULL;
+// palette translation support
+xlat_t *xlats = NULL;
 
 // [FG] translate between blood color value as per EE spec
 //      and actual color translation table index
