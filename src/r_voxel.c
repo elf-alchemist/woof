@@ -1050,16 +1050,13 @@ void VX_DrawVoxel (vissprite_t * spr)
 	// handle translated colors (for players in coop or deathmatch).
 	// we build a new map, rather than complicate the slab drawing code.
 
-	if ((spr->mobjflags & MF_TRANSLATION) && (spr->colormap[0] != NULL))
+	if ((spr->translation) && (spr->colormap[0] != NULL))
 	{
-		const byte * trans = translationtables - 256 +
-			( (spr->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
-
 		static byte new_colormap[256];
 
 		int i;
 		for (i = 0 ; i < 256 ; i++)
-			new_colormap[i] = spr->colormap[0][trans[i]];
+			new_colormap[i] = spr->colormap[0][spr->translation[i]];
 
 		spr->colormap[0] = new_colormap;
 	}

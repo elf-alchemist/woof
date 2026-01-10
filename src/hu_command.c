@@ -22,9 +22,9 @@
 #include "doomstat.h"
 #include "hu_command.h"
 #include "m_misc.h"
+#include "r_xlat.h"
 #include "st_sbardef.h"
 #include "st_widgets.h"
-#include "v_video.h"
 
 boolean hud_command_history;
 int hud_command_history_size;

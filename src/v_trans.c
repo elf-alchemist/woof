@@ -21,8 +21,8 @@
 
 #include "doomtype.h"
 #include "i_video.h"
+#include "r_xlat.h"
 #include "v_trans.h"
-#include "v_video.h"
 
 /*
 Date: Sun, 26 Oct 2014 10:36:12 -0700

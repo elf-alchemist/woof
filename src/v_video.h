@@ -31,83 +31,6 @@
 // VIDEO
 //
 
-extern int v_lightest_color, v_darkest_color;
-
-// jff 2/16/98 palette color ranges for translation
-// jff 2/18/98 conversion to palette lookups for speed
-// jff 4/24/98 now pointers to lumps loaded
-extern byte *cr_brick;
-extern byte *cr_tan;
-extern byte *cr_gray;
-extern byte *cr_green;
-extern byte *cr_brown;
-extern byte *cr_gold;
-extern byte *cr_red;
-extern byte *cr_blue;
-extern byte *cr_blue2;
-extern byte *cr_orange;
-extern byte *cr_yellow;
-extern byte *cr_black;
-extern byte *cr_purple;
-extern byte *cr_white;
-// [FG] dark/shaded color translation table
-extern byte *cr_dark;
-extern byte *cr_shaded;
-extern byte *cr_bright;
-
-extern byte invul_gray[];
-
-// array of pointers to color translation tables
-extern byte *colrngs[];
-extern byte *red2col[];
-
-// symbolic indices into color translation table pointer array
-typedef enum
-{
-    CR_ORIG = -1,
-    CR_BRICK,  // 0
-    CR_TAN,    // 1
-    CR_GRAY,   // 2
-    CR_GREEN,  // 3
-    CR_BROWN,  // 4
-    CR_GOLD,   // 5
-    CR_RED,    // 6
-    CR_BLUE1,  // 7
-    CR_ORANGE, // 8
-    CR_YELLOW, // 9
-    CR_BLUE2,  // 10
-    CR_BLACK,  // 11
-    CR_PURPLE, // 12
-    CR_WHITE,  // 13
-    CR_NONE,   // 14 // [FG] dummy
-    CR_BRIGHT, // 15
-    CR_LIMIT   // 16 //jff 2/27/98 added for range check
-} crange_idx_e;
-
-typedef struct
-{
-    const char *name;
-    const char *str;
-    byte **map1, **map2, **map_orig;
-} crdef_t;
-
-extern const crdef_t crdefs[];
-
-#define ORIG_S  "\x1b\x2f"
-#define BRICK_S "\x1b\x30"
-#define TAN_S   "\x1b\x31"
-#define GRAY_S  "\x1b\x32"
-#define GREEN_S "\x1b\x33"
-#define BROWN_S "\x1b\x34"
-#define GOLD_S  "\x1b\x35"
-#define RED_S   "\x1b\x36"
-#define BLUE1_S "\x1b\x37"
-#define BLUE2_S "\x1b\x3a"
-
-// jff 1/16/98 end palette color range additions
-
-crange_idx_e V_CRByName(const char *name);
-
 extern pixel_t *I_VideoBuffer;
 
 // jff 4/24/98 loads color translation lumps
@@ -176,7 +99,7 @@ extern crop_t zero_crop;
 void V_DrawPatch(int x, int y, patch_t *patch);
 void V_DrawPatchCastCall(patch_t *patch, const byte *tranmap, const byte *xlat, boolean flip);
 void V_DrawPatchCropped(int x, int y, patch_t *patch, crop_t crop);
-void V_DrawPatchGeneral(int x, int y, int xoffset, int yoffset, const byte *tranmap, byte *xlat, patch_t *patch, crop_t crop);
+void V_DrawPatchGeneral(int x, int y, int xoffset, int yoffset, const byte *tranmap, const byte *xlat, patch_t *patch, crop_t crop);
 void V_DrawPatchTranslated(int x, int y, patch_t *patch, byte* xlat);
 void V_DrawPatchTranslatedTwice(int x, int y, patch_t *patch, byte* xlat, byte* xlat2);
 void V_DrawPatchFullScreen(patch_t *patch);

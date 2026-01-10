@@ -694,7 +694,6 @@ void R_Init (void)
   R_SetViewSize(screenblocks);
   R_InitPlanes();
   R_InitLightTables();
-  R_InitTranslationTables();
   V_InitFlexTranTable();
 
   // [FG] spectre drawing mode

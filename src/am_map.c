@@ -39,6 +39,7 @@
 #include "r_defs.h"
 #include "r_main.h"
 #include "r_state.h"
+#include "r_xlat.h"
 #include "st_stuff.h"
 #include "st_widgets.h"
 #include "tables.h"

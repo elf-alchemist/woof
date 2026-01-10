@@ -44,8 +44,8 @@
 #include "r_skydefs.h"
 #include "r_state.h"
 #include "r_tranmap.h"
+#include "r_xlat.h"
 #include "v_patch.h"
-#include "v_video.h" // cr_dark, cr_shaded
 #include "w_wad.h"
 #include "z_zone.h"
 
@@ -927,10 +927,6 @@ void R_InitColormaps(void)
   for (i=1; i<numcolormaps; i++)
     colormaps[i] = W_CacheLumpNum(i+firstcolormaplump, PU_STATIC);
 
-  // [FG] dark/shaded color translation table
-  cr_dark = &colormaps[0][256*15];
-  cr_shaded = &colormaps[0][256*6];
-
   memcpy(invul_orig, &colormaps[0][256*32], 256);
   R_InvulMode();
 }
@@ -967,6 +963,7 @@ void R_InitData(void)
   R_InitSpriteLumps();
   R_InitTranMap();                      // killough 2/21/98, 3/6/98
   R_InitColormaps();                    // killough 3/20/98
+  R_InitTranslations();
   R_InitSkyDefs();
 }
 

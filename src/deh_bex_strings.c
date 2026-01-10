@@ -140,6 +140,15 @@ const bex_string_t bex_mnemonic_table[] =
     {"HUSTR_PLRRED",         HUSTR_PLRRED        },
     // part 4.1 - secrets!
     {"HUSTR_SECRETFOUND",    HUSTR_SECRETFOUND   },
+    // part 4.2 - id24 player translations
+    {"ID24_COLOR_GREEN",     ID24_COLOR_GREEN    },
+    {"ID24_COLOR_INDIGO",    ID24_COLOR_INDIGO   },
+    {"ID24_COLOR_BROWN",     ID24_COLOR_BROWN    },
+    {"ID24_COLOR_RED",       ID24_COLOR_RED      },
+    {"ID24_COLOR_YELLOW",    ID24_COLOR_YELLOW   },
+    {"ID24_COLOR_BLUE",      ID24_COLOR_BLUE     },
+    {"ID24_COLOR_NAVY",      ID24_COLOR_NAVY     },
+    {"ID24_COLOR_MAGENTA",   ID24_COLOR_MAGENTA  },
     // part 5 - level names in the automap
     {"HUSTR_E1M1",           HUSTR_E1M1          },
     {"HUSTR_E1M2",           HUSTR_E1M2          },

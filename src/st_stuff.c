@@ -53,6 +53,7 @@
 #include "r_draw.h"
 #include "r_main.h"
 #include "r_state.h"
+#include "r_xlat.h"
 #include "s_sound.h"
 #include "st_carousel.h"
 #include "st_stuff.h"
@@ -113,21 +114,10 @@ int st_height = 0, st_height_screenblocks10 = 0;
 // graphics are drawn to a backing screen and blitted to the real screen
 static pixel_t *st_backing_screen = NULL;
 
-static boolean sts_colored_numbers;
-
-static boolean sts_pct_always_gray;
-
 //jff 2/16/98 status color change levels
-static int ammo_red;      // ammo percent less than which status is red
-static int ammo_yellow;   // ammo percent less is yellow more green
 int health_red;           // health amount less than which status is red
 int health_yellow;        // health amount less than which status is yellow
 int health_green;         // health amount above is blue, below is green
-static int armor_red;     // armor amount less than which status is red
-static int armor_yellow;  // armor amount less than which status is yellow
-static int armor_green;   // armor amount above is blue, below is green
-
-static boolean hud_armor_type; // color of armor depends on type
 
 static boolean weapon_carousel;
 
@@ -1133,104 +1123,6 @@ static void UpdateAnimation(sbarelem_t *elem)
     --animation->duration_left;
 }
 
-static void UpdateBoomColors(sbarelem_t *elem, player_t *player)
-{
-    if (!sts_colored_numbers)
-    {
-        elem->crboom = CR_NONE;
-        return;
-    }
-
-    sbe_number_t *number = elem->subtype.number;
-
-    boolean invul = ST_PlayerInvulnerable(player);
-
-    crange_idx_e cr;
-
-    switch (number->type)
-    {
-        case sbn_health:
-            {
-                int health = player->health;
-                if (invul)
-                    cr = CR_GRAY;
-                else if (health < health_red)
-                    cr = CR_RED;
-                else if (health < health_yellow)
-                    cr = CR_GOLD;
-                else if (health <= health_green)
-                    cr = CR_GREEN;
-                else
-                    cr = CR_BLUE2;
-            }
-            break;
-        case sbn_armor:
-            if (hud_armor_type)
-            {
-                if (invul)
-                    cr = CR_GRAY;
-                else if (!player->armortype)
-                    cr = CR_RED;
-                else if (player->armortype == 1)
-                    cr = CR_GREEN;
-                else
-                    cr = CR_BLUE2;
-            }
-            else
-            {
-                int armor = player->armorpoints;
-                if (invul)
-                    cr = CR_GRAY;
-                else if (armor < armor_red)
-                    cr = CR_RED;
-                else if (armor < armor_yellow)
-                    cr = CR_GOLD;
-                else if (armor <= armor_green)
-                    cr = CR_GREEN;
-                else
-                    cr = CR_BLUE2;
-            }
-            break;
-        case sbn_ammoselected:
-            {
-                ammotype_t type = weaponinfo[player->readyweapon].ammo;
-                if (type == am_noammo)
-                {
-                    return;
-                }
-
-                int maxammo = player->maxammo[type];
-                if (maxammo == 0)
-                {
-                    return;
-                }
-
-                int ammo = player->ammo[type];
-
-                // backpack changes thresholds
-                if (player->backpack)
-                {
-                    maxammo /= 2;
-                }
-
-                if (ammo * 100 < ammo_red * maxammo)
-                    cr = CR_RED;
-                else if (ammo * 100 < ammo_yellow * maxammo)
-                    cr = CR_GOLD;
-                else if (ammo > maxammo)
-                    cr = CR_BLUE2;
-                else
-                    cr = CR_GREEN;
-            }
-            break;
-        default:
-            cr = CR_NONE;
-            break;
-    }
-
-    elem->crboom = cr;
-}
-
 static void UpdateString(sbarelem_t *elem)
 {
     sbe_string_t *string = elem->subtype.string;
@@ -1283,7 +1175,6 @@ static void UpdateElem(sbarelem_t *elem, player_t *player)
 
         case sbe_number:
         case sbe_percent:
-            UpdateBoomColors(elem, player);
             UpdateNumber(elem, player);
             break;
 
@@ -1467,7 +1358,7 @@ static int AdjustY(int y, int height, sbaralignment_t alignment)
 
 static void DrawPatch(int x1, int y1, int *x2, int *y2, boolean dry,
                       crop_t crop, int maxheight, sbaralignment_t alignment,
-                      patch_t *patch, crange_idx_e cr, const byte *tl)
+                      patch_t *patch, const byte *tr, const byte *tl)
 {
     if (!patch)
     {
@@ -1530,9 +1421,7 @@ static void DrawPatch(int x1, int y1, int *x2, int *y2, boolean dry,
         return;
     }
 
-    byte *outr = colrngs[cr];
-
-    V_DrawPatchGeneral(x1, y1, xoffset, yoffset, tl, outr, patch, crop);
+    V_DrawPatchGeneral(x1, y1, xoffset, yoffset, tl, tr, patch, crop);
 }
 
 static void DrawGlyphNumber(int x1, int y1, int *x2, int *y2, boolean dry,
@@ -1566,8 +1455,7 @@ static void DrawGlyphNumber(int x1, int y1, int *x2, int *y2, boolean dry,
     if (glyph)
     {
         DrawPatch(x1 + number->xoffset, y1, x2, y2, dry, zero_crop,
-                  font->maxheight, elem->alignment, glyph,
-                  elem->crboom == CR_NONE ? elem->cr : elem->crboom,
+                  font->maxheight, elem->alignment, glyph, elem->xlat,
                   elem->tranmap);
     }
 
@@ -1614,7 +1502,7 @@ static void DrawGlyphLine(int x1, int y1, int *x2, int *y2, boolean dry,
     if (glyph)
     {
         DrawPatch(x1 + line->xoffset, y1, x2, y2, dry, zero_crop,
-                  font->maxheight, elem->alignment, glyph, elem->cr,
+                  font->maxheight, elem->alignment, glyph, elem->xlat,
                   elem->tranmap);
     }
 
@@ -1658,13 +1546,7 @@ static void DrawNumber(int x1, int y1, int *x2, int *y2, boolean dry,
 
     if (elem->type == sbe_percent && font->percent != NULL)
     {
-        crange_idx_e oldcr = elem->crboom;
-        if (sts_pct_always_gray)
-        {
-            elem->crboom = CR_GRAY;
-        }
         DrawGlyphNumber(x1, y1, x2, y2, dry, elem, font->percent);
-        elem->crboom = oldcr;
     }
 
     number->xoffset = base_xoffset;
@@ -1676,8 +1558,6 @@ static void DrawStringLine(int x1, int y1, int *x2, int *y2, boolean dry,
 {
     int base_xoffset = line->xoffset;
 
-    int cr = elem->cr;
-
     const char *str = line->string;
     while (*str)
     {
@@ -1688,11 +1568,7 @@ static void DrawStringLine(int x1, int y1, int *x2, int *y2, boolean dry,
             ch = *str++;
             if (ch >= '0' && ch <= '0' + CR_NONE)
             {
-                elem->cr = ch - '0';
-            }
-            else if (ch == '0' + CR_ORIG)
-            {
-                elem->cr = cr;
+                elem->xlat = R_XlatTableByCR(ch - '0');
             }
             continue;
         }
@@ -1759,7 +1635,7 @@ static void DrawElem(int x1, int y1, int *x2, int *y2, boolean dry,
             {
                 sbe_graphic_t *graphic = elem->subtype.graphic;
                 DrawPatch(x1, y1, x2, y2, dry, graphic->crop, 0, elem->alignment,
-                          graphic->patch, elem->cr, elem->tranmap);
+                          graphic->patch, elem->xlat, elem->tranmap);
             }
             break;
 
@@ -1768,7 +1644,7 @@ static void DrawElem(int x1, int y1, int *x2, int *y2, boolean dry,
                 sbe_facebackground_t *facebackground = elem->subtype.facebackground;
                 DrawPatch(x1, y1, x2, y2, dry, facebackground->crop, 0,
                           elem->alignment, facebackpatches[displayplayer],
-                          elem->cr, elem->tranmap);
+                          elem->xlat, elem->tranmap);
             }
             break;
 
@@ -1776,7 +1652,7 @@ static void DrawElem(int x1, int y1, int *x2, int *y2, boolean dry,
             {
                 sbe_face_t *face = elem->subtype.face;
                 DrawPatch(x1, y1, x2, y2, dry, face->crop, 0, elem->alignment,
-                          facepatches[face->faceindex], elem->cr,
+                          facepatches[face->faceindex], elem->xlat,
                           elem->tranmap);
             }
             break;
@@ -1787,7 +1663,7 @@ static void DrawElem(int x1, int y1, int *x2, int *y2, boolean dry,
                 patch_t *patch =
                     animation->frames[animation->frame_index].patch;
                 DrawPatch(x1, y1, x2, y2, dry, zero_crop, 0, elem->alignment,
-                          patch, elem->cr, elem->tranmap);
+                          patch, elem->xlat, elem->tranmap);
             }
             break;
 
@@ -2339,33 +2215,9 @@ void ST_BindSTSVariables(void)
   M_BindNum("hud_anchoring", &hud_anchoring, NULL, HUD_ANCHORING_16_9,
             HUD_ANCHORING_WIDE, HUD_ANCHORING_21_9, ss_stat, wad_no,
             "HUD anchoring (0 = Wide; 1 = 4:3; 2 = 16:9; 3 = 21:9)");
-  M_BindBool("sts_colored_numbers", &sts_colored_numbers, NULL,
-             false, ss_stat, wad_yes, "Colored numbers on the status bar");
-  M_BindBool("sts_pct_always_gray", &sts_pct_always_gray, NULL,
-             false, ss_none, wad_yes,
-             "Percent signs on the status bar are always gray");
   M_BindBool("st_solidbackground", &st_solidbackground, NULL,
              false, ss_stat, wad_no,
              "Use solid-color borders for the status bar in widescreen mode");
-  M_BindBool("hud_armor_type", &hud_armor_type, NULL, true, ss_none, wad_no,
-             "Armor count is colored based on armor type");
-  M_BindNum("health_red", &health_red, NULL, 25, 0, 200, ss_none, wad_yes,
-            "Amount of health for red-to-yellow transition");
-  M_BindNum("health_yellow", &health_yellow, NULL, 50, 0, 200, ss_none, wad_yes,
-            "Amount of health for yellow-to-green transition");
-  M_BindNum("health_green", &health_green, NULL, 100, 0, 200, ss_none, wad_yes,
-            "Amount of health for green-to-blue transition");
-  M_BindNum("armor_red", &armor_red, NULL, 25, 0, 200, ss_none, wad_yes,
-            "Amount of armor for red-to-yellow transition");
-  M_BindNum("armor_yellow", &armor_yellow, NULL, 50, 0, 200, ss_none, wad_yes,
-            "Amount of armor for yellow-to-green transition");
-  M_BindNum("armor_green", &armor_green, NULL, 100, 0, 200, ss_none, wad_yes,
-            "Amount of armor for green-to-blue transition");
-  M_BindNum("ammo_red", &ammo_red, NULL, 25, 0, 100, ss_none, wad_yes,
-            "Percent of ammo for red-to-yellow transition");
-  M_BindNum("ammo_yellow", &ammo_yellow, NULL, 50, 0, 100, ss_none, wad_yes,
-            "Percent of ammo for yellow-to-green transition");
-
   M_BindNum("hud_crosshair", &hud_crosshair, NULL, 0, 0, 10 - 1, ss_stat, wad_no,
             "Crosshair");
   M_BindBool("hud_crosshair_health", &hud_crosshair_health, NULL,

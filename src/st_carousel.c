@@ -24,6 +24,7 @@
 #include "m_misc.h"
 #include "m_swap.h"
 #include "r_defs.h"
+#include "r_xlat.h"
 #include "st_sbardef.h"
 #include "v_patch.h"
 #include "v_video.h"
@@ -179,12 +180,12 @@ static void DrawIcon(int x, int y, sbarelem_t *elem, weapon_icon_t icon)
 
     patch_t *patch = V_CachePatchName(lump, PU_CACHE);
 
-    byte *cr = icon.state == wpi_disabled ? cr_dark : NULL;
+    const byte *tr = icon.state == wpi_disabled ? xlat_dark : NULL;
 
     int xoffset = SHORT(patch->leftoffset);
     int yoffset = SHORT(patch->topoffset);
 
-    V_DrawPatchGeneral(x, y, xoffset, yoffset, elem->tranmap, cr, patch, zero_crop);
+    V_DrawPatchGeneral(x, y, xoffset, yoffset, elem->tranmap, tr, patch, zero_crop);
 }
 
 static int CalcOffset(void)

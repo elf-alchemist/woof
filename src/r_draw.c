@@ -784,7 +784,7 @@ void R_SetFuzzColumnMode(void)
 //  identical sprites, kinda brightened up.
 //
 
-byte *dc_translation, *translationtables;
+const byte *dc_translation;
 
 void R_DrawTranslatedColumn(void)
 {
@@ -862,40 +862,6 @@ void R_DrawTranslatedColumn(void)
         {
             src = source[(frac >> FRACBITS) & heightmask];
             *dest = colormap[brightmap[src]][translation[src]];
-        }
-    }
-}
-
-//
-// R_InitTranslationTables
-// Creates the translation tables to map
-//  the green color ramp to gray, brown, red.
-// Assumes a given structure of the PLAYPAL.
-// Could be read from a lump instead.
-//
-
-void R_InitTranslationTables(void)
-{
-    int i;
-
-    // killough 5/2/98:
-    // Remove dependency of colormaps aligned on 256-byte boundary
-
-    translationtables = Z_Malloc(256 * 3, PU_STATIC, 0);
-
-    // translate just the 16 green colors
-    for (i = 0; i < 256; i++)
-    {
-        if (i >= 0x70 && i <= 0x7f)
-        { // map green ramp to gray, brown, red
-            translationtables[i] = 0x60 + (i & 0xf);
-            translationtables[i + 256] = 0x40 + (i & 0xf);
-            translationtables[i + 512] = 0x20 + (i & 0xf);
-        }
-        else // Keep all other colors as is.
-        {
-            translationtables[i] = translationtables[i + 256] =
-                translationtables[i + 512] = i;
         }
     }
 }

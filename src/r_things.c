@@ -434,31 +434,35 @@ void R_DrawVisSprite(vissprite_t *vis, int x1, int x2)
   // killough 4/11/98: rearrange and handle translucent sprites
   // mixed with translucent/non-translucent 2s normals
 
-  if (!dc_colormap[0])   // NULL colormap = shadow draw
-    colfunc = R_DrawFuzzColumn;    // killough 3/14/98
+  // NULL colormap = shadow draw
+  if (!dc_colormap[0])
+  {
+      // killough 3/14/98
+      colfunc = R_DrawFuzzColumn;
+  }
+  else if (vis->mobjflags_extra & MFX_COLOREDBLOOD)
+  {
+      // [FG] colored blood and gibs
+      colfunc = R_DrawTranslatedColumn;
+      dc_translation = red2col[vis->color];
+  }
+  else if (vis->translation)
+  {
+      colfunc = R_DrawTranslatedColumn;
+      dc_translation = vis->translation;
+  }
+  else if (translucency && !(strictmode && demo_compatibility) && vis->tranmap)
+  {
+      // phares
+      // killough 4/11/98
+      colfunc = R_DrawTLColumn;
+      tranmap = vis->tranmap;
+  }
   else
-    // [FG] colored blood and gibs
-    if (vis->mobjflags_extra & MFX_COLOREDBLOOD)
-      {
-        colfunc = R_DrawTranslatedColumn;
-        dc_translation = red2col[vis->color];
-      }
-  else
-    if (vis->mobjflags & MF_TRANSLATION)
-      {
-        colfunc = R_DrawTranslatedColumn;
-        dc_translation = translationtables - 256 +
-          ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
-      }
-    else
-      if (translucency && !(strictmode && demo_compatibility)
-          && vis->tranmap) // phares // ID24
-        {
-          colfunc = R_DrawTLColumn; // killough 4/11/98
-          tranmap = vis->tranmap;   // ID24
-        }
-      else
-        colfunc = R_DrawColumn;         // killough 3/14/98, 4/11/98
+  {
+      // killough 3/14/98, 4/11/98
+      colfunc = R_DrawColumn;
+  }
 
   dc_iscale = abs(vis->xiscale);
   dc_texturemid = vis->texturemid;

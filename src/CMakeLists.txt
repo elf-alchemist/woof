@@ -161,6 +161,7 @@ set(WOOF_SOURCES
     r_things.c             r_things.h
     r_tranmap.c            r_tranmap.h
     r_voxel.c              r_voxel.h
+    r_xlat.c               r_xlat.h
     s_musinfo.c            s_musinfo.h
     s_sndinfo.c            s_sndinfo.h
     s_sound.c              s_sound.h

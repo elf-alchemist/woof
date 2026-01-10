@@ -39,6 +39,7 @@
 #include "p_spec.h"
 #include "r_main.h"
 #include "r_voxel.h"
+#include "r_xlat.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "st_sbardef.h"
@@ -1021,10 +1022,10 @@ boolean ST_DemoProgressBar(boolean force)
     return true;
 }
 
-static void ColorizeString(const char *haystack, const char *needle, crange_idx_e cr)
+static void ColorizeString(const char *haystack, const char *needle, xlat_index index)
 {
     char replacement[18];
-    M_snprintf(replacement, sizeof(replacement), "%s%s%s", crdefs[cr].str, needle, ORIG_S);
+    M_snprintf(replacement, sizeof(replacement), "%s%s%s", xlats[index].str, needle, ORIG_S);
     char * colorized = M_StringReplaceWord(DEH_String(haystack), needle, replacement);
     DEH_AddStringColorizedReplacement(haystack, colorized);
     free(colorized);

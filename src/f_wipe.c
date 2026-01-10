@@ -24,6 +24,7 @@
 #include "i_video.h"
 #include "m_random.h"
 #include "r_main.h"
+#include "r_xlat.h"
 #include "v_flextran.h"
 #include "v_video.h"
 #include "z_zone.h"

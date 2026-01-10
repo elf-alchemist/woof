@@ -55,6 +55,7 @@
 #include "r_defs.h"
 #include "r_draw.h"
 #include "r_main.h"
+#include "r_xlat.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "st_sbardef.h"
@@ -945,7 +946,7 @@ static void M_DrawSaveLoadBottomLine(void)
     int index = (menu_input == mouse_mode ? highlight_item : itemOn);
 
     int flags = currentMenu->menuitems[index].flags;
-    byte *cr = (flags & MF_PAGE) ? cr_bright : NULL;
+    byte *cr = (flags & MF_PAGE) ? xlat_bright : NULL;
 
     M_DrawSaveLoadBorder(x, y, cr);
 
@@ -974,7 +975,7 @@ static void M_DrawSaveLoadBorders(void)
         const int y = currentMenu->y + LINEHEIGHT * i;
 
         const menuitem_t *item = &currentMenu->menuitems[i];
-        byte *cr = (item->flags & MF_HILITE) ? cr_bright : NULL;
+        byte *cr = (item->flags & MF_HILITE) ? xlat_bright : NULL;
 
         M_DrawSaveLoadBorder(x, y, cr);
         WriteText(x, y, savegamestrings[i]);
@@ -1580,7 +1581,7 @@ static void M_DrawSound(void)
 
     if (index == sfx_vol_thermo && (item->flags & MF_HILITE))
     {
-        cr = cr_bright;
+        cr = xlat_bright;
     }
     else
     {
@@ -1592,7 +1593,7 @@ static void M_DrawSound(void)
 
     if (index == music_vol_thermo && (item->flags & MF_HILITE))
     {
-        cr = cr_bright;
+        cr = xlat_bright;
     }
     else
     {
@@ -3581,11 +3582,11 @@ void M_Drawer(void)
         byte *cr;
         if (item->status == 0)
         {
-            cr = cr_dark;
+            cr = xlat_dark;
         }
         else if (item->flags & MF_HILITE)
         {
-            cr = cr_bright;
+            cr = xlat_bright;
         }
         else
         {

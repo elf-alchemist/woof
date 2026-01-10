@@ -78,18 +78,14 @@ extern uint32_t ds_xstep;
 extern uint32_t ds_ystep;
 
 // start of a 64*64 tile image
-extern byte *ds_source;              
-extern byte *translationtables;
-extern byte *dc_translation;
+extern byte *ds_source;
+extern const byte *dc_translation;
 extern const byte *ds_brightmap;
 
 // Span blitting for rows, floor/ceiling. No Spectre effect needed.
 void R_DrawSpan(void);
 
 void R_InitBuffer(void);
-
-// Initialize color translation tables, for player rendering etc.
-void R_InitTranslationTables(void);
 
 // Rendering function.
 void R_FillBackScreen(void);

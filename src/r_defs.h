@@ -46,21 +46,6 @@ struct mobj_s;
 #define FLATSIZE (64 * 64)
 
 //
-// Palette translations
-//
-
-typedef struct xlat_s
-{
-  const char     *name;
-  const char     *lumpname;
-  struct patch_s *sbarback;
-  struct patch_s *interback;
-  boolean         sbartranslate;
-  boolean         intertranslate;
-  byte            table[256];
-} xlat_t;
-
-//
 // INTERNAL MAP TYPES
 //  used by play and refresh
 //
@@ -448,6 +433,7 @@ typedef struct vissprite_s
 
   // ID24
   const byte *tranmap;
+  const byte *translation;
 
   // andrewj: voxel support
   int voxel_index;

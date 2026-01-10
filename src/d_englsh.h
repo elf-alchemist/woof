@@ -357,6 +357,15 @@
 #define HUSTR_KEYBROWN    'b'
 #define HUSTR_KEYRED      'r'
 
+#define ID24_COLOR_GREEN   "Green"
+#define ID24_COLOR_INDIGO  "Indigo"
+#define ID24_COLOR_BROWN   "Brown"
+#define ID24_COLOR_RED     "Red"
+#define ID24_COLOR_YELLOW  "Yellow"
+#define ID24_COLOR_BLUE    "Blue"
+#define ID24_COLOR_NAVY    "Navy"
+#define ID24_COLOR_MAGENTA "Magenta"
+
 //
 //  AM_map.C
 //

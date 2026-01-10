@@ -56,11 +56,12 @@
 #include "r_sky.h"   // [FG] R_UpdateStretchSkies()
 #include "r_tranmap.h"
 #include "r_voxel.h"
+#include "r_xlat.h"
 #include "s_sound.h"
 #include "s_trakinfo.h"
+#include "sounds.h"
 #include "st_sbardef.h"
 #include "st_stuff.h"
-#include "sounds.h"
 #include "st_widgets.h"
 #include "v_patch.h"
 #include "v_video.h"
@@ -563,7 +564,7 @@ static void DrawTabs(void)
         {
             DrawMenuStringEx(tabs[i].flags, x, rect->y, CR_TITLE);
             V_FillRect(x + video.deltaw, rect->y + M_SPC, rect->w, 1,
-                       colrngs[CR_TITLE][cr_shaded[v_lightest_color]]);
+                       colrngs[CR_TITLE][xlat_shaded[v_lightest_color]]);
         }
         else
         {
@@ -694,7 +695,7 @@ static void DrawIndicator_Meter(const setup_menu_t *s, int x, int y, int width)
 
         if (scale > 0.0f)
         {
-            const byte shade = cr_shaded[v_lightest_color];
+            const byte shade = xlat_shaded[v_lightest_color];
             const byte color = scale < limit    ? cr_green[shade]
                                : scale >= 0.99f ? cr_red[shade]
                                                 : cr_gold[shade];
@@ -1038,11 +1039,11 @@ static void DrawSetting(setup_menu_t *s, int accum_y)
         byte *cr;
         if (ItemDisabled(flags))
         {
-            cr = cr_dark;
+            cr = xlat_dark;
         }
         else if (flags & S_HILITE)
         {
-            cr = cr_bright;
+            cr = xlat_bright;
         }
         else
         {
@@ -1382,7 +1383,7 @@ static void DrawInstructions(void)
     }
 
     MN_DrawStringCR((SCREENWIDTH - MN_GetPixelWidth(s)) / 2, M_Y_WARN,
-                    cr_shaded, NULL, s);
+                    xlat_shaded, NULL, s);
 }
 
 static void SetupMenu(void)
@@ -1898,8 +1899,6 @@ static setup_menu_t stat_settings1[] = {
     MI_GAP,
 
     {"Status Bar", S_SKIP | S_TITLE, H_X, M_SPC},
-
-    {"Colored Numbers", S_ONOFF | S_COSMETIC, H_X, M_SPC, {"sts_colored_numbers"}},
 
     {"Solid Background Color", S_ONOFF, H_X, M_SPC, {"st_solidbackground"},
      .action = RefreshSolidBackground},
@@ -3933,17 +3932,17 @@ static void DrawMenuStringBuffer(int flags, int x, int y, int color,
 {
     if (ItemDisabled(flags))
     {
-        MN_DrawStringCR(x, y, cr_dark, NULL, buffer);
+        MN_DrawStringCR(x, y, xlat_dark, NULL, buffer);
     }
     else if (flags & S_HILITE)
     {
         if (color == CR_NONE)
         {
-            MN_DrawStringCR(x, y, cr_bright, NULL, buffer);
+            MN_DrawStringCR(x, y, xlat_bright, NULL, buffer);
         }
         else
         {
-            MN_DrawStringCR(x, y, colrngs[color], cr_bright, buffer);
+            MN_DrawStringCR(x, y, colrngs[color], xlat_bright, buffer);
         }
     }
     else

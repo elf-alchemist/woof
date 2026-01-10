@@ -33,6 +33,7 @@
 #include "m_swap.h"
 #include "mn_menu.h"
 #include "r_defs.h"
+#include "r_xlat.h"
 #include "s_sound.h"
 #include "st_sbardef.h"
 #include "st_stuff.h"

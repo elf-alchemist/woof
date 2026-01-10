@@ -24,6 +24,7 @@
 #include "m_swap.h"
 #include "r_defs.h"
 #include "r_tranmap.h"
+#include "r_xlat.h"
 #include "v_patch.h"
 #include "v_video.h"
 #include "w_wad.h"
@@ -134,8 +135,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
     }
 
     const char *translation = JS_GetStringValue(json, "translation");
-    out->cr = translation ? V_CRByName(translation) : CR_NONE;
-    out->crboom = CR_NONE;
+    out->xlat = translation ? R_XlatTableByName(translation) : NULL;
 
     json_t *js_conditions = JS_GetObject(json, "conditions");
     json_t *js_condition = NULL;
