@@ -126,7 +126,6 @@ extern boolean monkeys, default_monkeys;
 
 // v1.1-like pitched sounds
 extern boolean pitched_sounds;
-extern int pitch_bend_range; // [FG] variable pitch bend range
 
 extern boolean translucency;
 
@@ -172,10 +171,6 @@ enum {
 };
 
 extern int comp[COMP_TOTAL], default_comp[COMP_TOTAL];
-
-// -------------------------------------------
-// Language.
-extern  Language_t   language;
 
 // -------------------------------------------
 // Selected skill type, map etc.
@@ -285,7 +280,8 @@ extern  int max_kill_requirement;
 
 // Timer, for scores.
 extern  int levelstarttic;  // gametic at level start
-extern  int basetic;    // killough 9/29/98: levelstarttic, adjusted
+extern  int boom_basetic;    // killough 9/29/98: levelstarttic, adjusted
+extern  int true_basetic;
 extern  int leveltime;  // tics in game play for par
 extern  int oldleveltime;
 extern  int totalleveltimes; // [FG] total time for all completed levels
@@ -441,6 +437,9 @@ extern boolean monster_friction, default_monster_friction;
 extern boolean help_friends, default_help_friends;
 
 extern boolean hide_weapon;
+
+// haleyjd 9/22/99
+extern int helper_type; // in P_SpawnMapThing to substitute helper thing
 
 // [FG] centered weapon sprite
 extern int center_weapon;

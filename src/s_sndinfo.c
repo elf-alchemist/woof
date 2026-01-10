@@ -17,9 +17,9 @@
 
 #include <math.h>
 
-#include "doomtype.h"
+#include "deh_bex_sounds.h"
 #include "doomdef.h"
-#include "dsdhacked.h"
+#include "doomtype.h"
 #include "i_printf.h"
 #include "i_sound.h"
 #include "m_array.h"
@@ -281,7 +281,7 @@ static boolean ResolveAmbientSounds(sound_def_t *sound_defs,
 
                 if (!strcasecmp(sound_name, def->sound_name))
                 {
-                    amb->sfx_id = dsdh_GetNewSFXIndex();
+                    amb->sfx_id = DEH_SoundsGetNewIndex();
                     sfxinfo_t *sfx = &S_sfx[amb->sfx_id];
                     sfx->name = M_StringDuplicate(def->lump_name);
                     sfx->lumpnum = def->lumpnum;
@@ -302,6 +302,40 @@ static boolean ResolveAmbientSounds(sound_def_t *sound_defs,
 
     //I_Printf(VB_DEBUG, "SNDINFO: Resolved %d ambient sounds", num_resolved);
     return (num_resolved > 0);
+}
+
+// If "$random" is found, search for '{'. If no '{' is found, ignore the `SNDINFO` lump.
+// Then search for '}'. If no '}' is found, ignore the `SNDINFO` lump.
+// Otherwise, skip ahead to the next line after '}' and continue parsing.
+
+static boolean SkipRandomSoundCommand(scanner_t *s)
+{
+    int brackets_found = 0;
+
+    SC_Warning(s, "skip $random record");
+
+    while (SC_TokensLeft(s))
+    {
+        SC_CheckToken(s, TK_RawString);
+        const char *string = SC_GetString(s);
+
+        if (string[0] == '{' && brackets_found == 0)
+        {
+            brackets_found = 1;
+            continue;
+        }
+        else if (string[0] == '}' && brackets_found == 1)
+        {
+            if (SC_SameLine(s))
+            {
+                SC_GetNextLineToken(s);
+            }
+            brackets_found = 2;
+            break;
+        }
+    }
+
+    return (brackets_found == 2);
 }
 
 static void FreeSoundDefinitions(sound_def_t **sound_defs)
@@ -353,6 +387,14 @@ void S_ParseSndInfo(int lumpnum)
         if (string[0] != '$')
         {
             ParseSoundDefinition(s, &sound_defs);
+        }
+        else if (!strcasecmp(string, "$random"))
+        {
+            if (!SkipRandomSoundCommand(s))
+            {
+                FreeSoundDefinitions(&sound_defs);
+                break;
+            }
         }
         else if (!strcasecmp(string, "$ambient"))
         {

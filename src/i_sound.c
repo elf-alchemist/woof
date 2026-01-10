@@ -22,13 +22,16 @@
 
 #include "i_sound.h"
 
+#include "deh_bex_sounds.h"
+#include "deh_strings.h"
 #include "doomstat.h"
 #include "doomtype.h"
+#include "i_exit.h"
 #include "i_oalstream.h"
 #include "i_printf.h"
 #include "i_rumble.h"
-#include "i_system.h"
 #include "m_array.h"
+#include "m_misc.h"
 #include "mn_menu.h"
 #include "p_mobj.h"
 #include "s_sound.h"
@@ -260,13 +263,8 @@ int I_GetSfxLumpNum(sfxinfo_t *sfx)
 {
     if (sfx->lumpnum == -1)
     {
-        char namebuf[16];
-
-        memset(namebuf, 0, sizeof(namebuf));
-
-        strcpy(namebuf, "DS");
-        strcpy(namebuf + 2, sfx->name);
-
+        char namebuf[9] = {0};
+        M_snprintf(namebuf, sizeof(namebuf), "ds%s", DEH_String(sfx->name));
         sfx->lumpnum = W_CheckNumForName(namebuf);
     }
 
@@ -797,8 +795,6 @@ void I_BindSoundVariables(void)
         "Play SNDINFO ambient sounds");
     BIND_BOOL_SFX(pitched_sounds, false,
         "Variable pitch for sound effects");
-    BIND_NUM(pitch_bend_range, 120, 100, 300,
-        "Variable pitch bend range (100 = None)");
     BIND_BOOL_SFX(full_sounds, false, "Play sounds in full length (prevents cutoffs)");
     BIND_NUM_SFX(snd_channels, MAX_CHANNELS, 1, MAX_CHANNELS,
         "Number of sound channels");

@@ -187,7 +187,10 @@ typedef enum
     //  using an internal color lookup table for re-indexing.
     // If 0x4 0x8 or 0xc,
     //  use a translation table for player colormaps
-    MF_TRANSLATION      = 0xc000000,
+    MF_TRANSLATION1     = 0x04000000,
+    MF_TRANSLATION2     = 0x08000000,
+    MF_TRANSLATION      = (MF_TRANSLATION1|MF_TRANSLATION2),
+
     // Hmm ???.
     MF_TRANSSHIFT       = 26,
 
@@ -232,16 +235,17 @@ typedef enum
 // killough 9/15/98: Same, but internal flags, not intended for .deh
 // (some degree of opaqueness is good, to avoid compatibility woes)
 
-enum {
-  MIF_FALLING = 1,      // Object is falling
-  MIF_ARMED = 2,        // Object is armed (for MF_TOUCHY objects)
-  MIF_LINEDONE = 4,     // Object has activated W1 or S1 linedef via DEH frame
+typedef enum
+{
+  MIF_FALLING         = 0x00000001, // Object is falling
+  MIF_ARMED           = 0x00000002, // Object is armed (for MF_TOUCHY objects)
+  MIF_LINEDONE        = 0x00000004, // Object has activated W1 or S1 linedef via DEH frame
   // mbf21
-  MIF_SCROLLING = 8,    // Object is affected by scroller / pusher / puller
+  MIF_SCROLLING       = 0x00000008, // Object is affected by scroller / pusher / puller
   // cosmetic
-  MIF_FLIP = 16,
-  MIF_SPAWNED_BY_ICON = 32,
-};
+  MIF_FLIP            = 0x00000010,
+  MIF_SPAWNED_BY_ICON = 0x00000020,
+} mobjflag_int_t;
 
 // Map Object definition.
 //
@@ -309,11 +313,19 @@ typedef struct mobj_s
     
     int                 tics;   // state tic counter
     state_t*            state;
-    int                 flags;
-    int                 flags2; // mbf21
-    int                 flags_extra; // Woof!
-    int                 intflags;  // killough 9/15/98: internal flags
+    mobjflag_t          flags;
+    mobjflag2_t         flags2; // mbf21
+    mobjflag_extra_t    flags_extra; // Woof!
+    mobjflag_int_t      intflags;  // killough 9/15/98: internal flags
     int                 health;
+
+    // Action specials
+    int32_t             id;
+    int32_t             special;
+    int32_t             args[5];
+
+    // Translucency
+    byte*               tranmap;
 
     // Movement direction, movement generation (zig-zagging).
     short               movedir;        // 0-7
@@ -438,7 +450,6 @@ mobj_t *P_SubstNullMobj(mobj_t *mobj);
 void    P_RespawnSpecials(void);
 mobj_t  *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
 void    P_RemoveMobj(mobj_t *th);
-extern int setmobjstate_recursion;
 boolean P_SetMobjState(mobj_t *mobj, statenum_t state);
 void    P_MobjThinker(mobj_t *mobj);
 void    P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);

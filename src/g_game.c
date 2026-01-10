@@ -17,7 +17,6 @@
 //-----------------------------------------------------------------------------
 
 #include <errno.h>
-#include <math.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -28,12 +27,15 @@
 
 #include "am_map.h"
 #include "config.h"
-#include "d_deh.h" // Ty 3/27/98 deh declarations
 #include "d_event.h"
 #include "d_iwad.h"
 #include "d_main.h"
 #include "d_player.h"
 #include "d_ticcmd.h"
+#include "deh_bex_partimes.h"
+#include "deh_main.h"
+#include "deh_strings.h"
+#include "deh_misc.h"
 #include "doomdata.h"
 #include "doomdef.h"
 #include "doomkeys.h"
@@ -41,17 +43,19 @@
 #include "doomtype.h"
 #include "f_finale.h"
 #include "g_game.h"
-#include "g_rewind.h"
 #include "g_nextweapon.h"
+#include "g_rewind.h"
 #include "g_umapinfo.h"
 #include "hu_command.h"
+#include "hu_crosshair.h"
 #include "hu_obituary.h"
+#include "i_exit.h"
 #include "i_gamepad.h"
 #include "i_gyro.h"
 #include "i_input.h"
 #include "i_printf.h"
+#include "i_richpresence.h"
 #include "i_rumble.h"
-#include "i_system.h"
 #include "i_timer.h"
 #include "i_video.h"
 #include "info.h"
@@ -67,6 +71,7 @@
 #include "mn_menu.h"
 #include "mn_snapshot.h"
 #include "net_defs.h"
+#include "p_dirty.h"
 #include "p_enemy.h"
 #include "p_inter.h"
 #include "p_keyframe.h"
@@ -144,7 +149,8 @@ int             consoleplayer; // player taking events and displaying
 int             displayplayer; // view being displayed
 int             gametic;
 int             levelstarttic; // gametic at level start
-int             basetic;       // killough 9/29/98: for demo sync
+int             boom_basetic;       // killough 9/29/98: for demo sync
+int             true_basetic;
 int             totalkills, totalitems, totalsecret;    // for intermission
 int             max_kill_requirement; // DSDA UV Max category requirements
 int             totalleveltimes; // [FG] total time for all completed levels
@@ -357,6 +363,7 @@ void G_SetTimeScale(void)
 
     I_SetTimeScale(time_scale);
 
+    I_ResetDRS();
     setrefreshneeded = true;
 }
 
@@ -844,7 +851,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       cmd->buttons |= BT_CHANGE;
       cmd->buttons |= newweapon<<BT_WEAPONSHIFT;
       if (!nextweapon_cmd)
-        G_NextWeaponReset();
+        G_NextWeaponReset(newweapon);
     }
 
     WS_UpdateStateTic();
@@ -961,7 +968,7 @@ static void G_DoLoadLevel(void)
   playback_levelstarttic = playback_tic;
 
   if (!demo_compatibility && demo_version < DV_MBF)   // killough 9/29/98
-    basetic = gametic;
+    boom_basetic = gametic;
 
   if (wipegamestate == GS_LEVEL)
     wipegamestate = -1;             // force a wipe
@@ -1000,11 +1007,14 @@ static void G_DoLoadLevel(void)
     reset_inventory = false;
   }
 
+  P_ClearDirtyArrays();
+
   P_SetupLevel (gameepisode, gamemap, 0, gameskill);
 
-  G_ResetRewind();
   MN_UpdateFreeLook();
   HU_UpdateTurnFormat();
+
+  I_UpdateDiscordPresence(G_GetLevelTitle(), gamedescription);
 
   // [Woof!] Do not reset chosen player view across levels in multiplayer
   // demo playback. However, it must be reset when starting a new game.
@@ -1031,6 +1041,8 @@ static void G_DoLoadLevel(void)
   // killough 5/13/98: in case netdemo has consoleplayer other than green
   ST_Start();
 
+  wi_overlay = false;
+
   // killough: make -timedemo work on multilevel demos
   // Move to end of function to minimize noise -- killough 2/22/98:
 
@@ -1053,7 +1065,8 @@ static void G_ReloadLevel(void)
     gameepisode = startepisode;
   }
 
-  basetic = gametic;
+  boom_basetic = gametic;
+  true_basetic = gametic;
   rngseed += gametic;
 
   if (demorecording)
@@ -1740,7 +1753,7 @@ static void G_WriteLevelStat(void)
 // G_DoCompleted
 //
 
-boolean um_pars = false;
+boolean umapinfo_partimes = false;
 
 static void G_DoCompleted(void)
 {
@@ -1774,7 +1787,7 @@ static void G_DoCompleted(void)
 
   wminfo.lastmapinfo = gamemapinfo;
   wminfo.nextmapinfo = NULL;
-  um_pars = false;
+  umapinfo_partimes = false;
   if (gamemapinfo)
   {
     const char *next = NULL;
@@ -1816,7 +1829,7 @@ static void G_DoCompleted(void)
       wminfo.didsecret = players[consoleplayer].didsecret;
       wminfo.partime = gamemapinfo->partime * TICRATE;
       if (wminfo.partime > 0)
-        um_pars = true;
+        umapinfo_partimes = true;
       goto frommapinfo;	// skip past the default setup.
     }
   }
@@ -1891,12 +1904,12 @@ static void G_DoCompleted(void)
     {
       int cpars32;
 
-      memcpy(&cpars32, s_GAMMALVL0, sizeof(int));
+      memcpy(&cpars32, DEH_String(GAMMALVL0), sizeof(int));
       wminfo.partime = TICRATE*LONG(cpars32);
     }
     else if (gamemap >= 1 && gamemap <= 34)
     {
-      wminfo.partime = TICRATE*cpars[gamemap-1];
+      wminfo.partime = TICRATE * bex_cpars[gamemap - 1];
     }
   }
   else
@@ -1904,11 +1917,11 @@ static void G_DoCompleted(void)
     // Doom Episode 4 doesn't have a par time, so this overflows into the cpars[] array.
     if (demo_compatibility && gameepisode == 4 && gamemap >= 1 && gamemap <= 9)
     {
-      wminfo.partime = TICRATE*cpars[gamemap];
+      wminfo.partime = TICRATE * bex_cpars[gamemap - 1];
     }
-    else if (gameepisode >= 1 && gameepisode <= 3 && gamemap >= 1 && gamemap <= 9)
+    else if (gameepisode >= 1 && gameepisode <= 6 && gamemap >= 1 && gamemap <= 9)
     {
-      wminfo.partime = TICRATE*pars[gameepisode][gamemap];
+      wminfo.partime = TICRATE * bex_pars[gameepisode - 1][gamemap - 1];
     }
   }
 
@@ -1949,9 +1962,23 @@ frommapinfo:
 
   for (int i = 0; i < MAXPLAYERS; ++i)
   {
-      level_t level = {gameepisode, gamemap};
-      array_push(players[i].visitedlevels, level);
-      players[i].num_visitedlevels = array_size(players[i].visitedlevels);
+      if (playeringame[i])
+      {
+          level_t *level;
+          array_foreach(level, players[i].visitedlevels)
+          {
+              if (level->episode == gameepisode && level->map == gamemap)
+              {
+                  break;
+              }
+          }
+          if (level == array_end(players[i].visitedlevels))
+          {
+              level_t newlevel = {gameepisode, gamemap};
+              array_push(players[i].visitedlevels, newlevel);
+          }
+          players[i].num_visitedlevels = array_size(players[i].visitedlevels);
+      }
   }
   wminfo.visitedlevels = players[consoleplayer].visitedlevels;
 
@@ -1960,12 +1987,14 @@ frommapinfo:
 
 static void G_DoWorldDone(void)
 {
+  P_ArchiveDirtyArraysCurrentLevel();
+
   idmusnum = -1;             //jff 3/17/98 allow new level's music to be loaded
-  musinfo.from_savegame = false;
   gamestate = GS_LEVEL;
   gameepisode = wminfo.nextep + 1;
   gamemap = wminfo.next+1;
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
+  G_ResetRewind(false);
   G_DoLoadLevel();
   gameaction = ga_nothing;
   viewactive = true;
@@ -2000,7 +2029,10 @@ static void G_DoPlayDemo(void)
   int demolength;
 
   if (gameaction != ga_loadgame)      // killough 12/98: support -loadgame
-    basetic = gametic;  // killough 9/29/98
+  {
+      boom_basetic = gametic;  // killough 9/29/98
+      true_basetic = gametic;
+  }
 
   // [crispy] in demo continue mode free the obsolete demo buffer
   // of size 'maxdemosize' previously allocated in G_RecordDemo()
@@ -2426,6 +2458,11 @@ char* G_MBFSaveGameName(int slot)
   }
 }
 
+void G_Rewind(void)
+{
+    gameaction = ga_rewind;
+}
+
 // killough 12/98:
 // This function returns a signature for the current wad.
 // It is used to distinguish between wads, for the purposes
@@ -2520,14 +2557,9 @@ static void DoSaveGame(char *name)
   saveg_write32(leveltime); //killough 11/98: save entire word
 
   // killough 11/98: save revenant tracer state
-  saveg_write8((gametic-basetic) & 255);
+  saveg_write8((gametic - boom_basetic) & 255);
 
-  P_ArchivePlayers();
-  P_ArchiveWorld();
-  P_ArchiveThinkers();
-  P_ArchiveSpecials();
-  P_ArchiveRNG();    // killough 1/18/98: save RNG information
-  P_ArchiveMap();    // killough 1/22/98: save automap information
+  P_ArchiveKeyframe();
 
   saveg_write8(0xe6);   // consistancy marker
 
@@ -2561,7 +2593,7 @@ static void DoSaveGame(char *name)
   }
   else
   {
-      displaymsg("%s", s_GGSAVED); // Ty 03/27/98 - externalized
+      displaymsg("%s", DEH_String(GGSAVED));
   }
 
   Z_Free(savebuffer);  // killough
@@ -2570,7 +2602,7 @@ static void DoSaveGame(char *name)
   gameaction = ga_nothing;
   savedescription[0] = 0;
 
-  drs_skip_frame = true;
+  I_ResetDRS();
 }
 
 static void G_DoSaveGame(void)
@@ -2739,8 +2771,16 @@ static boolean DoLoadGame(boolean do_load_autosave)
   leveltime = saveg_read32();
 
   // killough 11/98: load revenant tracer state
-  basetic = gametic - (int) *save_p++;
+  boom_basetic = gametic - (int) *save_p++;
 
+  if (saveg_compat > saveg_woof1500)
+  {
+    P_MapStart();
+    P_UnArchiveKeyframe();
+    P_MapEnd();
+  }
+  else
+  {
   // dearchive all the modifications
   P_MapStart();
   P_UnArchivePlayers();
@@ -2750,6 +2790,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
   P_UnArchiveRNG();    // killough 1/18/98: load RNG information
   P_UnArchiveMap();    // killough 1/22/98: load automap information
   P_MapEnd();
+  }
 
   if (saveg_read8() != 0xe6)
     I_Error ("Bad savegame");
@@ -2776,7 +2817,6 @@ static boolean DoLoadGame(boolean do_load_autosave)
           musinfo.lastmapthing = NULL;
           musinfo.tics = 0;
           musinfo.current_item = lumpnum;
-          musinfo.from_savegame = true;
           S_ChangeMusInfoMusic(lumpnum, true);
       }
   }
@@ -2906,21 +2946,24 @@ boolean clean_screenshot;
 
 void G_CleanScreenshot(void)
 {
-  int old_screenblocks;
-  boolean old_hide_weapon;
+  const int old_screenblocks = screenblocks;
+  const int old_hud_crosshair = hud_crosshair;
+  const boolean old_hide_weapon = hide_weapon;
 
   ST_ResetPalette();
 
   if (gamestate != GS_LEVEL)
       return;
 
-  old_screenblocks = screenblocks;
-  old_hide_weapon = hide_weapon;
+  hud_crosshair = 0;
   hide_weapon = true;
+
   R_SetViewSize(11);
   R_ExecuteSetViewSize();
   R_RenderPlayerView(&players[displayplayer]);
   R_SetViewSize(old_screenblocks);
+
+  hud_crosshair = old_hud_crosshair;
   hide_weapon = old_hide_weapon;
 }
 
@@ -2986,6 +3029,9 @@ void G_Ticker(void)
       case ga_saveautosave:
 	G_DoSaveAutoSave();
 	break;
+      case ga_rewind:
+	G_LoadAutoKeyframe();
+	break;
       default:  // killough 9/29/98
 	gameaction = ga_nothing;
 	break;
@@ -3013,12 +3059,16 @@ void G_Ticker(void)
   // we do not need to stop if a menu is pulled up during netgames.
 
   if (paused & 2 || ((!demoplayback || menu_pause_demos) && menuactive && !netgame))
-    basetic++;  // For revenant tracers and RNG -- we must maintain sync
+    {
+      boom_basetic++;  // For revenant tracers and RNG -- we must maintain sync
+      true_basetic++;
+    }
   else
     {
-      if (!timingdemo && gamestate == GS_LEVEL && gameaction == ga_nothing)
+      if (!timingdemo && !paused
+          && gamestate == GS_LEVEL && gameaction == ga_nothing)
         G_SaveAutoKeyframe();
-      
+
       // get commands, check consistancy, and build new consistancy check
       int buf = (gametic/ticdup)%BACKUPTICS;
 
@@ -3058,7 +3108,7 @@ void G_Ticker(void)
 		  cmd->forwardmove > TURBOTHRESHOLD &&
 		  !(gametic&31) && ((gametic>>5)&3) == i )
 		{
-		  displaymsg("%s is turbo!", *player_names[i]); // killough 9/29/98
+		  displaymsg("%s is turbo!", DEH_StringColorized(strings_players[i])); // killough 9/29/98
 		}
 
 	      if (netgame && !netdemo && !(gametic%ticdup) )
@@ -3187,12 +3237,12 @@ void G_PlayerReborn(int player)
 
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;
-  p->health = initial_health;  // Ty 03/12/98 - use dehacked values
+  p->health = deh_initial_health;  // Ty 03/12/98 - use dehacked values
   p->lastweapon = wp_fist;
   p->nextweapon = p->readyweapon = p->pendingweapon = wp_pistol;
   p->weaponowned[wp_fist] = true;
   p->weaponowned[wp_pistol] = true;
-  p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  p->ammo[am_clip] = deh_initial_bullets; // Ty 03/12/98 - use dehacked values
 
   for (i=0 ; i<NUMAMMO ; i++)
     p->maxammo[i] = maxammo[i];
@@ -3216,14 +3266,13 @@ static boolean G_CheckSpot(int playernum, mapthing_t *mthing)
     {
       // first spawn of level, before corpses
       for (i=0 ; i<playernum ; i++)
-        if (players[i].mo->x == mthing->x << FRACBITS
-            && players[i].mo->y == mthing->y << FRACBITS)
+        if (players[i].mo->x == mthing->x && players[i].mo->y == mthing->y)
           return false;
       return true;
     }
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   // killough 4/2/98: fix bug where P_CheckPosition() uses a non-solid
   // corpse to detect collisions with other players in DM starts
@@ -3415,22 +3464,6 @@ void G_ScreenShot(void)
   gameaction = ga_screenshot;
 }
 
-// DOOM Par Times
-int pars[4][10] = {
-  {0},
-  {0,30,75,120,90,165,180,180,30,165},
-  {0,90,90,90,120,90,360,240,30,170},
-  {0,90,45,90,150,90,90,165,30,135}
-};
-
-// DOOM II Par Times
-int cpars[34] = {
-  30,90,120,120,90,150,120,120,270,90,  //  1-10
-  210,150,150,150,210,150,420,150,210,150,  // 11-20
-  240,150,180,150,150,300,330,420,300,180,  // 21-30
-  120,30,30,30          // 31-34
-};
-
 //
 // G_WorldDone
 //
@@ -3512,7 +3545,6 @@ void G_DeferedInitNew(skill_t skill, int episode, int map)
   d_episode = episode;
   d_map = map;
   gameaction = ga_newgame;
-  musinfo.from_savegame = false;
 
   if (demorecording)
   {
@@ -4031,7 +4063,8 @@ void G_DoNewGame (void)
   netgame = false;               // killough 3/29/98
   solonet = false;
   deathmatch = false;
-  basetic = gametic;             // killough 9/29/98
+  boom_basetic = gametic;             // killough 9/29/98
+  true_basetic = gametic;
 
   G_InitNew(d_skill, d_episode, d_map);
   gameaction = ga_nothing;
@@ -4153,6 +4186,21 @@ void G_InitNew(skill_t skill, int episode, int map)
 
   if (demo_version == DV_MBF)
     G_MBFComp();
+
+  G_ResetRewind(true);
+
+  G_DoLoadLevel();
+}
+
+void G_SimplifiedInitNew(int episode, int map)
+{
+  gameepisode = episode;
+  gamemap = map;
+  gamemapinfo = G_LookupMapinfo(episode, gamemap);
+
+  AM_clearMarks();
+
+  G_ResetRewind(false);
 
   G_DoLoadLevel();
 }
@@ -4659,6 +4707,7 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
     free(tmp);
   }
 
+  char **dehfiles = DEH_GetFileNames();
   if (dehfiles)
   {
     mem_fputs(" -deh", stream);
@@ -4848,6 +4897,86 @@ boolean G_CheckDemoStatus(void)
     }
 
   return false;
+}
+
+void G_CheckDemoRecordingStatus(void)
+{
+    if (demorecording)
+    {
+        G_CheckDemoStatus();
+    }
+}
+
+static boolean IsVanillaMap(int e, int m)
+{
+    if (gamemode == commercial)
+    {
+        return (e == 1 && m > 0 && m <= 32);
+    }
+    else
+    {
+        return (e > 0 && e <= 4 && m > 0 && m <= 9);
+    }
+}
+
+static inline const char * GetVanillaMapname()
+{
+    return (gamemode != commercial) ? mapnames[(gameepisode - 1) * 9 + gamemap - 1] :
+          (gamemission == pack_tnt) ? mapnamest[gamemap - 1] :
+         (gamemission == pack_plut) ? mapnamesp[gamemap - 1] :
+                                      mapnames2[gamemap - 1];
+}
+
+static inline const char * GetVanillaMapnameOverflow()
+{
+    return (gamemission == doom2) ? mapnamesp[gamemap - 33] :
+       (gamemission == pack_plut) ? mapnamest[gamemap - 33] : "";
+}
+
+const char *G_GetLevelTitle(void)
+{
+    const char *result = "";
+
+    if (gamemapinfo && gamemapinfo->levelname)
+    {
+        if (!(gamemapinfo->flags & MapInfo_LabelClear))
+        {
+            static char *string;
+            if (string)
+            {
+                free(string);
+            }
+            string = M_StringJoin(gamemapinfo->label ? gamemapinfo->label
+                                                     : gamemapinfo->mapname,
+                                  ": ", gamemapinfo->levelname);
+            result = string;
+        }
+        else
+        {
+            result = gamemapinfo->levelname;
+        }
+    }
+    else if (gamestate == GS_LEVEL)
+    {
+        if (IsVanillaMap(gameepisode, gamemap))
+        {
+            result = DEH_String(GetVanillaMapname());
+        }
+        // WADs like pl2.wad have a MAP33, and rely on the layout in the
+        // Vanilla executable, where it is possible to overflow the end of one
+        // array into the next.
+        else if (gamemode == commercial && gamemap >= 33 && gamemap <= 35)
+        {
+            result = DEH_String(GetVanillaMapnameOverflow());
+        }
+        else
+        {
+            // initialize the map title widget with the generic map lump name
+            result = MapName(gameepisode, gamemap);
+        }
+    }
+
+    return result;
 }
 
 // killough 1/22/98: this is a "Doom printf" for messages. I've gotten

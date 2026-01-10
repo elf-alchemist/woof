@@ -17,14 +17,15 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "d_deh.h" // Ty 03/27/98 - externalized
 #include "d_player.h"
 #include "d_think.h"
+#include "deh_strings.h"
 #include "doomdata.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "i_printf.h"
 #include "m_fixed.h"
+#include "p_dirty.h"
 #include "p_mobj.h"
 #include "p_spec.h"
 #include "p_tick.h"
@@ -270,7 +271,7 @@ int EV_DoLockedDoor(line_t *line, vldoor_e type, mobj_t *thing)
     case 133:
       if (!p->cards[it_bluecard] && !p->cards[it_blueskull])
         {
-          doomprintf(p, MESSAGES_NONE, "%s", s_PD_BLUEO);  // Ty 03/27/98 - externalized
+          doomprintf(p, MESSAGES_NONE, DEH_StringColorized(PD_BLUEO));
           S_StartSound(p->mo,sfx_oof);                  // killough 3/20/98
           return 0;
         }
@@ -280,7 +281,7 @@ int EV_DoLockedDoor(line_t *line, vldoor_e type, mobj_t *thing)
     case 135:
       if (!p->cards[it_redcard] && !p->cards[it_redskull])
         {
-          doomprintf(p, MESSAGES_NONE, "%s", s_PD_REDO); // Ty 03/27/98 - externalized
+          doomprintf(p, MESSAGES_NONE, DEH_StringColorized(PD_REDO));
           S_StartSound(p->mo,sfx_oof);                // killough 3/20/98
           return 0;
         }
@@ -290,7 +291,7 @@ int EV_DoLockedDoor(line_t *line, vldoor_e type, mobj_t *thing)
     case 137:
       if (!p->cards[it_yellowcard] && !p->cards[it_yellowskull])
         {
-          doomprintf(p, MESSAGES_NONE, "%s", s_PD_YELLOWO);  // Ty 03/27/98 - externalized
+          doomprintf(p, MESSAGES_NONE, DEH_StringColorized(PD_YELLOWO));
           S_StartSound(p->mo,sfx_oof);                    // killough 3/20/98
           return 0;
         }
@@ -326,7 +327,7 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 
       // new door thinker
       rtn = 1;
-      door = arena_alloc(thinkers_arena, 1, vldoor_t);
+      door = arena_alloc(thinkers_arena, vldoor_t);
       P_AddThinker(&door->thinker);
       sec->ceilingdata = door; //jff 2/22/98
 
@@ -417,7 +418,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
         return 0;
       if (!player->cards[it_bluecard] && !player->cards[it_blueskull])
         {
-          doomprintf(player, MESSAGES_NONE, "%s", s_PD_BLUEK);  // Ty 03/27/98 - externalized
+          doomprintf(player, MESSAGES_NONE, DEH_StringColorized(PD_BLUEK));
           S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
           return 0;
         }
@@ -429,7 +430,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
         return 0;
       if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
         {
-          doomprintf(player, MESSAGES_NONE, "%s", s_PD_YELLOWK);  // Ty 03/27/98 - externalized
+          doomprintf(player, MESSAGES_NONE, DEH_StringColorized(PD_YELLOWK));
           S_StartSound(player->mo,sfx_oof);               // killough 3/20/98
           return 0;
         }
@@ -441,7 +442,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
         return 0;
       if (!player->cards[it_redcard] && !player->cards[it_redskull])
         {
-          doomprintf(player, MESSAGES_NONE, "%s", s_PD_REDK); // Ty 03/27/98 - externalized
+          doomprintf(player, MESSAGES_NONE, DEH_StringColorized(PD_REDK));
           S_StartSound(player->mo,sfx_oof);           // killough 3/20/98
           return 0;
         }
@@ -561,7 +562,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
     }
 
   // new door thinker
-  door = arena_alloc(thinkers_arena, 1, vldoor_t);
+  door = arena_alloc(thinkers_arena, vldoor_t);
   P_AddThinker (&door->thinker);
   sec->ceilingdata = door; //jff 2/22/98
   door->thinker.function.p1 = T_VerticalDoorAdapter;
@@ -572,7 +573,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
   door->line = line; // jff 1/31/98 remember line that triggered us
 
   // killough 10/98: use gradual lighting changes if nonzero tag given
-  door->lighttag = STRICTMODE_COMP(comp_doorlight) ? 0 : line->tag; // killough 10/98
+  door->lighttag = STRICTMODE_COMP(comp_doorlight) ? 0 : line->args[0]; // killough 10/98
 
   // set the type of door from the activating linedef type
   switch(line->special)
@@ -589,7 +590,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
     case 33:
     case 34:
       door->type = doorOpen;
-      line->special = 0;
+      dirty_line(line)->special = 0;
       break;
 
     case 117: // blazing door raise
@@ -599,7 +600,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
 
     case 118: // blazing door open
       door->type = blazeOpen;
-      line->special = 0;
+      dirty_line(line)->special = 0;
       door->speed = VDOORSPEED*4;
       break;
 
@@ -631,7 +632,7 @@ int EV_VerticalDoor(line_t *line, mobj_t *thing)
 
 void P_SpawnDoorCloseIn30 (sector_t* sec)
 {
-  vldoor_t *door = arena_alloc(thinkers_arena, 1, vldoor_t);
+  vldoor_t *door = arena_alloc(thinkers_arena, vldoor_t);
 
   P_AddThinker (&door->thinker);
 
@@ -661,7 +662,7 @@ void P_SpawnDoorRaiseIn5Mins(sector_t *sec, int secnum)
 {
   vldoor_t* door;
 
-  door = arena_alloc(thinkers_arena, 1, vldoor_t);
+  door = arena_alloc(thinkers_arena, vldoor_t);
 
   P_AddThinker (&door->thinker);
 

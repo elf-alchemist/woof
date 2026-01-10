@@ -36,9 +36,6 @@ GameVersions_t gameversions[] = {
     { NULL,           NULL,       0},
 };
 
-// Language.
-Language_t   language = english;
-
 // Set if homebrew PWAD stuff has been added.
 boolean modifiedgame;
 
@@ -64,7 +61,6 @@ demo_version_t demo_version;        // killough 7/19/98: Boom version of demo
 
 // v1.1-like pitched sounds
 boolean pitched_sounds;  // killough 10/98
-int pitch_bend_range; // [FG] variable pitch bend range
 
 boolean translucency;    // killough 10/98
 
@@ -113,6 +109,9 @@ boolean help_friends, default_help_friends;
 boolean monkeys, default_monkeys;
 
 boolean hide_weapon;
+
+// haleyjd 9/22/99
+int helper_type = -1; // in P_SpawnMapThing to substitute helper thing
 
 // [FG] centered weapon sprite
 int center_weapon;

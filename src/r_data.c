@@ -25,18 +25,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "d_iwad.h"
 #include "d_think.h"
-#include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
 #include "i_printf.h"
 #include "i_system.h"
 #include "info.h"
-#include "m_argv.h" // M_CheckParm()
 #include "m_array.h"
 #include "m_fixed.h"
-#include "m_io.h"
 #include "m_misc.h"
 #include "m_swap.h"
 #include "p_mobj.h"
@@ -47,7 +43,8 @@
 #include "r_sky.h"
 #include "r_skydefs.h"
 #include "r_state.h"
-#include "v_fmt.h"
+#include "r_tranmap.h"
+#include "v_patch.h"
 #include "v_video.h" // cr_dark, cr_shaded
 #include "w_wad.h"
 #include "z_zone.h"
@@ -598,6 +595,11 @@ void R_InitTextures (void)
     {
       strncpy (name,name_p+i*8, 8);
       patchlookup[i] = W_CheckNumForName(name);
+
+      // [EB] some wads use the texture namespace but then still use those in pnames
+      if (patchlookup[i] == -1)
+        patchlookup[i] = (W_CheckNumForName)(name, ns_textures);
+
       if (patchlookup[i] == -1)
         {
           // killough 4/17/98:
@@ -614,7 +616,7 @@ void R_InitTextures (void)
             I_Printf(VB_DEBUG, "Warning: patch %.8s, index %d does not exist",name,i);
         }
 
-      if (patchlookup[i] != -1 && !R_IsPatchLump(patchlookup[i]))
+      if (patchlookup[i] != -1 && !V_LumpIsPatch(patchlookup[i]))
         {
           I_Printf(VB_WARNING, "R_InitTextures: patch %.8s, index %d is invalid", name, i);
           patchlookup[i] = (W_CheckNumForName)("TNT1A0", ns_sprites);
@@ -678,27 +680,13 @@ void R_InitTextures (void)
   textureheight = Z_Malloc(numtextures*sizeof*textureheight, PU_STATIC, 0);
   texturebrightmap = Z_Malloc (numtextures * sizeof(*texturebrightmap), PU_STATIC, 0);
 
-  {  // Really complex printing shit...
-    int temp1 = W_GetNumForName("S_START");
-    int temp2 = W_GetNumForName("S_END") - 1;
-
-    // 1/18/98 killough:  reduce the number of initialization dots
-    // and make more accurate
-
-    int temp3 = 8+(temp2-temp1+255)/128 + (numtextures+255)/128;  // killough
-    I_PutChar(VB_INFO, '[');
-    for (i = 0; i < temp3; i++)
-      I_PutChar(VB_INFO, ' ');
-    I_PutChar(VB_INFO, ']');
-    for (i = 0; i < temp3; i++)
-      I_PutChar(VB_INFO, '\x8');
-  }
+  // Complex printing shit factored out
+  M_ProgressBarStart(numtextures, __func__);
 
   // TEXTURE1 & TEXTURE2 only. TX_ markers parsed below.
   for (i=0 ; i<numtextures1 + numtextures2 ; i++, directory++)
     {
-      if (!(i&127))          // killough
-        I_PutChar(VB_INFO, '.');
+      M_ProgressBarMove(i); // killough
 
       if (i == numtextures1)
         {
@@ -761,16 +749,13 @@ void R_InitTextures (void)
   {
     for (i = (numtextures1 + numtextures2), k = 0; i < numtextures; i++, k++)
     {
-      if (!(i&127))
-      {
-        I_PutChar(VB_INFO, '.');
-      }
+      M_ProgressBarMove(i);
 
       int tx_lump = first_tx + k;
       texture = textures[i] = Z_Malloc(sizeof(texture_t), PU_STATIC, 0);
       M_CopyLumpName(texture->name, lumpinfo[tx_lump].name);
 
-      if (!R_IsPatchLump(tx_lump))
+      if (!V_LumpIsPatch(tx_lump))
       {
         I_Printf(VB_WARNING, "R_InitTextures: Texture %.8s in wrong format",
                  texture->name);
@@ -789,6 +774,8 @@ void R_InitTextures (void)
       RegisterTexture(texture, i);
     }
   }
+
+  M_ProgressBarEnd();
 
   Z_Free(patchlookup);         // killough
 
@@ -878,16 +865,19 @@ void R_InitSpriteLumps(void)
   spritetopoffset =
     Z_Malloc(numspritelumps*sizeof*spritetopoffset, PU_STATIC, 0);
 
+  M_ProgressBarStart(numspritelumps, __func__);
+
   for (i=0 ; i< numspritelumps ; i++)
     {
-      if (!(i&127))            // killough
-        I_PutChar(VB_INFO, '.');
+      M_ProgressBarMove(i); // killough
 
       patch = V_CachePatchNum(firstspritelump+i, PU_CACHE);
       spritewidth[i] = SHORT(patch->width)<<FRACBITS;
       spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
       spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
     }
+
+  M_ProgressBarEnd();
 }
 
 //
@@ -959,160 +949,6 @@ int R_ColormapNumForName(const char *name)
 }
 
 //
-// R_InitTranMap
-//
-// Initialize translucency filter map
-//
-// By Lee Killough 2/21/98
-//
-
-int tran_filter_pct = 66;       // filter percent
-
-#define TSC 12        /* number of fixed point digits in filter percent */
-
-void R_InitTranMap(int progress)
-{
-  int lump = W_CheckNumForName("TRANMAP");
-  //!
-  // @category mod
-  //
-  // Forces a (re-)building of the translucency and color translation tables.
-  //
-  int force_rebuild = M_CheckParm("-tranmap");
-
-  // If a tranlucency filter map lump is present, use it
-
-  if (lump != -1 && !force_rebuild)  // Set a pointer to the translucency filter maps.
-    main_tranmap = W_CacheLumpNum(lump, PU_STATIC);   // killough 4/11/98
-  else
-    {   // Compose a default transparent filter map based on PLAYPAL.
-      unsigned char *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
-      char *fname = M_StringJoin(D_DoomPrefDir(), DIR_SEPARATOR_S, "tranmap.dat");
-      struct {
-        unsigned char pct;
-        unsigned char playpal[256*3]; // [FG] a palette has 256 colors saved as byte triples
-      } cache;
-      FILE *cachefp = M_fopen(fname,"r+b");
-
-      if (main_tranmap == NULL) // [FG] prevent memory leak
-      {
-      main_tranmap = Z_Malloc(256*256, PU_STATIC, 0);  // killough 4/11/98
-      }
-
-      // Use cached translucency filter if it's available
-
-      if (!cachefp ? cachefp = M_fopen(fname,"w+b") , 1 : // [FG] open for writing and reading
-          fread(&cache, 1, sizeof cache, cachefp) != sizeof cache ||
-          cache.pct != tran_filter_pct ||
-          memcmp(cache.playpal, playpal, sizeof cache.playpal) ||
-          fread(main_tranmap, 256, 256, cachefp) != 256 ||  // killough 4/11/98
-          force_rebuild)
-        {
-          long pal[3][256], tot[256], pal_w1[3][256];
-          long w1 = ((unsigned long) tran_filter_pct<<TSC)/100;
-          long w2 = (1l<<TSC)-w1;
-
-          // First, convert playpal into long int type, and transpose array,
-          // for fast inner-loop calculations. Precompute tot array.
-
-          {
-            register int i = 255;
-            register const unsigned char *p = playpal+255*3;
-            do
-              {
-                register long t,d;
-                pal_w1[0][i] = (pal[0][i] = t = p[0]) * w1;
-                d = t*t;
-                pal_w1[1][i] = (pal[1][i] = t = p[1]) * w1;
-                d += t*t;
-                pal_w1[2][i] = (pal[2][i] = t = p[2]) * w1;
-                d += t*t;
-                p -= 3;
-                tot[i] = d << (TSC-1);
-              }
-            while (--i>=0);
-          }
-
-          // Next, compute all entries using minimum arithmetic.
-
-          {
-            int i,j;
-            byte *tp = main_tranmap;
-            for (i=0;i<256;i++)
-              {
-                long r1 = pal[0][i] * w2;
-                long g1 = pal[1][i] * w2;
-                long b1 = pal[2][i] * w2;
-
-                if (!(i & 31) && progress)
-		  I_PutChar(VB_INFO, '.');
-
-		if (!(~i & 15))
-		{
-		  if (i & 32)       // killough 10/98: display flashing disk
-		    I_EndRead();
-		  else
-		    I_BeginRead(DISK_ICON_THRESHOLD);
-		}
-
-                for (j=0;j<256;j++,tp++)
-                  {
-                    register int color = 255;
-                    register long err;
-                    long r = pal_w1[0][j] + r1;
-                    long g = pal_w1[1][j] + g1;
-                    long b = pal_w1[2][j] + b1;
-                    long best = LONG_MAX;
-                    do
-                      if ((err = tot[color] - pal[0][color]*r
-                          - pal[1][color]*g - pal[2][color]*b) < best)
-                        best = err, *tp = color;
-                    while (--color >= 0);
-                  }
-              }
-            // [FG] finish progress line
-            if (progress)
-              I_PutChar(VB_INFO, '\n');
-          }
-          if (cachefp && !force_rebuild) // write out the cached translucency map
-            {
-              cache.pct = tran_filter_pct;
-              memcpy(cache.playpal, playpal, sizeof cache.playpal); // [FG] a palette has 256 colors saved as byte triples
-              fseek(cachefp, 0, SEEK_SET);
-              fwrite(&cache, 1, sizeof cache, cachefp);
-              fwrite(main_tranmap, 256, 256, cachefp);
-            }
-        }
-      else
-	if (progress)
-	  I_Printf(VB_INFO, "........");
-
-      if (cachefp)              // killough 11/98: fix filehandle leak
-	fclose(cachefp);
-
-      Z_ChangeTag(playpal, PU_CACHE);
-      free(fname);
-    }
-
-  //!
-  // @category mod
-  // @arg <name>
-  //
-  // Dump tranmap lump.
-  //
-
-  int p = M_CheckParmWithArgs("-dumptranmap", 1);
-  if (p > 0)
-  {
-      char *path = AddDefaultExtension(myargv[p + 1], ".lmp");
-
-      M_WriteFile(path, main_tranmap, 256 * 256);
-
-      free(path);
-  }
-}
-
-//
 // R_InitData
 // Locates all the lumps
 //  that will be used by all views
@@ -1129,7 +965,7 @@ void R_InitData(void)
   R_InitFlatBrightmaps();
   R_InitTextures();
   R_InitSpriteLumps();
-    R_InitTranMap(1);                   // killough 2/21/98, 3/6/98
+  R_InitTranMap();                      // killough 2/21/98, 3/6/98
   R_InitColormaps();                    // killough 3/20/98
   R_InitSkyDefs();
 }
@@ -1150,6 +986,26 @@ int R_FlatNumForName(const char *name)    // killough -- const added
     return i;
   }
   return i - firstflat;
+}
+
+byte *R_MissingFlat(void)
+{
+    static byte *buffer = NULL;
+
+    if (buffer == NULL)
+    {
+        const byte c1 = colrngs[CR_PURPLE][v_lightest_color];
+        const byte c2 = v_darkest_color;
+
+        buffer = Z_Malloc(FLATSIZE, PU_LEVEL, (void **)&buffer);
+
+        for (int i = 0; i < FLATSIZE; i++)
+        {
+            buffer[i] = ((i & 16) == 16) != ((i & 1024) == 1024) ? c1 : c2;
+        }
+    }
+
+    return buffer;
 }
 
 //
@@ -1285,58 +1141,6 @@ void R_PrecacheLevel(void)
           }
       }
   Z_Free(hitlist);
-}
-
-// [FG] check if the lump can be a Doom patch
-// taken from PrBoom+ prboom2/src/r_patch.c:L350-L390
-
-boolean R_IsPatchLump (const int lump)
-{
-  int size;
-  int width, height;
-  const patch_t *patch;
-  boolean result;
-
-  // [FG] non-existent cannot be a patch lump
-  if (lump < 0)
-    return false;
-
-  patch = V_CachePatchNum(lump, PU_CACHE);
-
-  size = V_LumpSize(lump);
-
-  // minimum length of a valid Doom patch
-  if (size < 13)
-    return false;
-
-  width = SHORT(patch->width);
-  height = SHORT(patch->height);
-
-  result = (height > 0 && height <= 16384 && width > 0 && width <= 16384
-            && width < size / 4);
-
-  if (result)
-  {
-    // The dimensions seem like they might be valid for a patch, so
-    // check the column directory for extra security. All columns
-    // must begin after the column directory, and none of them must
-    // point past the end of the patch.
-    int x;
-
-    for (x = 0; x < width; x++)
-    {
-      unsigned int ofs = LONG(patch->columnofs[x]);
-
-      // Need one byte for an empty column (but there's patches that don't know that!)
-      if (ofs < (unsigned int)width * 4 + 8 || ofs >= (unsigned int)size)
-      {
-        result = false;
-        break;
-      }
-    }
-  }
-
-  return result;
 }
 
 //-----------------------------------------------------------------------------
