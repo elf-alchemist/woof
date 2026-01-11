@@ -37,13 +37,6 @@ typedef struct xlat_s
     xlat_data table;
 } xlat_t;
 
-static const char *const player_xlat_names[] = {
-    "T_GREEN",  "T_INDIGO", "T_BROWN", "T_RED",
-    "T_YELLOW", "T_BLUE",   "T_NAVY",  "T_MAGENTA",
-};
-
-static const size_t num_player_xlat_names = arrlen(player_xlat_names);
-
 // symbolic indices into color translation table pointer array
 typedef enum
 {
