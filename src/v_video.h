@@ -33,9 +33,6 @@
 
 extern pixel_t *I_VideoBuffer;
 
-// jff 4/24/98 loads color translation lumps
-void V_InitColorTranslation(void);
-
 typedef struct
 {
     int width;

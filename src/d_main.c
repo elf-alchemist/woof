@@ -2159,8 +2159,6 @@ void D_DoomMain(void)
 
   D_SetSavegameDirectory();
 
-  V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
-
   // killough 2/22/98: copyright / "modified game" / SPA banners removed
 
   // Ty 04/08/98 - Add 5 lines of misc. data, only if nonblank

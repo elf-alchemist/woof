@@ -27,6 +27,7 @@
 #include "m_fixed.h"
 #include "m_io.h"
 #include "r_main.h"
+#include "r_xlat.h"
 #include "v_video.h"
 
 static const char snapshot_str[] = "WOOF_SNAPSHOT";

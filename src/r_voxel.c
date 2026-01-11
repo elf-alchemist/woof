@@ -1063,22 +1063,22 @@ void VX_DrawVoxel (vissprite_t * spr)
 
 	if ((spr->mobjflags_extra & MFX_COLOREDBLOOD) && (spr->colormap[0] != NULL))
 	{
-		static const byte * prev_trans = NULL, * prev_map = NULL;
-		const byte * trans = red2col[spr->color], * map = spr->colormap[0];
+		// static const byte * prev_trans = NULL, * prev_map = NULL;
+		// const byte * trans = red2col[spr->color], * map = spr->colormap[0];
 
-		static byte new_colormap[256];
+		// static byte new_colormap[256];
 
-		if (prev_trans != trans || prev_map != map)
-		{
-			int i;
-			for (i = 0 ; i < 256 ; i++)
-				new_colormap[i] = map[trans[i]];
+		// if (prev_trans != trans || prev_map != map)
+		// {
+		// 	int i;
+		// 	for (i = 0 ; i < 256 ; i++)
+		// 		new_colormap[i] = map[trans[i]];
 
-			prev_trans = trans;
-			prev_map = map;
-		}
+		// 	prev_trans = trans;
+		// 	prev_map = map;
+		// }
 
-		spr->colormap[0] = new_colormap;
+		// spr->colormap[0] = new_colormap;
 	}
 
 	// perform reverse transform, place camera in relation to model

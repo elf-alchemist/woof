@@ -696,9 +696,7 @@ static void DrawIndicator_Meter(const setup_menu_t *s, int x, int y, int width)
         if (scale > 0.0f)
         {
             const byte shade = xlat_shaded[v_lightest_color];
-            const byte color = scale < limit    ? cr_green[shade]
-                               : scale >= 0.99f ? cr_red[shade]
-                                                : cr_gold[shade];
+            const byte color = shade;
             V_FillRect(x, y, lroundf(width * scale), 1, color);
         }
     }
@@ -3476,7 +3474,7 @@ void MN_DrawGeneral(void)
 
     if (I_UseGamepad() && current_menu == gen_settings4 && I_UseStickLayout())
     {
-        DrawIndicator = DrawIndicator_Meter;
+        // DrawIndicator = DrawIndicator_Meter;
     }
     else
     {
@@ -3901,11 +3899,13 @@ void MN_DrawStringCR(int cx, int cy, byte *cr1, byte *cr2, const char *ch)
         // desired color, colrngs[color]
         if (cr && cr2)
         {
-            V_DrawPatchTranslatedTwice(cx, cy, patch, cr, cr2);
+            // V_DrawPatchTranslatedTwice(cx, cy, patch, cr, cr2);
+            V_DrawPatch(cx, cy, patch);
         }
         else
         {
-            V_DrawPatchTranslated(cx, cy, patch, cr);
+            // V_DrawPatchTranslated(cx, cy, patch, cr);
+            V_DrawPatch(cx, cy, patch);
         }
 
         // The screen is cramped, so trim one unit from each

@@ -34,6 +34,7 @@
 #include "m_swap.h"
 #include "r_defs.h"
 #include "r_state.h"
+#include "r_xlat.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "st_sbardef.h"

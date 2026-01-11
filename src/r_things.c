@@ -444,7 +444,7 @@ void R_DrawVisSprite(vissprite_t *vis, int x1, int x2)
   {
       // [FG] colored blood and gibs
       colfunc = R_DrawTranslatedColumn;
-      dc_translation = red2col[vis->color];
+      // dc_translation = red2col[vis->color];
   }
   else if (vis->translation)
   {

@@ -29,6 +29,11 @@
 
 size_t R_XlatIndexByName(const char *name)
 {
+    if (!xlats)
+    {
+        return NO_INDEX;
+    }
+
     for (const xlat_t *p = xlats; p->name; ++p)
     {
         if (!strcmp(p->name, name))
@@ -154,7 +159,7 @@ static inline void BuildTranslationTable(xlat_t *xlat, vanilla_xlat_t data)
     const fixed_t xlat_step =
         FixedDiv(IntToFixed(data.target_max - data.target_min + 1),
                  IntToFixed(data.src_max - data.src_min + 1));
-    for (int32_t index = 0; index <= 256; index++)
+    for (int32_t index = 0; index < 256; index++)
     {
         int32_t value = index;
         if (index >= data.src_min && index <= data.src_max)

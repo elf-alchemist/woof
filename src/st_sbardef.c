@@ -134,8 +134,8 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
         out->tranmap = W_CacheLumpName(tranmap, PU_STATIC);
     }
 
-    const char *translation = JS_GetStringValue(json, "translation");
-    out->xlat = translation ? R_XlatTableByName(translation) : NULL;
+    // const char *translation = JS_GetStringValue(json, "translation");
+    // out->xlat = translation ? R_XlatTableByName(translation) : NULL;
 
     json_t *js_conditions = JS_GetObject(json, "conditions");
     json_t *js_condition = NULL;
