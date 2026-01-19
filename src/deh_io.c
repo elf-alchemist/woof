@@ -67,11 +67,11 @@ struct deh_context_s
 
 static deh_context_t *DEH_NewContext(void)
 {
-    deh_context_t *context = malloc(sizeof(*context));
+    deh_context_t *context = I_Malloc(sizeof(*context));
 
     // Initial read buffer size of 128 bytes
     context->readbuffer_size = 128;
-    context->readbuffer = malloc(context->readbuffer_size);
+    context->readbuffer = I_Malloc(context->readbuffer_size);
     context->linenum = 0;
     context->last_was_newline = true;
 
@@ -104,7 +104,7 @@ deh_context_t *DEH_OpenFile(const char *filename)
 // Open a WAD lump for reading.
 deh_context_t *DEH_OpenLump(int lumpnum)
 {
-    void *lump = W_CacheLumpNum(lumpnum, PU_STATIC);
+    void *lump = W_CacheLumpNum(lumpnum);
     deh_context_t *context = DEH_NewContext();
 
     context->type = DEH_INPUT_LUMP;
@@ -113,7 +113,7 @@ deh_context_t *DEH_OpenLump(int lumpnum)
     context->input_buffer_len = W_LumpLength(lumpnum);
     context->input_buffer_pos = 0;
 
-    context->filename = malloc(9);
+    context->filename = I_Malloc(9);
     M_StringCopy(context->filename, lumpinfo[lumpnum].name, 9);
 
     return context;
@@ -131,9 +131,9 @@ void DEH_CloseFile(deh_context_t *context)
         Z_Free(lumpcache[context->lumpnum]);
     }
 
-    free(context->filename);
-    free(context->readbuffer);
-    free(context);
+    I_Free(context->filename);
+    I_Free(context->readbuffer);
+    I_Free(context);
 }
 
 int DEH_GetCharFile(deh_context_t *context)
@@ -214,11 +214,11 @@ int DEH_GetChar(deh_context_t *context)
 static void IncreaseReadBuffer(deh_context_t *context)
 {
     int newbuffer_size = context->readbuffer_size * 2;
-    char *newbuffer = malloc(newbuffer_size);
+    char *newbuffer = I_Malloc(newbuffer_size);
 
     memcpy(newbuffer, context->readbuffer, context->readbuffer_size);
 
-    free(context->readbuffer);
+    I_Free(context->readbuffer);
 
     context->readbuffer = newbuffer;
     context->readbuffer_size = newbuffer_size;

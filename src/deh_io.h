@@ -22,6 +22,7 @@
 #include "deh_defs.h"
 #include "doomtype.h"
 #include "i_printf.h"
+#include "i_system.h" // Reduce double includes in deh_*.c files
 
 deh_context_t *DEH_OpenFile(const char *filename);
 deh_context_t *DEH_OpenLump(int lumpnum);

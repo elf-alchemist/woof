@@ -16,7 +16,6 @@
 // Parses "Cheat" sections in dehacked files
 //
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "deh_defs.h"
@@ -64,7 +63,7 @@ static void DEH_CheatParseLine(deh_context_t *context, char *line, void *tag)
 
     int i = 0;
     unsigned char *unsvalue = (unsigned char *)value;
-    char *placeholder = malloc(sizeof(char) * strlen(value));
+    char *placeholder = I_Malloc(sizeof(char) * strlen(value));
     while (unsvalue[i] != 0 && unsvalue[i] != 0xff)
     {
         if (deh_apply_cheats)
@@ -77,7 +76,7 @@ static void DEH_CheatParseLine(deh_context_t *context, char *line, void *tag)
         if (i >= MAX_CHEAT_LEN - c->arg)
         {
             DEH_Error(context, "Cheat sequence too long!");
-            free(placeholder);
+            I_Free(placeholder);
             return;
         }
     }
@@ -88,7 +87,7 @@ static void DEH_CheatParseLine(deh_context_t *context, char *line, void *tag)
         c->sequence = M_StringDuplicate(placeholder);
         c->sequence_len = strlen(placeholder);
     }
-    free(placeholder);
+    I_Free(placeholder);
 }
 
 deh_section_t deh_section_cheat =

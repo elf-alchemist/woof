@@ -58,7 +58,7 @@ void DEH_FreeSprites(void)
     {
         if (deh_spritenames[i])
         {
-            free(deh_spritenames[i]);
+            I_Free(deh_spritenames[i]);
         }
     }
     array_free(deh_spritenames);

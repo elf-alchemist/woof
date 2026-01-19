@@ -187,7 +187,7 @@ static void DEH_FrameParseLine(deh_context_t *context, char *line, void *tag)
     }
     else if (!strcasecmp(variable_name, "Tranmap"))
     {
-        state->tranmap = W_CacheLumpName(value, PU_STATIC);
+        state->tranmap = W_CacheLumpName(value, ns_global);
         return;
     }
     else if (!strcasecmp(variable_name, "Args1"))

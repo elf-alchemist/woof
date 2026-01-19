@@ -61,7 +61,7 @@ void DEH_FreeSFX(void)
     {
         if (deh_soundnames[i])
         {
-            free(deh_soundnames[i]);
+            I_Free(deh_soundnames[i]);
         }
     }
     array_free(deh_soundnames);

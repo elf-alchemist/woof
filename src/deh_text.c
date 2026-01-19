@@ -29,7 +29,6 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
-#include "i_printf.h"
 #include "m_misc.h"
 
 // Strings for dehacked replacements of the startup banner
@@ -145,8 +144,8 @@ static void *DEH_TextStart(deh_context_t *context, char *line)
         return NULL;
     }
 
-    char *from_text = malloc(from_len + 1);
-    char *to_text = malloc(to_len + 1);
+    char *from_text = I_Malloc(from_len + 1);
+    char *to_text = I_Malloc(to_len + 1);
 
     // read in the "from" text
     for (int i = 0; i < from_len; ++i)
@@ -164,8 +163,8 @@ static void *DEH_TextStart(deh_context_t *context, char *line)
 
     DEH_AddStringReplacement(from_text, to_text);
 
-    free(from_text);
-    free(to_text);
+    I_Free(from_text);
+    I_Free(to_text);
 
     return NULL;
 }

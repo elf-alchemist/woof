@@ -18,7 +18,6 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "deh_io.h"
@@ -43,7 +42,7 @@ static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
         return NULL;
     }
 
-    char *inc_file = malloc(strlen(line) + 1);
+    char *inc_file = I_Malloc(strlen(line) + 1);
 
     if (sscanf(line, "INCLUDE NOTEXT %32s", inc_file) == 1)
     {
@@ -56,7 +55,7 @@ static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
     else
     {
         DEH_Warning(context, "Parse error on section start");
-        free(inc_file);
+        I_Free(inc_file);
         return NULL;
     }
 
@@ -68,7 +67,7 @@ static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
         // second, try loading the file in the directory of the current file
         char *dir = M_DirName(deh_file);
         try_path = M_StringJoin(dir, DIR_SEPARATOR_S, inc_file);
-        free(dir);
+        I_Free(dir);
     }
 
     bex_nested = true;
@@ -83,9 +82,9 @@ static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
 
     if (try_path != inc_file)
     {
-        free(try_path);
+        I_Free(try_path);
     }
-    free(inc_file);
+    I_Free(inc_file);
 
     return NULL;
 }
