@@ -267,6 +267,11 @@ void M_SaveDefaults(void)
     {
         config_t value = {0};
 
+        if (dp->type == menu)
+        {
+            continue;
+        }
+
         // If we still haven't seen any blanks,
         // Output a blank line for separation
 
@@ -278,11 +283,6 @@ void M_SaveDefaults(void)
         if (!dp->name) // If we're at end of defaults table, exit loop
         {
             break;
-        }
-
-        if (dp->type == menu)
-        {
-            continue;
         }
 
         // jff 3/3/98 output help string
@@ -309,7 +309,7 @@ void M_SaveDefaults(void)
                            : fprintf(f, "[%d-%d(%d)]", dp->limit.min, dp->limit.max,
                                      dp->defaultvalue.number))
                        == EOF
-                || fprintf(f, " %s %s\n", dp->help, dp->wad_allowed ? "*" : "")
+                || fprintf(f, " %s%s\n", dp->help, dp->wad_allowed ? " *" : "")
                        == EOF)
             {
                 goto error;

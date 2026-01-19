@@ -17,6 +17,7 @@
 
 #include "alext.h"
 #include "i_system.h"
+#include "deh_bex_sounds.h"
 #include "pffft/pffft.h"
 
 #include <math.h>
