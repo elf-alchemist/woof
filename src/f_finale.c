@@ -475,7 +475,7 @@ static boolean MapInfo_Drawer(void)
             {
                 V_DrawPatchFullScreen(
                     V_CachePatchNameTag(
-                        W_CheckWidescreenPatch(gamemapinfo->endpic), PU_CACHE));
+                        W_CheckWidescreenPatch(gamemapinfo->endpic), PU_LEVEL));
             }
             break;
         case FINALE_STAGE_CAST:
@@ -1183,7 +1183,7 @@ static void F_CastDrawer(void)
   // erase the entire screen to a background
   // Ty 03/30/98 bg texture extern
   V_DrawPatchFullScreen(
-    V_CachePatchNameTag(W_CheckWidescreenPatch(DEH_String(BGCASTCALL)), PU_CACHE));
+    V_CachePatchNameTag(W_CheckWidescreenPatch(DEH_String(BGCASTCALL)), PU_LEVEL));
 
   F_CastPrint (castorder[castnum].name);
     
@@ -1250,7 +1250,7 @@ static void F_BunnyScroll(void)
   {
     V_DrawPatch ((SCREENWIDTH-13*8)/2,
                  (SCREENHEIGHT-8*8)/2,
-                 V_CachePatchNameTag ("END0",PU_CACHE));
+                 V_CachePatchNameTag("END0", PU_LEVEL));
     laststage = 0;
     return;
   }
@@ -1267,7 +1267,7 @@ static void F_BunnyScroll(void)
   M_snprintf(name, sizeof(name), "END%i", stage);
   V_DrawPatch ((SCREENWIDTH-13*8)/2,
                (SCREENHEIGHT-8*8)/2,
-               V_CachePatchNameTag (name,PU_CACHE));
+               V_CachePatchNameTag(name, PU_LEVEL));
 }
 
 
@@ -1296,21 +1296,21 @@ void F_Drawer (void)
       case 1:
            if ( (gamemode == retail && !pwad_help2) || gamemode == commercial )
              V_DrawPatchFullScreen(
-              V_CachePatchNameTag(W_CheckWidescreenPatch("CREDIT"), PU_CACHE));
+              V_CachePatchNameTag(W_CheckWidescreenPatch("CREDIT"), PU_LEVEL));
            else
              V_DrawPatchFullScreen(
-              V_CachePatchNameTag(W_CheckWidescreenPatch("HELP2"), PU_CACHE));
+              V_CachePatchNameTag(W_CheckWidescreenPatch("HELP2"), PU_LEVEL));
            break;
       case 2:
            V_DrawPatchFullScreen(
-            V_CachePatchNameTag(W_CheckWidescreenPatch("VICTORY2"), PU_CACHE));
+            V_CachePatchNameTag(W_CheckWidescreenPatch("VICTORY2"), PU_LEVEL));
            break;
       case 3:
            F_BunnyScroll();
            break;
       case 4:
            V_DrawPatchFullScreen(
-            V_CachePatchNameTag(W_CheckWidescreenPatch("ENDPIC"), PU_CACHE));
+            V_CachePatchNameTag(W_CheckWidescreenPatch("ENDPIC"), PU_LEVEL));
            break;
     }
   }

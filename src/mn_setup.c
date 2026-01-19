@@ -599,7 +599,7 @@ static void DrawItem(setup_menu_t *s, int accum_y)
         // Draw the blinking version in tune with the blinking skull otherwise
 
         const int index = (flags & (S_HILITE | S_SELECT)) ? whichSkull : 0;
-        patch_t *patch = V_CachePatchNameTag(reset_button_name[index], PU_CACHE);
+        patch_t *patch = V_CachePatchName(reset_button_name[index]);
         rect->x = x;
         rect->y = y;
         rect->w = SHORT(patch->width);
@@ -711,16 +711,16 @@ static void DrawSetupThermo(const setup_menu_t *s, int x, int y, int width,
     int i;
 
     xx = x;
-    V_DrawPatchTranslated(xx, y, V_CachePatchNameTag("M_THERML", PU_CACHE), cr);
+    V_DrawPatchTranslated(xx, y, V_CachePatchName("M_THERML"), cr);
     xx += M_THRM_STEP;
 
-    patch_t *patch = V_CachePatchNameTag("M_THERMM", PU_CACHE);
+    patch_t *patch = V_CachePatchName("M_THERMM");
     for (i = 0; i < width + 1; i++)
     {
         V_DrawPatchTranslated(xx, y, patch, cr);
         xx += M_THRM_STEP;
     }
-    V_DrawPatchTranslated(xx, y, V_CachePatchNameTag("M_THERMR", PU_CACHE), cr);
+    V_DrawPatchTranslated(xx, y, V_CachePatchName("M_THERMR"), cr);
 
     if (dot > size)
     {
@@ -744,7 +744,7 @@ static void DrawSetupThermo(const setup_menu_t *s, int x, int y, int width,
     }
 
     V_DrawPatchTranslated(x + M_THRM_STEP + dot * step / FRACUNIT, y,
-                          V_CachePatchNameTag("M_THERMO", PU_CACHE), cr);
+                          V_CachePatchName("M_THERMO"), cr);
 }
 
 static void WrapSettingString(setup_menu_t *s, int x, int y, int color)
@@ -1143,7 +1143,7 @@ static void DrawScreenItems(setup_menu_t *src)
 
 static void DrawDefVerify(void)
 {
-    patch_t *patch = V_CachePatchNameTag("M_VBOX", PU_CACHE);
+    patch_t *patch = V_CachePatchName("M_VBOX");
     int x = (SCREENWIDTH - patch->width) / 2;
     int y = (SCREENHEIGHT - patch->height) / 2;
     V_DrawPatch(x, y, patch);
@@ -1163,7 +1163,7 @@ static void DrawDefVerify(void)
 
 static void DrawNotification(const char *text, int color, boolean blink)
 {
-    patch_t *patch = V_CachePatchNameTag("M_VBOX", PU_CACHE);
+    patch_t *patch = V_CachePatchName("M_VBOX");
     int x = (SCREENWIDTH - patch->width) / 2;
     int y = (SCREENHEIGHT - patch->height) / 2;
     V_DrawPatch(x, y, patch);
@@ -2053,7 +2053,7 @@ void MN_DrawStatusHUD(void)
     if (hud_crosshair && current_page == 2)
     {
         patch_t *patch =
-            V_CachePatchNameTag(crosshair_lumps[hud_crosshair], PU_CACHE);
+            V_CachePatchName(crosshair_lumps[hud_crosshair]);
 
         int x = XH_X + 85 - SHORT(patch->width) / 2;
         int y = M_Y + M_SPC / 2 - SHORT(patch->height) / 2 - 1;
@@ -4973,7 +4973,7 @@ void MN_DrawTitle(int x, int y, const char *patch, const char *alttext)
 
     if (patch_lump >= 0 && patch_priority >= bigfont_priority)
     {
-        patch_t *patch = V_CachePatchNumTag(patch_lump, PU_CACHE);
+        patch_t *patch = V_CachePatchNum(patch_lump);
         V_DrawPatch(x == M_X_CENTER ? SCREENWIDTH / 2 - patch->width / 2 : x,
                     y, patch);
     }

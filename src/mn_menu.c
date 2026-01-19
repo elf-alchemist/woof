@@ -436,7 +436,7 @@ static void M_FinishReadThis(int choice)
 static void M_DrawReadThis1(void)
 {
     V_DrawPatchFullScreen(
-        V_CachePatchNameTag(W_CheckWidescreenPatch("HELP2"), PU_CACHE));
+        V_CachePatchName(W_CheckWidescreenPatch("HELP2")));
 }
 
 //
@@ -457,13 +457,13 @@ static void M_DrawReadThis2(void)
         helplump = W_CheckNumForName(W_CheckWidescreenPatch("HELP1"));
     }
 
-    V_DrawPatchFullScreen(V_CachePatchNumTag(helplump, PU_CACHE));
+    V_DrawPatchFullScreen(V_CachePatchNum(helplump));
 }
 
 static void M_DrawReadThisCommercial(void)
 {
     V_DrawPatchFullScreen(
-        V_CachePatchNameTag(W_CheckWidescreenPatch("HELP"), PU_CACHE));
+        V_CachePatchName(W_CheckWidescreenPatch("HELP")));
 }
 
 /////////////////////////////
@@ -1009,15 +1009,15 @@ static void M_DrawSaveLoadBorder(int x, int y, byte *cr)
 {
     int i;
 
-    V_DrawPatchTranslated(x - 8, y + 7, V_CachePatchNameTag("M_LSLEFT", PU_CACHE), cr);
+    V_DrawPatchTranslated(x - 8, y + 7, V_CachePatchName("M_LSLEFT"), cr);
 
     for (i = 0; i < 24; i++)
     {
-        V_DrawPatchTranslated(x, y + 7, V_CachePatchNameTag("M_LSCNTR", PU_CACHE), cr);
+        V_DrawPatchTranslated(x, y + 7, V_CachePatchName("M_LSCNTR"), cr);
         x += 8;
     }
 
-    V_DrawPatchTranslated(x, y + 7, V_CachePatchNameTag("M_LSRGHT", PU_CACHE), cr);
+    V_DrawPatchTranslated(x, y + 7, V_CachePatchName("M_LSRGHT"), cr);
 }
 
 //
@@ -1925,7 +1925,7 @@ static void M_DrawExtHelp(void)
     char namebfr[] = "HELPnn"; // [FG] char array!
     namebfr[4] = extended_help_index / 10 + 0x30;
     namebfr[5] = extended_help_index % 10 + 0x30;
-    V_DrawPatchFullScreen(V_CachePatchNameTag(namebfr, PU_CACHE));
+    V_DrawPatchFullScreen(V_CachePatchName(namebfr));
 }
 
 //
@@ -2294,7 +2294,7 @@ void M_Init(void)
     if (lumpnum >= 0)
     {
         bigfont_priority = lumpinfo[lumpnum].handle.priority;
-        MN_LoadFon2(W_CacheLumpNumTag(lumpnum, PU_CACHE), W_LumpLength(lumpnum));
+        MN_LoadFon2(W_CacheLumpNum(lumpnum), W_LumpLength(lumpnum));
     }
 
     // Here we could catch other version dependencies,
@@ -3612,7 +3612,7 @@ void M_Drawer(void)
         }
         else if (name[0])
         {
-            patch_t *patch = V_CachePatchNameTag(name, PU_CACHE);
+            patch_t *patch = V_CachePatchName(name);
             rect->y -= SHORT(patch->topoffset);
             V_DrawPatchTranslated(x, y, patch, cr);
         }
@@ -3625,7 +3625,7 @@ void M_Drawer(void)
     y = setup_active ? SCREENHEIGHT - 19 : currentMenu->y;
 
     V_DrawPatch(x + SKULLXOFF, y - 5 + itemOn * LINEHEIGHT,
-                V_CachePatchNameTag(skullName[whichSkull], PU_CACHE));
+                V_CachePatchName(skullName[whichSkull]));
 
     if (delete_verify)
     {
@@ -3665,14 +3665,14 @@ static void M_DrawThermo(int x, int y, int thermWidth, int thermDot, byte *cr)
     char num[4];
 
     xx = x;
-    V_DrawPatchTranslated(xx, y, V_CachePatchNameTag("M_THERML", PU_CACHE), cr);
+    V_DrawPatchTranslated(xx, y, V_CachePatchName("M_THERML"), cr);
     xx += 8;
     for (i = 0; i < thermWidth; i++)
     {
-        V_DrawPatchTranslated(xx, y, V_CachePatchNameTag("M_THERMM", PU_CACHE), cr);
+        V_DrawPatchTranslated(xx, y, V_CachePatchName("M_THERMM"), cr);
         xx += 8;
     }
-    V_DrawPatchTranslated(xx, y, V_CachePatchNameTag("M_THERMR", PU_CACHE), cr);
+    V_DrawPatchTranslated(xx, y, V_CachePatchName("M_THERMR"), cr);
 
     // [FG] write numerical values next to thermometer
     M_snprintf(num, 4, "%3d", thermDot);
@@ -3685,7 +3685,7 @@ static void M_DrawThermo(int x, int y, int thermWidth, int thermDot, byte *cr)
     }
 
     V_DrawPatchTranslated((x + 8) + thermDot * 8, y,
-                          V_CachePatchNameTag("M_THERMO", PU_CACHE), cr);
+                          V_CachePatchName("M_THERMO"), cr);
 }
 
 //

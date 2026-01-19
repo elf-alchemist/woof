@@ -1914,7 +1914,7 @@ static void DrawSolidBackground(void)
     // [FG] calculate average color of the 16px left and right of the status bar
     const int vstep[][2] = { {0, 1}, {1, 2}, {2, st_height} };
 
-    patch_t *sbar = V_CachePatchNameTag(W_CheckWidescreenPatch("STBAR"), PU_CACHE);
+    patch_t *sbar = V_CachePatchName(W_CheckWidescreenPatch("STBAR"));
     // [FG] temporarily draw status bar to background buffer
     crop_t crop = {.width = SHORT(sbar->width), .height = st_height};
     V_DrawPatchCropped(-video.deltaw, 0, sbar, crop);
@@ -1997,7 +1997,7 @@ static void DrawBackground(const char *name)
                 || (!statusbar->fullscreenrender && screenblocks > 10)
                 || automap_on)
             {
-                patch_t *patch = V_CachePatchNameTag("brdr_b", PU_CACHE);
+                patch_t *patch = V_CachePatchName("brdr_b");
                 crop_t crop = {.width = SHORT(patch->width), .height = st_height};
                 for (int x = 0; x < video.unscaledw; x += 8)
                 {

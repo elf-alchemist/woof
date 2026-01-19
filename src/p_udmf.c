@@ -1124,7 +1124,7 @@ static void UDMF_LoadLineDefs(void)
         int32_t lump = W_CheckNumForName(udmf_linedefs[i].tranmap);
         if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
         {
-            lines[i].tranmap = W_CacheLumpNumTag(lump, PU_CACHE);
+            lines[i].tranmap = W_CacheLumpNum(lump);
         }
 
         // killough 11/98: fix common wad errors (missing sidedefs):
@@ -1250,7 +1250,7 @@ void UDMF_LoadThings(void)
         int32_t lump = W_CheckNumForName(udmf_things[i].tranmap);
         if (lump >= 0 && W_LumpLength(lump) == 256 * 256)
         {
-            mt.tranmap = W_CacheLumpNumTag(lump, PU_CACHE);
+            mt.tranmap = W_CacheLumpNum(lump);
         }
 
         P_SpawnMapThing(&mt);

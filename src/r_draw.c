@@ -1037,25 +1037,25 @@ void R_DrawBorder(int x, int y, int w, int h)
 {
     patch_t *patch;
 
-    patch = V_CachePatchNameTag("brdr_t", PU_CACHE);
+    patch = V_CachePatchName("brdr_t");
     for (int i = 0; i < w; i += 8)
     {
         V_DrawPatch(x + i - video.deltaw, y - 8, patch);
     }
 
-    patch = V_CachePatchNameTag("brdr_b", PU_CACHE);
+    patch = V_CachePatchName("brdr_b");
     for (int i = 0; i < w; i += 8)
     {
         V_DrawPatch(x + i - video.deltaw, y + h, patch);
     }
 
-    patch = V_CachePatchNameTag("brdr_l", PU_CACHE);
+    patch = V_CachePatchName("brdr_l");
     for (int j = 0; j < h; j += 8)
     {
         V_DrawPatch(x - 8 - video.deltaw, y + j, patch);
     }
 
-    patch = V_CachePatchNameTag("brdr_r", PU_CACHE);
+    patch = V_CachePatchName("brdr_r");
     for (int j = 0; j < h; j += 8)
     {
         V_DrawPatch(x + w - video.deltaw, y + j, patch);
@@ -1063,16 +1063,16 @@ void R_DrawBorder(int x, int y, int w, int h)
 
     // Draw beveled edge.
     V_DrawPatch(x - 8 - video.deltaw, y - 8,
-                V_CachePatchNameTag("brdr_tl", PU_CACHE));
+                V_CachePatchName("brdr_tl"));
 
     V_DrawPatch(x + w - video.deltaw, y - 8,
-                V_CachePatchNameTag("brdr_tr", PU_CACHE));
+                V_CachePatchName("brdr_tr"));
 
     V_DrawPatch(x - 8 - video.deltaw, y + h,
-                V_CachePatchNameTag("brdr_bl", PU_CACHE));
+                V_CachePatchName("brdr_bl"));
 
     V_DrawPatch(x + w - video.deltaw, y + h,
-                V_CachePatchNameTag("brdr_br", PU_CACHE));
+                V_CachePatchName("brdr_br"));
 }
 
 void R_FillBackScreen(void)

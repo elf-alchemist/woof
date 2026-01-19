@@ -220,7 +220,7 @@ static void R_GenerateComposite(int texnum)
 
   for (; --i >=0; patch++)
     {
-      patch_t *realpatch = V_CachePatchNumTag(patch->patch, PU_CACHE);
+      patch_t *realpatch = V_CachePatchNum(patch->patch);
       int x, x1 = patch->originx, x2 = x1 + SHORT(realpatch->width);
       const int *cofs = realpatch->columnofs - x1;
 
@@ -336,7 +336,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
   while (--i >= 0)
     {
       int pat = patch->patch;
-      const patch_t *realpatch = V_CachePatchNumTag(pat, PU_CACHE);
+      const patch_t *realpatch = V_CachePatchNum(pat);
       int x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
       const int *cofs = realpatch->columnofs - x1;
       
@@ -374,7 +374,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
       for (i = texture->patchcount, patch = texture->patches; --i >= 0;)
 	{
 	  int pat = patch->patch;
-	  const patch_t *realpatch = V_CachePatchNumTag(pat, PU_CACHE);
+	  const patch_t *realpatch = V_CachePatchNum(pat);
 	  int x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
 	  const int *cofs = realpatch->columnofs - x1;
 	  
@@ -749,7 +749,7 @@ void R_InitTextures (void)
         tx_lump = (W_CheckNumForName)("TNT1A0", ns_sprites);
       }
 
-      patch_t* tx_patch = V_CachePatchNumTag(tx_lump, PU_CACHE);
+      patch_t* tx_patch = V_CachePatchNum(tx_lump);
       texture->width = tx_patch->width;
       texture->height = tx_patch->height;
       texture->patchcount = 1;
@@ -852,7 +852,7 @@ void R_InitSpriteLumps(void)
     {
       M_ProgressBarMove(i); // killough
 
-      patch = V_CachePatchNumTag(firstspritelump+i, PU_CACHE);
+      patch = V_CachePatchNum(firstspritelump+i);
       spritewidth[i] = SHORT(patch->width)<<FRACBITS;
       spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
       spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
@@ -1095,7 +1095,7 @@ void R_PrecacheLevel(void)
         texture_t *texture = textures[i];
         int j = texture->patchcount;
         while (--j >= 0)
-          V_CachePatchNumTag(texture->patches[j].patch, PU_CACHE);
+          V_CachePatchNum(texture->patches[j].patch);
       }
 
   // Precache sprites.
@@ -1117,7 +1117,7 @@ void R_PrecacheLevel(void)
             short *sflump = sprites[i].spriteframes[j].lump;
             int k = 7;
             do
-              V_CachePatchNumTag(firstspritelump + sflump[k], PU_CACHE);
+              V_CachePatchNum(firstspritelump + sflump[k]);
             while (--k >= 0);
           }
       }

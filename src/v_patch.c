@@ -253,7 +253,7 @@ static patch_t *DummyPatchTag(int lump, pu_tag tag)
 {
     int num = (W_CheckNumForName)("TNT1A0", ns_sprites);
     int len = W_LumpLength(num);
-    patch_t *dummy = V_CachePatchNumTag(num, PU_CACHE);
+    patch_t *dummy = V_CachePatchNum(num);
 
     Z_Malloc(len, tag, &lumpcache[lump]);
     memcpy(lumpcache[lump], dummy, len);
@@ -1033,7 +1033,6 @@ patch_t *V_CachePatchNum(int lump)
 
     if (lumpcache[lump])
     {
-        I_Printf(VB_WARNING, "%s:%d cahce hit on lumpnum %d", __func__, __LINE__, lump);
         return lumpcache[lump];
     }
 
@@ -1042,15 +1041,12 @@ patch_t *V_CachePatchNum(int lump)
 
     if (buffer_length < 8 || memcmp(buffer, "\211PNG\r\n\032\n", 8))
     {
-        I_Printf(VB_WARNING, "%s:%d normal patch on lumpnum %d", __func__, __LINE__, lump);
         return buffer;
     }
 
     png_t png = {0};
-    I_Printf(VB_WARNING, "%s:%d PNG on lumpnum %d", __func__, __LINE__, lump);
     if (!InitPNG(&png, buffer, buffer_length))
     {
-        I_Printf(VB_WARNING, "%s:%d PNG init error on lumpnum %d", __func__, __LINE__, lump);
         goto error;
     }
 
@@ -1079,7 +1075,6 @@ patch_t *V_CachePatchNum(int lump)
 
     if (!DecodePNG(&png))
     {
-        I_Printf(VB_WARNING, "%s:%d PNG decode error on lumpnum %d", __func__, __LINE__, lump);
         goto error;
     }
 
@@ -1125,7 +1120,6 @@ patch_t *V_CachePatchNum(int lump)
     }
 
     FreePNG(&png);
-    I_Printf(VB_WARNING, "%s:%d freed PNG on lumpnum %d", __func__, __LINE__, lump);
     return lumpcache[lump] = patch;
 
 error:
@@ -1220,7 +1214,7 @@ boolean V_LumpIsPatch(const int lump)
         return false;
     }
 
-    const patch_t *patch = V_CachePatchNumTag(lump, PU_CACHE);
+    const patch_t *patch = V_CachePatchNum(lump);
 
     int width = SHORT(patch->width);
     int height = SHORT(patch->height);
@@ -1258,7 +1252,7 @@ boolean V_PatchIsEmpty(const int lump)
         return true;
     }
 
-    const patch_t *patch = V_CachePatchNumTag(lump, PU_CACHE);
+    const patch_t *patch = V_CachePatchNum(lump);
 
     int width = SHORT(patch->width);
 
