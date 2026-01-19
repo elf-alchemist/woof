@@ -158,7 +158,7 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
         }
 
         chars[i].patch = V_LinearToTransPatch(data, chars[i].width, height, NULL,
-                                              color_key, PU_STATIC, NULL);
+                                              color_key);
         I_Free(data);
     }
 

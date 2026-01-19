@@ -252,7 +252,7 @@ static boolean VX_Load (int spr, int frame)
 		return false;
 	}
 
-	byte *buf = W_CacheLumpNumTag(lumpnum, PU_STATIC);
+	byte *buf = W_CacheLumpNum(lumpnum);
 	int len   = W_LumpLength(lumpnum);
 
 	// Note: this may return NULL

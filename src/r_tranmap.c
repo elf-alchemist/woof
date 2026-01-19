@@ -251,7 +251,7 @@ void R_InitTranMap(void)
 
     if (lump != -1 && !force_rebuild)
     {
-        main_tranmap = W_CacheLumpNumTag(lump, PU_STATIC);
+        main_tranmap = W_CacheLumpNum(lump);
     }
     else
     {

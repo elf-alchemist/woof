@@ -350,7 +350,7 @@ static void M_DrawMainMenu(void)
 {
     options_active = false;
 
-    V_DrawPatch(94, 2, V_CachePatchNameTag("M_DOOM", PU_CACHE));
+    V_DrawPatch(94, 2, V_CachePatchName("M_DOOM"));
 }
 
 /////////////////////////////

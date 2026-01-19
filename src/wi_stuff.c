@@ -2360,7 +2360,7 @@ static void WI_loadData(void)
           M_snprintf(name, sizeof(name), "CWILV%2.2d", i);
           if (W_CheckNumForName(name) != -1)
           {
-          lnames[i] = V_CachePatchNameTag(name, PU_STATIC);
+          lnames[i] = V_CachePatchName(name);
           }
           else
           {
@@ -2376,7 +2376,7 @@ static void WI_loadData(void)
           M_snprintf(name, sizeof(name), "WILV%d%d", wbs->epsd, i);
           if (W_CheckNumForName(name) != -1)
           {
-            lnames[i] = V_CachePatchNameTag(name, PU_STATIC);
+            lnames[i] = V_CachePatchName(name);
           }
           else
           {
@@ -2477,10 +2477,10 @@ static void WI_loadData(void)
   total = V_CachePatchNameTag("WIMSTT", PU_LEVEL);
 
   // your face
-  star = V_CachePatchNameTag("STFST01", PU_STATIC);
+  star = V_CachePatchName("STFST01");
 
   // dead face
-  bstar = V_CachePatchNameTag("STFDEAD0", PU_STATIC);
+  bstar = V_CachePatchName("STFDEAD0");
 
   for (i = 0; i < MAXPLAYERS; i++)
   {

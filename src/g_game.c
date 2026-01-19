@@ -2060,7 +2060,7 @@ static void G_DoPlayDemo(void)
       W_ExtractFileBase(defdemoname, lumpname);           // killough
       int lumpnum = W_GetNumForName(lumpname);
       demolength = W_LumpLength(lumpnum);
-      demobuffer = demo_p = W_CacheLumpNumTag(lumpnum, PU_STATIC);  // killough
+      demobuffer = demo_p = W_CacheLumpNum(lumpnum);  // killough
       I_Printf(VB_DEMO, "G_DoPlayDemo: %s (%s)", lumpname, W_WadNameForLump(lumpnum));
   }
 

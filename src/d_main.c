@@ -358,7 +358,7 @@ void D_Display (void)
     {
       int x = scaledviewx;
       int y = 4;
-      patch_t *patch = V_CachePatchNameTag("M_PAUSE", PU_STATIC);
+      patch_t *patch = V_CachePatchName("M_PAUSE");
 
       x += (scaledviewwidth - SHORT(patch->width)) / 2 - video.deltaw;
 

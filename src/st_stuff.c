@@ -168,7 +168,7 @@ static patch_t *CachePatchName(const char *name)
             return NULL;
         }
     }
-    return V_CachePatchNumTag(lumpnum, PU_STATIC);
+    return V_CachePatchNum(lumpnum);
 }
 
 static void LoadFacePatches(void)
@@ -183,30 +183,30 @@ static void LoadFacePatches(void)
              ++straightface)
         {
             M_snprintf(lump, sizeof(lump), "STFST%d%d", count, straightface);
-            array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+            array_push(facepatches, V_CachePatchName(lump));
         }
 
         M_snprintf(lump, sizeof(lump), "STFTR%d0", count); // turn right
-        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchName(lump));
 
         M_snprintf(lump, sizeof(lump), "STFTL%d0", count); // turn left
-        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchName(lump));
 
         M_snprintf(lump, sizeof(lump), "STFOUCH%d", count); // ouch!
-        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchName(lump));
 
         M_snprintf(lump, sizeof(lump), "STFEVL%d", count); // evil grin ;)
-        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchName(lump));
 
         M_snprintf(lump, sizeof(lump), "STFKILL%d", count); // pissed off
-        array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+        array_push(facepatches, V_CachePatchName(lump));
     }
 
     M_snprintf(lump, sizeof(lump), "STFGOD0");
-    array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+    array_push(facepatches, V_CachePatchName(lump));
 
     M_snprintf(lump, sizeof(lump), "STFDEAD0");
-    array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+    array_push(facepatches, V_CachePatchName(lump));
 
     // [FG] support face gib animations as in the 3DO/Jaguar/PSX ports
     for (count = 0; count < ST_NUMXDTHFACES; ++count)
@@ -215,7 +215,7 @@ static void LoadFacePatches(void)
 
         if (W_CheckNumForName(lump) != -1)
         {
-            array_push(facepatches, V_CachePatchNameTag(lump, PU_STATIC));
+            array_push(facepatches, V_CachePatchName(lump));
         }
         else
         {
@@ -227,7 +227,7 @@ static void LoadFacePatches(void)
     for (count = 0; count < MAXPLAYERS; ++count)
     {
         M_snprintf(lump, sizeof(lump), "STFB%d", count);
-        array_push(facebackpatches, V_CachePatchNameTag(lump, PU_STATIC));
+        array_push(facebackpatches, V_CachePatchName(lump));
     }
 }
 

@@ -601,8 +601,7 @@ void P_LoadLineDefs2(int lump)
         case 260: // killough 4/11/98: translucent 2s textures
         {
           int32_t lump = sides[*ld->sidenum].special; // translucency from sidedef
-          const byte *tranmap =
-              !lump ? main_tranmap : W_CacheLumpNumTag(lump - 1, PU_STATIC);
+          const byte *tranmap = !lump ? main_tranmap : W_CacheLumpNum(lump - 1);
           if (!ld->args[0])
             // if tag==0, affect this linedef only
             ld->tranmap = tranmap;

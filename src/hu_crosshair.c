@@ -80,8 +80,7 @@ void HU_StartCrosshair(void)
 {
     if (crosshair_lumps[hud_crosshair])
     {
-        crosshair.patch =
-            V_CachePatchNameTag(crosshair_lumps[hud_crosshair], PU_STATIC);
+        crosshair.patch = V_CachePatchName(crosshair_lumps[hud_crosshair]);
 
         crosshair.w = SHORT(crosshair.patch->width) / 2;
         crosshair.h = SHORT(crosshair.patch->height) / 2;

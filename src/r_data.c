@@ -903,10 +903,10 @@ void R_InitColormaps(void)
   numcolormaps = lastcolormaplump - firstcolormaplump;
   colormaps = I_Calloc(numcolormaps, sizeof(lighttable_t*));
 
-  colormaps[0] = W_CacheLumpNumTag(W_GetNumForName("COLORMAP"), PU_STATIC);
+  colormaps[0] = W_CacheLumpNum(W_GetNumForName("COLORMAP"));
 
   for (i=1; i<numcolormaps; i++)
-    colormaps[i] = W_CacheLumpNumTag(i+firstcolormaplump, PU_STATIC);
+    colormaps[i] = W_CacheLumpNum(i+firstcolormaplump);
 
   // [FG] dark/shaded color translation table
   cr_dark = &colormaps[0][256*15];

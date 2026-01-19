@@ -946,7 +946,7 @@ static void I_InitDiskFlash(void)
     old_data = I_Calloc(disk.sw * disk.sh, sizeof(pixel_t));
 
     V_GetBlock(0, 0, disk.sw, disk.sh, temp);
-    V_DrawPatch(-video.deltaw, 0, V_CachePatchNameTag("STDISK", PU_CACHE));
+    V_DrawPatch(-video.deltaw, 0, V_CachePatchName("STDISK"));
     V_GetBlock(0, 0, disk.sw, disk.sh, diskflash);
     V_PutBlock(0, 0, disk.sw, disk.sh, temp);
 

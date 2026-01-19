@@ -17,12 +17,12 @@
 #define V_PATCH_H
 
 #include "doomtype.h"
-#include "z_zone.h"
 #include "w_wad.h"
+#include "z_zone.h"
 
-struct patch_s *V_LinearToTransPatch(const byte *data, int width, int height,
-                                     int *output_size, int color_key,
-                                     pu_tag tag, void **user);
+struct patch_s *V_LinearToTransPatchTag(const byte *data, int width, int height,
+                                        int *output_size, int color_key,
+                                        pu_tag tag, void **user);
 
 struct patch_s *V_CachePatchNumTag(int lump, pu_tag tag);
 
@@ -38,5 +38,15 @@ int V_LumpSize(int lump);
 boolean V_LumpIsPatch(const int lump);
 
 boolean V_PatchIsEmpty(const int lump);
+
+struct patch_s *V_LinearToTransPatch(const byte *data, int width, int height,
+                                     int *output_size, int color_key);
+
+struct patch_s *V_CachePatchNum(int lump);
+
+inline static struct patch_s *V_CachePatchName(const char *name)
+{
+    return V_CachePatchNum(W_GetNumForName(name));
+}
 
 #endif

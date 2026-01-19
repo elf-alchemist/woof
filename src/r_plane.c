@@ -129,7 +129,7 @@ static byte *skytran;
 void R_InitPlanes (void)
 {
   xtoskyangle = linearsky ? linearskyangle : xtoviewangle;
-  skytran = W_CacheLumpNameTag("SKYTRAN", PU_STATIC);
+  skytran = W_CacheLumpName("SKYTRAN", ns_global);
 }
 
 void R_InitPlanesRes(void)

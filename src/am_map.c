@@ -572,7 +572,7 @@ static void AM_loadPics(void)
   for (int i = 0; i < 10; i++)
   {
     M_snprintf(namebuf, sizeof(namebuf), "AMMNUM%d", i);
-    marknums[i] = V_CachePatchNameTag(namebuf, PU_STATIC);
+    marknums[i] = V_CachePatchName(namebuf);
   }
 }
 

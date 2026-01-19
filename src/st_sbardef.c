@@ -128,7 +128,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
     const char *tranmap = JS_GetStringValue(json, "tranmap");
     if (tranmap)
     {
-        out->tranmap = W_CacheLumpNameTag(tranmap, PU_STATIC);
+        out->tranmap = W_CacheLumpName(tranmap, ns_global);
     }
 
     const char *translation = JS_GetStringValue(json, "translation");
@@ -419,7 +419,7 @@ static boolean ParseNumberFont(json_t *json, numberfont_t *out)
             I_Printf(VB_ERROR, "SBARDEF: patch \"%s\" not found", lump);
             continue;
         }
-        out->numbers[num] = V_CachePatchNumTag(found, PU_STATIC);
+        out->numbers[num] = V_CachePatchNum(found);
         maxwidth = MAX(maxwidth, SHORT(out->numbers[num]->width));
         maxheight = MAX(maxheight, SHORT(out->numbers[num]->height));
     }
@@ -430,7 +430,7 @@ static boolean ParseNumberFont(json_t *json, numberfont_t *out)
     found = W_CheckNumForName(lump);
     if (found >= 0)
     {
-        out->minus = V_CachePatchNumTag(found, PU_STATIC);
+        out->minus = V_CachePatchNum(found);
         maxwidth = MAX(maxwidth, SHORT(out->minus->width));
     }
 
@@ -438,7 +438,7 @@ static boolean ParseNumberFont(json_t *json, numberfont_t *out)
     found = W_CheckNumForName(lump);
     if (found >= 0)
     {
-        out->percent = V_CachePatchNumTag(found, PU_STATIC);
+        out->percent = V_CachePatchNum(found);
         maxwidth = MAX(maxwidth, SHORT(out->percent->width));
     }
 
@@ -473,7 +473,7 @@ static void LoadHUDFont(hudfont_t *out)
             out->characters[i] = NULL;
             continue;
         }
-        out->characters[i] = V_CachePatchNumTag(found, PU_STATIC);
+        out->characters[i] = V_CachePatchNum(found);
         maxwidth = MAX(maxwidth, SHORT(out->characters[i]->width));
         maxheight = MAX(maxheight, SHORT(out->characters[i]->height));
     }
