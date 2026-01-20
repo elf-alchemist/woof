@@ -154,14 +154,29 @@ void R_InitPlanesRes(void)
 
 void R_InitVisplanesRes(void)
 {
-  int i;
+  visplane_t *plane = freetail;
+  visplane_t *next = NULL;
+
+  while (plane)
+  {
+    next = plane->next;
+    I_Free(plane);
+    plane = next;
+  }
 
   freetail = NULL;
   freehead = &freetail;
 
-  for (i = 0; i < MAXVISPLANES; i++)
+  for (int i = 0; i < MAXVISPLANES; i++)
   {
+    plane = visplanes[i];
     visplanes[i] = 0;
+    while (plane)
+    {
+      next = plane->next;
+      I_Free(plane);
+      plane = next;
+    }
   }
 }
 
@@ -284,7 +299,7 @@ static visplane_t *new_visplane(unsigned hash)
   if (!check)
   {
     const int size = sizeof(*check) + (video.width * 2) * sizeof(*check->top);
-    check = Z_Calloc(1, size, PU_VALLOC, NULL);
+    check = I_Malloc(size);
     check->bottom = &check->top[video.width + 2];
   }
   else
