@@ -28,7 +28,6 @@
 #include "r_main.h"
 #include "v_patch.h"
 #include "v_video.h"
-#include "z_zone.h"
 
 typedef struct
 {

@@ -91,6 +91,13 @@ extern side_t           *sides;
 
 extern struct arena_s   *world_arena;
 
+// misc level geometry data that isn't crucial for demo-compat
+// includes node_t and blockmap, for example
+extern struct arena_s   *bsp_arena;
+
+// graphics, intermission stuff, finales, custom endfinales, etc
+extern struct arena_s   *inter_arena;
+
 typedef struct localview_s
 {
     double rawangle;

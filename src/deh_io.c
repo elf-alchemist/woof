@@ -28,7 +28,6 @@
 #include "m_io.h"
 #include "m_misc.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 typedef enum
 {

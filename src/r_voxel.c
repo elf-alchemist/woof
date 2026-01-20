@@ -36,7 +36,6 @@
 #include "tables.h"
 #include "v_video.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 static boolean voxels_found;
 boolean voxels_rendering, default_voxels_rendering;

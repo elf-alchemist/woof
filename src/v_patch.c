@@ -869,7 +869,7 @@ patch_t *V_CachePatchNumTag(int lump, pu_tag tag)
 
     if (lumpcache[lump])
     {
-        Z_ChangeTag(lumpcache[lump], tag);
+        // Z_ChangeTag(lumpcache[lump], tag);
         return lumpcache[lump];
     }
 
@@ -976,7 +976,7 @@ void *V_CacheFlatNumTag(int lump, pu_tag tag)
 
     if (lumpcache[lump])
     {
-        Z_ChangeTag(lumpcache[lump], tag);
+        // Z_ChangeTag(lumpcache[lump], tag);
         return lumpcache[lump];
     }
 

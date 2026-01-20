@@ -49,7 +49,6 @@
 #include "v_patch.h"
 #include "v_video.h"
 #include "ws_stuff.h"
-#include "z_zone.h"
 
 //jff 1/7/98 default automap colors added
 #define MAPCOLOR(x) mapcolor_##x, cur_mapcolor_##x

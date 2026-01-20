@@ -66,7 +66,6 @@
 #include "v_video.h"
 #include "w_wad.h"
 #include "ws_stuff.h"
-#include "z_zone.h"
 
 static int M_GetKeyString(int c, int offset);
 static void DrawMenuString(int cx, int cy, int color);

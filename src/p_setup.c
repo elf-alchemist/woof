@@ -92,6 +92,8 @@ int      numsides;
 side_t   *sides;
 
 arena_t *world_arena;
+arena_t *bsp_arena;
+arena_t *inter_arena;
 
 // BLOCKMAP
 // Created from axis aligned bounding box
@@ -379,7 +381,7 @@ void P_LoadNodes (int lump)
   int  i;
 
   numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
-  nodes = Z_Malloc (numnodes*sizeof(node_t),PU_LEVEL,0);
+  nodes = arena_calloc_num(bsp_arena, node_t, numnodes);
   data = W_CacheLumpNum(lump);
 
   for (i=0; i<numnodes; i++)
@@ -1075,8 +1077,7 @@ void P_CreateBlockMap(void)
 
   // Create the blockmap lump
 
-  //blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) * (4 + NBlocks + linetotal));
-  blockmaplump = Z_Malloc(sizeof(*blockmaplump) * (4 + NBlocks + linetotal), PU_LEVEL, 0);
+  blockmaplump = arena_calloc_num(bsp_arena, int32_t, (4 + NBlocks + linetotal));
 
   // blockmap header
 
@@ -1247,7 +1248,7 @@ static void P_CreateBlockMap(void)
 	  count += bmap[i].n + 2; // 1 header word + 1 trailer word + blocklist
 
       // Allocate blockmap lump with computed count
-      blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
+      blockmaplump = arena_calloc_num(bsp_arena, int32_t, count);
     }									 
 
     // Now compress the blockmap.
@@ -1806,6 +1807,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   M_ArenaClear(thinkers_arena);
   M_ArenaClear(msecnodes_arena);
 
+  M_ArenaClear(bsp_arena);
+  M_ArenaClear(inter_arena);
+
   Z_FreeTag(PU_CACHE);
 
   P_InitThinkers();
@@ -1932,6 +1936,9 @@ void P_Init (void)
   msecnodes_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
   activeceilings_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
   activeplats_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
+
+  bsp_arena = M_ArenaInit(SIZE_MB(8), SIZE_MB(1));
+  inter_arena = M_ArenaInit(SIZE_MB(8), SIZE_MB(1));
 }
 
 //----------------------------------------------------------------------------

@@ -88,7 +88,6 @@
 #include "w_wad.h"
 #include "wi_stuff.h"
 #include "ws_stuff.h"
-#include "z_zone.h"
 
 boolean devparm;        // started game with -devparm
 

@@ -540,7 +540,9 @@ void *W_CacheLumpNumTag(int lump, pu_tag tag)
   if (!lumpcache[lump])      // read the lump in
     W_ReadLump(lump, Z_Malloc(W_LumpLength(lump), tag, &lumpcache[lump]));
   else
-    Z_ChangeTag(lumpcache[lump],tag);
+  {
+    // Z_ChangeTag(lumpcache[lump],tag);
+  }
 
   return lumpcache[lump];
 }

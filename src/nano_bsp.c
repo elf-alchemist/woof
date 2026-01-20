@@ -36,7 +36,6 @@
 #include "r_defs.h"
 #include "r_main.h"
 #include "r_state.h"
-#include "z_zone.h"
 
 #define DIST_EPSILON  (FRACUNIT / 64)
 
@@ -79,7 +78,7 @@ struct Nanode
 
 vertex_t * BSP_NewVertex (fixed_t x, fixed_t y)
 {
-	vertex_t * vert = Z_Malloc(sizeof(vertex_t), PU_LEVEL, NULL);
+	vertex_t * vert = arena_calloc(bsp_arena, vertex_t);
 	vert->x = x;
 	vert->y = y;
 	vert->r_x = x; // [FG] Woof!'ism
@@ -89,15 +88,13 @@ vertex_t * BSP_NewVertex (fixed_t x, fixed_t y)
 
 seg_t * BSP_NewSeg (void)
 {
-	seg_t * seg = Z_Malloc (sizeof(seg_t), PU_LEVEL, NULL);
-	memset (seg, 0, sizeof(*seg));
+	seg_t * seg = arena_calloc(bsp_arena, seg_t);
 	return seg;
 }
 
 nanode_t * BSP_NewNode (void)
 {
-	nanode_t * node = Z_Malloc (sizeof(nanode_t), PU_LEVEL, NULL);
-	memset (node, 0, sizeof(*node));
+	nanode_t * node = arena_calloc(bsp_arena, nanode_t);
 	return node;
 }
 
@@ -725,8 +722,6 @@ void BSP_WriteSubsector (nanode_t * N)
 		// copy and free it
 		memcpy (&segs[nano_seg_index], seg, sizeof(seg_t));
 
-		Z_Free (seg);
-
 		nano_seg_index += 1;
 		out->numlines  += 1;
 	}
@@ -763,8 +758,6 @@ unsigned int BSP_WriteNode (nanode_t * N, fixed_t * bbox)
 		BSP_MergeBounds (bbox, out->bbox[0], out->bbox[1]);
 	}
 
-	Z_Free (N);
-
 	return index;
 }
 
@@ -785,13 +778,9 @@ void BSP_BuildNodes (void)
 	BSP_CountStuff (root);
 
 	// allocate the global arrays
-	nodes      = Z_Malloc (numnodes*sizeof(node_t), PU_LEVEL, NULL);
-	subsectors = arena_alloc_num (world_arena, subsector_t, numsubsectors);
-	segs       = arena_alloc_num (world_arena, seg_t, numsegs);
-
-	// clear the initial contents
-	memset (nodes, 0, numnodes*sizeof(node_t));
-	memset (subsectors, 0, numsubsectors*sizeof(subsector_t));
+	nodes      = arena_calloc_num(bsp_arena, node_t, numnodes);
+	subsectors = arena_calloc_num(world_arena, subsector_t, numsubsectors);
+	segs       = arena_calloc_num(world_arena, seg_t, numsegs);
 
 	nano_seg_index = 0;
 

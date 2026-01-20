@@ -38,7 +38,6 @@
 #include "r_srgb.h"
 #include "r_tranmap.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 //
 // R_InitTranMap

@@ -29,7 +29,9 @@
 #include "g_game.h"
 #include "g_umapinfo.h"
 #include "i_printf.h"
+#include "i_system.h"
 #include "info.h"
+#include "m_arena.h"
 #include "m_misc.h" // [FG] M_StringDuplicate()
 #include "m_swap.h"
 #include "r_defs.h"
@@ -83,11 +85,6 @@ static boolean mapinfo_finale;
 //
 // ID24 EndFinale extensions
 //
-
-#define M_ARRAY_MALLOC(size) Z_Malloc(size, PU_LEVEL, NULL)
-#define M_ARRAY_REALLOC(ptr, size) Z_Realloc(ptr, size, PU_LEVEL, NULL)
-#define M_ARRAY_FREE(ptr) Z_Free(ptr)
-#include "m_array.h"
 
 #include "m_json.h"
 
@@ -144,10 +141,8 @@ typedef struct end_finale_s
 
 static end_finale_t *endfinale;
 
-static void ParseEndFinale_CastFrame(json_t *js_frame, cast_frame_t **frames,
-                                     int *framecount, const char *lump)
+static void ParseEndFinale_CastFrame(json_t *js_frame, cast_frame_t *out, const char *lump)
 {
-    cast_frame_t cast_frame = {0};
     const char *frame_lump = JS_GetStringValue(js_frame, "lump");
     const char *tran_lump = JS_GetStringValue(js_frame, "tranmap");
     const char *xlat_lump = JS_GetStringValue(js_frame, "translation");
@@ -158,43 +153,43 @@ static void ParseEndFinale_CastFrame(json_t *js_frame, cast_frame_t **frames,
     }
     else
     {
-        M_CopyLumpName(cast_frame.frame_lump, frame_lump);
+        M_CopyLumpName(out->frame_lump, frame_lump);
     }
 
-    M_CopyLumpName(cast_frame.tran_lump, (tran_lump ? tran_lump : "\0"));
-    M_CopyLumpName(cast_frame.xlat_lump, (xlat_lump ? xlat_lump : "\0"));
-    cast_frame.flipped = JS_GetBooleanValue(js_frame, "flipped");
-    cast_frame.duration = MAX(1, JS_GetNumberValue(js_frame, "duration") * TICRATE);
-    cast_frame.sound = JS_GetIntegerValue(js_frame, "sound");
-
-    array_push(*frames, cast_frame);
-    (*framecount)++;
+    M_CopyLumpName(out->tran_lump, (tran_lump ? tran_lump : "\0"));
+    M_CopyLumpName(out->xlat_lump, (xlat_lump ? xlat_lump : "\0"));
+    out->flipped = JS_GetBooleanValue(js_frame, "flipped");
+    out->duration = MAX(1, JS_GetNumberValue(js_frame, "duration") * TICRATE);
+    out->sound = JS_GetIntegerValue(js_frame, "sound");
 }
 
-static cast_anim_t ParseEndFinale_CastAnims(json_t *js_castanim_entry,
-                                            const char *lump)
+void ParseEndFinale_CastAnims(json_t *js_castanim_entry, cast_anim_t *out,
+                              const char *lump)
 {
-    cast_anim_t out = {0};
-    out.name = DEH_StringForMnemonic(JS_GetStringValue(js_castanim_entry, "name"));
-    out.alertsound = JS_GetIntegerValue(js_castanim_entry, "alertsound");
+    out->name = DEH_StringForMnemonic(JS_GetStringValue(js_castanim_entry, "name"));
+    out->alertsound = JS_GetIntegerValue(js_castanim_entry, "alertsound");
 
     json_t *js_alive_frame_list = JS_GetObject(js_castanim_entry, "aliveframes");
     json_t *js_alive_frame = NULL;
+    out->aliveframescount = JS_GetArraySize(js_alive_frame_list);
+    out->aliveframes = arena_calloc_num(inter_arena, cast_frame_t, out->aliveframescount);
+    int alive_index = 0;
     JS_ArrayForEach(js_alive_frame, js_alive_frame_list)
     {
-        ParseEndFinale_CastFrame(js_alive_frame, &out.aliveframes,
-                                 &out.aliveframescount, lump);
+        ParseEndFinale_CastFrame(js_alive_frame, &out->aliveframes[alive_index], lump);
+        alive_index++;
     }
 
     json_t *js_death_frame = NULL;
     json_t *js_death_frame_list = JS_GetObject(js_castanim_entry, "deathframes");
+    out->deathframescount = JS_GetArraySize(js_death_frame_list);
+    out->deathframes = arena_calloc_num(inter_arena, cast_frame_t, out->deathframescount);
+    int death_index = 0;
     JS_ArrayForEach(js_death_frame, js_death_frame_list)
     {
-        ParseEndFinale_CastFrame(js_death_frame, &out.deathframes,
-                                 &out.deathframescount, lump);
+        ParseEndFinale_CastFrame(js_death_frame, &out->deathframes[death_index], lump);
+        death_index++;
     }
-
-    return out;
 }
 
 static void ParseEndFinale_CastRollCall(json_t *js_castrollcall,
@@ -203,12 +198,15 @@ static void ParseEndFinale_CastRollCall(json_t *js_castrollcall,
     json_t *js_castanim_list = JS_GetObject(js_castrollcall, "castanims");
 
     json_t *js_castanim_entry = NULL;
+    out->cast_animscount = JS_GetArraySize(js_castanim_list);
+    out->cast_anims = arena_calloc_num(inter_arena, cast_anim_t, out->cast_animscount);
+    int index = 0;
     JS_ArrayForEach(js_castanim_entry, js_castanim_list)
     {
-        cast_anim_t castanim_entry =
-            ParseEndFinale_CastAnims(js_castanim_entry, lump);
-        out->cast_animscount++;
-        array_push(out->cast_anims, castanim_entry);
+        cast_anim_t cast_anim = {0};
+        ParseEndFinale_CastAnims(js_castanim_entry, &cast_anim, lump);
+        out->cast_anims[index] = cast_anim;
+        index++;
     }
 }
 
@@ -809,12 +807,15 @@ static void EndFinaleCast_SetupCall(void)
     W_CacheLumpNameTag(endfinale->background, PU_LEVEL);
     ef_callee_count = endfinale->cast_animscount;
 
-    cast_anim_t *callee;
-    array_foreach(callee, endfinale->cast_anims)
+    cast_anim_t *callee = NULL;
+    for(int i = 0; i < ef_callee_count; i++)
     {
+        callee = &endfinale->cast_anims[i];
         cast_frame_t *frame;
-        array_foreach(frame, callee->aliveframes)
+
+        for(int j = 0; j < callee->aliveframescount; j++)
         {
+            frame = &callee->aliveframes[j];
             W_CacheSpriteName(frame->frame_lump, PU_LEVEL);
             frame->tranmap = (W_CheckNumForName(frame->tran_lump) >= 0)
                            ? W_CacheLumpNameTag(frame->tran_lump, PU_LEVEL)
@@ -823,8 +824,10 @@ static void EndFinaleCast_SetupCall(void)
                         ? W_CacheLumpNameTag(frame->xlat_lump, PU_LEVEL)
                         : NULL;
         }
-        array_foreach(frame, callee->deathframes)
+
+        for(int j = 0; j < callee->deathframescount; j++)
         {
+            frame = &callee->deathframes[j];
             W_CacheSpriteName(frame->frame_lump, PU_LEVEL);
             frame->tranmap = (W_CheckNumForName(frame->tran_lump) >= 0)
                            ? W_CacheLumpNameTag(frame->tran_lump, PU_LEVEL)

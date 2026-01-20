@@ -25,7 +25,6 @@
 #include "v_patch.h"
 #include "v_video.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 static numberfont_t *numberfonts;
 static hudfont_t *hudfonts;

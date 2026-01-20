@@ -15,6 +15,7 @@
 #define M_JSON_H
 
 #include "doomtype.h"
+#include "yyjson.h"
 
 typedef struct yyjson_val json_t;
 

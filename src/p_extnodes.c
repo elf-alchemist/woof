@@ -37,7 +37,6 @@
 #include "r_main.h"
 #include "r_state.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 // [FG] support maps with NODES in compressed ZNOD/ZGLN formats
 #include "miniz.h"
@@ -409,7 +408,7 @@ void P_LoadNodes_DEEP(int lump)
     int i;
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_deep_t);
-    nodes = Z_Malloc(numnodes * sizeof(node_t), PU_LEVEL, 0);
+    nodes = arena_calloc_num(bsp_arena, node_t, numnodes);
     data = W_CacheLumpNum(lump);
 
     // [FG] skip header
@@ -836,7 +835,7 @@ void P_LoadNodes_ZDoom(int lump, nodeformat_t format)
     data += sizeof(numNodes);
 
     numnodes = numNodes;
-    nodes = Z_Malloc(numnodes * sizeof(node_t), PU_LEVEL, 0);
+    nodes = arena_calloc_num(bsp_arena, node_t, numnodes);
 
     for (i = 0; i < numnodes; i++)
     {
