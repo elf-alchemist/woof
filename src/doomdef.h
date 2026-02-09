@@ -75,6 +75,9 @@ typedef enum
 #define DEN_PLAYER7 4003
 #define DEN_PLAYER8 4004
 
+// Start of ID24Hacked reserved range
+#define ID24_NEG_OFFSET -1879048192 // 0x90000000
+
 // State updates, number of tics / second.
 #define TICRATE          35
 
@@ -153,17 +156,22 @@ typedef enum {
   wp_supershotgun,
 
   NUMWEAPONS,
-  wp_nochange              // No pending weapon change.
+  wp_nochange,             // No pending weapon change.
+
+  wp_incinerator = ID24_NEG_OFFSET,
+  wp_calamityblade,
 } weapontype_t;
 
 // Ammunition types defined.
 typedef enum {
+  am_noammo = -1, // Unlimited for chainsaw / fist.
   am_clip,    // Pistol / chaingun ammo.
   am_shell,   // Shotgun / double barreled shotgun.
   am_cell,    // Plasma rifle, BFG.
   am_misl,    // Missile launcher.
   NUMAMMO,
-  am_noammo   // Unlimited for chainsaw / fist.
+
+  am_fuel = ID24_NEG_OFFSET,
 } ammotype_t;
 
 // Power up artifacts.

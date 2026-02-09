@@ -849,7 +849,7 @@ void P_MobjThinker (mobj_t* mobj)
       return;
 
     int tics = (demo_version >= DV_ID24) ? mobj->info->respawn_min_tics
-                                         : 12 * TICRATE;
+                                         : RESPAWN_TICS;
 
     if (++mobj->movecount < tics)
       return;
@@ -858,7 +858,7 @@ void P_MobjThinker (mobj_t* mobj)
       return;
 
     int dice = (demo_version >= DV_ID24) ? mobj->info->respawn_dice
-                                         : 4;
+                                         : RESPAWN_DICE;
 
     if (P_Random(pr_respawn) > dice)
       return;

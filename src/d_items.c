@@ -159,6 +159,53 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
   },
 };
 
+weaponinfo_t id24_weaponinfo[2] = {
+  // Incinerator
+  {
+    am_fuel,        // ammo
+    -1879047888,    // upstate
+    -1879047889,    // downstate
+    -1879047890,    // readystate
+    -1879047887,    // atkstate
+    -1879047878,    // flashstate
+    1,              // ammopershot
+    0,              // intflags
+    WPF_NOAUTOFIRE, // mbf21flags
+    8,              // slot
+    0,              // slotpriority
+    3,              // switchpriority
+    false,          // initialowned
+    false,          // initialraised
+    "SMFLAM",       // carouselicon
+    -1,             // allowswitchifownedweapon
+    -1,             // noswitchifownedweapon
+    -1,             // allowswitchifowneditem
+    -1,             // noswitchifowneditem
+  },
+  // Calamity blade
+  {
+    am_fuel,        // ammo
+    -1879047839,    // upstate
+    -1879047840,    // downstate
+    -1879047841,    // readystate
+    -1879047838,    // atkstate
+    -1879047743,    // flashstate
+    10,             // ammopershot
+    0,              // intflags
+    WPF_NOAUTOFIRE, // mbf21flags
+    9,              // slot
+    0,              // slotpriority
+    1,              // switchpriority
+    false,          // initialowned
+    false,          // initialraised
+    "SMHEAT",       // carouselicon
+    -1,             // allowswitchifownedweapon
+    -1,             // noswitchifownedweapon
+    -1,             // allowswitchifowneditem
+    -1,             // noswitchifowneditem
+  }
+};
+
 //----------------------------------------------------------------------------
 //
 // $Log: d_items.c,v $

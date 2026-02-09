@@ -439,7 +439,7 @@ const char *DEH_StringForMnemonic(const char *mnemonic)
             return DEH_String(bex_mnemonic_table[i].original_string);
         }
     }
-
+    return "(NULL)";
     I_Error("BEX mnemonic '%s' not found! Check your lumps.", mnemonic);
 }
 

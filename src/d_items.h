@@ -21,6 +21,7 @@
 #define __D_ITEMS__
 
 #include "doomdef.h"
+#include "doomtype.h"
 
 //
 // mbf21: Internal weapon flags
@@ -59,10 +60,19 @@ typedef struct
   int         flags;
   // id24
   int         slot;
+  int         slotpriority;
+  int         switchpriority;
+  boolean     initialowned;
+  boolean     initialraised;
   const char  *carouselicon;
+  int         allowswitchifownedweapon;
+  int         noswitchifownedweapon;
+  int         allowswitchifowneditem;
+  int         noswitchifowneditem;
 } weaponinfo_t;
 
 extern  weaponinfo_t    weaponinfo[NUMWEAPONS+2];
+extern  weaponinfo_t    id24_weaponinfo[2];
 
 #endif
 

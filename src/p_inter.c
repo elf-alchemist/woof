@@ -927,7 +927,14 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
         P_RemoveMobj(special);
     }
 
-    player->bonuscount += special->info->pickup_bonus;
+    if (demo_version >= DV_ID24)
+    {
+      player->bonuscount += special->info->pickup_bonus;
+    }
+    else
+    {
+      player->bonuscount += PICKUP_BONUS;
+    }
 
     // killough 4/25/98, 12/98
     S_StartSoundPreset(player->mo, sound, (sound == sfx_itemup) ? PITCH_NONE : PITCH_FULL);

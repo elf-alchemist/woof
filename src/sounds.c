@@ -128,6 +128,9 @@ musicinfo_t S_music[] = {
 #define SOUND(n, s, p) \
   SOUND_LINK(n, s, p, 0)
 
+#define SOUND_DEFAULT(n) \
+  SOUND_LINK(n, sg_none, 127, 0)
+
 sfxinfo_t original_S_sfx[NUMSFX] = {
   SOUND("none",   sg_none,    0), // S_sfx[0] needs to be a dummy for odd reasons.
 
@@ -458,6 +461,48 @@ sfxinfo_t original_S_sfx[NUMSFX] = {
   [697] = SOUND("fre197", sg_none, 127),
   [698] = SOUND("fre198", sg_none, 127),
   [699] = SOUND("fre199", sg_none, 127),
+};
+
+// must account for negative indexes of reserved range
+sfxinfo_t id24_S_sfx[] =
+{
+  SOUND_DEFAULT("banact"),
+  SOUND_DEFAULT("bandth"),
+  SOUND_DEFAULT("banpai"),
+  SOUND_DEFAULT("break"),
+  SOUND_DEFAULT("cspact"),
+  SOUND_DEFAULT("cspdth"),
+  SOUND_DEFAULT("cspsit"),
+  SOUND_DEFAULT("cspwlk"),
+  SOUND_DEFAULT("gatcls"),
+  SOUND_DEFAULT("gatlop"),
+  SOUND_DEFAULT("gatopn"),
+  SOUND_DEFAULT("ghlact"),
+  SOUND_DEFAULT("ghldth"),
+  SOUND_DEFAULT("ghlpai"),
+  SOUND_DEFAULT("ghlsit"),
+  SOUND_DEFAULT("hetchg"),
+  SOUND_DEFAULT("hetsht"),
+  SOUND_DEFAULT("hetxpl"),
+  SOUND_DEFAULT("incbrn"),
+  SOUND_DEFAULT("incfi1"),
+  SOUND_DEFAULT("incfi2"),
+  SOUND_DEFAULT("incht1"),
+  SOUND_DEFAULT("incht2"),
+  SOUND_DEFAULT("incht3"),
+  SOUND_DEFAULT("klaxon"),
+  SOUND_DEFAULT("ppoact"),
+  SOUND_DEFAULT("ppodth"),
+  SOUND_DEFAULT("ppohed"),
+  SOUND_DEFAULT("ppopai"),
+  SOUND_DEFAULT("tyrdth"),
+  SOUND_DEFAULT("tyrsit"),
+  SOUND_DEFAULT("tyrwlk"),
+  SOUND_DEFAULT("vasact"),
+  SOUND_DEFAULT("vasatk"),
+  SOUND_DEFAULT("vasdth"),
+  SOUND_DEFAULT("vaspai"),
+  SOUND_DEFAULT("vassit"),
 };
 
 //----------------------------------------------------------------------------

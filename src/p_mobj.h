@@ -107,6 +107,8 @@
 //
 typedef enum
 {
+    MF_NONE             = 0x00000000, // Nothing.
+
     // Call P_SpecialThing when touched.
     MF_SPECIAL          = 1,
     // Blocks.
@@ -205,6 +207,7 @@ typedef enum
 // MBF21
 typedef enum
 {
+    MF2_NONE            = 0x00000000, // Nothing.
     MF2_LOGRAV          = 0x00000001, // alternate gravity setting
     MF2_SHORTMRANGE     = 0x00000002, // has short missile range (archvile)
     MF2_DMGIGNORED      = 0x00000004, // other things ignore its attacks (archvile)
@@ -229,6 +232,7 @@ typedef enum
 // ID24
 typedef enum
 {
+    MF3_NONE               = 0x00000000, // Nothing.
     MF3_NORESPAWN          = 0x00000001, // Disable nightmare respawn
     MF3_SPECIALSTAYSSINGLE = 0x00000002, // Item pickup stays, in singleplayer
     MF3_SPECIALSTAYSCOOP   = 0x00000004, // Item pickup stays, in cooperative

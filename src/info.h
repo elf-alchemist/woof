@@ -196,7 +196,52 @@ typedef enum
   SPR_SP80, SPR_SP81, SPR_SP82, SPR_SP83, SPR_SP84, SPR_SP85, SPR_SP86, SPR_SP87, SPR_SP88, SPR_SP89,
   SPR_SP90, SPR_SP91, SPR_SP92, SPR_SP93, SPR_SP94, SPR_SP95, SPR_SP96, SPR_SP97, SPR_SP98, SPR_SP99,
 
-  NUMSPRITES  // counter of how many there are
+  NUMSPRITES, // counter of how many there are
+
+  SPR_BSH1 = ID24_NEG_OFFSET,
+  SPR_BSH2,
+  SPR_BSHE,
+  SPR_CBR2,
+  SPR_CHR1,
+  SPR_CSPI,
+  SPR_CYB2,
+  SPR_FLMF,
+  SPR_FLMG,
+  SPR_GBAL,
+  SPR_GHUL,
+  SPR_GOR6,
+  SPR_GOR7,
+  SPR_GOR8,
+  SPR_GORA,
+  SPR_HBB2,
+  SPR_HBBQ,
+  SPR_HDB7,
+  SPR_HDB8,
+  SPR_HETB,
+  SPR_HETC,
+  SPR_HETF,
+  SPR_HETG,
+  SPR_IFLM,
+  SPR_LAMP,
+  SPR_PHED,
+  SPR_POB6,
+  SPR_POL7,
+  SPR_POLA,
+  SPR_PPOS,
+  SPR_STC1,
+  SPR_STC2,
+  SPR_STC3,
+  SPR_STG1,
+  SPR_STG2,
+  SPR_STG3,
+  SPR_STMI,
+  SPR_TLP6,
+  SPR_VASS,
+  SPR_VFLM,
+  SPR_INCN,
+  SPR_CBLD,
+  SPR_FCPU,
+  SPR_FTNK,
 } spritenum_t;
 
 // ********************************************************************
@@ -1249,7 +1294,9 @@ typedef enum
 
   S_MUSHROOM,  // killough 10/98: mushroom explosion effect
 
-  NUMSTATES  // Counter of how many there are
+  NUMSTATES, // Counter of how many there are
+
+  NUMSTATES_ID24 = 461,
 } statenum_t;
 
 // ********************************************************************
@@ -1263,9 +1310,9 @@ typedef struct
   actionf_t   action;       // code pointer to function for action if any
   statenum_t  nextstate;    // linked list pointer to next state or zero
   int         misc1, misc2; // used for psprite positioning
+  int         flags;
   int         args[MAXSTATEARGS]; // [XA] mbf21 args
   byte       *tranmap; // ID24
-  int         flags;
 } state_t;
 
 //
@@ -1281,7 +1328,10 @@ typedef struct
 
 // these are in info.c
 extern state_t  original_states[NUMSTATES];
+extern state_t  id24_states[NUMSTATES_ID24];
+
 extern char *original_sprnames[];             // 1/17/98 killough
+extern char *id24_sprnames[];
 
 // ********************************************************************
 // Thing enumeration -- must match info.c
@@ -1439,8 +1489,71 @@ typedef enum {
 
   MT_MUSICSOURCE, // [crispy] support MUSINFO lump (dynamic music changing)
 
-  NUMMOBJTYPES  // Counter of how many there are
+  NUMMOBJTYPES,  // Counter of how many there are
 
+  MT_GHOUL = ID24_NEG_OFFSET,
+  MT_BANSHEE,
+  MT_MINDWEAVER,
+  MT_SHOCKTROOPER,
+  MT_VASSAGO,
+  MT_TYRANT,
+  MT_TYRANT_BOSS_1,
+  MT_TYRANT_BOSS_2,
+  MT_INCINERATOR_FLAME,
+  MT_HEATWAVE_SPAWNER,
+  MT_HEATWAVE_RIPPER,
+  MT_GHOUL_BALL,
+  MT_SHOCKTROOPER_HEAD,
+  MT_SHOCKTROOPER_TORSO,
+  MT_VASSAGO_FLAME,
+  MT_STALAGMITE_GRAY,
+  MT_LARGE_CORPSE_PILE,
+  MT_HUMAN_BBQ_1,
+  MT_HUMAN_BBQ_2,
+  MT_HANGING_VICTIM_BOTH_LEGS,
+  MT_HANGING_VICTIM_BOTH_LEGS_BLOCKING,
+  MT_HANGING_VICTIM_CRUCIFIED,
+  MT_HANGING_VICTIM_CRUCIFIED_BLOCKING,
+  MT_HANGING_VICTIM_ARMS_BOUND,
+  MT_HANGING_VICTIM_ARMS_BOUND_BLOCKING,
+  MT_HANGING_BARON_OF_HELL,
+  MT_HANGING_BARON_OF_HELL_BLOCKING,
+  MT_HANGING_VICTIM_CHAINED,
+  MT_HANGING_VICTIM_CHAINED_BLOCKING,
+  MT_HANGING_TORSO_CHAINED,
+  MT_HANGING_TORSO_CHAINED_BLOCKING,
+  MT_SKULL_POLE_TRIO,
+  MT_SKULL_GIBS,
+  MT_BUSH_SHORT,
+  MT_BUSH_SHORT_BURNED_1,
+  MT_BUSH_SHORT_BURNED_2,
+  MT_BUSH_TALL,
+  MT_BUSH_TALL_BURNED_1,
+  MT_BUSH_TALL_BURNED_2,
+  MT_CAVE_ROCK_COLUMN,
+  MT_CAVE_STALAGMITE_LARGE,
+  MT_CAVE_STALAGMITE_MEDIUM,
+  MT_CAVE_STALAGMITE_SMALL,
+  MT_CAVE_STALACTITE_LARGE,
+  MT_CAVE_STALACTITE_LARGE_BLOCKING,
+  MT_CAVE_STALACTITE_MEDIUM,
+  MT_CAVE_STALACTITE_MEDIUM_BLOCKING,
+  MT_CAVE_STALACTITE_SMALL,
+  MT_CAVE_STALACTITE_SMALL_BLOCKING,
+  MT_OFFICE_CHAIR,
+  MT_OFFICE_LAMP_BREAKABLE,
+  MT_CEILING_LAMP,
+  MT_CANDELABRA_SHORT,
+  MT_AMBIENT_KLAXON,
+  MT_AMBIENT_PORTAL_OPEN,
+  MT_AMBIENT_PORTAL_LOOP,
+  MT_AMBIENT_PORTAL_CLOSE,
+  MT_FUEL_CAN,
+  MT_FUEL_TANK,
+  MT_CALAMITY_BLADE,
+  MT_INCINERATOR,
+
+  NUMMOBJTYPES_ID24 = 61,
 } mobjtype_t;
 
 typedef enum {
@@ -1452,11 +1565,14 @@ typedef enum {
   PG_GROUPLESS = -1,
   PG_DEFAULT,
   PG_BARON,
+  PG_TYRANT,
   PG_END
 } projectile_group_t;
 
 typedef enum {
   SG_DEFAULT,
+  SG_VASSAGO,
+  SG_TYRANT,
   SG_END
 } splash_group_t;
 
@@ -1533,9 +1649,10 @@ typedef struct
     int pickup_ammo_category;
     int pickup_weapon_type;
     itemtype_t pickup_item_type;
-    int pickup_sound;
     int pickup_bonus;
+    int pickup_sound;
     const char *pickup_mnemonic;
+    const char *xlat_lump;
     fixed_t self_damage;
 
     // MBF2y
@@ -1548,8 +1665,13 @@ typedef struct
 
 #define NO_ALTSPEED -1
 
+#define RESPAWN_TICS TICRATE * 12
+#define RESPAWN_DICE 4 // out of 256
+#define PICKUP_BONUS 6
+
 // See p_mobj_h for addition more technical info
 extern mobjinfo_t original_mobjinfo[NUMMOBJTYPES];
+extern mobjinfo_t id24_mobjinfo[NUMMOBJTYPES_ID24];
 
 // DSDHacked
 extern state_t *states;
