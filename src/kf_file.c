@@ -1474,7 +1474,7 @@ static void PrepareArchiveThinkers(void)
         thinker_pointers[i] = pointer;
     }
 
-    free(table);
+    I_Free(table);
 }
 
 static void ArchiveThinkers(void)
@@ -1691,7 +1691,7 @@ static void ArchiveMSecNodes(void)
     {
         write_msecnode_t((msecnode_t *)table[i]);
     }
-    free(table);
+    I_Free(table);
 }
 
 static void PrepareUnArchiveMSecNodes(void)
@@ -1805,7 +1805,7 @@ static void ArchiveCeilingList(void)
         ceilinglist_t *cl = (ceilinglist_t *)table[i];
         writep_thinker(&cl->ceiling->thinker);
     }
-    free(table);
+    I_Free(table);
 }
 
 static void PrepareUnArchiveCeilingList(void)
@@ -1854,7 +1854,7 @@ static void ArchivePlatList(void)
         platlist_t *cl = (platlist_t *)table[i];
         writep_thinker(&cl->plat->thinker);
     }
-    free(table);
+    I_Free(table);
 }
 
 static void PrepareUnArchivePlatList(void)

@@ -68,7 +68,7 @@ static boolean SetStringMapping(deh_mapping_t *mapping, deh_mapping_entry_t *ent
     // Copy value into field:
     if (*location)
     {
-        free(*location);
+        I_Free(*location);
     }
     *location = M_StringDuplicate(value);
     return true;

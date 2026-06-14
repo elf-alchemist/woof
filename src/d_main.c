@@ -1302,7 +1302,7 @@ static void AutoloadIWadDir(void (*AutoLoadFunc)(const char *path))
     {
         char *dir = GetAutoloadDir(autoload_paths[j], "all-all", true);
         AutoLoadFunc(dir);
-        free(dir);
+        I_Free(dir);
 
         // common auto-loaded files for all Doom flavors
         if (local_gamemission != none)

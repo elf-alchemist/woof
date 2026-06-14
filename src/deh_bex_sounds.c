@@ -90,7 +90,7 @@ static void DEH_BEXSoundsParseLine(deh_context_t *context, char *line, int tag)
     {
         if (S_sfx[match].name)
         {
-            free(S_sfx[match].name);
+            I_Free(S_sfx[match].name);
         }
         S_sfx[match].name = M_StringDuplicate(sound_name);
     }

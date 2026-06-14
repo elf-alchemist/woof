@@ -78,7 +78,7 @@ struct Nanode
 
 vertex_t * BSP_NewVertex (fixed_t x, fixed_t y)
 {
-	vertex_t * vert = arena_calloc(bsp_arena, vertex_t);
+	vertex_t * vert = arena_alloc(bsp_arena, vertex_t);
 	vert->x = x;
 	vert->y = y;
 	vert->r_x = x; // [FG] Woof!'ism
@@ -88,13 +88,13 @@ vertex_t * BSP_NewVertex (fixed_t x, fixed_t y)
 
 seg_t * BSP_NewSeg (void)
 {
-	seg_t * seg = arena_calloc(bsp_arena, seg_t);
+	seg_t * seg = arena_alloc(bsp_arena, seg_t);
 	return seg;
 }
 
 nanode_t * BSP_NewNode (void)
 {
-	nanode_t * node = arena_calloc(bsp_arena, nanode_t);
+	nanode_t * node = arena_alloc(bsp_arena, nanode_t);
 	return node;
 }
 

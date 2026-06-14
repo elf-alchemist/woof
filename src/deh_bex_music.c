@@ -98,7 +98,7 @@ static void DEH_BEXMusicParseLine(deh_context_t *context, char *line, int tag)
     {
         if (modified[index])
         {
-            free(S_music[index].name);
+            I_Free(S_music[index].name);
         }
         S_music[index].name = M_StringDuplicate(music_name);
         modified[index] = true;

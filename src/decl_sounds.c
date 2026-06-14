@@ -217,7 +217,7 @@ int DECL_SoundMapping(const char *sound_name)
         char *name = M_StringDuplicate(sound_name);
         M_StringToLower(name);
         decl_sound_t *sound = hashmap_get_str(sounds, name);
-        free(name);
+        I_Free(name);
         if (sound)
         {
             return sound->sfx_number;

@@ -391,9 +391,8 @@ void P_LoadNodes(int lump)
 {
     byte *data;
 
-    numsegs = W_LumpLength(lump) / sizeof(mapseg_deepbspv4_t);
-    segs = arena_alloc_num(world_arena, seg_t, numsegs);
-    memset(segs, 0, numsegs * sizeof(seg_t));
+    numnodes = W_LumpLength(lump) / sizeof(mapnode_t);
+    nodes = arena_alloc_num(bsp_arena, node_t, numnodes);
     data = W_CacheLumpNum(lump);
 
     for (int i = 0; i < numnodes; i++)
@@ -432,8 +431,7 @@ void P_LoadNodes(int lump)
             }
         }
     }
-
-    Z_Free(data);
+    W_ReleaseLumpNum(lump);
 }
 
 //
@@ -449,8 +447,6 @@ void P_LoadSubsectors(int lump)
     subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
     data = W_CacheLumpNum(lump);
 
-    memset(subsectors, 0, numsubsectors * sizeof(subsector_t));
-
     for (int i = 0; i < numsubsectors; i++)
     {
         // [FG] extended nodes
@@ -459,8 +455,7 @@ void P_LoadSubsectors(int lump)
         subsectors[i].firstline =
             (unsigned short)SHORT(((mapsubsector_t *)data)[i].firstseg);
     }
-
-    Z_Free(data);
+    W_ReleaseLumpNum(lump);
 }
 
 //
@@ -527,8 +522,7 @@ void P_LoadSegs(int lump)
             li->backsector = 0;
         }
     }
-
-    Z_Free(data);
+    W_ReleaseLumpNum(lump);
 }
 
 // [FG] support maps with DeePBSP nodes
@@ -609,8 +603,6 @@ void P_LoadSubsectors_DeePBSPV4(int lump)
     subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
     data = (mapsubsector_deepbspv4_t *)W_CacheLumpNum(lump);
 
-    memset(subsectors, 0, numsubsectors * sizeof(subsector_t));
-
     for (i = 0; i < numsubsectors; i++)
     {
         // [MB] 2020-04-22: Fix endianess for DeePBSPV4 nodes
@@ -627,7 +619,7 @@ void P_LoadNodes_DeePBSPV4(int lump)
     int i;
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_deepbspv4_t);
-    nodes = Z_Malloc(numnodes * sizeof(node_t), PU_LEVEL, 0);
+    nodes = arena_alloc_num(bsp_arena, node_t, numnodes);
     data = W_CacheLumpNum(lump);
 
     // [FG] skip header
@@ -953,7 +945,6 @@ void P_LoadBSPTree_ZDBSP(int lump, bspformat_t format)
         newvertarray =
             arena_alloc_num(world_arena, vertex_t, orgVerts + newVerts);
         memcpy(newvertarray, vertexes, orgVerts * sizeof(vertex_t));
-        memset(newvertarray + orgVerts, 0, newVerts * sizeof(vertex_t));
     }
 
     for (i = 0; i < newVerts; i++)
@@ -991,7 +982,6 @@ void P_LoadBSPTree_ZDBSP(int lump, bspformat_t format)
 
     numsubsectors = numSubs;
     subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
-    memset(subsectors, 0, numsubsectors);
 
     for (i = currSeg = 0; i < numsubsectors; i++)
     {
@@ -1019,7 +1009,6 @@ void P_LoadBSPTree_ZDBSP(int lump, bspformat_t format)
     numsegs = numSegs;
 
     segs = arena_alloc_num(world_arena, seg_t, numsegs);
-    memset(segs, 0, sizeof(seg_t) * numsegs);
 
     if (format == BSP_XNOD || format == BSP_ZNOD)
     {
@@ -1045,7 +1034,6 @@ void P_LoadBSPTree_ZDBSP(int lump, bspformat_t format)
 
     numnodes = numNodes;
     nodes = arena_alloc_num(bsp_arena, node_t, numnodes);
-    memset(nodes, 0, numnodes);
 
     for (i = 0; i < numnodes; i++)
     {

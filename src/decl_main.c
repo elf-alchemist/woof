@@ -120,7 +120,7 @@ static void ParseActor(scanner_t *sc)
         {
             SC_Error(sc, "Unknown parent actor '%s'.", parent_name);
         }
-        free(parent_name);
+        I_Free(parent_name);
 
         actor.parent = parent;
         actor.props.flags = parent->props.flags;
@@ -138,7 +138,7 @@ static void ParseActor(scanner_t *sc)
             char *name = M_StringDuplicate(SC_GetString(sc));
             M_StringToLower(name);
             actor.doomednum = ReplaceActor(sc, name);
-            free(name);
+            I_Free(name);
         }
         else
         {
@@ -223,9 +223,7 @@ void DECL_Parse(int lumpnum)
 {
     char lumpname[9] = {0};
     M_CopyLumpName(lumpname, lumpinfo[lumpnum].name);
-    scanner_t *sc = SC_OpenOptions("declarate", (version_t){1, 0, 0}, lumpname,
-                                   W_CacheLumpNum(lumpnum, PU_CACHE),
-                                   W_LumpLength(lumpnum));
+    scanner_t *sc = SC_OpenOptions("declarate", (version_t){1, 0, 0}, lumpname, lumpnum);
     ParseDeclarate(sc);
     SC_Close(sc);
 }

@@ -16,6 +16,7 @@
 //
 
 #include "alext.h"
+#include "i_system.h"
 #include "pffft/pffft.h"
 
 #include <math.h>

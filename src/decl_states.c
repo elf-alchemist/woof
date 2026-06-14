@@ -402,7 +402,7 @@ static void ParseState(scanner_t *sc, dstate_t *state)
         if (strcmp(sprnames[i], sprite) == 0)
         {
             state->spritenum = i;
-            free(sprite);
+            I_Free(sprite);
             break;
         }
     }
@@ -486,7 +486,7 @@ void DECL_ParseActorStates(scanner_t *sc, actor_t *actor)
                 if (SC_CheckKeyword(sc, "loop", "goto", "stop", "wait") >= 0
                     || !SC_CheckToken(sc, ':'))
                 {
-                    free(label);
+                    I_Free(label);
                     break;
                 }
                 else
@@ -562,7 +562,7 @@ void DECL_ParseActorStates(scanner_t *sc, actor_t *actor)
                     if (strcasecmp(label->name, labels[i]) == 0)
                     {
                         label->statenum = array_size(actor->states) - 1;
-                        free(labels[i]);
+                        I_Free(labels[i]);
                         break;
                     }
                 }
@@ -597,7 +597,7 @@ static int ResolveArg(const actor_t *owner, const arg_t *arg)
                 char *name = M_StringDuplicate(arg->data.string);
                 M_StringToLower(name);
                 actor_t *actor = hashmap_get_str(actors, name);
-                free(name);
+                I_Free(name);
                 if (actor && !actor->native)
                 {
                     return actor->mobjtype + 1;

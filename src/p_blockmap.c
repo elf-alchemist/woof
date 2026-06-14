@@ -17,6 +17,7 @@
 
 #include "doomdata.h"
 #include "doomtype.h"
+#include "i_system.h"
 #include "m_arena.h"
 #include "m_argv.h"
 #include "m_fixed.h"
@@ -25,7 +26,6 @@
 #include "p_setup.h"
 #include "r_state.h"
 #include "w_wad.h"
-#include "z_zone.h"
 #include <limits.h>
 
 const char *bmap_format_names[] = {
@@ -70,7 +70,7 @@ static void AddBlockLine(linelist_t **lists, int *count, int *done, int blockno,
         return;
     }
 
-    l = Z_Malloc(sizeof(linelist_t), PU_STATIC, 0);
+    l = I_Malloc(sizeof(linelist_t));
     l->num = lineno;
     l->next = lists[blockno];
     lists[blockno] = l;
@@ -145,16 +145,16 @@ static void P_CreateBlockMap(void)
     // finally make an array in which we can mark blocks done per line
 
     // CPhipps - calloc's
-    blocklists = Z_Calloc(NBlocks, sizeof(linelist_t *), PU_STATIC, 0);
-    blockcount = Z_Calloc(NBlocks, sizeof(int), PU_STATIC, 0);
-    blockdone = Z_Malloc(NBlocks * sizeof(int), PU_STATIC, 0);
+    blocklists = I_Calloc(NBlocks, sizeof(linelist_t *));
+    blockcount = I_Calloc(NBlocks, sizeof(int));
+    blockdone = I_Calloc(NBlocks, sizeof(int));
 
     // initialize each blocklist, and enter the trailing -1 in all blocklists
     // note the linked list of lines grows backwards
 
     for (i = 0; i < NBlocks; i++)
     {
-        blocklists[i] = Z_Malloc(sizeof(linelist_t), PU_STATIC, 0);
+        blocklists[i] = I_Malloc(sizeof(linelist_t));
         blocklists[i]->num = -1;
         blocklists[i]->next = NULL;
         blockcount[i]++;
@@ -361,8 +361,7 @@ static void P_CreateBlockMap(void)
 
     // blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) *
     // (4 + NBlocks + linetotal));
-    blockmaplump = Z_Malloc(sizeof(*blockmaplump) * (4 + NBlocks + linetotal),
-                            PU_LEVEL, 0);
+    blockmaplump = arena_alloc_num(bsp_arena, int32_t, 4 + NBlocks + linetotal);
 
     // blockmap header
 
@@ -387,16 +386,16 @@ static void P_CreateBlockMap(void)
         {
             linelist_t *tmp = bl->next;
             blockmaplump[offs++] = bl->num;
-            Z_Free(bl);
+            I_Free(bl);
             bl = tmp;
         }
     }
 
     // free all temporary storage
 
-    Z_Free(blocklists);
-    Z_Free(blockcount);
-    Z_Free(blockdone);
+    I_Free(blocklists);
+    I_Free(blockcount);
+    I_Free(blockdone);
 }
 
 #else // MBF_STRICT
@@ -474,7 +473,7 @@ static void P_CreateBlockMap(void)
         // size of blockmap
         unsigned tot = bmapwidth * bmapheight;
         // array of blocklists
-        bmap_t *bmap = Z_Calloc(tot, sizeof(*bmap), PU_STATIC, 0);
+        bmap_t *bmap = Z_Calloc(tot, sizeof(*bmap), 0);
 
         for (i = 0; i < numlines; i++)
         {
@@ -576,7 +575,7 @@ static void P_CreateBlockMap(void)
             }
 
             // Allocate blockmap lump with computed count
-            blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
+            blockmaplump = I_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
         }
 
         // Now compress the blockmap.
@@ -602,7 +601,7 @@ static void P_CreateBlockMap(void)
                     // Store trailer
                     blockmaplump[ndx++] = -1;
                     // Free linedef list
-                    Z_Free(bp->list);
+                    I_Free(bp->list);
                 }
                 else // Empty blocklist: point to reserved empty blocklist
                 {
@@ -610,7 +609,7 @@ static void P_CreateBlockMap(void)
                 }
             }
 
-            Z_Free(bmap); // Free uncompressed blockmap
+            I_Free(bmap); // Free uncompressed blockmap
         }
     }
 }
@@ -650,7 +649,7 @@ static bmap_format_t CheckBlockmapFormat(int lump, int lump_size)
 {
     bmap_format_t format = BMAP_DoomBlockmap;
     boolean force_rebuild = false;
-    void *data = W_CacheLumpNum(lump, PU_CACHE);
+    void *data = W_CacheLumpNum(lump);
     int vanilla_size = lump_size / sizeof(uint16_t);
 
     // Try extended formats
@@ -677,7 +676,7 @@ static bmap_format_t CheckBlockmapFormat(int lump, int lump_size)
         format = BMAP_BoomBuilder;
     }
 
-    Z_Free(data);
+    W_ReleaseLumpNum(lump);
     return format;
 }
 
@@ -692,9 +691,9 @@ static bmap_format_t CheckBlockmapFormat(int lump, int lump_size)
 
 static void LoadBlockmap_DoomBlockmap(int lump, int bmap_size)
 {
-    short *wadblockmaplump = W_CacheLumpNum(lump, PU_STATIC);
+    short *wadblockmaplump = W_CacheLumpNum(lump);
     int count = bmap_size / sizeof(uint16_t);
-    blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
+    blockmaplump = I_Malloc(sizeof(*blockmaplump) * count);
 
     // killough 3/1/98: Expand wad blockmap into larger internal one,
     // by treating all offsets except -1 as unsigned and zero-extending
@@ -712,7 +711,7 @@ static void LoadBlockmap_DoomBlockmap(int lump, int bmap_size)
         blockmaplump[i] = t == -1 ? -1l : (int32_t)t & FRACMASK;
     }
 
-    Z_Free(wadblockmaplump);
+    I_Free(wadblockmaplump);
 
     bmaporgx = IntToFixed(blockmaplump[0]);
     bmaporgy = IntToFixed(blockmaplump[1]);
@@ -724,9 +723,9 @@ static void LoadBlockmap_DoomBlockmap(int lump, int bmap_size)
 
 static void LoadBlockmap_XBM1(int lump, int bmap_size)
 {
-    int32_t *data = W_CacheLumpNum(lump, PU_STATIC);
+    int32_t *data = W_CacheLumpNum(lump);
     int count = (bmap_size - 8) / sizeof(uint32_t);
-    blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
+    blockmaplump = I_Malloc(sizeof(*blockmaplump) * count);
 
     // skip prefix header
     // data[0] = "XBM1"
@@ -741,7 +740,7 @@ static void LoadBlockmap_XBM1(int lump, int bmap_size)
         blockmaplump[i] = LONG(data[k]);
     }
 
-    Z_Free(data);
+    I_Free(data);
 
     P_SetSkipBlockStart();
 }
@@ -767,7 +766,6 @@ bmap_format_t P_LoadBlockMap(int lump)
     // clear out mobj chains
     blocklinks_size = sizeof(*blocklinks) * bmapwidth * bmapheight;
     blocklinks = M_ArenaAlloc(world_arena, blocklinks_size, alignof(mobj_t *));
-    memset(blocklinks, 0, blocklinks_size);
     blockmap = blockmaplump + 4;
 
     return format;

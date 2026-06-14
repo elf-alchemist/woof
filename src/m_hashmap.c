@@ -175,7 +175,7 @@ static void Resize(hashmap_t *map, int new_capacity)
         }
     }
 
-    free(old_entries);
+    I_Free(old_entries);
 }
 
 static hashmap_t *Init(int initial_capacity, size_t value_size,
@@ -233,7 +233,7 @@ void hashmap_free(hashmap_t *map)
         {
             if (map->entries[i].occupied)
             {
-                free(map->entries[i].string_key);
+                I_Free(map->entries[i].string_key);
             }
         }
     }
