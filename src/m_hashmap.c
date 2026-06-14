@@ -181,7 +181,7 @@ static void Resize(hashmap_t *map, int new_capacity)
 static hashmap_t *Init(int initial_capacity, size_t value_size,
                        hashmap_key_type_t key_type)
 {
-    hashmap_t *map = I_Malloc(sizeof(hashmap_t));
+    hashmap_t *map = I_Alloc(sizeof(hashmap_t));
 
     int capacity = 16;
     while (capacity < initial_capacity)
@@ -190,7 +190,7 @@ static hashmap_t *Init(int initial_capacity, size_t value_size,
     }
 
     map->key_type = key_type;
-    map->entries = I_Calloc(capacity, sizeof(hashmap_entry_t));
+    map->entries = I_AllocNum(capacity, sizeof(hashmap_entry_t));
     map->capacity = capacity;
     map->size = 0;
     map->value_size = value_size;
@@ -293,7 +293,7 @@ int hashmap_size(const hashmap_t *map)
 
 hashmap_t *M_HashMapCopy(const hashmap_t *from)
 {
-    hashmap_t *to = I_Calloc(1, sizeof(hashmap_t));
+    hashmap_t *to = I_AllocNum(1, sizeof(hashmap_t));
 
     to->key_type = from->key_type;
     to->capacity = from->capacity;
@@ -302,7 +302,7 @@ hashmap_t *M_HashMapCopy(const hashmap_t *from)
     to->value_size = from->value_size;
     to->values_are_packed = from->values_are_packed;
 
-    to->entries = I_Malloc(from->capacity * sizeof(hashmap_entry_t));
+    to->entries = I_Alloc(from->capacity * sizeof(hashmap_entry_t));
     memcpy(to->entries, from->entries, from->capacity * sizeof(hashmap_entry_t));
 
     if (from->key_type == KEY_TYPE_STRING)
@@ -319,7 +319,7 @@ hashmap_t *M_HashMapCopy(const hashmap_t *from)
 
     if (from->values_are_packed)
     {
-        to->values = I_Malloc(from->values_capacity * from->value_size);
+        to->values = I_Alloc(from->values_capacity * from->value_size);
         memcpy(to->values, from->values, from->size * from->value_size);
     }
 

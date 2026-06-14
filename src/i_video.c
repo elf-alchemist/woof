@@ -42,7 +42,6 @@
 #include "i_system.h"
 #include "i_timer.h"
 #include "i_video.h"
-#include "m_arena.h"
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_fixed.h"
@@ -952,8 +951,8 @@ static void I_InitDiskFlash(void)
         I_Free(old_data);
     }
 
-    diskflash = I_Calloc(disk.sw * disk.sh, sizeof(pixel_t));
-    old_data = I_Calloc(disk.sw * disk.sh, sizeof(pixel_t));
+    diskflash = I_AllocNum(disk.sw * disk.sh, sizeof(pixel_t));
+    old_data = I_AllocNum(disk.sw * disk.sh, sizeof(pixel_t));
 
     V_UseBuffer(diskflash, disk.sw);
     V_DrawPatch(-video.deltaw, 0, V_CachePatchName("STDISK"));
@@ -1097,7 +1096,7 @@ boolean I_WritePNGfile(char *filename)
     }
     int pitch = surface->w * 3;
     int size = surface->h * pitch;
-    void *pixels = I_Malloc(size);
+    void *pixels = I_Alloc(size);
     if (!SDL_ConvertPixels(surface->w, surface->h,
                            surface->format, surface->pixels,
                            surface->pitch, SDL_PIXELFORMAT_RGB24, pixels,
@@ -1590,10 +1589,9 @@ static void CreateVideoBuffer(void)
     {
         I_Free(I_VideoBuffer);
     }
-    I_VideoBuffer = I_Calloc(video.width * video.height, sizeof(pixel_t));
+    I_VideoBuffer = I_AllocNum(video.width * video.height, sizeof(pixel_t));
     V_RestoreBuffer();
 
-    M_ArenaClear(renderer_arena);
     R_InitAnyRes();
     ST_InitRes();
 

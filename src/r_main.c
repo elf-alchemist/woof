@@ -21,7 +21,6 @@
 //-----------------------------------------------------------------------------
 
 #include "i_system.h"
-#include "m_arena.h"
 #define _USE_MATH_DEFINES
 #include <limits.h>
 #include <math.h>
@@ -52,7 +51,6 @@
 #include "v_flextran.h"
 #include "v_video.h"
 
-arena_t *renderer_arena = NULL;
 byte *global_playpal;
 
 // Fineangles in the SCREENWIDTH wide window.
@@ -421,8 +419,8 @@ void R_InitLightTables (void)
   if (zlightoffset == NULL && zlightindex == NULL)
   {
     int NumZLightEntries = LIGHTLEVELS * MAXLIGHTZ;
-    zlightoffset = I_Calloc(NumZLightEntries, sizeof(int));
-    zlightindex  = I_Calloc(NumZLightEntries, sizeof(int));
+    zlightoffset = I_AllocNum(NumZLightEntries, sizeof(int));
+    zlightindex  = I_AllocNum(NumZLightEntries, sizeof(int));
   }
 
   // Calculate the light levels to use
@@ -448,8 +446,8 @@ void R_InitLightTables (void)
   // so we initialize it here
 
   int NumScaleLightEntries = LIGHTLEVELS * MAXLIGHTSCALE;
-  scalelightindex  = (int*)I_Malloc(sizeof(int) * NumScaleLightEntries);
-  scalelightoffset = (int*)I_Malloc(sizeof(int) * NumScaleLightEntries);
+  scalelightindex  = (int*)I_Alloc(sizeof(int) * NumScaleLightEntries);
+  scalelightoffset = (int*)I_Alloc(sizeof(int) * NumScaleLightEntries);
 
   // Calculate the light levels to use
   //  for each level / scale combination.
@@ -632,7 +630,6 @@ void R_ExecuteSetViewSize (void)
 
 void R_Init (void)
 {
-  renderer_arena = M_ArenaInit(SIZE_MB(16), SIZE_KB(64));
   R_InitData();
   R_SetViewSize(screenblocks);
   R_InitPlanes();

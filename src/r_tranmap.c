@@ -118,7 +118,7 @@ static void CreateTranMapBaseDir(void)
     const char *data_root = D_DoomPrefDir();
     const int length = strlen(data_root) + sizeof("/tranmaps");
 
-    tranmap_dir = I_Malloc(length);
+    tranmap_dir = I_Alloc(length);
     M_snprintf(tranmap_dir, length, "%s/tranmaps", data_root);
 
     M_MakeDirectory(tranmap_dir);
@@ -137,7 +137,7 @@ static void CreateTranMapPaletteDir(void)
     }
 
     int length = strlen(tranmap_dir) + sizeof(playpal_string) + 1;
-    playpal_dir = I_Malloc(length);
+    playpal_dir = I_Alloc(length);
     M_snprintf(playpal_dir, length, "%s/%s", tranmap_dir, playpal_string);
     free(tranmap_dir);
     tranmap_dir = NULL;
@@ -152,7 +152,7 @@ static void CreateTranMapPaletteDir(void)
 static byte *GenerateTranmapData(double fg_alpha, double bg_alpha)
 {
     // killough 4/11/98
-    byte *buffer = I_Malloc(tranmap_lump_length);
+    byte *buffer = I_Alloc(tranmap_lump_length);
     byte *tp = buffer;
 
     // Background
@@ -200,7 +200,7 @@ byte *R_NormalTranMap(int alpha, boolean force)
         }
 
         const int length = strlen(playpal_dir) + sizeof("/tranmap_XY.dat");
-        char *filename = I_Malloc(length);
+        char *filename = I_Alloc(length);
         M_snprintf(filename, length, "%s/tranmap_%02d.dat", playpal_dir, alpha);
         playpal_dir = I_Free(playpal_dir);
 

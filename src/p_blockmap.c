@@ -70,7 +70,7 @@ static void AddBlockLine(linelist_t **lists, int *count, int *done, int blockno,
         return;
     }
 
-    l = I_Malloc(sizeof(linelist_t));
+    l = I_Alloc(sizeof(linelist_t));
     l->num = lineno;
     l->next = lists[blockno];
     lists[blockno] = l;
@@ -145,16 +145,16 @@ static void P_CreateBlockMap(void)
     // finally make an array in which we can mark blocks done per line
 
     // CPhipps - calloc's
-    blocklists = I_Calloc(NBlocks, sizeof(linelist_t *));
-    blockcount = I_Calloc(NBlocks, sizeof(int));
-    blockdone = I_Calloc(NBlocks, sizeof(int));
+    blocklists = I_AllocNum(NBlocks, sizeof(linelist_t *));
+    blockcount = I_AllocNum(NBlocks, sizeof(int));
+    blockdone = I_AllocNum(NBlocks, sizeof(int));
 
     // initialize each blocklist, and enter the trailing -1 in all blocklists
     // note the linked list of lines grows backwards
 
     for (i = 0; i < NBlocks; i++)
     {
-        blocklists[i] = I_Malloc(sizeof(linelist_t));
+        blocklists[i] = I_Alloc(sizeof(linelist_t));
         blocklists[i]->num = -1;
         blocklists[i]->next = NULL;
         blockcount[i]++;
@@ -361,7 +361,7 @@ static void P_CreateBlockMap(void)
 
     // blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) *
     // (4 + NBlocks + linetotal));
-    blockmaplump = arena_alloc_num(bsp_arena, int32_t, 4 + NBlocks + linetotal);
+    blockmaplump = I_AllocNum(sizeof(*blockmaplump), 4 + NBlocks + linetotal);
 
     // blockmap header
 
@@ -693,7 +693,7 @@ static void LoadBlockmap_DoomBlockmap(int lump, int bmap_size)
 {
     short *wadblockmaplump = W_CacheLumpNum(lump);
     int count = bmap_size / sizeof(uint16_t);
-    blockmaplump = I_Malloc(sizeof(*blockmaplump) * count);
+    blockmaplump = I_Alloc(sizeof(*blockmaplump) * count);
 
     // killough 3/1/98: Expand wad blockmap into larger internal one,
     // by treating all offsets except -1 as unsigned and zero-extending
@@ -725,7 +725,7 @@ static void LoadBlockmap_XBM1(int lump, int bmap_size)
 {
     int32_t *data = W_CacheLumpNum(lump);
     int count = (bmap_size - 8) / sizeof(uint32_t);
-    blockmaplump = I_Malloc(sizeof(*blockmaplump) * count);
+    blockmaplump = I_Alloc(sizeof(*blockmaplump) * count);
 
     // skip prefix header
     // data[0] = "XBM1"

@@ -29,6 +29,7 @@
 
 #include "doomdata.h"
 #include "doomtype.h"
+#include "i_system.h"
 #include "m_arena.h"
 #include "m_bbox.h"
 #include "m_fixed.h"
@@ -78,7 +79,7 @@ struct Nanode
 
 vertex_t * BSP_NewVertex (fixed_t x, fixed_t y)
 {
-	vertex_t * vert = arena_alloc(bsp_arena, vertex_t);
+	vertex_t * vert = arena_alloc(world_arena, vertex_t);
 	vert->x = x;
 	vert->y = y;
 	vert->r_x = x; // [FG] Woof!'ism
@@ -88,13 +89,13 @@ vertex_t * BSP_NewVertex (fixed_t x, fixed_t y)
 
 seg_t * BSP_NewSeg (void)
 {
-	seg_t * seg = arena_alloc(bsp_arena, seg_t);
+	seg_t * seg = I_Alloc(sizeof(seg_t));
 	return seg;
 }
 
 nanode_t * BSP_NewNode (void)
 {
-	nanode_t * node = arena_alloc(bsp_arena, nanode_t);
+	nanode_t * node = I_Alloc(sizeof(nanode_t));
 	return node;
 }
 
@@ -724,6 +725,8 @@ void BSP_WriteSubsector (nanode_t * N)
 
 		nano_seg_index += 1;
 		out->numlines  += 1;
+
+		I_Free(seg);
 	}
 }
 
@@ -758,6 +761,8 @@ unsigned int BSP_WriteNode (nanode_t * N, fixed_t * bbox)
 		BSP_MergeBounds (bbox, out->bbox[0], out->bbox[1]);
 	}
 
+	I_Free(N);
+
 	return index;
 }
 
@@ -778,7 +783,7 @@ void BSP_BuildNodes (void)
 	BSP_CountStuff (root);
 
 	// allocate the global arrays
-	nodes      = arena_alloc_num(bsp_arena, node_t, numnodes);
+	nodes      = I_AllocNum(sizeof(node_t), numnodes);
 	subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
 	segs       = arena_alloc_num(world_arena, seg_t, numsegs);
 

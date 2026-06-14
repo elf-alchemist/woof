@@ -21,7 +21,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "d_main.h"
@@ -176,7 +175,7 @@ void V_InitColorTranslation(void)
         }
 
         // [FG] allocate new color translation table
-        *p->map2 = I_Malloc(256);
+        *p->map2 = I_Alloc(256);
 
         // [FG] translate all colors to target color
         for (int i = 0; i < 256; i++)
@@ -199,7 +198,7 @@ void V_InitColorTranslation(void)
         *p->map1 = *p->map2;
     }
 
-    cr_bright = I_Malloc(256);
+    cr_bright = I_Alloc(256);
     for (int i = 0; i < 256; ++i)
     {
         cr_bright[i] = V_Colorize(playpal, CR_BRIGHT, (byte)i);

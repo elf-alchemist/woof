@@ -27,7 +27,6 @@
 #include "mn_menu.h"
 #include "p_mobj.h"
 #include "r_bmaps.h"
-#include "r_data.h"
 #include "r_defs.h"
 #include "r_draw.h"
 #include "r_main.h"
@@ -150,7 +149,7 @@ static struct Voxel * VX_Decode (byte * p, int length)
 
 	byte * orig_p = p;
 
-	struct Voxel * v = I_Malloc(sizeof(struct Voxel));
+	struct Voxel * v = I_Alloc(sizeof(struct Voxel));
 
 	// skip num_bytes
 	p += 4;
@@ -181,7 +180,7 @@ static struct Voxel * VX_Decode (byte * p, int length)
 	int min_offset = (1 << 30);
 	int max_offset = 0;
 
-	v->offsets = I_Calloc(num_offsets, sizeof(int));
+	v->offsets = I_AllocNum(num_offsets, sizeof(int));
 
 	for (x = 0 ; x < v->x_size ; x++)
 	{
@@ -210,7 +209,7 @@ static struct Voxel * VX_Decode (byte * p, int length)
 	// copy the slab data
 	p = orig_p + (7 * 4) + min_offset;
 
-	v->data = I_Malloc(data_size);
+	v->data = I_Alloc(data_size);
 
 	memcpy (v->data, p, data_size);
 
@@ -272,10 +271,10 @@ void VX_Init (void)
 {
 	int spr, frame;
 
-	all_voxels = I_Calloc(num_sprites, sizeof(*all_voxels));
+	all_voxels = I_AllocNum(num_sprites, sizeof(*all_voxels));
 	for (spr = 0 ; spr < num_sprites ; spr++)
 	{
-		all_voxels[spr] = I_Calloc(MAX_FRAMES, sizeof(**all_voxels));
+		all_voxels[spr] = I_AllocNum(MAX_FRAMES, sizeof(**all_voxels));
 		for (frame = 0 ; frame < MAX_FRAMES ; frame++)
 		{
 			all_voxels[spr][frame] = NULL;

@@ -14,7 +14,6 @@
 #include "st_sbardef.h"
 
 #include "doomdef.h"
-#include "doomstat.h"
 #include "doomtype.h"
 #include "i_printf.h"
 #include "i_system.h"
@@ -24,7 +23,6 @@
 #include "m_swap.h"
 #include "r_defs.h"
 #include "r_tranmap.h"
-#include "st_stuff.h"
 #include "v_patch.h"
 #include "v_video.h"
 #include "w_wad.h"
@@ -172,7 +170,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_graphic:
             {
-                sbe_graphic_t *graphic = I_Malloc(sizeof(sbe_graphic_t));
+                sbe_graphic_t *graphic = I_Alloc(sizeof(sbe_graphic_t));
                 const char *patch = JS_GetStringValue(json, "patch");
                 if (!patch)
                 {
@@ -187,7 +185,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_animation:
             {
-                sbe_animation_t *animation = I_Malloc(sizeof(sbe_animation_t));
+                sbe_animation_t *animation = I_Alloc(sizeof(sbe_animation_t));
                 json_t *js_frames = JS_GetObject(json, "frames");
                 json_t *js_frame = NULL;
                 JS_ArrayForEach(js_frame, js_frames)
@@ -205,7 +203,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
         case sbe_number:
         case sbe_percent:
             {
-                sbe_number_t *number = I_Malloc(sizeof(sbe_number_t));
+                sbe_number_t *number = I_Alloc(sizeof(sbe_number_t));
                 const char *font_name = JS_GetStringValue(json, "font");
                 if (!font_name)
                 {
@@ -240,7 +238,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_widget:
              {
-                sbe_widget_t *widget = I_Malloc(sizeof(sbe_widget_t));
+                sbe_widget_t *widget = I_Alloc(sizeof(sbe_widget_t));
                 const char *font_name = JS_GetStringValue(json, "font");
                 if (!font_name)
                 {
@@ -307,14 +305,14 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_face:
             {
-                sbe_face_t *face = I_Malloc(sizeof(sbe_face_t));
+                sbe_face_t *face = I_Alloc(sizeof(sbe_face_t));
                 face->crop = ParseCrop(json);
                 out->subtype.face = face;
             }
             break;
         case sbe_facebackground:
             {
-                sbe_facebackground_t *facebackground = I_Malloc(sizeof(sbe_facebackground_t));
+                sbe_facebackground_t *facebackground = I_Alloc(sizeof(sbe_facebackground_t));
                 facebackground->crop = ParseCrop(json);
                 out->subtype.facebackground = facebackground;
             }
@@ -546,7 +544,7 @@ hudfont_t *LoadSTCFN(void)
             return font;
         }
     }
-    font = I_Malloc(sizeof(hudfont_t));
+    font = I_Alloc(sizeof(hudfont_t));
     font->stem = "STCFN";
     font->type = sbf_proportional;
     LoadHUDFont(font);
@@ -613,7 +611,7 @@ sbardef_t *ST_ParseSbarDef(void)
         return NULL;
     }
 
-    sbardef_t *out = I_Malloc(sizeof(sbardef_t));
+    sbardef_t *out = I_Alloc(sizeof(sbardef_t));
 
     json_t *js_numberfonts = JS_GetObject(data, "numberfonts");
     json_t *js_numberfont = NULL;

@@ -22,7 +22,6 @@
 #include "efx.h"
 
 #include <math.h>
-#include <stdlib.h>
 
 #include "i_oalcommon.h"
 #include "i_oalequalizer.h"
@@ -461,7 +460,7 @@ boolean I_OAL_InitSound(int snd_module)
         I_OAL_ShutdownSound();
     }
 
-    oal = I_Malloc(sizeof(oal_system_t));
+    oal = I_Alloc(sizeof(oal_system_t));
     oal->device = alcOpenDevice(NULL);
     if (!oal->device)
     {
@@ -482,7 +481,7 @@ boolean I_OAL_InitSound(int snd_module)
     }
     PrintDeviceInfo(oal->device);
 
-    oal->sources = I_Calloc(MAX_CHANNELS, sizeof(ALuint));
+    oal->sources = I_AllocNum(MAX_CHANNELS, sizeof(ALuint));
     alGetError();
     alGenSources(MAX_CHANNELS, oal->sources);
     if (!oal->sources || alGetError() != AL_NO_ERROR)

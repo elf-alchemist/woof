@@ -94,8 +94,6 @@ int      numsides;
 side_t   *sides;
 
 arena_t *world_arena;
-arena_t *bsp_arena;
-arena_t *inter_arena;
 
 // BLOCKMAP
 // Created from axis aligned bounding box
@@ -799,7 +797,7 @@ int P_GroupLines (void)
 
 void P_RemoveSlimeTrails(void)                // killough 10/98
 {
-  byte *hit = I_Malloc(numvertexes);         // Hitlist for vertices
+  byte *hit = I_Alloc(numvertexes);         // Hitlist for vertices
   int i;
   for (i=0; i<numsegs; i++)                   // Go through each seg
     {
@@ -1093,9 +1091,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   M_ArenaClear(thinkers_arena);
   M_ArenaClear(msecnodes_arena);
 
-  M_ArenaClear(bsp_arena);
-  M_ArenaClear(inter_arena);
-
   Z_FreeTag(PU_CACHE);
 
   P_InitThinkers();
@@ -1226,14 +1221,13 @@ void P_Init (void)
   P_InitPicAnims();
   R_InitSprites(sprnames);
 
+  #define SIZE_MB(x) ((x) * 1024 * 1024)
   world_arena = M_ArenaInit(SIZE_MB(128), SIZE_MB(4));
   thinkers_arena = M_ArenaInit(SIZE_MB(128), SIZE_MB(2));
   msecnodes_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
   activeceilings_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
   activeplats_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
-
-  bsp_arena = M_ArenaInit(SIZE_MB(8), SIZE_MB(1));
-  inter_arena = M_ArenaInit(SIZE_MB(8), SIZE_MB(1));
+  #undef SIZE_MB
 
   seenstate_tab = calloc(num_states, sizeof(*seenstate_tab));
 }

@@ -16,7 +16,6 @@
 //     through the network module system
 //
 
-#include <stdio.h>
 
 #include "i_system.h"
 #include "net_defs.h"
@@ -36,7 +35,7 @@ net_context_t *NET_NewContext(void)
 {
     net_context_t *context;
 
-    context = I_Malloc(sizeof(net_context_t));
+    context = I_Alloc(sizeof(net_context_t));
     context->num_modules = 0;
 
     return context;

@@ -114,7 +114,7 @@ static void R_InitFireSky(sky_t *sky)
     size_t size = tex->width * tex->height;
     int arr_size = array_size(sky->palette);
 
-    sky->fire = I_Calloc(size, sizeof(*(sky->fire)));
+    sky->fire = I_AllocNum(size, sizeof(*(sky->fire)));
 
     for (int i = 0; i < tex->width; i++)
     {
@@ -398,7 +398,7 @@ static byte R_SkyBlendColor(int tex)
 
     const int width = texturewidth[tex];
 
-    rgb_t *colors = I_Calloc(width, sizeof(rgb_t));
+    rgb_t *colors = I_AllocNum(width, sizeof(rgb_t));
 
     // [FG] count colors
     for (int i = 0; i < width; i++)
@@ -457,7 +457,7 @@ byte R_GetSkyColor(int texturenum)
 
     if (target == NULL)
     {
-        target = I_Malloc(sizeof(skycolor_t));
+        target = I_Alloc(sizeof(skycolor_t));
 
         target->texturenum = texturenum;
         target->color = R_SkyBlendColor(texturenum);

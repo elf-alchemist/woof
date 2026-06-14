@@ -267,7 +267,7 @@ void I_InitRumble(void)
     }
 
     last_rumble = joy_rumble;
-    rumble.channels = I_Calloc(MAX_CHANNELS, sizeof(rumble_channel_t));
+    rumble.channels = I_AllocNum(MAX_CHANNELS, sizeof(rumble_channel_t));
     ResetAllChannels();
 }
 
@@ -394,8 +394,8 @@ static void SfxToRumble(const byte *data, int rate, int length,
                         float **low, float **high, int *ticlength)
 {
     const int ticlen = *ticlength - 1;
-    *low = I_Calloc(ticlen + 1, sizeof(float));
-    *high = I_Calloc(ticlen + 1, sizeof(float));
+    *low = I_AllocNum(ticlen + 1, sizeof(float));
+    *high = I_AllocNum(ticlen + 1, sizeof(float));
     (*low)[ticlen] = 0.0f;
     (*high)[ticlen] = 0.0f;
 

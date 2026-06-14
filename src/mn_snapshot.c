@@ -16,7 +16,6 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -26,7 +25,6 @@
 #include "i_system.h"
 #include "m_fixed.h"
 #include "m_misc.h"
-#include "m_io.h"
 #include "r_main.h"
 #include "v_video.h"
 
@@ -75,7 +73,7 @@ boolean MN_ReadSnapshot(int i, FILE *fp)
         return false;
     }
 
-    if ((snapshots[i] = I_Malloc(snapshot_size * sizeof(**snapshots))) == NULL)
+    if ((snapshots[i] = I_Alloc(snapshot_size * sizeof(**snapshots))) == NULL)
     {
         return false;
     }
@@ -130,7 +128,7 @@ static void TakeSnapshot(void)
 
     if (!current_snapshot)
     {
-        current_snapshot = I_Malloc(snapshot_size * sizeof(**snapshots));
+        current_snapshot = I_Alloc(snapshot_size * sizeof(**snapshots));
     }
 
     pixel_t *p = current_snapshot;

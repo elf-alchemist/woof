@@ -40,7 +40,7 @@ static exit_priority_t exit_priority;
 void I_AtExitPrio(atexit_func_t func, boolean run_on_error, const char *name,
                   exit_priority_t priority)
 {
-    atexit_listentry_t *entry = I_Malloc(sizeof(atexit_listentry_t));
+    atexit_listentry_t *entry = I_Alloc(sizeof(atexit_listentry_t));
     entry->func = func;
     entry->run_on_error = run_on_error;
     entry->next = exit_funcs[priority];
@@ -83,7 +83,7 @@ static atexit_listentry_t *atsignal_funcs;
 
 void I_AtSignal(atexit_func_t func)
 {
-    atexit_listentry_t *entry = I_Malloc(sizeof(atexit_listentry_t));
+    atexit_listentry_t *entry = I_Alloc(sizeof(atexit_listentry_t));
     entry->func = func;
     entry->next = atsignal_funcs;
     atsignal_funcs = entry;

@@ -299,7 +299,7 @@ static boolean StartPlayer(void)
 {
     int i;
 
-    player.data = I_Calloc(BUFFER_SAMPLES, player.frame_size);
+    player.data = I_AllocNum(BUFFER_SAMPLES, player.frame_size);
 
     // Rewind the source position and clear the buffer queue.
     alSourceRewind(player.source);

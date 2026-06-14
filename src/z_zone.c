@@ -63,7 +63,7 @@ void *Z_Malloc(size_t size, pu_tag tag, void **user)
   if (!size)
     return user ? *user = NULL : NULL;           // malloc(0) returns NULL
 
-  while (!(block = I_Malloc(size + HEADER_SIZE)))
+  while (!(block = I_Alloc(size + HEADER_SIZE)))
   {
     if (!blockbytag[PU_CACHE])
       I_Error ("Failure trying to allocate %lu bytes", (unsigned long) size);

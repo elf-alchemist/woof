@@ -145,7 +145,7 @@ static void ParseVorbisComments(loop_metadata_t *metadata, MEMFILE *fs)
         comment_len = LONG(buf);
 
         // Read actual comment data into string buffer.
-        comment = I_Malloc(comment_len + 1);
+        comment = I_Alloc(comment_len + 1);
         if (comment == NULL
             || mem_fread(comment, 1, comment_len, fs) < comment_len)
         {
@@ -592,7 +592,7 @@ boolean I_SND_LoadFile(void *data, ALenum *format, byte **wavdata,
     }
 
     local_wavdata =
-        I_Malloc(file.sfinfo.frames * file.frame_size / file.sfinfo.channels);
+        I_Alloc(file.sfinfo.frames * file.frame_size / file.sfinfo.channels);
 
     if (file.sample_format == Int16)
     {

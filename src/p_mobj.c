@@ -95,7 +95,7 @@ boolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   statenum_t* tempstate = NULL;               // for use with recursion
 
   if (recursion++)                            // if recursion detected,
-    seenstate = tempstate = I_Calloc(num_states, sizeof(statenum_t)); // allocate state table
+    seenstate = tempstate = I_AllocNum(num_states, sizeof(statenum_t)); // allocate state table
 
   do
     {
@@ -1046,7 +1046,7 @@ int P_FindDoomedNum(unsigned type)
 
   if (!hash)
     {
-      hash = I_Calloc(num_mobj_types, sizeof(*hash));
+      hash = I_AllocNum(num_mobj_types, sizeof(*hash));
       for (i=0; i<num_mobj_types; i++)
 	hash[i].first = num_mobj_types;
       for (i=0; i<num_mobj_types; i++)

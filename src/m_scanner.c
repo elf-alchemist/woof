@@ -181,7 +181,7 @@ static void CopyString(parserstate_t *state, const char *string, int length)
         {
             I_Free(state->string);
         }
-        state->string = I_Malloc(length + 1);
+        state->string = I_Alloc(length + 1);
         state->length = length;
     }
     memcpy(state->string, string, length);
@@ -846,7 +846,7 @@ scanner_t *SC_OpenOptions(const char *type, version_t maxversion,
 
 scanner_t *SC_Open(const char *scriptname, const int lumpnum)
 {
-    scanner_t *s = I_Malloc(sizeof(scanner_t));
+    scanner_t *s = I_Alloc(sizeof(scanner_t));
 
     s->line = 1;
     s->neednext = true;
@@ -854,7 +854,7 @@ scanner_t *SC_Open(const char *scriptname, const int lumpnum)
 
     byte * data = W_CacheLumpNum(s->lumpnum);
     s->length = W_LumpLength(s->lumpnum);
-    s->data = I_Malloc(s->length);
+    s->data = I_Alloc(s->length);
     memcpy(s->data, data, s->length);
 
     CheckForWhitespace(s);

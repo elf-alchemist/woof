@@ -103,8 +103,8 @@ static int wipe_initMelt(int width, int height, int ticks)
 {
     wipe_columns = video.unscaledw / 2;
 
-    ybuff1 = I_Calloc(wipe_columns, sizeof(int));
-    ybuff2 = I_Calloc(wipe_columns, sizeof(int));
+    ybuff1 = I_AllocNum(wipe_columns, sizeof(int));
+    ybuff2 = I_AllocNum(wipe_columns, sizeof(int));
 
     curry = ybuff1;
     prevy = ybuff2;
@@ -271,7 +271,7 @@ static int wipe_exitMelt(int width, int height, int ticks)
 int wipe_StartScreen(int x, int y, int width, int height)
 {
     int size = width * height;
-    wipe_scr_start = I_Calloc(size, sizeof(pixel_t));
+    wipe_scr_start = I_AllocNum(size, sizeof(pixel_t));
     I_ReadScreen(wipe_scr_start);
     return 0;
 }
@@ -279,7 +279,7 @@ int wipe_StartScreen(int x, int y, int width, int height)
 int wipe_EndScreen(int x, int y, int width, int height)
 {
     int size = width * height;
-    wipe_scr_end = I_Calloc(size, sizeof(pixel_t));
+    wipe_scr_end = I_AllocNum(size, sizeof(pixel_t));
     I_ReadScreen(wipe_scr_end);
     V_DrawBlock(x, y, width, height, wipe_scr_start); // restore start scr.
     return 0;

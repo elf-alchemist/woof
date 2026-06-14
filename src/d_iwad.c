@@ -818,7 +818,7 @@ const iwad_t **D_GetIwads(void)
     char *filename;
     int i;
 
-    result = I_Calloc(arrlen(iwads) + 1, sizeof(iwad_t*));
+    result = I_AllocNum(arrlen(iwads) + 1, sizeof(iwad_t*));
     result_len = 0;
 
     // Try to find all IWADs

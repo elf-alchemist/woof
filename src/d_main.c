@@ -913,7 +913,7 @@ void FindResponseFile (void)
         fseek(handle,0,SEEK_END);
         size = ftell(handle);
         fseek(handle,0,SEEK_SET);
-        file = I_Malloc(size);
+        file = I_Alloc(size);
         // [FG] check return value
         if (!fread(file,size,1,handle))
         {
@@ -928,7 +928,7 @@ void FindResponseFile (void)
           moreargs[index++] = myargv[k];
 
         firstargv = myargv[0];
-        myargv = I_Calloc(MAXARGVS, sizeof(char*));
+        myargv = I_AllocNum(MAXARGVS, sizeof(char*));
         myargv[0] = firstargv;
 
         infile = file;
@@ -1139,7 +1139,7 @@ static void M_AddLooseFiles(void)
     // allocate space for up to four additional regular parameters
     // (-iwad, -merge, -deh, -playdemo)
 
-    arguments = I_Calloc((myargc + 4), sizeof(argument_t));
+    arguments = I_AllocNum((myargc + 4), sizeof(argument_t));
 
     // check the command line and make sure it does not already
     // contain any regular parameters or response files
@@ -1201,7 +1201,7 @@ static void M_AddLooseFiles(void)
         myargc++;
     }
 
-    newargv = I_Calloc(myargc, sizeof(char*));
+    newargv = I_AllocNum(myargc, sizeof(char*));
 
     // sort the argument list by file type, except for the zeroth argument
     // which is the executable invocation itself
@@ -1638,7 +1638,7 @@ void D_DoomMain(void)
   }
 
   // killough 10/98: set default savename based on executable's name
-  sprintf(savegamename = I_Malloc(16), "%.4ssav", D_DoomExeName());
+  sprintf(savegamename = I_Alloc(16), "%.4ssav", D_DoomExeName());
 
   I_Printf(VB_INFO, "W_Init: Init WADfiles.");
 

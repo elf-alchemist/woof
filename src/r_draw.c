@@ -26,7 +26,6 @@
 #include "doomtype.h"
 #include "i_system.h"
 #include "i_video.h"
-#include "m_arena.h"
 #include "m_fixed.h"
 #include "r_bsp.h"
 #include "r_defs.h"
@@ -881,7 +880,7 @@ void R_InitTranslationTables(void)
     // killough 5/2/98:
     // Remove dependency of colormaps aligned on 256-byte boundary
 
-    translationtables = I_Malloc(256 * 3);
+    translationtables = I_Alloc(256 * 3);
 
     // translate just the 16 green colors
     for (i = 0; i < 256; i++)
@@ -1076,9 +1075,13 @@ void R_DrawSpan(void)
 
 void R_InitBufferRes(void)
 {
-    columnofs = arena_alloc_num(renderer_arena, int, video.width);
-    ylookup = arena_alloc_num(renderer_arena, pixel_t*, video.height);
-    solidcol = arena_alloc_num(renderer_arena, byte, video.width);
+    if (columnofs) I_Free(columnofs);
+    if (ylookup) I_Free(ylookup);
+    if (solidcol) I_Free(solidcol);
+
+    columnofs = I_AllocNum(sizeof(int), video.width);
+    ylookup = I_AllocNum(sizeof(pixel_t*), video.height);
+    solidcol = I_AllocNum(sizeof(byte), video.width);
 }
 
 //
@@ -1169,7 +1172,7 @@ void R_FillBackScreen(void)
     // Allocate the background buffer if necessary
     if (background_buffer == NULL)
     {
-        background_buffer = I_Calloc(video.width * video.height, sizeof(pixel_t));
+        background_buffer = I_AllocNum(video.width * video.height, sizeof(pixel_t));
     }
 
     V_UseBuffer(background_buffer, video.width);

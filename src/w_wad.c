@@ -236,7 +236,7 @@ static int IsMarker(const char *marker, const char *name)
 static void W_CoalesceMarkedResource(const char *start_marker,
                                      const char *end_marker, int namespace)
 {
-  lumpinfo_t *marked = I_Calloc(numlumps, sizeof(lumpinfo_t));
+  lumpinfo_t *marked = I_AllocNum(numlumps, sizeof(lumpinfo_t));
   size_t i, num_marked = 0, num_unmarked = 0;
   int is_marked = 0, mark_end = 0;
   lumpinfo_t *lump = lumpinfo;
@@ -465,7 +465,7 @@ void W_InitMultipleFiles(void)
   W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
 
   // set up caching
-  lumpcache = I_Calloc(numlumps, sizeof(void*));
+  lumpcache = I_AllocNum(numlumps, sizeof(void*));
 
   // killough 1/31/98: initialize lump hash table
   W_InitLumpHash();
@@ -562,7 +562,7 @@ void *W_CacheLumpName(const char *lumpname, namespace_t ns)
 
     if (!lumpcache[lumpnum])
     {
-        lumpcache[lumpnum] = I_Malloc(lumpinfo[lumpnum].size);
+        lumpcache[lumpnum] = I_Alloc(lumpinfo[lumpnum].size);
         W_ReadLump(lumpnum, lumpcache[lumpnum]);
     }
     return lumpcache[lumpnum];
@@ -579,7 +579,7 @@ void *W_CacheLumpNum(int lumpnum)
 
     if (!lumpcache[lumpnum])
     {
-        lumpcache[lumpnum] = I_Malloc(lumpinfo[lumpnum].size);
+        lumpcache[lumpnum] = I_Alloc(lumpinfo[lumpnum].size);
         W_ReadLump(lumpnum, lumpcache[lumpnum]);
     }
     return lumpcache[lumpnum];

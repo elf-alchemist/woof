@@ -16,7 +16,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "doomtype.h"
 #include "i_exit.h"
@@ -384,7 +383,7 @@ net_packet_t *NET_Conn_NewReliable(net_connection_t *conn, int packet_type)
 
     // Add to the list of reliable packets
 
-    rp = I_Malloc(sizeof(net_reliable_packet_t));
+    rp = I_Alloc(sizeof(net_reliable_packet_t));
     rp->packet = packet;
     rp->next = NULL;
     rp->seq = conn->reliable_send_seq;

@@ -1196,7 +1196,7 @@ void P_UnArchiveThinkers(void)
         }
 
         // first table entry special: 0 maps to NULL
-        *(mobj_p = I_Malloc(size * sizeof(mobj_t*))) = 0; // table of pointers
+        *(mobj_p = I_Alloc(size * sizeof(mobj_t*))) = 0; // table of pointers
         save_p = sp; // restore save pointer
     }
 

@@ -144,8 +144,8 @@ static int DEH_TextStart(deh_context_t *context, char *line)
         return 0;
     }
 
-    char *from_text = I_Malloc(from_len + 1);
-    char *to_text = I_Malloc(to_len + 1);
+    char *from_text = I_Alloc(from_len + 1);
+    char *to_text = I_Alloc(to_len + 1);
 
     // read in the "from" text
     for (int i = 0; i < from_len; ++i)

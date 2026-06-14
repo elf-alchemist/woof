@@ -32,8 +32,6 @@ void *M_ArenaAlloc(arena_t *arena, int size, int align);
 
 void arena_free(arena_t *arena, void *ptr);
 
-#define SIZE_KB(x) ((x) * 1024)
-#define SIZE_MB(x) ((x) * 1024 * 1024)
 arena_t *M_ArenaInit(int reserve, int commit);
 void M_ArenaClear(arena_t *arena);
 

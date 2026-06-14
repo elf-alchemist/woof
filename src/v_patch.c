@@ -385,7 +385,7 @@ patch_t *V_LinearToTransPatch(const byte *data, int width, int height,
         size += 1; // room for 0xff cap byte
     }
 
-    byte *output = I_Malloc(size);
+    byte *output = I_Alloc(size);
     byte *rover = output;
 
     // write header fields
@@ -455,14 +455,14 @@ static patch_t *DummyPatch(int lump)
     int len = W_LumpLength(num);
     patch_t *dummy = V_CachePatchNum(num);
 
-    lumpcache[lump] = I_Malloc(len);
+    lumpcache[lump] = I_Alloc(len);
     memcpy(lumpcache[lump], dummy, len);
     return lumpcache[lump];
 }
 
 static void *DummyFlat(int lump)
 {
-    lumpcache[lump] = I_Malloc(FLATSIZE);
+    lumpcache[lump] = I_Alloc(FLATSIZE);
     memcpy(lumpcache[lump], R_MissingFlat(), FLATSIZE);
     return lumpcache[lump];
 }
@@ -647,7 +647,7 @@ static boolean DecodePNG(png_t *png)
         return false;
     }
 
-    byte *image = I_Malloc(image_size);
+    byte *image = I_Alloc(image_size);
     ret = spng_decode_image(png->ctx, image, image_size, fmt, 0);
 
     if (ret)
@@ -661,7 +661,7 @@ static boolean DecodePNG(png_t *png)
     if (fmt == SPNG_FMT_RGB8)
     {
         int indexed_size = image_size / 3;
-        byte *indexed_image = I_Malloc(indexed_size);
+        byte *indexed_image = I_Alloc(indexed_size);
 
         uniform_quantizer_t q = {0};
 
@@ -708,7 +708,7 @@ static boolean DecodePNG(png_t *png)
     else if (fmt == SPNG_FMT_RGBA8)
     {
         int indexed_size = image_size / 4;
-        byte *indexed_image = I_Malloc(indexed_size);
+        byte *indexed_image = I_Alloc(indexed_size);
 
         uniform_quantizer_t q = {0};
 
@@ -796,7 +796,7 @@ static boolean DecodePNG(png_t *png)
             return false;
         }
 
-        byte *translate = I_Malloc(plte.n_entries);
+        byte *translate = I_Alloc(plte.n_entries);
         boolean need_translation = false;
         byte *palette = global_playpal;
 
@@ -931,7 +931,7 @@ patch_t *V_CachePatchNumTag(int lump, pu_tag tag)
 
     if (n_chunks > 0)
     {
-        struct spng_unknown_chunk *chunks = I_Calloc(n_chunks, sizeof(struct spng_unknown_chunk));
+        struct spng_unknown_chunk *chunks = I_AllocNum(n_chunks, sizeof(struct spng_unknown_chunk));
         spng_get_unknown_chunks(png.ctx, chunks, &n_chunks);
         for (int i = 0; i < n_chunks; ++i)
         {
@@ -1093,7 +1093,7 @@ patch_t *V_CachePatchNum(int lump)
 
     if (n_chunks > 0)
     {
-        struct spng_unknown_chunk *chunks = I_Calloc(n_chunks, sizeof(struct spng_unknown_chunk));
+        struct spng_unknown_chunk *chunks = I_AllocNum(n_chunks, sizeof(struct spng_unknown_chunk));
         spng_get_unknown_chunks(png.ctx, chunks, &n_chunks);
         for (int i = 0; i < n_chunks; ++i)
         {
@@ -1173,7 +1173,7 @@ void *V_CacheFlatNum(int lump)
     W_ReleaseLumpNum(lump);
 
     lumpinfo[lump].fmt_size = png.image_size;
-    lumpcache[lump] = I_Malloc(png.image_size);
+    lumpcache[lump] = I_Alloc(png.image_size);
     memcpy(lumpcache[lump], png.image, png.image_size);
 
     FreePNG(&png);

@@ -46,7 +46,7 @@ MEMFILE *mem_fopen_read(void *buf, size_t buflen)
 {
     MEMFILE *file;
 
-    file = I_Malloc(sizeof(MEMFILE));
+    file = I_Alloc(sizeof(MEMFILE));
 
     file->buf = (unsigned char *)buf;
     file->buflen = buflen;
@@ -109,10 +109,10 @@ MEMFILE *mem_fopen_write(void)
 {
     MEMFILE *file;
 
-    file = I_Malloc(sizeof(MEMFILE));
+    file = I_Alloc(sizeof(MEMFILE));
 
     file->alloced = 1024;
-    file->buf = I_Malloc(file->alloced);
+    file->buf = I_Alloc(file->alloced);
     file->buflen = 0;
     file->position = 0;
     file->read_eof = false;
@@ -142,7 +142,7 @@ size_t mem_fwrite(const void *ptr, size_t size, size_t nmemb, MEMFILE *stream)
     {
         unsigned char *newbuf;
 
-        newbuf = I_Malloc(stream->alloced * 2);
+        newbuf = I_Alloc(stream->alloced * 2);
         memcpy(newbuf, stream->buf, stream->alloced);
         I_Free(stream->buf);
         stream->buf = newbuf;

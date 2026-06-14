@@ -66,11 +66,11 @@ struct deh_context_s
 
 static deh_context_t *DEH_NewContext(void)
 {
-    deh_context_t *context = I_Malloc(sizeof(*context));
+    deh_context_t *context = I_Alloc(sizeof(*context));
 
     // Initial read buffer size of 128 bytes
     context->readbuffer_size = 128;
-    context->readbuffer = I_Malloc(context->readbuffer_size);
+    context->readbuffer = I_Alloc(context->readbuffer_size);
     context->linenum = 0;
     context->last_was_newline = true;
 
@@ -112,7 +112,7 @@ deh_context_t *DEH_OpenLump(int lumpnum)
     context->input_buffer_len = W_LumpLength(lumpnum);
     context->input_buffer_pos = 0;
 
-    context->filename = I_Malloc(9);
+    context->filename = I_Alloc(9);
     M_StringCopy(context->filename, lumpinfo[lumpnum].name, 9);
 
     return context;
@@ -213,7 +213,7 @@ int DEH_GetChar(deh_context_t *context)
 static void IncreaseReadBuffer(deh_context_t *context)
 {
     int newbuffer_size = context->readbuffer_size * 2;
-    char *newbuffer = I_Malloc(newbuffer_size);
+    char *newbuffer = I_Alloc(newbuffer_size);
 
     memcpy(newbuffer, context->readbuffer, context->readbuffer_size);
 

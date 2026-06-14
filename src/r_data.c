@@ -282,7 +282,7 @@ static void R_GenerateComposite(int texnum)
   // killough 4/9/98: Next, convert multipatched columns into true columns,
   // to fix Medusa bug while still allowing for transparent regions.
 
-  source = I_Malloc(texture->height);       // temporary column
+  source = I_Alloc(texture->height);       // temporary column
   for (i=0; i < texture->width; i++)
     // [FG] generate composites for all columns
 //  if (collump[i] == -1)                 // process only multipatched columns
@@ -360,7 +360,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
 
   struct {
     unsigned patches, posts;
-  } *count = I_Calloc(texture->width, sizeof(*count));
+  } *count = I_AllocNum(texture->width, sizeof(*count));
 
   // killough 12/98: First count the number of patches per column.
 
@@ -572,9 +572,9 @@ static inline void RegisterTexture(texture_t *texture, int i)
     // killough 4/9/98: make column offsets 32-bit;
     // clean up malloc-ing to use sizeof
     // killough 12/98: fix sizeofs
-    texturecolumnlump[i] = I_Calloc(texture->width, sizeof(**texturecolumnlump));
-    texturecolumnofs[i] = I_Calloc(texture->width, sizeof(**texturecolumnofs));
-    texturecolumnofs2[i] = I_Calloc(texture->width, sizeof(**texturecolumnofs2));
+    texturecolumnlump[i] = I_AllocNum(texture->width, sizeof(**texturecolumnlump));
+    texturecolumnofs[i] = I_AllocNum(texture->width, sizeof(**texturecolumnofs));
+    texturecolumnofs2[i] = I_AllocNum(texture->width, sizeof(**texturecolumnofs2));
 
     int j;
     for (j = 1; j * 2 <= texture->width; j <<= 1)
@@ -621,7 +621,7 @@ void R_InitTextures (void)
     numpatches += tx_numtextures;
   }
 
-  patchlookup = I_Calloc(numpatches, sizeof(*patchlookup));
+  patchlookup = I_AllocNum(numpatches, sizeof(*patchlookup));
 
   for (i=0 ; i<nummappatches ; i++)
     {
@@ -692,17 +692,17 @@ void R_InitTextures (void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  textures = I_Calloc(numtextures, sizeof(*textures));
-  texturecolumnlump = I_Calloc(numtextures, sizeof(*texturecolumnlump));
-  texturecolumnofs = I_Calloc(numtextures, sizeof(*texturecolumnofs));
-  texturecolumnofs2 = I_Calloc(numtextures, sizeof(*texturecolumnofs2));
-  texturecomposite = I_Calloc(numtextures, sizeof(*texturecomposite));
-  texturecomposite2 = I_Calloc(numtextures, sizeof(*texturecomposite2));
-  texturecompositesize = I_Calloc(numtextures, sizeof(*texturecompositesize));
-  texturewidthmask = I_Calloc(numtextures, sizeof(*texturewidthmask));
-  texturewidth = I_Calloc(numtextures, sizeof(*texturewidth));
-  textureheight = I_Calloc(numtextures, sizeof(*textureheight));
-  texturebrightmap = I_Calloc(numtextures, sizeof(*texturebrightmap));
+  textures = I_AllocNum(numtextures, sizeof(*textures));
+  texturecolumnlump = I_AllocNum(numtextures, sizeof(*texturecolumnlump));
+  texturecolumnofs = I_AllocNum(numtextures, sizeof(*texturecolumnofs));
+  texturecolumnofs2 = I_AllocNum(numtextures, sizeof(*texturecolumnofs2));
+  texturecomposite = I_AllocNum(numtextures, sizeof(*texturecomposite));
+  texturecomposite2 = I_AllocNum(numtextures, sizeof(*texturecomposite2));
+  texturecompositesize = I_AllocNum(numtextures, sizeof(*texturecompositesize));
+  texturewidthmask = I_AllocNum(numtextures, sizeof(*texturewidthmask));
+  texturewidth = I_AllocNum(numtextures, sizeof(*texturewidth));
+  textureheight = I_AllocNum(numtextures, sizeof(*textureheight));
+  texturebrightmap = I_AllocNum(numtextures, sizeof(*texturebrightmap));
 
   // Complex printing shit factored out
   M_ProgressBarStart(numtextures, __func__);
@@ -727,7 +727,7 @@ void R_InitTextures (void)
 
       mtexture = (maptexture_t *) ( (byte *)maptex + offset);
 
-      texture = textures[i] = I_Malloc(sizeof(texture_t) + sizeof(texpatch_t)*(SHORT(mtexture->patchcount)-1));
+      texture = textures[i] = I_Alloc(sizeof(texture_t) + sizeof(texpatch_t)*(SHORT(mtexture->patchcount)-1));
 
       texture->width = SHORT(mtexture->width);
       texture->height = SHORT(mtexture->height);
@@ -773,7 +773,7 @@ void R_InitTextures (void)
       M_ProgressBarMove(i);
 
       int tx_lump = first_tx + k;
-      texture = textures[i] = I_Malloc(sizeof(texture_t));
+      texture = textures[i] = I_Alloc(sizeof(texture_t));
       M_CopyLumpName(texture->name, lumpinfo[tx_lump].name);
 
       if (!V_LumpIsPatch(tx_lump))
@@ -816,7 +816,7 @@ void R_InitTextures (void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  texturetranslation = I_Calloc((numtextures+1), sizeof(*texturetranslation));
+  texturetranslation = I_AllocNum((numtextures+1), sizeof(*texturetranslation));
 
   for (i=0 ; i<numtextures ; i++)
     texturetranslation[i] = i;
@@ -847,9 +847,9 @@ void R_InitFlats(void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  flattranslation = I_Calloc((numflats+1), sizeof(*flattranslation));
+  flattranslation = I_AllocNum((numflats+1), sizeof(*flattranslation));
 
-  flatterrain = I_Calloc((numflats+1), sizeof(*flatterrain));
+  flatterrain = I_AllocNum((numflats+1), sizeof(*flatterrain));
 
   for (i=0 ; i<numflats ; i++)
   {
@@ -876,9 +876,9 @@ void R_InitSpriteLumps(void)
   // killough 4/9/98: make columnd offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  spritewidth = I_Calloc(numspritelumps, sizeof(*spritewidth));
-  spriteoffset = I_Calloc(numspritelumps, sizeof(*spriteoffset));
-  spritetopoffset = I_Calloc(numspritelumps, sizeof(*spritetopoffset));
+  spritewidth = I_AllocNum(numspritelumps, sizeof(*spritewidth));
+  spriteoffset = I_AllocNum(numspritelumps, sizeof(*spriteoffset));
+  spritetopoffset = I_AllocNum(numspritelumps, sizeof(*spritetopoffset));
 
   M_ProgressBarStart(numspritelumps, __func__);
 
@@ -935,7 +935,7 @@ void R_InitColormaps(void)
   firstcolormaplump = W_GetNumForName("C_START");
   lastcolormaplump  = W_GetNumForName("C_END");
   numcolormaps = lastcolormaplump - firstcolormaplump;
-  colormaps = I_Calloc(numcolormaps, sizeof(lighttable_t*));
+  colormaps = I_AllocNum(numcolormaps, sizeof(lighttable_t*));
 
   colormaps[0] = W_CacheLumpNum(W_GetNumForName("COLORMAP"));
 
@@ -1082,7 +1082,7 @@ void R_PrecacheLevel(void)
 
   {
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
-    hitlist = I_Malloc(numtextures > size ? numtextures : size);
+    hitlist = I_Alloc(numtextures > size ? numtextures : size);
   }
 
   // Precache flats.

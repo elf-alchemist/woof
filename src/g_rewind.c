@@ -21,7 +21,6 @@
 #include "p_dirty.h"
 #include "p_keyframe.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 static int rewind_interval;
@@ -78,7 +77,7 @@ static void Push(keyframe_t *keyframe)
         }
     }
 
-    elem_t *newelem = I_Malloc(sizeof(elem_t));
+    elem_t *newelem = I_Alloc(sizeof(elem_t));
     newelem->keyframe = keyframe;
     
     if (IsEmpty())

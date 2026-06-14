@@ -27,7 +27,7 @@ net_packet_t *NET_NewPacket(int initial_size)
 {
     net_packet_t *packet;
 
-    packet = I_Malloc(sizeof(net_packet_t));
+    packet = I_Alloc(sizeof(net_packet_t));
 
     if (initial_size == 0)
     {
@@ -35,7 +35,7 @@ net_packet_t *NET_NewPacket(int initial_size)
     }
 
     packet->alloced = initial_size;
-    packet->data = I_Malloc(initial_size);
+    packet->data = I_Alloc(initial_size);
     packet->len = 0;
     packet->pos = 0;
 
@@ -252,7 +252,7 @@ static void NET_IncreasePacket(net_packet_t *packet)
 
     packet->alloced *= 2;
 
-    newdata = I_Malloc(packet->alloced);
+    newdata = I_Alloc(packet->alloced);
 
     memcpy(newdata, packet->data, packet->len);
 

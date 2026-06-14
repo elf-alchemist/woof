@@ -52,14 +52,14 @@ glob_t *I_StartMultiGlobInternal(const char *directory, int flags,
     char **globs;
     glob_t *result;
 
-    globs = I_Calloc(num_globs, sizeof(char*));
+    globs = I_AllocNum(num_globs, sizeof(char*));
 
     for (int i = 0; i < num_globs; ++i)
     {
         globs[i] = M_StringDuplicate(glob[i]);
     }
 
-    result = I_Malloc(sizeof(glob_t));
+    result = I_Alloc(sizeof(glob_t));
 
     if (!M_DirExists(directory))
     {

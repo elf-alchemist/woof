@@ -2496,7 +2496,7 @@ static void DoSaveGame(char *name)
 {
   S_MarkSounds();
 
-  save_p = savebuffer = I_Malloc(savegamesize);
+  save_p = savebuffer = I_Alloc(savegamesize);
 
   saveg_grow(SAVESTRINGSIZE + VERSIONSIZE);
   memcpy(save_p, savedescription, SAVESTRINGSIZE);
@@ -2712,7 +2712,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
    {  // killough 3/16/98, 12/98: check lump name checksum
      if (checksum != G_Signature(tmp_episode, tmp_map))
        {
-	 char *msg = I_Malloc(strlen((char *) save_p) + 128);
+	 char *msg = I_Alloc(strlen((char *) save_p) + 128);
 	 strcpy(msg,"Incompatible Savegame!!!\n");
 	 if (save_p[sizeof checksum])
 	   strcat(strcat(msg,"Wads expected:\n\n"), (char *) save_p);
@@ -4263,7 +4263,7 @@ void G_RecordDemo(const char *name)
     maxdemosize = M_ParmArgToInt(i) * 1024;
   if (maxdemosize < 0x20000)  // killough
     maxdemosize = 0x20000;
-  demobuffer = I_Malloc(maxdemosize); // killough
+  demobuffer = I_Alloc(maxdemosize); // killough
   demorecording = true;
 }
 

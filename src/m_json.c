@@ -196,7 +196,7 @@ json_t *JS_GetArrayItem(json_t *json, int index)
 
 json_arr_iter_t *JS_ArrayIterator(json_t *json)
 {
-    json_arr_iter_t *iter = I_Malloc(sizeof(json_arr_iter_t));
+    json_arr_iter_t *iter = I_Alloc(sizeof(json_arr_iter_t));
     yyjson_arr_iter_init(json, iter);
     return iter;
 }
@@ -273,7 +273,7 @@ const char *JS_GetStringValue(json_t *json, const char *string)
 
 json_obj_iter_t *JS_ObjectIterator(json_t *json)
 {
-    yyjson_obj_iter *iter = I_Malloc(sizeof(yyjson_obj_iter));
+    yyjson_obj_iter *iter = I_Alloc(sizeof(yyjson_obj_iter));
     if (yyjson_obj_iter_init(json, iter))
     {
         return iter;

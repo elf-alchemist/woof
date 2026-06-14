@@ -173,7 +173,7 @@ static void *ReadByteSequence(unsigned int num_bytes, MEMFILE *stream)
     // Allocate a buffer. Allocate one extra byte, as malloc(0) is
     // non-portable.
 
-    result = I_Malloc(num_bytes + 1);
+    result = I_Alloc(num_bytes + 1);
 
     // Read the data:
 
@@ -254,7 +254,7 @@ static boolean ReadSysExEvent(midi_event_t *event, int event_type,
     // Read the byte sequence:
 
     event->data.sysex.length++; // Extra byte for event type.
-    event->data.sysex.data = I_Malloc(event->data.sysex.length);
+    event->data.sysex.data = I_Alloc(event->data.sysex.length);
 
     if (event->data.sysex.data == NULL)
     {
@@ -560,7 +560,7 @@ static boolean ReadAllTracks(midi_file_t *file, MEMFILE *stream)
 
     // Allocate list of tracks and read each track:
 
-    file->tracks = I_Calloc(file->num_tracks, sizeof(midi_track_t));
+    file->tracks = I_AllocNum(file->num_tracks, sizeof(midi_track_t));
 
     if (file->tracks == NULL)
     {
@@ -641,7 +641,7 @@ midi_file_t *MIDI_LoadFile(void *buf, size_t buflen)
     midi_file_t *file;
     MEMFILE *stream;
 
-    file = I_Malloc(sizeof(midi_file_t));
+    file = I_Alloc(sizeof(midi_file_t));
 
     file->tracks = NULL;
     file->num_tracks = 0;
@@ -693,7 +693,7 @@ unsigned int MIDI_NumTracks(midi_file_t *file)
 
 midi_track_iter_t *MIDI_IterateTrack(midi_file_t *file, unsigned int track)
 {
-    midi_track_iter_t *iter = I_Malloc(sizeof(midi_track_iter_t));
+    midi_track_iter_t *iter = I_Alloc(sizeof(midi_track_iter_t));
     iter->track = &file->tracks[track];
     iter->position = 0;
     iter->loop_point = 0;

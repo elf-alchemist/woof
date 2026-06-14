@@ -1593,7 +1593,7 @@ static void I_OPL_PlayStream(boolean looping)
 
     // Allocate track data.
 
-    tracks = I_Calloc(MIDI_NumTracks(midifile), sizeof(opl_track_data_t));
+    tracks = I_AllocNum(MIDI_NumTracks(midifile), sizeof(opl_track_data_t));
 
     num_tracks = MIDI_NumTracks(midifile);
     running_tracks = num_tracks;

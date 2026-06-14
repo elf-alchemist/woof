@@ -21,11 +21,9 @@
 #define __R_MAIN__
 
 #include "doomtype.h"
-#include "m_arena.h"
 #include "m_fixed.h"
 #include "tables.h"
 
-extern arena_t *renderer_arena;
 extern byte *global_playpal;
 
 struct node_s;

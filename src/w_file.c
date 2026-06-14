@@ -163,7 +163,7 @@ static w_type_t W_FILE_Open(const char *path, w_handle_t *handle)
     }
 
     int length = header.numlumps * sizeof(filelump_t);
-    filelump_t *fileinfo = I_Malloc(length);
+    filelump_t *fileinfo = I_Alloc(length);
     if (fileinfo == NULL)
     {
         I_Error("Failed to allocate file table from %s", path);

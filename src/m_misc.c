@@ -391,7 +391,7 @@ static char *M_StringReplaceEx(const char *haystack, const char *needle,
 
     // Construct new string.
 
-    result = I_Malloc(result_len);
+    result = I_Alloc(result_len);
     if (result == NULL)
     {
         I_Error("Failed to allocate new string");
@@ -520,7 +520,7 @@ char *M_StringJoinInternal(const char *s[], size_t n)
         length += strlen(s[i]);
     }
 
-    char *result = I_Malloc(length);
+    char *result = I_Alloc(length);
 
     int pos = 0;
     for (int i = 0; i < n; ++i)
@@ -659,7 +659,7 @@ int M_ReadFile(char const *name, byte **buffer)
         fseek(fp, 0, SEEK_END);
         length = ftell(fp);
         fseek(fp, 0, SEEK_SET);
-        *buffer = I_Malloc(length);
+        *buffer = I_Alloc(length);
         if (fread(*buffer, 1, length, fp) == length)
         {
             fclose(fp);

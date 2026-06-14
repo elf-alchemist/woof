@@ -42,7 +42,7 @@ static int DEH_BEXIncludeStart(deh_context_t *context, char *line)
         return -1;
     }
 
-    char *inc_file = I_Malloc(strlen(line) + 1);
+    char *inc_file = I_Alloc(strlen(line) + 1);
 
     if (sscanf(line, "INCLUDE NOTEXT %32s", inc_file) == 1)
     {

@@ -31,7 +31,6 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "info.h"
-#include "m_arena.h"
 #include "m_swap.h"
 #include "p_mobj.h"
 #include "p_pspr.h"
@@ -122,12 +121,19 @@ static int maxframe;
 
 void R_InitSpritesRes(void)
 {
-  xtoviewangle = arena_alloc_num(renderer_arena, angle_t, (video.width + 1));
-  linearskyangle = arena_alloc_num(renderer_arena, angle_t, (video.width + 1));
-  negonearray = arena_alloc_num(renderer_arena, int, video.width);
-  screenheightarray = arena_alloc_num(renderer_arena, int, video.width);
+  if (xtoviewangle) I_Free(xtoviewangle);
+  if (linearskyangle) I_Free(linearskyangle);
+  if (negonearray) I_Free(negonearray);
+  if (screenheightarray) I_Free(screenheightarray);
 
-  clipbot = arena_alloc_num(renderer_arena, int, 2 * video.width);
+  if (clipbot) I_Free(clipbot);
+
+  xtoviewangle = I_AllocNum(sizeof(angle_t), (video.width + 1));
+  linearskyangle = I_AllocNum(sizeof(angle_t), (video.width + 1));
+  negonearray = I_AllocNum(sizeof(int), video.width);
+  screenheightarray = I_AllocNum(sizeof(int), video.width);
+
+  clipbot = I_AllocNum(sizeof(int), 2 * video.width);
   cliptop = clipbot + video.width;
 }
 
@@ -208,12 +214,12 @@ void R_InitSpriteDefs(char **namelist)
   if (!numentries || !*namelist)
     return;
 
-  sprites = I_Calloc(num_sprites, sizeof(spritedef_t));
+  sprites = I_AllocNum(num_sprites, sizeof(spritedef_t));
 
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
 
-  hash = I_Calloc(numentries, sizeof(*hash)); // allocate hash table
+  hash = I_AllocNum(numentries, sizeof(*hash)); // allocate hash table
 
   for (i=0; i<numentries; i++)             // initialize hash table as empty
     hash[i].index = -1;
@@ -297,7 +303,7 @@ void R_InitSpriteDefs(char **namelist)
                     }
                   }
               // allocate space for the frames present and copy sprtemp to it
-              sprites[i].spriteframes = I_Calloc(maxframe, sizeof(spriteframe_t));
+              sprites[i].spriteframes = I_AllocNum(maxframe, sizeof(spriteframe_t));
               memcpy (sprites[i].spriteframes, sprtemp,
                       maxframe*sizeof(spriteframe_t));
             }

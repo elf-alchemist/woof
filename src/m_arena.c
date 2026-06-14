@@ -85,7 +85,7 @@ void *M_ArenaAlloc(arena_t *arena, int size, int align)
             I_Error("Out of memory");
         }
 
-        void *buffer = I_Malloc(buffer_size);
+        void *buffer = I_Alloc(buffer_size);
         memcpy(buffer, arena->buffer, buffer_size);
         if (!I_DecommitRegion(arena->buffer, buffer_size))
         {
@@ -141,7 +141,7 @@ void arena_free(arena_t *arena, void *ptr)
 
 arena_t *M_ArenaInit(int reserve, int commit)
 {
-    arena_t *arena = I_Malloc(sizeof(arena_t));
+    arena_t *arena = I_Alloc(sizeof(arena_t));
 
     arena->reserve = reserve;
     arena->buffer = I_ReserveRegion(reserve);
@@ -215,11 +215,11 @@ static block_t *CopyBlocks(const block_t *from)
 
 arena_copy_t *M_ArenaCopy(const arena_t *arena)
 {
-    arena_copy_t *copy = I_Malloc(sizeof(arena_copy_t));
+    arena_copy_t *copy = I_Alloc(sizeof(arena_copy_t));
 
     ptrdiff_t size = arena->beg - arena->buffer;
     copy->size = size;
-    copy->buffer = I_Malloc(size);
+    copy->buffer = I_Alloc(size);
     memcpy(copy->buffer, arena->buffer, size);
 
     copy->deleted = CopyBlocks(arena->deleted);

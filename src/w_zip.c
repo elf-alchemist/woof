@@ -55,7 +55,7 @@ static void AddWadInMem(w_handle_t handle, const char *name, int index,
 
     mz_zip_archive *zip = handle.p1.archive->zip;
 
-    byte *data = I_Malloc(data_size);
+    byte *data = I_Alloc(data_size);
 
     if (!mz_zip_reader_extract_to_mem(zip, index, data, data_size, 0))
     {
@@ -206,7 +206,7 @@ static int compare_records(const void *a, const void *b)
 
 static w_type_t W_ZIP_Open(const char *path, w_handle_t *handle)
 {
-    mz_zip_archive *zip = I_Malloc(sizeof(mz_zip_archive));
+    mz_zip_archive *zip = I_Alloc(sizeof(mz_zip_archive));
 
     if (!mz_zip_reader_init_file(zip, path, MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY))
     {
@@ -215,12 +215,12 @@ static w_type_t W_ZIP_Open(const char *path, w_handle_t *handle)
     }
 
     const int num_files = mz_zip_reader_get_num_files(zip);
-    record_t *directory = I_Malloc(num_files * sizeof(*directory));
+    record_t *directory = I_Alloc(num_files * sizeof(*directory));
     for (int i = 0; i < num_files; ++i)
     {
         directory[i].index = i;
         int size = mz_zip_reader_get_filename(zip, i, NULL, 0);
-        char *filename = I_Malloc(size);
+        char *filename = I_Alloc(size);
         mz_zip_reader_get_filename(zip, i, filename, size);
         directory[i].filename = filename;
     }

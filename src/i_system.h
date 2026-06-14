@@ -21,7 +21,6 @@
 #define __I_SYSTEM__
 
 #include "doomtype.h"
-#include "i_printf.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -93,15 +92,15 @@ const char *I_GetPlatform(void);
 void I_SetMetadata(const char *appname, const char *appversion,
                    const char *appidentifier);
 
-static inline void *I_Malloc(size_t size)
+static inline void *I_Alloc(size_t size)
 {
-    void *ptr = malloc(size);
+    void *ptr = calloc(1, size);
     if (ptr == NULL) I_Error("Failed to mallocate memory.");
     memset(ptr, 0, size);
     return ptr;
 }
 
-static inline void *I_Calloc(size_t num, size_t size)
+static inline void *I_AllocNum(size_t num, size_t size)
 {
     void *ptr = calloc(num, size);
     if (ptr == NULL) I_Error("Failed to callocate memory.");

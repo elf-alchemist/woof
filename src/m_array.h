@@ -32,7 +32,7 @@
 #endif
 
 #ifndef M_ARRAY_MALLOC
-#  define M_ARRAY_MALLOC(size) I_Malloc(size)
+#  define M_ARRAY_MALLOC(size) I_Alloc(size)
 #endif
 
 #ifndef M_ARRAY_REALLOC

@@ -45,7 +45,6 @@
 #include "doomtype.h"
 #include "i_system.h"
 #include "i_video.h"
-#include "m_arena.h"
 #include "m_fixed.h"
 #include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 #include "r_data.h"
@@ -134,22 +133,36 @@ void R_InitPlanes (void)
 
 void R_InitPlanesRes(void)
 {
-  floorclip = arena_alloc_num(renderer_arena, int, video.width);
-  ceilingclip = arena_alloc_num(renderer_arena, int, video.width);
-  spanstart = arena_alloc_num(renderer_arena, int, video.height);
+    if (floorclip) I_Free(floorclip);
+    if (ceilingclip) I_Free(ceilingclip);
+    if (spanstart) I_Free(spanstart);
 
-  cachedheight = arena_alloc_num(renderer_arena, fixed_t, video.height);
-  cacheddistance = arena_alloc_num(renderer_arena, fixed_t, video.height);
-  cachedxstep = arena_alloc_num(renderer_arena, fixed_t, video.height);
-  cachedystep = arena_alloc_num(renderer_arena, fixed_t, video.height);
-  cachedrotation = arena_alloc_num(renderer_arena, fixed_t, video.height);
+    if (cachedheight) I_Free(cachedheight);
+    if (cacheddistance) I_Free(cacheddistance);
+    if (cachedxstep) I_Free(cachedxstep);
+    if (cachedystep) I_Free(cachedystep);
+    if (cachedrotation) I_Free(cachedrotation);
 
-  yslope = arena_alloc_num(renderer_arena, fixed_t, video.height);
+    if (yslope) I_Free(yslope);
 
-  maxopenings = video.width * video.height;
-  openings = arena_alloc_num(renderer_arena, int, maxopenings);
+    if (openings) I_Free(openings);
 
-  R_InitPlanes();
+    floorclip = I_AllocNum(sizeof(int), video.width);
+    ceilingclip = I_AllocNum(sizeof(int), video.width);
+    spanstart = I_AllocNum(sizeof(int), video.height);
+
+    cachedheight = I_AllocNum(sizeof(fixed_t), video.height);
+    cacheddistance = I_AllocNum(sizeof(fixed_t), video.height);
+    cachedxstep = I_AllocNum(sizeof(fixed_t), video.height);
+    cachedystep = I_AllocNum(sizeof(fixed_t), video.height);
+    cachedrotation = I_AllocNum(sizeof(fixed_t), video.height);
+
+    yslope = I_AllocNum(sizeof(fixed_t), video.height);
+
+    maxopenings = video.width * video.height;
+    openings = I_AllocNum(sizeof(int), maxopenings);
+
+    R_InitPlanes();
 }
 
 void R_InitVisplanesRes(void)
@@ -299,7 +312,7 @@ static visplane_t *new_visplane(unsigned hash)
   if (!check)
   {
     const int size = sizeof(*check) + (video.width * 2) * sizeof(*check->top);
-    check = I_Malloc(size);
+    check = I_Alloc(size);
     check->bottom = &check->top[video.width + 2];
   }
   else

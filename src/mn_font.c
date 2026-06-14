@@ -16,7 +16,6 @@
 // DESCRIPTION:
 //     Load and draw ZDoom FON2 fonts
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "doomtype.h"
@@ -89,7 +88,7 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
         upper = true;
     }
     numchars = header->lastc - header->firstc + 1;
-    chars = I_Calloc(numchars, sizeof(fon2_char_t));
+    chars = I_AllocNum(numchars, sizeof(fon2_char_t));
 
     for (int i = 0; i < numchars; ++i)
     {
@@ -104,7 +103,7 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
     }
 
     // Build translation table for palette.
-    byte *translate = I_Malloc(header->palsize + 1);
+    byte *translate = I_Alloc(header->palsize + 1);
     for (int i = 0; i < header->palsize + 1; ++i)
     {
         int r = *p++;
@@ -127,7 +126,7 @@ boolean MN_LoadFon2(const byte *gfx_data, int size)
         }
 
         int numpixels = chars[i].width * height;
-        byte *data = I_Malloc(numpixels);
+        byte *data = I_Alloc(numpixels);
         byte *d = data;
         byte code = 0;
         int length = 0;

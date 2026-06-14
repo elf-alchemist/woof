@@ -392,7 +392,7 @@ void P_LoadNodes(int lump)
     byte *data;
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_t);
-    nodes = arena_alloc_num(bsp_arena, node_t, numnodes);
+    nodes = I_AllocNum(sizeof(node_t), numnodes);
     data = W_CacheLumpNum(lump);
 
     for (int i = 0; i < numnodes; i++)
@@ -619,7 +619,7 @@ void P_LoadNodes_DeePBSPV4(int lump)
     int i;
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_deepbspv4_t);
-    nodes = arena_alloc_num(bsp_arena, node_t, numnodes);
+    nodes = I_AllocNum(sizeof(node_t), numnodes);
     data = W_CacheLumpNum(lump);
 
     // [FG] skip header
@@ -878,10 +878,10 @@ void P_LoadBSPTree_ZDBSP(int lump, bspformat_t format)
         // first estimate for compression rate:
         // output buffer size == 2.5 * input size
         outlen = 2.5 * len;
-        output = I_Malloc(outlen);
+        output = I_Alloc(outlen);
 
         // initialize stream state for decompression
-        zstream = I_Malloc(sizeof(mz_stream));
+        zstream = I_Alloc(sizeof(mz_stream));
         zstream->next_in = data + 4;
         zstream->avail_in = len - 4;
         zstream->next_out = output;
@@ -1033,7 +1033,7 @@ void P_LoadBSPTree_ZDBSP(int lump, bspformat_t format)
     data += sizeof(numNodes);
 
     numnodes = numNodes;
-    nodes = arena_alloc_num(bsp_arena, node_t, numnodes);
+    nodes = I_AllocNum(sizeof(node_t), numnodes);
 
     for (i = 0; i < numnodes; i++)
     {

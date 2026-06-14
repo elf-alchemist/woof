@@ -38,7 +38,6 @@
 #include "hu_obituary.h"
 #include "i_video.h"
 #include "info.h"
-#include "m_arena.h"
 #include "m_array.h"
 #include "m_cheat.h"
 #include "m_config.h"
@@ -2336,7 +2335,7 @@ void ST_InitRes(void)
         I_Free(st_backing_screen);
     }
     // killough 11/98: allocate enough for hires
-    st_backing_screen = I_Malloc(st_size * sizeof(*st_backing_screen));
+    st_backing_screen = I_Alloc(st_size * sizeof(*st_backing_screen));
 }
 
 const char **ST_StatusbarList(void)

@@ -53,7 +53,7 @@ void V_InitFlexTranTable(void)
     tpalcol_t *tempRGBpal;
     const byte *palRover;
 
-    tempRGBpal = I_Calloc(256, sizeof(tpalcol_t));
+    tempRGBpal = I_AllocNum(256, sizeof(tpalcol_t));
 
     for (i = 0, palRover = global_playpal; i < 256; i++, palRover += 3)
     {

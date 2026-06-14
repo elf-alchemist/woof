@@ -444,11 +444,11 @@ static void UnArchiveAutomap(void)
 
 keyframe_t *P_SaveKeyframe(int tic)
 {
-    keyframe_t *keyframe = I_Malloc(sizeof(keyframe_t));
-    keyframe->data = I_Malloc(sizeof(keyframe_data_t));
+    keyframe_t *keyframe = I_Alloc(sizeof(keyframe_t));
+    keyframe->data = I_Alloc(sizeof(keyframe_data_t));
 
     buffer_size = KEYFRAME_BUFFER_SIZE;
-    buffer = I_Malloc(buffer_size);
+    buffer = I_Alloc(buffer_size);
     curr_p = buffer;
 
     write8((gametic - boom_basetic) & 255);

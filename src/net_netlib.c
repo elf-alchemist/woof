@@ -55,7 +55,7 @@ static void InitAddrTable(void)
 {
     addr_table_size = 16;
 
-    addr_table = I_Calloc(addr_table_size, sizeof(addrpair_t *));
+    addr_table = I_AllocNum(addr_table_size, sizeof(addrpair_t *));
 }
 
 static boolean AddressesEqual(ip_address_t *a, ip_address_t *b)
@@ -109,7 +109,7 @@ static net_addr_t *FindAddress(ip_address_t *addr)
         // the existing table in.  replace the old table.
 
         new_addr_table_size = addr_table_size * 2;
-        new_addr_table = I_Calloc(new_addr_table_size, sizeof(addrpair_t*));
+        new_addr_table = I_AllocNum(new_addr_table_size, sizeof(addrpair_t*));
         memcpy(new_addr_table, addr_table, addr_table_size * sizeof(addrpair_t*));
         I_Free(addr_table);
         addr_table = new_addr_table;
@@ -118,7 +118,7 @@ static net_addr_t *FindAddress(ip_address_t *addr)
 
     // Add a new entry
 
-    new_entry = I_Malloc(sizeof(addrpair_t));
+    new_entry = I_Alloc(sizeof(addrpair_t));
 
     new_entry->netlib_addr = *addr;
     new_entry->net_addr.refcount = 0;
