@@ -26,7 +26,6 @@
 #include "r_defs.h"
 #include "tables.h"
 #include "v_patch.h"
-#include "z_zone.h"
 
 boolean r_swirl;
 
@@ -117,14 +116,13 @@ byte *R_DistortedFlat(int flatnum)
         char *normalflat;
         int i;
 
-        normalflat = V_CacheFlatNumTag(flatnum, PU_STATIC);
+        normalflat = V_CacheFlatNum(flatnum);
 
         for (i = 0; i < FLATSIZE; i++)
         {
             distortedflat[i] = normalflat[offset[i]];
         }
 
-        Z_ChangeTag(normalflat, PU_CACHE);
 
         swirlflat = flatnum;
     }

@@ -29,7 +29,6 @@
 
 #include "decl_defs.h"
 #include "decl_main.h"
-#include "doomtype.h"
 #include "info.h"
 #include "m_array.h"
 #include "m_hashmap.h"
@@ -37,7 +36,6 @@
 #include "m_scanner.h"
 #include "p_mobj.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 hashmap_t *actors;
 

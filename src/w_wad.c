@@ -30,7 +30,6 @@
 #include "m_misc.h"
 #include "w_wad.h"
 #include "w_internal.h"
-#include "z_zone.h"
 
 //
 // GLOBALS
@@ -531,23 +530,6 @@ void W_ReadLump(int lump, void *dest)
 // W_CacheLumpNum
 //
 // killough 4/25/98: simplified
-
-void *W_CacheLumpNumTag(int lump, pu_tag tag)
-{
-#ifdef RANGECHECK
-  if ((unsigned)lump >= numlumps)
-    I_Error ("%i >= numlumps",lump);
-#endif
-
-  if (!lumpcache[lump])      // read the lump in
-    W_ReadLump(lump, Z_Malloc(W_LumpLength(lump), tag, &lumpcache[lump]));
-  else
-  {
-    // Z_ChangeTag(lumpcache[lump],tag);
-  }
-
-  return lumpcache[lump];
-}
 
 void *W_CacheLumpName(const char *lumpname, namespace_t ns)
 {

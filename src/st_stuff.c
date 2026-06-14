@@ -64,7 +64,6 @@
 #include "v_patch.h"
 #include "v_video.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 int st_height = 0, st_height_screenblocks10 = 0;
 
@@ -2050,8 +2049,7 @@ static void DrawBackground(const char *name)
                 name = (gamemode == commercial) ? "GRNROCK" : "FLOOR7_2";
             }
 
-            byte *flat =
-                V_CacheFlatNumTag(firstflat + R_FlatNumForName(name), PU_CACHE);
+            byte *flat = V_CacheFlatNum(firstflat + R_FlatNumForName(name));
 
             V_TileBlock64(ST_Y, video.unscaledw, st_height, flat);
 

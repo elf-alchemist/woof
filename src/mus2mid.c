@@ -688,7 +688,6 @@ boolean mus2mid(MEMFILE *musinput, MEMFILE *midioutput)
 #ifdef STANDALONE
 
 #  include "m_misc.h"
-#  include "z_zone.h"
 
 int main(int argc, char *argv[])
 {

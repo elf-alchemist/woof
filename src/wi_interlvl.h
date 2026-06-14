@@ -57,7 +57,7 @@ typedef struct interlevelcond_s
 
 typedef struct interlevelframe_s
 {
-    char *image_lump;
+    char image_lump[9];
     frametype_t type;
     int duration;
     int maxduration;
@@ -79,8 +79,8 @@ typedef struct interlevellayer_s
 
 typedef struct interlevel_s
 {
-    char *music_lump;
-    char *background_lump;
+    char music_lump[9];
+    char background_lump[9];
     interlevellayer_t *layers;
 } interlevel_t;
 

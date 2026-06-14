@@ -711,7 +711,7 @@ static void LoadBlockmap_DoomBlockmap(int lump, int bmap_size)
         blockmaplump[i] = t == -1 ? -1l : (int32_t)t & FRACMASK;
     }
 
-    I_Free(wadblockmaplump);
+    W_ReleaseLumpNum(lump);
 
     bmaporgx = IntToFixed(blockmaplump[0]);
     bmaporgy = IntToFixed(blockmaplump[1]);
@@ -740,7 +740,7 @@ static void LoadBlockmap_XBM1(int lump, int bmap_size)
         blockmaplump[i] = LONG(data[k]);
     }
 
-    I_Free(data);
+    W_ReleaseLumpNum(lump);
 
     P_SetSkipBlockStart();
 }
@@ -749,6 +749,8 @@ bmap_format_t P_LoadBlockMap(int lump)
 {
     int bmap_size = W_LumpLengthWithName(lump, "BLOCKMAP");
     bmap_format_t format = CheckBlockmapFormat(lump, bmap_size);
+
+    if (blockmaplump) I_Free(blockmaplump);
 
     switch (format)
     {

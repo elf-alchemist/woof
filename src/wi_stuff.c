@@ -41,7 +41,6 @@
 #include "w_wad.h"
 #include "wi_interlvl.h"
 #include "wi_stuff.h"
-#include "z_zone.h"
 
 #define LARGENUMBER 1994
 
@@ -385,9 +384,6 @@ static int    num_lnames;
 
 static const char *exitpic, *enterpic;
 
-#define M_ARRAY_MALLOC(size) Z_Malloc((size), PU_LEVEL, NULL)
-#define M_ARRAY_REALLOC(ptr, size) Z_Realloc((ptr), (size), PU_LEVEL, NULL)
-#define M_ARRAY_FREE(ptr) Z_Free((ptr))
 #include "m_array.h"
 
 typedef struct
@@ -557,7 +553,7 @@ static boolean DrawAnimation(void)
     if (animation->background_lump)
     {
         V_DrawPatchFullScreen(
-            V_CachePatchNameTag(animation->background_lump, PU_LEVEL));
+            V_CachePatchName(animation->background_lump));
     }
 
     wi_animationstate_t *state;
@@ -570,7 +566,7 @@ static boolean DrawAnimation(void)
             lumpnum = (W_CheckNumForName)(frame->image_lump, ns_sprites);
         }
         V_DrawPatch(state->x_pos, state->y_pos,
-                    V_CachePatchNumTag(lumpnum, PU_LEVEL));
+                    V_CachePatchNum(lumpnum));
     }
 
     return true;
@@ -718,7 +714,7 @@ void WI_slamBackground(void)
     }
 
     V_DrawPatchFullScreen(
-      V_CachePatchNameTag(W_CheckWidescreenPatch(name), PU_LEVEL));
+      V_CachePatchName(W_CheckWidescreenPatch(name)));
 }
 
 // ====================================================================
@@ -768,7 +764,7 @@ static void WI_drawLF(void)
     }
     else if (mapinfo && mapinfo->levelpic[0])
     {
-        patch_t *patch = V_CachePatchNameTag(mapinfo->levelpic, PU_LEVEL);
+        patch_t *patch = V_CachePatchName(mapinfo->levelpic);
 
         V_DrawPatch((SCREENWIDTH - SHORT(patch->width)) / 2, y, patch);
 
@@ -819,7 +815,7 @@ static void WI_drawEL(void)
     }
     else if (mapinfo && mapinfo->levelpic[0])
     {
-        patch_t *patch = V_CachePatchNameTag(mapinfo->levelpic, PU_LEVEL);
+        patch_t *patch = V_CachePatchName(mapinfo->levelpic);
 
         // If the levelpic graphics lump is not fullscreen,
         // draw it right below the "entering" graphics lump
@@ -2385,13 +2381,13 @@ static void WI_loadData(void)
         }
 
       // you are here
-      yah[0] = V_CachePatchNameTag("WIURH0", PU_LEVEL);
+      yah[0] = V_CachePatchName("WIURH0");
 
       // you are here (alt.)
-      yah[1] = V_CachePatchNameTag("WIURH1", PU_LEVEL);
+      yah[1] = V_CachePatchName("WIURH1");
 
       // splat
-      splat[0] = V_CachePatchNameTag("WISPLAT", PU_LEVEL);
+      splat[0] = V_CachePatchName("WISPLAT");
 
       if (wbs->epsd < 3)
         {
@@ -2405,7 +2401,7 @@ static void WI_loadData(void)
                     {
                       // animations
                       M_snprintf(name, sizeof(name), "WIA%d%.2d%.2d", wbs->epsd, j, i);
-                      a->p[i] = V_CachePatchNameTag(name, PU_LEVEL);
+                      a->p[i] = V_CachePatchName(name);
                     }
                   else
                     {
@@ -2421,60 +2417,60 @@ static void WI_loadData(void)
   // [FG] allow playing with the Doom v1.2 IWAD which is missing the WIMINUS lump
   if (W_CheckNumForName("WIMINUS") >= 0)
   {
-    wiminus = V_CachePatchNameTag("WIMINUS", PU_LEVEL);
+    wiminus = V_CachePatchName("WIMINUS");
   }
 
   for (i=0;i<10;i++)
     {
       // numbers 0-9
       M_snprintf(name, sizeof(name), "WINUM%d", i);
-      num[i] = V_CachePatchNameTag(name, PU_LEVEL);
+      num[i] = V_CachePatchName(name);
     }
 
   // percent sign
-  percent = V_CachePatchNameTag("WIPCNT", PU_LEVEL);
+  percent = V_CachePatchName("WIPCNT");
 
   // "finished"
-  finished = V_CachePatchNameTag("WIF", PU_LEVEL);
+  finished = V_CachePatchName("WIF");
 
   // "entering"
-  entering = V_CachePatchNameTag("WIENTER", PU_LEVEL);
+  entering = V_CachePatchName("WIENTER");
 
   // "kills"
-  kills = V_CachePatchNameTag("WIOSTK", PU_LEVEL);
+  kills = V_CachePatchName("WIOSTK");
 
   // "scrt"
-  secret = V_CachePatchNameTag("WIOSTS", PU_LEVEL);
+  secret = V_CachePatchName("WIOSTS");
 
   // "secret"
-  sp_secret = V_CachePatchNameTag("WISCRT2", PU_LEVEL);
+  sp_secret = V_CachePatchName("WISCRT2");
 
   // "items"
-  items = V_CachePatchNameTag("WIOSTI", PU_LEVEL);
+  items = V_CachePatchName("WIOSTI");
 
   // "frgs"
-  frags = V_CachePatchNameTag("WIFRGS", PU_LEVEL);
+  frags = V_CachePatchName("WIFRGS");
 
   // ":"
-  colon = V_CachePatchNameTag("WICOLON", PU_LEVEL);
+  colon = V_CachePatchName("WICOLON");
 
   // "time"
-  witime = V_CachePatchNameTag("WITIME", PU_LEVEL);
+  witime = V_CachePatchName("WITIME");
 
   // "sucks"
-  sucks = V_CachePatchNameTag("WISUCKS", PU_LEVEL);
+  sucks = V_CachePatchName("WISUCKS");
 
   // "par"
-  par = V_CachePatchNameTag("WIPAR", PU_LEVEL);
+  par = V_CachePatchName("WIPAR");
 
   // "killers" (vertical)
-  killers = V_CachePatchNameTag("WIKILRS", PU_LEVEL);
+  killers = V_CachePatchName("WIKILRS");
   
   // "victims" (horiz)
-  victims = V_CachePatchNameTag("WIVCTMS", PU_LEVEL);
+  victims = V_CachePatchName("WIVCTMS");
 
   // "total"
-  total = V_CachePatchNameTag("WIMSTT", PU_LEVEL);
+  total = V_CachePatchName("WIMSTT");
 
   // your face
   star = V_CachePatchName("STFST01");
@@ -2486,11 +2482,11 @@ static void WI_loadData(void)
   {
       // "1,2,3,4"
       M_snprintf(name, sizeof(name), "STPB%d", i);
-      p[i] = V_CachePatchNameTag(name, PU_LEVEL);
+      p[i] = V_CachePatchName(name);
 
       // "1,2,3,4"
       M_snprintf(name, sizeof(name), "WIBP%d", i + 1);
-      bp[i] = V_CachePatchNameTag(name, PU_LEVEL);
+      bp[i] = V_CachePatchName(name);
   }
 
   wi_inited = true;
@@ -2608,7 +2604,7 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
       {
           if (!animation)
           {
-              animation = Z_Calloc(1, sizeof(*animation), PU_LEVEL, NULL);
+              animation = I_Alloc(sizeof(*animation));
           }
           animation->interlevel_exiting =
               WI_ParseInterlevel(wbs->lastmapinfo->exitanim);
@@ -2625,7 +2621,7 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
       {
           if (!animation)
           {
-              animation = Z_Calloc(1, sizeof(*animation), PU_LEVEL, NULL);
+              animation = I_Alloc(sizeof(*animation));
           }
           animation->interlevel_entering =
               WI_ParseInterlevel(wbs->nextmapinfo->enteranim);

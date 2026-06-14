@@ -48,7 +48,6 @@
 #include "v_patch.h"
 #include "v_video.h" // cr_dark, cr_shaded
 #include "w_wad.h"
-#include "z_zone.h"
 
 //
 // Graphics.
@@ -241,19 +240,17 @@ static void R_GenerateComposite(int texnum)
   unsigned *colofs2 = texturecolumnofs2[texnum];
   int i = texture->patchcount;
   // killough 4/9/98: marks to identify transparent regions in merged textures
-  byte *marks = Z_Calloc(texture->width * texture->height, sizeof(*marks), PU_STATIC, 0),
+  byte *marks = I_AllocNum(texture->width * texture->height, sizeof(*marks)),
        *source;
 
   if (!block)
   {
-    block = Z_Malloc(texturecompositesize[texnum], PU_LEVEL,
-                     (void **) &texturecomposite[texnum]);
+    texturecomposite[texnum] = block = I_Alloc(texturecompositesize[texnum]);
   }
   // [FG] memory block for opaque textures
   if (!block2)
   {
-    block2 = Z_Malloc(texture->width * texture->height, PU_LEVEL,
-                      (void **) &texturecomposite2[texnum]);
+    texturecomposite2[texnum] = block2 = I_Alloc(texture->width * texture->height);
   }
   // [FG] initialize composite background to palette index 0 (usually black)
   memset(block, 0, texturecompositesize[texnum]);
@@ -335,8 +332,8 @@ static void R_GenerateComposite(int texnum)
             col = (column_t *)((byte *) col + len + 4); // next post
           }
       }
-  Z_Free(source);         // free temporary column
-  Z_Free(marks);          // free transparency marks
+  I_Free(source);         // free temporary column
+  I_Free(marks);          // free transparency marks
 }
 
 //
@@ -345,7 +342,7 @@ static void R_GenerateComposite(int texnum)
 // Rewritten by Lee Killough for performance and to fix Medusa bug
 //
 
-static void R_GenerateLookup(int texnum, int *const errors)
+static void R_GenerateLookup(int texnum)
 {
   const texture_t *texture = textures[texnum];
 
@@ -456,7 +453,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
   {
     int x = texture->width;
     int height = texture->height;
-    int csize = 0, err = 0;        // killough 10/98
+    int csize = 0;        // killough 10/98
 
     while (--x >= 0)
       {
@@ -498,13 +495,7 @@ static void R_GenerateLookup(int texnum, int *const errors)
       }
 
     texturecompositesize[texnum] = csize;
-    
-    if (err)       // killough 10/98: non-verbose output
-      {
-	I_Printf(VB_WARNING, "R_GenerateLookup: Column without a patch in texture %.8s",
-	       texture->name);
-	++*errors;
-      }
+
   }
   I_Free(count);                    // killough 4/9/98
 }
@@ -603,7 +594,6 @@ void R_InitTextures (void)
   int  maxoff, maxoff2;
   int  numtextures1, numtextures2, tx_numtextures;
   int  *directory;
-  int  errors = 0;
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
@@ -802,15 +792,9 @@ void R_InitTextures (void)
   I_Free(maptex1);
   I_Free(maptex2);
 
-  if (errors)
-    I_Error("\n\n%d errors.", errors);
-    
   // Precalculate whatever possible.
   for (i=0 ; i<numtextures ; i++)
-    R_GenerateLookup(i, &errors);
-
-  if (errors)
-    I_Error("\n\n%d errors.", errors);
+    R_GenerateLookup(i);
 
   // Create translation table for global animation.
   // killough 4/9/98: make column offsets 32-bit;
@@ -1099,7 +1083,7 @@ void R_PrecacheLevel(void)
 
   for (i = numflats; --i >= 0; )
     if (hitlist[i])
-      V_CacheFlatNumTag(firstflat + i, PU_CACHE);
+      V_CacheFlatNum(firstflat + i);
 
   // Precache textures.
 

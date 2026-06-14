@@ -61,7 +61,6 @@
 #include "v_patch.h"
 #include "v_video.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 #define MAXVISPLANES 128    /* must be a power of 2 */
 
@@ -598,8 +597,7 @@ static void do_draw_plane(visplane_t *pl)
         }
         else
         {
-            ds_source = V_CacheFlatNumTag(firstflat + flattranslation[pl->picnum],
-                                       PU_STATIC);
+            ds_source = V_CacheFlatNum(firstflat + flattranslation[pl->picnum]);
             ds_brightmap = R_BrightmapForFlatNum(flattranslation[pl->picnum]);
         }
     }
@@ -661,7 +659,7 @@ static void do_draw_plane(visplane_t *pl)
 
     if (!swirling)
     {
-        Z_ChangeTag(ds_source, PU_CACHE);
+        // W_ReleaseLumpNum(flattranslation[pl->picnum]);
     }
 }
 

@@ -43,7 +43,6 @@
 #include "v_trans.h"
 #include "v_video.h"
 #include "w_wad.h" // needed for color translation lump lookup
-#include "z_zone.h"
 
 pixel_t *I_VideoBuffer = NULL;
 
@@ -1046,8 +1045,7 @@ void V_PutBlock(int x, int y, int width, int height, pixel_t *src)
 
 void V_DrawBackground(const char *patchname)
 {
-    const byte *src =
-        V_CacheFlatNumTag(firstflat + R_FlatNumForName(patchname), PU_CACHE);
+    const byte *src = V_CacheFlatNum(firstflat + R_FlatNumForName(patchname));
 
     V_TileBlock64(0, video.unscaledw, SCREENHEIGHT, src);
 }

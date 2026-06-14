@@ -220,7 +220,6 @@ byte *R_NormalTranMap(int alpha, boolean force)
             buffer = GenerateTranmapData(alpha / 100.0, 1.0 - (alpha / 100.0));
             M_WriteFile(filename, buffer, tranmap_lump_length);
         }
-        free(filename);
 
         normal_tranmap[alpha] = buffer;
 

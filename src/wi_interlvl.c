@@ -16,11 +16,8 @@
 #include "doomdef.h"
 #include "doomtype.h"
 #include "i_printf.h"
-#include "z_zone.h"
+#include "m_misc.h"
 
-#define M_ARRAY_MALLOC(size) Z_Malloc(size, PU_LEVEL, NULL)
-#define M_ARRAY_REALLOC(ptr, size) Z_Realloc(ptr, size, PU_LEVEL, NULL)
-#define M_ARRAY_FREE(ptr) Z_Free(ptr)
 #include "m_array.h"
 
 #include "m_json.h"
@@ -51,7 +48,7 @@ static boolean ParseFrame(json_t *json, interlevelframe_t *out)
     {
         return false;
     }
-    out->image_lump = Z_StrDup(JS_GetString(image_lump), PU_LEVEL);
+    M_CopyLumpName(out->image_lump, JS_GetString(image_lump));
 
     json_t *type = JS_GetObject(json, "type");
     if (!JS_IsNumber(type))
@@ -175,10 +172,10 @@ interlevel_t *WI_ParseInterlevel(const char *lumpname)
         return NULL;
     }
 
-    interlevel_t *out = Z_Calloc(1, sizeof(*out), PU_LEVEL, NULL);
+    interlevel_t *out = I_Alloc(sizeof(interlevel_t));
 
-    out->music_lump = Z_StrDup(JS_GetString(music), PU_LEVEL);
-    out->background_lump = Z_StrDup(JS_GetString(backgroundimage), PU_LEVEL);
+    M_CopyLumpName(out->music_lump, JS_GetString(music));
+    M_CopyLumpName(out->background_lump, JS_GetString(backgroundimage));
 
     json_t *js_layers = JS_GetObject(data, "layers");
     json_t *js_layer = NULL;

@@ -194,7 +194,6 @@ set(WOOF_SOURCES
     wi_stuff.c             wi_stuff.h
     wi_interlvl.c          wi_interlvl.h
     ws_stuff.c             ws_stuff.h
-    z_zone.c               z_zone.h
 )
 
 # Standard target definition
@@ -316,7 +315,6 @@ set(SETUP_SOURCES
     net_query.c             net_query.h
     net_netlib.c            net_netlib.h
     net_structrw.c          net_structrw.h
-    z_zone.c                z_zone.h
 )
 
 if(WIN32)

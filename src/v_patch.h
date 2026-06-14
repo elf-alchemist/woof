@@ -18,20 +18,6 @@
 
 #include "doomtype.h"
 #include "w_wad.h"
-#include "z_zone.h"
-
-struct patch_s *V_LinearToTransPatchTag(const byte *data, int width, int height,
-                                        int *output_size, int color_key,
-                                        pu_tag tag, void **user);
-
-struct patch_s *V_CachePatchNumTag(int lump, pu_tag tag);
-
-inline static struct patch_s *V_CachePatchNameTag(const char *name, pu_tag tag)
-{
-    return V_CachePatchNumTag(W_GetNumForName(name), tag);
-}
-
-void *V_CacheFlatNumTag(int lump, pu_tag tag);
 
 int V_LumpSize(int lump);
 
@@ -48,5 +34,7 @@ inline static struct patch_s *V_CachePatchName(const char *name)
 {
     return V_CachePatchNum(W_GetNumForName(name));
 }
+
+void *V_CacheFlatNum(int lump);
 
 #endif

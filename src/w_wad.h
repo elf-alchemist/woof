@@ -23,7 +23,6 @@
 #include <stdio.h>
 
 #include "doomtype.h"
-#include "z_zone.h"
 
 //
 // TYPES
@@ -141,16 +140,13 @@ int     W_GetNumForName (const char* name);
 int     W_LumpLength (int lump);
 void    W_ReadLump (int lump, void *dest);
 void    W_ReadLumpSize(int lump, void *dest, int size);
-void    *W_CacheLumpNumTag(int lump, pu_tag tag);
-
-#define W_CacheLumpNameTag(name,tag) W_CacheLumpNumTag (W_GetNumForName(name),(tag))
-#define W_CacheSpriteName(name,tag) W_CacheLumpNumTag ((W_CheckNumForName)(name, ns_sprites),(tag))
 
 void *W_CacheLumpNum(int lumpnum);
 void *W_CacheLumpName(const char *lumpname, namespace_t ns);
 void W_ReleaseLumpNum(int lumpnum);
 void W_ReleaseLumpName(const char *lumpname, namespace_t ns);
 
+#define W_CacheSpriteName(name) W_CacheLumpNum((W_CheckNumForName)(name, ns_sprites))
 const char *W_CheckWidescreenPatch(const char *lump);
 
 void W_ExtractFileBase(const char *, char *);       // killough

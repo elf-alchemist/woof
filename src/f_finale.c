@@ -31,7 +31,6 @@
 #include "i_printf.h"
 #include "i_system.h"
 #include "info.h"
-#include "m_arena.h"
 #include "m_misc.h" // [FG] M_StringDuplicate()
 #include "m_swap.h"
 #include "r_defs.h"
@@ -44,7 +43,6 @@
 #include "v_video.h"
 #include "w_wad.h"
 #include "wi_stuff.h"
-#include "z_zone.h"
 
 // Stage of animation:
 //  0 = text, 1 = art screen, 2 = character cast
@@ -85,6 +83,8 @@ static boolean mapinfo_finale;
 //
 // ID24 EndFinale extensions
 //
+
+#include "m_array.h"
 
 #include "m_json.h"
 
@@ -172,7 +172,7 @@ void ParseEndFinale_CastAnims(json_t *js_castanim_entry, cast_anim_t *out,
     json_t *js_alive_frame_list = JS_GetObject(js_castanim_entry, "aliveframes");
     json_t *js_alive_frame = NULL;
     out->aliveframescount = JS_GetArraySize(js_alive_frame_list);
-    out->aliveframes = arena_alloc_num(inter_arena, cast_frame_t, out->aliveframescount);
+    array_resize(out->aliveframes, out->aliveframescount);
     int alive_index = 0;
     JS_ArrayForEach(js_alive_frame, js_alive_frame_list)
     {
@@ -183,7 +183,7 @@ void ParseEndFinale_CastAnims(json_t *js_castanim_entry, cast_anim_t *out,
     json_t *js_death_frame = NULL;
     json_t *js_death_frame_list = JS_GetObject(js_castanim_entry, "deathframes");
     out->deathframescount = JS_GetArraySize(js_death_frame_list);
-    out->deathframes = arena_alloc_num(inter_arena, cast_frame_t, out->deathframescount);
+    array_resize(out->deathframes, out->deathframescount);
     int death_index = 0;
     JS_ArrayForEach(js_death_frame, js_death_frame_list)
     {
@@ -199,7 +199,7 @@ static void ParseEndFinale_CastRollCall(json_t *js_castrollcall,
 
     json_t *js_castanim_entry = NULL;
     out->cast_animscount = JS_GetArraySize(js_castanim_list);
-    out->cast_anims = arena_alloc_num(inter_arena, cast_anim_t, out->cast_animscount);
+    array_resize(out->cast_anims, out->cast_animscount);
     int index = 0;
     JS_ArrayForEach(js_castanim_entry, js_castanim_list)
     {
@@ -251,7 +251,7 @@ static end_finale_t *F_ParseEndFinale(const char *lump)
     }
 
     // Now, actually parse it
-    end_finale_t *out = Z_Calloc(1, sizeof(end_finale_t), PU_LEVEL, NULL);
+    end_finale_t *out = I_Alloc(sizeof(end_finale_t));
     out->type = JS_GetIntegerValue(data, "type");
     out->donextmap = JS_GetBooleanValue(data, "donextmap");
     out->musicloops = JS_GetBooleanValue(data, "musicloops");
@@ -263,7 +263,7 @@ static end_finale_t *F_ParseEndFinale(const char *lump)
         I_Printf(VB_WARNING,
                  "EndFinale: invalid music or background fields on lump '%s'",
                  lump);
-        Z_Free(out);
+        I_Free(out);
         JS_Close(lump);
         return NULL;
     }
@@ -289,7 +289,7 @@ static end_finale_t *F_ParseEndFinale(const char *lump)
                 VB_WARNING,
                 "EndFinale: unknown entry of type '%d' on lump %s, skipping",
                 out->type, lump);
-            Z_Free(out);
+            I_Free(out);
             JS_Close(lump);
             return NULL;
     }
@@ -472,8 +472,8 @@ static boolean MapInfo_Drawer(void)
             else if (gamemapinfo->endpic[0])
             {
                 V_DrawPatchFullScreen(
-                    V_CachePatchNameTag(
-                        W_CheckWidescreenPatch(gamemapinfo->endpic), PU_LEVEL));
+                    V_CachePatchName(
+                        W_CheckWidescreenPatch(gamemapinfo->endpic)));
             }
             break;
         case FINALE_STAGE_CAST:
@@ -714,7 +714,7 @@ static void F_TextWrite(void)
   if (gamemapinfo && W_CheckNumForName(finaleflat) != -1 &&
       (W_CheckNumForName)(finaleflat, ns_flats) == -1)
   {
-    V_DrawPatchFullScreen(V_CachePatchNameTag(finaleflat, PU_LEVEL));
+    V_DrawPatchFullScreen(V_CachePatchName(finaleflat));
   }
   else if ((W_CheckNumForName)(finaleflat, ns_flats) != -1)
   {
@@ -804,36 +804,31 @@ static void EndFinaleCast_CalleeDead(void)
 static void EndFinaleCast_SetupCall(void)
 {
     S_ChangeMusInfoMusic(W_GetNumForName(endfinale->music), endfinale->musicloops);
-    W_CacheLumpNameTag(endfinale->background, PU_LEVEL);
+    W_CacheLumpName(endfinale->background, ns_global);
     ef_callee_count = endfinale->cast_animscount;
 
-    cast_anim_t *callee = NULL;
-    for(int i = 0; i < ef_callee_count; i++)
+    // cast_anim_t *callee = NULL;
+    array_foreach_type(callee, endfinale->cast_anims, cast_anim_t)
     {
-        callee = &endfinale->cast_anims[i];
-        cast_frame_t *frame;
-
-        for(int j = 0; j < callee->aliveframescount; j++)
+        array_foreach_type(frame, callee->aliveframes, cast_frame_t)
         {
-            frame = &callee->aliveframes[j];
-            W_CacheSpriteName(frame->frame_lump, PU_LEVEL);
+            W_CacheSpriteName(frame->frame_lump);
             frame->tranmap = (W_CheckNumForName(frame->tran_lump) >= 0)
-                           ? W_CacheLumpNameTag(frame->tran_lump, PU_LEVEL)
+                           ? W_CacheLumpName(frame->tran_lump, ns_global)
                            : NULL;
             frame->xlat = (W_CheckNumForName(frame->xlat_lump) >= 0)
-                        ? W_CacheLumpNameTag(frame->xlat_lump, PU_LEVEL)
+                        ? W_CacheLumpName(frame->xlat_lump, ns_global)
                         : NULL;
         }
 
-        for(int j = 0; j < callee->deathframescount; j++)
+        array_foreach_type(frame, callee->deathframes, cast_frame_t)
         {
-            frame = &callee->deathframes[j];
-            W_CacheSpriteName(frame->frame_lump, PU_LEVEL);
+            W_CacheSpriteName(frame->frame_lump);
             frame->tranmap = (W_CheckNumForName(frame->tran_lump) >= 0)
-                           ? W_CacheLumpNameTag(frame->tran_lump, PU_LEVEL)
+                           ? W_CacheLumpName(frame->tran_lump, ns_global)
                            : NULL;
             frame->xlat = (W_CheckNumForName(frame->xlat_lump) >= 0)
-                        ? W_CacheLumpNameTag(frame->xlat_lump, PU_LEVEL)
+                        ? W_CacheLumpName(frame->xlat_lump, ns_global)
                         : NULL;
         }
     }
@@ -900,9 +895,9 @@ static void F_CastPrint(const char *text);
 
 void EndFinaleCast_Drawer(void)
 {
-    V_DrawPatchFullScreen(W_CacheLumpNameTag(endfinale->background, PU_LEVEL));
+    V_DrawPatchFullScreen(W_CacheLumpName(endfinale->background, ns_global));
     F_CastPrint(ef_current_callee->name);
-    patch_t *frame = W_CacheSpriteName(ef_current_frame->frame_lump, PU_LEVEL);
+    patch_t *frame = W_CacheSpriteName(ef_current_frame->frame_lump);
     const byte *tranmap = ef_current_frame->tranmap;
     const byte *xlat = ef_current_frame->xlat;
     boolean flip = ef_current_frame->flipped;
@@ -1186,7 +1181,7 @@ static void F_CastDrawer(void)
   // erase the entire screen to a background
   // Ty 03/30/98 bg texture extern
   V_DrawPatchFullScreen(
-    V_CachePatchNameTag(W_CheckWidescreenPatch(DEH_String(BGCASTCALL)), PU_LEVEL));
+    V_CachePatchName(W_CheckWidescreenPatch(DEH_String(BGCASTCALL))));
 
   F_CastPrint (castorder[castnum].name);
     
@@ -1196,7 +1191,7 @@ static void F_CastDrawer(void)
   lump = sprframe->lump[0];
   flip = (boolean)sprframe->flip[0];
                         
-  patch = V_CachePatchNumTag(lump+firstspritelump, PU_LEVEL);
+  patch = V_CachePatchNum(lump+firstspritelump);
   V_DrawPatchCastCall(patch, NULL, NULL, flip);
 }
 
@@ -1212,8 +1207,8 @@ static void F_BunnyScroll(void)
   int         stage;
   static int  laststage;
 
-  p1 = V_CachePatchNameTag(W_CheckWidescreenPatch("PFUB1"), PU_LEVEL);
-  p2 = V_CachePatchNameTag(W_CheckWidescreenPatch("PFUB2"), PU_LEVEL);
+  p1 = V_CachePatchName(W_CheckWidescreenPatch("PFUB1"));
+  p2 = V_CachePatchName(W_CheckWidescreenPatch("PFUB2"));
 
   scrolled = 320 - (finalecount-230)/2;
 
@@ -1253,7 +1248,7 @@ static void F_BunnyScroll(void)
   {
     V_DrawPatch ((SCREENWIDTH-13*8)/2,
                  (SCREENHEIGHT-8*8)/2,
-                 V_CachePatchNameTag("END0", PU_LEVEL));
+                 V_CachePatchName("END0"));
     laststage = 0;
     return;
   }
@@ -1270,7 +1265,7 @@ static void F_BunnyScroll(void)
   M_snprintf(name, sizeof(name), "END%i", stage);
   V_DrawPatch ((SCREENWIDTH-13*8)/2,
                (SCREENHEIGHT-8*8)/2,
-               V_CachePatchNameTag(name, PU_LEVEL));
+               V_CachePatchName(name));
 }
 
 
@@ -1299,21 +1294,21 @@ void F_Drawer (void)
       case 1:
            if ( (gamemode == retail && !pwad_help2) || gamemode == commercial )
              V_DrawPatchFullScreen(
-              V_CachePatchNameTag(W_CheckWidescreenPatch("CREDIT"), PU_LEVEL));
+              V_CachePatchName(W_CheckWidescreenPatch("CREDIT")));
            else
              V_DrawPatchFullScreen(
-              V_CachePatchNameTag(W_CheckWidescreenPatch("HELP2"), PU_LEVEL));
+              V_CachePatchName(W_CheckWidescreenPatch("HELP2")));
            break;
       case 2:
            V_DrawPatchFullScreen(
-            V_CachePatchNameTag(W_CheckWidescreenPatch("VICTORY2"), PU_LEVEL));
+            V_CachePatchName(W_CheckWidescreenPatch("VICTORY2")));
            break;
       case 3:
            F_BunnyScroll();
            break;
       case 4:
            V_DrawPatchFullScreen(
-            V_CachePatchNameTag(W_CheckWidescreenPatch("ENDPIC"), PU_LEVEL));
+            V_CachePatchName(W_CheckWidescreenPatch("ENDPIC")));
            break;
     }
   }

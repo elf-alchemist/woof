@@ -113,15 +113,7 @@ static int ParseProperty(scanner_t *s)
     if (idx < 0)
     {
         SC_Error(s, "brightmap '%s' not found", SC_GetString(s));
-<<<<<<< HEAD
-        I_Free(name);
-        return false;
-||||||| 4bca4e8d
-        free(name);
-        return false;
-=======
         return -1;
->>>>>>> master
     }
 
     int game = DOOM1AND2;
@@ -157,15 +149,7 @@ static int ParseProperty(scanner_t *s)
     if ((gamemission == doom && game == DOOM2ONLY)
         || (gamemission == doom2 && game == DOOM1ONLY))
     {
-<<<<<<< HEAD
-        I_Free(name);
-        return false;
-||||||| 4bca4e8d
-        free(name);
-        return false;
-=======
         return -1;
->>>>>>> master
     }
 
     return idx;

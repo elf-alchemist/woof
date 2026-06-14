@@ -60,7 +60,6 @@
 #include "s_sound.h"
 #include "tables.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 statenum_t *seenstate_tab = NULL;
 
@@ -919,14 +918,17 @@ boolean P_LoadReject(int lumpnum, int totallines)
 
     if (lumplen >= minlength)
     {
-        rejectmatrix = W_CacheLumpNumTag(lumpnum, PU_LEVEL);
+        byte *data = W_CacheLumpNum(lumpnum);
+        rejectmatrix = I_Alloc(lumplen);
+        memcpy(rejectmatrix, data, lumplen);
+        W_ReleaseLumpNum(lumpnum);
         ret = false;
     }
     else
     {
         unsigned int padvalue;
 
-        rejectmatrix = Z_Malloc(minlength, PU_LEVEL, (void **) &rejectmatrix);
+        rejectmatrix = I_Alloc(minlength);
         W_ReadLumpSize(lumpnum, rejectmatrix, minlength);
 
         //!
@@ -980,6 +982,20 @@ boolean P_LoadReject(int lumpnum, int totallines)
     }
 
     return ret;
+}
+
+static void PreSetupUnLoad(void)
+{
+    // Not critial enough for
+    if (nodes) I_Free(nodes);
+    numnodes = 0;
+
+    // Can easily get large enough to overwhelm `world_arena`
+    if (rejectmatrix) I_Free(rejectmatrix);
+
+    M_ArenaClear(world_arena);
+    M_ArenaClear(thinkers_arena);
+    M_ArenaClear(msecnodes_arena);
 }
 
 static void LoadDoomFormat(int lumpnum, bspformat_t bspformat,
@@ -1086,12 +1102,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // Make sure all sounds are stopped before Z_FreeTags.
   S_Start();
 
-  Z_FreeTag(PU_LEVEL);
-  M_ArenaClear(world_arena);
-  M_ArenaClear(thinkers_arena);
-  M_ArenaClear(msecnodes_arena);
-
-  Z_FreeTag(PU_CACHE);
+  PreSetupUnLoad();
 
   P_InitThinkers();
 

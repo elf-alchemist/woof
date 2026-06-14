@@ -48,6 +48,7 @@
 #include "v_flextran.h"
 #include "v_patch.h"
 #include "v_video.h"
+#include "w_wad.h"
 #include "ws_stuff.h"
 
 //jff 1/7/98 default automap colors added
@@ -585,6 +586,24 @@ static void AM_loadPics(void)
 }
 
 //
+// AM_unloadPics()
+//
+// Makes the mark patches purgable
+//
+// Passed nothing, returns nothing
+//
+static void AM_unloadPics(void)
+{
+  char namebuf[9];
+
+  for (int i = 0; i < 10; i++)
+  {
+    M_snprintf(namebuf, sizeof(namebuf), "AMMNUM%d", i);
+    W_ReleaseLumpName(namebuf, ns_global);
+  }
+}
+
+//
 // AM_clearMarks()
 //
 // Sets the number of marks to 0, thereby clearing them from the display
@@ -717,6 +736,7 @@ void AM_Stop (void)
 {
   memset(buttons_state, 0, sizeof(buttons_state));
 
+  AM_unloadPics();
   automapactive = false;
   stopped = true;
 }
