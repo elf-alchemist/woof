@@ -38,12 +38,14 @@
 #include "d_main.h"
 #include "d_player.h"
 #include "d_ticcmd.h"
+#include "decl_main.h"
 #include "deh_main.h"
 #include "deh_strings.h"
 #include "deh_thing.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
+#include "dsdh_main.h"
 #include "f_finale.h"
 #include "f_wipe.h"
 #include "g_compatibility.h"
@@ -69,14 +71,13 @@
 #include "net_client.h"
 #include "net_dedicated.h"
 #include "deh_misc.h" // deh_max_health_bonus
+#include "p_ambient.h"
 #include "p_setup.h"
-#include "r_bmaps.h"
 #include "r_defs.h"
 #include "r_draw.h"
 #include "r_main.h"
 #include "r_state.h"
 #include "r_voxel.h"
-#include "s_sndinfo.h"
 #include "s_sound.h"
 #include "s_trakinfo.h"
 #include "st_stuff.h"
@@ -271,9 +272,6 @@ void D_Display (void)
       else if (gamestate == GS_LEVEL)
         I_DynamicResolution();
     }
-
-  if (setsmoothlight)
-    R_SmoothLight();
 
   if (setsizeneeded)                // change the view size if needed
     {
@@ -1081,6 +1079,7 @@ static int GuessFileType(const char *name)
         iwad_found = true;
     }
     else if (M_StringEndsWith(lower, ".wad") ||
+             M_StringEndsWith(lower, ".pk3") ||
              M_StringEndsWith(lower, ".zip"))
     {
         ret = FILETYPE_PWAD;
@@ -1245,8 +1244,6 @@ static void AutoLoadWADs(const char *path)
     W_AddPath(path);
 }
 
-static int firstpwad = 1;
-
 static void LoadIWadBase(void)
 {
     GameMode_t local_gamemode;
@@ -1291,10 +1288,8 @@ static void LoadIWadBase(void)
     {
         W_AddBaseDir("rekkr-all");
     }
-    for (int i = 0; i < firstpwad; i++)
-    {
-        W_AddBaseDir(M_BaseName(wadfiles[i]));
-    }
+
+    W_AddBaseDir(M_BaseName(wadfiles[0]));
 }
 
 static void AutoloadIWadDir(void (*AutoLoadFunc)(const char *path))
@@ -1303,80 +1298,77 @@ static void AutoloadIWadDir(void (*AutoLoadFunc)(const char *path))
     GameMission_t local_gamemission;
     D_GetModeAndMissionByIWADName(M_BaseName(wadfiles[0]), &local_gamemode, &local_gamemission);
 
-    for (int i = 0; i < firstpwad; i++)
+    for (int j = 0; j < array_size(autoload_paths); ++j)
     {
-        for (int j = 0; j < array_size(autoload_paths); ++j)
+        char *dir = GetAutoloadDir(autoload_paths[j], "all-all", true);
+        AutoLoadFunc(dir);
+        free(dir);
+
+        // common auto-loaded files for all Doom flavors
+        if (local_gamemission != none)
         {
-            char *dir = GetAutoloadDir(autoload_paths[j], "all-all", true);
-            AutoLoadFunc(dir);
-            I_Free(dir);
-
-            // common auto-loaded files for all Doom flavors
-            if (local_gamemission != none)
+            if (local_gamemission < pack_chex)
             {
-                if (local_gamemission < pack_chex)
-                {
-                    dir = GetAutoloadDir(autoload_paths[j], "doom-all", true);
-                    AutoLoadFunc(dir);
-                    I_Free(dir);
-                }
-                else if (local_gamemission == pack_chex || local_gamemission == pack_chex3v)
-                {
-                    dir = GetAutoloadDir(autoload_paths[j], "chex-all", true);
-                    AutoLoadFunc(dir);
-                    I_Free(dir);
-                }
+                dir = GetAutoloadDir(autoload_paths[j], "doom-all", true);
+                AutoLoadFunc(dir);
+                I_Free(dir);
+            }
+            else if (local_gamemission == pack_chex || local_gamemission == pack_chex3v)
+            {
+                dir = GetAutoloadDir(autoload_paths[j], "chex-all", true);
+                AutoLoadFunc(dir);
+                I_Free(dir);
+            }
 
-                if (local_gamemission == doom)
+            if (local_gamemission == doom)
+            {
+                dir = GetAutoloadDir(autoload_paths[j], "doom1-all", true);
+                AutoLoadFunc(dir);
+                I_Free(dir);
+            }
+            else if (local_gamemission >= doom2
+                     && local_gamemission <= pack_plut)
+            {
+                dir = GetAutoloadDir(autoload_paths[j], "doom2-all", true);
+                AutoLoadFunc(dir);
+                I_Free(dir);
+            }
+            else if (local_gamemission == pack_freedoom)
+            {
+                dir = GetAutoloadDir(autoload_paths[j], "freedoom-all", true);
+                AutoLoadFunc(dir);
+                I_Free(dir);
+                if (local_gamemode == commercial)
                 {
-                    dir = GetAutoloadDir(autoload_paths[j], "doom1-all", true);
+                    dir = GetAutoloadDir(autoload_paths[j], "freedoom2-all", true);
                     AutoLoadFunc(dir);
                     I_Free(dir);
                 }
-                else if (local_gamemission >= doom2
-                         && local_gamemission <= pack_plut)
+                else
                 {
-                    dir = GetAutoloadDir(autoload_paths[j], "doom2-all", true);
-                    AutoLoadFunc(dir);
-                    I_Free(dir);
-                }
-                else if (local_gamemission == pack_freedoom)
-                {
-                    dir = GetAutoloadDir(autoload_paths[j], "freedoom-all", true);
-                    AutoLoadFunc(dir);
-                    I_Free(dir);
-                    if (local_gamemode == commercial)
-                    {
-                        dir = GetAutoloadDir(autoload_paths[j], "freedoom2-all", true);
-                        AutoLoadFunc(dir);
-                        I_Free(dir);
-                    }
-                    else
-                    {
-                        dir = GetAutoloadDir(autoload_paths[j], "freedoom1-all", true);
-                        AutoLoadFunc(dir);
-                        I_Free(dir);
-                    }
-                }
-                else if (local_gamemission == pack_rekkr)
-                {
-                    dir = GetAutoloadDir(autoload_paths[j], "rekkr-all", true);
+                    dir = GetAutoloadDir(autoload_paths[j], "freedoom1-all", true);
                     AutoLoadFunc(dir);
                     I_Free(dir);
                 }
             }
-
-            // auto-loaded files per IWAD
-            dir = GetAutoloadDir(autoload_paths[j], M_BaseName(wadfiles[i]), true);
-            AutoLoadFunc(dir);
-            I_Free(dir);
+            else if (local_gamemission == pack_rekkr)
+            {
+                dir = GetAutoloadDir(autoload_paths[j], "rekkr-all", true);
+                AutoLoadFunc(dir);
+                I_Free(dir);
+            }
         }
+
+        // auto-loaded files per IWAD
+        dir = GetAutoloadDir(autoload_paths[j], M_BaseName(wadfiles[0]), true);
+        AutoLoadFunc(dir);
+        I_Free(dir);
     }
 }
 
 static void LoadPWadBase(void)
 {
-    for (int i = firstpwad; i < array_size(wadfiles); ++i)
+    for (int i = 1; i < array_size(wadfiles); ++i)
     {
         W_AddBaseDir(wadfiles[i]);
     }
@@ -1384,7 +1376,7 @@ static void LoadPWadBase(void)
 
 static void AutoloadPWadDir(void (*AutoLoadFunc)(const char *path))
 {
-    for (int i = firstpwad; i < array_size(wadfiles); ++i)
+    for (int i = 1; i < array_size(wadfiles); ++i)
     {
         for (int j = 0; j < array_size(autoload_paths); ++j)
         {
@@ -1654,26 +1646,10 @@ void D_DoomMain(void)
 
   IdentifyVersion();
 
-  //!
-  // @category mod
-  //
-  // Disable auto-loading of extars.wad file.
-  //
-
-  if (gamemission < pack_chex && !M_ParmExists("-noextras"))
-  {
-      char *path = D_FindWADByName("extras.wad");
-      if (path)
-      {
-          D_AddFile(path);
-          firstpwad = array_size(wadfiles);
-      }
-  }
-
   // [FG] emulate a specific version of Doom
   InitGameVersion();
 
-  DEH_InitTables();
+  DSDH_Init();
 
   modifiedgame = false;
 
@@ -2126,7 +2102,12 @@ void D_DoomMain(void)
   // End DeHackEd Loading
   //
 
-  W_ProcessInWads("BRGHTMPS", R_ParseBrightmaps, PROCESS_PWAD);
+  W_ProcessInWads("DECLARE", DECL_Parse, PROCESS_IWAD | PROCESS_PWAD);
+
+  DECL_Install();
+
+  // Ambient
+  P_InitAmbientSoundMobjInfo();
 
   // Moved after WAD initialization because we are checking the COMPLVL lump
   G_ReloadDefaults(false); // killough 3/4/98: set defaults just loaded.
@@ -2204,8 +2185,6 @@ void D_DoomMain(void)
 
   // Allows PWAD HELP2 screen for DOOM 1 wads (using Ultimate Doom IWAD).
   pwad_help2 = gamemode == retail && W_IsWADLump(W_CheckNumForName("HELP2"));
-
-  W_ProcessInWads("SNDINFO", S_ParseSndInfo, PROCESS_IWAD | PROCESS_PWAD);
 
   W_ProcessInWads("TRAKINFO", S_ParseTrakInfo, PROCESS_IWAD | PROCESS_PWAD);
   D_SetupDemoLoop();
@@ -2484,7 +2463,7 @@ void D_BindMiscVariables(void)
   BIND_BOOL_GENERAL(quit_sound, false, "Play quit sound");
   BIND_NUM_GENERAL(show_endoom, ENDOOM_OFF, ENDOOM_OFF, ENDOOM_ALWAYS,
     "Show ENDOOM screen (0 = Off; 1 = PWAD Only; 2 = Always)");
-  BIND_BOOL_GENERAL(demobar, false, "Show demo progress bar");
+  BIND_BOOL_GENERAL(demobar, true, "Show demo progress bar");
   BIND_NUM_GENERAL(screen_melt, wipe_Melt, wipe_None, wipe_Fizzle,
     "Screen wipe effect (0 = None; 1 = Melt; 2 = Crossfade; 3 = Fizzlefade)");
   BIND_NUM_GENERAL(palette_changes, PAL_CHANGE_ON, PAL_CHANGE_OFF, PAL_CHANGE_REDUCED,

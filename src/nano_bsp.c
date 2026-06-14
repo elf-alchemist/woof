@@ -32,7 +32,7 @@
 #include "m_arena.h"
 #include "m_bbox.h"
 #include "m_fixed.h"
-#include "p_extnodes.h"
+#include "p_bsp.h"
 #include "r_defs.h"
 #include "r_main.h"
 #include "r_state.h"
@@ -778,9 +778,9 @@ void BSP_BuildNodes (void)
 	BSP_CountStuff (root);
 
 	// allocate the global arrays
-	nodes      = arena_calloc_num(bsp_arena, node_t, numnodes);
-	subsectors = arena_calloc_num(world_arena, subsector_t, numsubsectors);
-	segs       = arena_calloc_num(world_arena, seg_t, numsegs);
+	nodes      = arena_alloc_num(bsp_arena, node_t, numnodes);
+	subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
+	segs       = arena_alloc_num(world_arena, seg_t, numsegs);
 
 	nano_seg_index = 0;
 

@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <time.h>
 
 #include "doomdef.h"
@@ -26,6 +25,7 @@
 #include "doomtype.h"
 #include "i_system.h"
 #include "m_fixed.h"
+#include "m_misc.h"
 #include "m_io.h"
 #include "r_main.h"
 #include "v_video.h"
@@ -90,9 +90,9 @@ boolean MN_ReadSnapshot(int i, FILE *fp)
 
 void MN_ReadSavegameTime(int i, char *name)
 {
-    struct stat st;
+    time_t mtime = (time_t)M_FileMTime(name);
 
-    if (M_stat(name, &st) == -1)
+    if (mtime == 0)
     {
         savegametimes[i][0] = '\0';
     }
@@ -104,7 +104,7 @@ void MN_ReadSavegameTime(int i, char *name)
 #  pragma GCC diagnostic ignored "-Wformat-y2k"
 #endif
         strftime(savegametimes[i], sizeof(savegametimes[i]), "%x %X",
-                 localtime(&st.st_mtime));
+                 localtime(&mtime));
 #if defined(__GNUC__)
 #  pragma GCC diagnostic pop
 #endif

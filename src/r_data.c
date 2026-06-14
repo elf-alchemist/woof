@@ -123,6 +123,37 @@ int       *flatterrain;
 int       *texturetranslation;
 const byte **texturebrightmap; // [crispy] brightmaps
 
+// Really complex printing shit...
+static void M_ProgressBarStart(const int item_count, const char *msg)
+{
+    const int loop_count = (item_count + 255) / 128;
+    I_Printf(VB_INFO, " %s: ", msg);
+
+    I_PutChar(VB_INFO, '[');
+    for (int i = 0; i <= loop_count; i++)
+    {
+        I_PutChar(VB_INFO, ' ');
+    }
+    I_PutChar(VB_INFO, ']');
+
+    for (int i = 0; i <= loop_count; i++)
+    {
+        I_PutChar(VB_INFO, '\x8');
+    }
+}
+
+static void M_ProgressBarMove(const int item_current)
+{
+    if (!(item_current & 127))
+    {
+        I_PutChar(VB_INFO, '.');
+    }
+}
+
+static void M_ProgressBarEnd(void)
+{
+    I_PutChar(VB_INFO, '\n');
+}
 
 // needed for pre-rendering
 fixed_t   *spritewidth, *spriteoffset, *spritetopoffset;
@@ -200,8 +231,8 @@ static void R_DrawColumnInCache(const column_t *patch, byte *cache,
 
 static void R_GenerateComposite(int texnum)
 {
-  byte *block = Z_Malloc(texturecompositesize[texnum], PU_STATIC,
-                         (void **) &texturecomposite[texnum]);
+  byte *block = texturecomposite[texnum],
+       *block2 = texturecomposite2[texnum];
   texture_t *texture = textures[texnum];
   // Composite the columns together.
   texpatch_t *patch = texture->patches;
@@ -210,12 +241,20 @@ static void R_GenerateComposite(int texnum)
   unsigned *colofs2 = texturecolumnofs2[texnum];
   int i = texture->patchcount;
   // killough 4/9/98: marks to identify transparent regions in merged textures
-  byte *marks = I_Calloc(texture->width, texture->height);
-  byte *source;
+  byte *marks = Z_Calloc(texture->width * texture->height, sizeof(*marks), PU_STATIC, 0),
+       *source;
 
+  if (!block)
+  {
+    block = Z_Malloc(texturecompositesize[texnum], PU_LEVEL,
+                     (void **) &texturecomposite[texnum]);
+  }
   // [FG] memory block for opaque textures
-  byte *block2 = Z_Malloc(texture->width * texture->height, PU_STATIC,
-                          (void **) &texturecomposite2[texnum]);
+  if (!block2)
+  {
+    block2 = Z_Malloc(texture->width * texture->height, PU_LEVEL,
+                      (void **) &texturecomposite2[texnum]);
+  }
   // [FG] initialize composite background to palette index 0 (usually black)
   memset(block, 0, texturecompositesize[texnum]);
 
@@ -296,14 +335,8 @@ static void R_GenerateComposite(int texnum)
             col = (column_t *)((byte *) col + len + 4); // next post
           }
       }
-  I_Free(source);         // free temporary column
-  I_Free(marks);          // free transparency marks
-
-  // Now that the texture has been built in column cache,
-  // it is purgable from zone memory.
-
-  Z_ChangeTag(block, PU_CACHE);
-  Z_ChangeTag(block2, PU_CACHE);
+  Z_Free(source);         // free temporary column
+  Z_Free(marks);          // free transparency marks
 }
 
 //
@@ -853,10 +886,10 @@ void R_InitSpriteLumps(void)
     {
       M_ProgressBarMove(i); // killough
 
-      patch = V_CachePatchNum(firstspritelump+i);
-      spritewidth[i] = SHORT(patch->width)<<FRACBITS;
-      spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
-      spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
+      patch = V_CachePatchNum(firstspritelump + i);
+      spritewidth[i] = IntToFixed(SHORT(patch->width));
+      spriteoffset[i] = IntToFixed(SHORT(patch->leftoffset));
+      spritetopoffset[i] = IntToFixed(SHORT(patch->topoffset));
     }
 
   M_ProgressBarEnd();
@@ -944,7 +977,7 @@ void R_InitData(void)
   // mistaken as patches and by R_InitFlatBrightmaps() to set brightmaps for
   // flats.
   R_InitFlats();
-  R_InitFlatBrightmaps();
+  W_ProcessInWads("BRGHTMPS", R_ParseBrightmaps, PROCESS_PWAD);
   R_InitTextures();
   R_InitSpriteLumps();
   R_InitTranMap();                      // killough 2/21/98, 3/6/98
@@ -979,7 +1012,7 @@ byte *R_MissingFlat(void)
         const byte c1 = colrngs[CR_PURPLE][v_lightest_color];
         const byte c2 = v_darkest_color;
 
-        buffer = arena_calloc_num(world_arena, byte, 4096);
+        buffer = arena_alloc_num(world_arena, byte, 4096);
 
         for (int i = 0; i < FLATSIZE; i++)
         {

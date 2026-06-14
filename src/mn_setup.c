@@ -1510,6 +1510,7 @@ static setup_menu_t keys_settings5[] = {
     {"Follow",          S_INPUT, KB_X, M_SPC, {0}, m_map, input_map_follow},
     {"Overlay",         S_INPUT, KB_X, M_SPC, {0}, m_map, input_map_overlay},
     {"Rotate",          S_INPUT, KB_X, M_SPC, {0}, m_map, input_map_rotate},
+    {"Minimap", S_INPUT | S_STRICT, KB_X, M_SPC, {0}, m_map, input_map_mini},
     MI_GAP,
     {"Zoom In",         S_INPUT, KB_X, M_SPC, {0}, m_map, input_map_zoomin},
     {"Zoom Out",        S_INPUT, KB_X, M_SPC, {0}, m_map, input_map_zoomout},
@@ -1887,7 +1888,7 @@ static const char *hud_anchoring_strings[] = {
 
 static setup_menu_t stat_settings1[] = {
 
-    {"Screen Size", S_THERMO, H_X_THRM8, M_THRM_SPC, {"screenblocks"},
+    {"HUD Layout", S_THERMO, H_X_THRM8, M_THRM_SPC, {"screenblocks"},
      .strings_id = str_screensize, .action = SizeDisplayAlt},
 
     MI_GAP,
@@ -2093,6 +2094,7 @@ static setup_menu_t auto_settings1[] = {
 
     MI_GAP,
 
+    {"Show Minimap", S_ONOFF | S_STRICT, H_X, M_SPC, {"minimap"}},
     {"Line Thickness", S_THERMO | S_THRM_SIZE4, H_X, M_THRM_SPC,
      {"map_line_thickness"}, .strings_id = str_automap_thickness,
      .action = AM_ResetThickness},
@@ -3323,12 +3325,6 @@ void MN_DrawGyro(void)
     DrawGyroCalibration();
 }
 
-static void SmoothLight(void)
-{
-    setsmoothlight = true;
-    setsizeneeded = true; // run R_ExecuteSetViewSize
-}
-
 static const char *fuzzmode_strings[] = {
     "Blocky", "Refraction", "Shadow", "Original"
 };
@@ -3357,9 +3353,6 @@ static setup_menu_t gen_settings5[] = {
      .action = R_InitPlanes},
 
     {"Swirling Flats", S_ONOFF, OFF_CNTR_X, M_SPC, {"r_swirl"}},
-
-    {"Smooth Diminishing Lighting", S_ONOFF, OFF_CNTR_X, M_SPC, {"smoothlight"},
-     .action = SmoothLight},
 
     MI_END
 };
@@ -3445,6 +3438,11 @@ void MN_UpdateFpsLimitItem(void)
 void MN_DisableVoxelsRenderingItem(void)
 {
     DisableItem(true, gen_settings5, "voxels_rendering");
+}
+
+void MN_DisableBrightmapsItem(void)
+{
+    DisableItem(true, gen_settings5, "brightmaps");
 }
 
 // Setting up for the General screen. Turn on flags, set pointers,
@@ -5087,7 +5085,10 @@ static const char **GetScreenSizeStrings(void)
     }
     for (int i = 3; i < 10; ++i)
     {
-        array_push(strings, "Status Bar");
+        char buf[8];
+        buf[0] = '\0';
+        M_snprintf(buf, sizeof(buf), "%d", i);
+        array_push(strings, M_StringDuplicate(buf));
     }
 
     const char **st_strings = ST_StatusbarList();
@@ -5124,8 +5125,6 @@ void MN_SetupResetMenu(void)
     DisableItem(M_ParmExists("-uncapped") || M_ParmExists("-nouncapped"),
                 gen_settings1, "uncapped");
     DisableItem(deh_set_blood_color, enem_settings1, "colored_blood");
-    DisableItem(!brightmaps_found || force_brightmaps, gen_settings5,
-                "brightmaps");
     DisableItem(!trakinfo_found, gen_settings2, "extra_music");
     DisableItem(M_ParmExists("-save"), gen_settings6, "organize_savefiles");
     DisableItem(!map_smooth_lines, auto_settings1, "map_line_thickness");

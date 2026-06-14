@@ -172,7 +172,7 @@ void ParseEndFinale_CastAnims(json_t *js_castanim_entry, cast_anim_t *out,
     json_t *js_alive_frame_list = JS_GetObject(js_castanim_entry, "aliveframes");
     json_t *js_alive_frame = NULL;
     out->aliveframescount = JS_GetArraySize(js_alive_frame_list);
-    out->aliveframes = arena_calloc_num(inter_arena, cast_frame_t, out->aliveframescount);
+    out->aliveframes = arena_alloc_num(inter_arena, cast_frame_t, out->aliveframescount);
     int alive_index = 0;
     JS_ArrayForEach(js_alive_frame, js_alive_frame_list)
     {
@@ -183,7 +183,7 @@ void ParseEndFinale_CastAnims(json_t *js_castanim_entry, cast_anim_t *out,
     json_t *js_death_frame = NULL;
     json_t *js_death_frame_list = JS_GetObject(js_castanim_entry, "deathframes");
     out->deathframescount = JS_GetArraySize(js_death_frame_list);
-    out->deathframes = arena_calloc_num(inter_arena, cast_frame_t, out->deathframescount);
+    out->deathframes = arena_alloc_num(inter_arena, cast_frame_t, out->deathframescount);
     int death_index = 0;
     JS_ArrayForEach(js_death_frame, js_death_frame_list)
     {
@@ -199,7 +199,7 @@ static void ParseEndFinale_CastRollCall(json_t *js_castrollcall,
 
     json_t *js_castanim_entry = NULL;
     out->cast_animscount = JS_GetArraySize(js_castanim_list);
-    out->cast_anims = arena_calloc_num(inter_arena, cast_anim_t, out->cast_animscount);
+    out->cast_anims = arena_alloc_num(inter_arena, cast_anim_t, out->cast_animscount);
     int index = 0;
     JS_ArrayForEach(js_castanim_entry, js_castanim_list)
     {
@@ -940,7 +940,7 @@ static void F_StartCast(void)
   wipegamestate = -1; // force a screen wipe
   finalestage = FINALE_STAGE_CAST;
 
-  if (gamemapinfo->flags & MapInfo_EndGameCustomFinale)
+  if (gamemapinfo && gamemapinfo->flags & MapInfo_EndGameCustomFinale)
   {
     EndFinaleCast_SetupCall();
     return;
@@ -985,7 +985,7 @@ static boolean F_CastTicker(void)
   int st;
   int sfx;
 
-  if (gamemapinfo->flags & MapInfo_EndGameCustomFinale)
+  if (gamemapinfo && gamemapinfo->flags & MapInfo_EndGameCustomFinale)
     return EndFinaleCast_Ticker();
 
   if (--casttics > 0)
@@ -1093,7 +1093,7 @@ static boolean F_CastTicker(void)
 
 static boolean F_CastResponder(event_t* ev)
 {
-  if (gamemapinfo->flags & MapInfo_EndGameCustomFinale)
+  if (gamemapinfo && gamemapinfo->flags & MapInfo_EndGameCustomFinale)
     return EndFinaleCast_Responder(ev);
 
   if (ev->type != ev_keydown && ev->type != ev_mouseb_down && ev->type != ev_joyb_down)
@@ -1171,7 +1171,7 @@ static void F_CastPrint(const char* text)
 
 static void F_CastDrawer(void)
 {
-  if (gamemapinfo->flags & MapInfo_EndGameCustomFinale)
+  if (gamemapinfo && gamemapinfo->flags & MapInfo_EndGameCustomFinale)
   {
       EndFinaleCast_Drawer();
       return;

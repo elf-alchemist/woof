@@ -21,7 +21,6 @@
 #include <string.h>
 
 #include "d_player.h"
-#include "deh_frame.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "g_game.h"
@@ -36,6 +35,7 @@
 #include "p_maputl.h"
 #include "p_mobj.h"
 #include "p_pspr.h"
+#include "p_setup.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_defs.h"
@@ -851,8 +851,6 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
   mobjinfo_t *info = &mobjinfo[type];
   state_t    *st;
 
-  memset(mobj, 0, sizeof *mobj);
-
   mobj->type = type;
   mobj->info = info;
   mobj->x = x;
@@ -862,6 +860,7 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
   mobj->flags  = info->flags;
   mobj->flags2 = info->flags2;
   mobj->flags_extra = info->flags_extra;
+  mobj->tint = NO_INDEX;
 
   // killough 8/23/98: no friends, bouncers, or touchy things in old demos
   if (demo_version < DV_MBF)
@@ -1355,7 +1354,20 @@ spawnit:
       P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
     }
 
-  // UDMF thing height
+  // Spawn health
+  if (mthing->health != FRACUNIT)
+  {
+    if (mthing->health < 0)
+    {
+      mobj->health = FixedToInt(-mthing->health);
+    }
+    else
+    {
+      mobj->health = FixedMul(mobj->health, mthing->health);
+    }
+  }
+
+  // Vertical spawn position
   if (z == ONFLOORZ)
   {
     mobj->z += mthing->height;
@@ -1373,6 +1385,9 @@ spawnit:
   mobj->args[2] = mthing->args[2];
   mobj->args[3] = mthing->args[3];
   mobj->args[4] = mthing->args[4];
+
+  // Tinting
+  mobj->tint = mthing->tint;
 
   // Translucency
   mobj->tranmap = mthing->tranmap;
@@ -1407,7 +1422,7 @@ void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
   mobj_t* th;
   // killough 5/5/98: remove dependence on order of evaluation:
   int t = P_Random(pr_spawnpuff);
-  z += (t - P_Random(pr_spawnpuff))<<10;
+  z += shiftleft32(t - P_Random(pr_spawnpuff), 10);
 
   th = P_SpawnMobj (x,y,z, MT_PUFF);
   th->momz = FRACUNIT;
@@ -1434,7 +1449,7 @@ void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage,mobj_t *bleeder)
   mobj_t* th;
   // killough 5/5/98: remove dependence on order of evaluation:
   int t = P_Random(pr_spawnblood);
-  z += (t - P_Random(pr_spawnblood))<<10;
+  z += shiftleft32(t - P_Random(pr_spawnblood), 10);
   th = P_SpawnMobj(x,y,z, MT_BLOOD);
   th->momz = FRACUNIT*2;
   th->tics -= P_Random(pr_spawnblood)&3;

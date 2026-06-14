@@ -134,20 +134,20 @@ void R_InitPlanes (void)
 
 void R_InitPlanesRes(void)
 {
-  floorclip = arena_calloc_num(renderer_arena, int, video.width);
-  ceilingclip = arena_calloc_num(renderer_arena, int, video.width);
-  spanstart = arena_calloc_num(renderer_arena, int, video.height);
+  floorclip = arena_alloc_num(renderer_arena, int, video.width);
+  ceilingclip = arena_alloc_num(renderer_arena, int, video.width);
+  spanstart = arena_alloc_num(renderer_arena, int, video.height);
 
-  cachedheight = arena_calloc_num(renderer_arena, fixed_t, video.height);
-  cacheddistance = arena_calloc_num(renderer_arena, fixed_t, video.height);
-  cachedxstep = arena_calloc_num(renderer_arena, fixed_t, video.height);
-  cachedystep = arena_calloc_num(renderer_arena, fixed_t, video.height);
-  cachedrotation = arena_calloc_num(renderer_arena, fixed_t, video.height);
+  cachedheight = arena_alloc_num(renderer_arena, fixed_t, video.height);
+  cacheddistance = arena_alloc_num(renderer_arena, fixed_t, video.height);
+  cachedxstep = arena_alloc_num(renderer_arena, fixed_t, video.height);
+  cachedystep = arena_alloc_num(renderer_arena, fixed_t, video.height);
+  cachedrotation = arena_alloc_num(renderer_arena, fixed_t, video.height);
 
-  yslope = arena_calloc_num(renderer_arena, fixed_t, video.height);
+  yslope = arena_alloc_num(renderer_arena, fixed_t, video.height);
 
   maxopenings = video.width * video.height;
-  openings = arena_calloc_num(renderer_arena, int, maxopenings);
+  openings = arena_alloc_num(renderer_arena, int, maxopenings);
 
   R_InitPlanes();
 }
@@ -194,7 +194,7 @@ void R_InitVisplanesRes(void)
 // BASIC PRIMITIVE
 //
 
-static void R_MapPlane(int y, int x1, int x2, lighttable_t *thiscolormap)
+static void R_MapPlane(int y, int x1, int x2, const lighttable_t * const thiscolormap)
 {
   fixed_t distance;
   unsigned lookup;
@@ -424,7 +424,8 @@ visplane_t *R_CheckPlane(visplane_t *pl, int start, int stop)
 
 // [FG] 32-bit integer math
 static void R_MakeSpans(int x, unsigned int t1, unsigned int b1,
-                        unsigned int t2, unsigned int b2, lighttable_t *colormap)
+                        unsigned int t2, unsigned int b2,
+                        const lighttable_t * const colormap)
 {
   for (; t1 < t2 && t1 <= b1; t1++)
     R_MapPlane(t1, spanstart[t1], x-1, colormap);
@@ -635,7 +636,9 @@ static void do_draw_plane(visplane_t *pl)
 
     planezlightindex = light;
     planezlightoffset = &zlightoffset[light * MAXLIGHTZ];
-    lighttable_t *thiscolormap = pl->tint ? colormaps[pl->tint] : fullcolormap;
+    const lighttable_t * const thiscolormap = (pl->tint >= 0)
+                                            ? colormaps[pl->tint]
+                                            : fullcolormap;
 
     for (int x = pl->minx; x <= stop; x++)
     {

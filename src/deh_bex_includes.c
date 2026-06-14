@@ -26,20 +26,20 @@
 
 static boolean bex_nested = false;
 
-static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
+static int DEH_BEXIncludeStart(deh_context_t *context, char *line)
 {
     extern boolean bex_notext;
 
     if (!DEH_FileName(context))
     {
         DEH_Warning(context, "DEHACKED lumps may not include files");
-        return NULL;
+        return -1;
     }
 
     if (bex_nested)
     {
         DEH_Warning(context, "Included files may not include other files");
-        return NULL;
+        return -1;
     }
 
     char *inc_file = I_Malloc(strlen(line) + 1);
@@ -56,7 +56,7 @@ static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
     {
         DEH_Warning(context, "Parse error on section start");
         I_Free(inc_file);
-        return NULL;
+        return -1;
     }
 
     // first, try loading the file right away
@@ -86,10 +86,10 @@ static void *DEH_BEXIncludeStart(deh_context_t *context, char *line)
     }
     I_Free(inc_file);
 
-    return NULL;
+    return 0;
 }
 
-static void DEH_BEXIncludeParseLine(deh_context_t *context, char *line, void *tag)
+static void DEH_BEXIncludeParseLine(deh_context_t *context, char *line, int tag)
 {
     // not used
 }
