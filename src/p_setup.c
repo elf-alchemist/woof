@@ -28,6 +28,7 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
+#include "f_finale.h"
 #include "g_game.h"
 #include "g_compatibility.h"
 #include "i_printf.h"
@@ -986,9 +987,15 @@ boolean P_LoadReject(int lumpnum, int totallines)
 
 static void PreSetupUnLoad(void)
 {
-    // Not critial enough for
-    if (nodes) I_Free(nodes);
-    numnodes = 0;
+    // If starting a new level, then already done with previous finale
+    F_ClearEndFinale();
+
+    // Not demo critial for world arena
+    if (nodes)
+    {
+        I_Free(nodes);
+        numnodes = 0;
+    }
 
     // Can easily get large enough to overwhelm `world_arena`
     if (rejectmatrix) I_Free(rejectmatrix);

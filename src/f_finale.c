@@ -298,6 +298,23 @@ static end_finale_t *F_ParseEndFinale(const char *lump)
     return out;
 }
 
+void F_ClearEndFinale(void)
+{
+    if (!endfinale)
+    {
+        return;
+    }
+
+    cast_anim_t * cast_anims = endfinale->cast_anims;
+    array_foreach_type(anim, cast_anims, cast_anim_t)
+    {
+        array_free(anim->aliveframes);
+        array_free(anim->deathframes);
+    }
+
+    array_free(cast_anims);
+}
+
 //
 // UMAPINFO
 //
