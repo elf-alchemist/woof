@@ -268,15 +268,10 @@ static void T_MoveFloor(floormove_t* floor)
       switch(floor->type) // handle texture/type changes
       {
         case donutRaise:
-          floor->sector->special = floor->newspecial;
-          floor->sector->floorpic = floor->texture;
-          break;
         case genFloorChgT:
         case genFloorChg0:
-          floor->sector->special = floor->newspecial;
-          //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
-          //fall thru
+          P_TransferSpecial(floor->sector, &floor->transfer);
+          // fallthrough
         case genFloorChg:
           floor->sector->floorpic = floor->texture;
           break;
@@ -289,17 +284,10 @@ static void T_MoveFloor(floormove_t* floor)
       switch(floor->type) // handle texture/type changes
       {
         case lowerAndChange:
-          floor->sector->special = floor->newspecial;
-          //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
-          floor->sector->floorpic = floor->texture;
-          break;
         case genFloorChgT:
         case genFloorChg0:
-          floor->sector->special = floor->newspecial;
-          //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
-          //fall thru
+          P_TransferSpecial(floor->sector, &floor->transfer);
+          // fallthrough
         case genFloorChg:
           floor->sector->floorpic = floor->texture;
           break;
@@ -582,9 +570,7 @@ int EV_DoFloor
         floor->speed = FLOORSPEED;
         floor->floordestheight = floor->sector->floorheight + 24 * FRACUNIT;
         sec->floorpic = line->frontsector->floorpic;
-        sec->special = line->frontsector->special;
-        //jff 3/14/98 transfer both old and new special
-        sec->oldspecial = line->frontsector->oldspecial;
+        P_CopySectorSpecial(sec, line->frontsector);
         break;
 
       case raiseToTexture:
@@ -633,21 +619,14 @@ int EV_DoFloor
         floor->floordestheight = P_FindLowestFloorSurrounding(sec);
         floor->texture = sec->floorpic;
 
-        // jff 1/24/98 make sure floor->newspecial gets initialized
-        // in case no surrounding sector is at floordestheight
-        // --> should not affect compatibility <--
-        floor->newspecial = sec->special; 
-        //jff 3/14/98 transfer both old and new special
-        floor->oldspecial = sec->oldspecial;
+        P_CopyTransferSpecial(&floor->transfer, sec);
 
         //jff 5/23/98 use model subroutine to unify fixes and handling
         sec = P_FindModelFloorSector(floor->floordestheight,sec-sectors);
         if (sec)
         {
           floor->texture = sec->floorpic;
-          floor->newspecial = sec->special;
-          //jff 3/14/98 transfer both old and new special
-          floor->oldspecial = sec->oldspecial;
+          P_CopyTransferSpecial(&floor->transfer, sec);
         }
         break;
       default:
@@ -690,17 +669,13 @@ int EV_DoChange
     switch(changetype)
     {
       case trigChangeOnly:
-        sec->floorpic = line->frontsector->floorpic;
-        sec->special = line->frontsector->special;
-        sec->oldspecial = line->frontsector->oldspecial;
+        P_CopySectorSpecial(sec, line->frontsector);
         break;
       case numChangeOnly:
         secm = P_FindModelFloorSector(sec->floorheight,secnum);
         if (secm) // if no model, no change
         {
-          sec->floorpic = secm->floorpic;
-          sec->special = secm->special;
-          sec->oldspecial = secm->oldspecial;
+          P_CopySectorSpecial(sec, secm);
         }
         break;
       default:
@@ -1028,7 +1003,6 @@ int EV_DoDonut(line_t*  line)
       floor->sector = s2;
       floor->speed = FLOORSPEED / 2;
       floor->texture = s3_floorpic;
-      floor->newspecial = 0;
       floor->floordestheight = s3_floorheight;
         
       //  Spawn lowering donut-hole pillar

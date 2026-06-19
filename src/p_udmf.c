@@ -98,7 +98,7 @@ typedef enum UDMF_Features_Sector_e
 typedef struct
 {
     // Base spec
-    int32_t id;
+    int32_t tid;
     int32_t type;
     double x, y;
     double height;
@@ -134,6 +134,7 @@ typedef struct
     // Extensions
     char tranmap[9];
     double alpha;
+    int32_t lock;
 } UDMF_Linedef_t;
 
 // Important note about line tag/id/arg0, in the Doom/Heretic/Strife namespaces:
@@ -348,7 +349,7 @@ static inline void UDMF_SkipScan(scanner_t *s)
 }
 
 // UDMF namespace
-static void UDMF_ParseNamespace(scanner_t *s)
+static void UDMF_ParseNamespace(scanner_t *s, map_t *map)
 {
     SC_MustGetToken(s, '=');
     SC_MustGetToken(s, TK_StringConst);
@@ -360,11 +361,13 @@ static void UDMF_ParseNamespace(scanner_t *s)
 
     if (!strcasecmp(name, "doom"))
     {
+        map->param = false;
         udmf_linedef_flags |= UDMF_LINE_PASSUSE;
         udmf_thing_flags |= UDMF_THING_FRIEND;
     }
     else if (!strcasecmp(name, "woof"))
     {
+        map->param = false;
         udmf_linedef_flags |= UDMF_LINE_PASSUSE | UDMF_LINE_BLOCK
                               | UDMF_LINE_ALPHA | UDMF_LINE_TRANMAP;
         udmf_thing_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM
@@ -379,6 +382,25 @@ static void UDMF_ParseNamespace(scanner_t *s)
     else
     {
         I_Error("Unknown UDMF namespace: \"%s\".", name);
+    }
+
+    if (map->param)
+    {
+        P_UseSpecialLine = P_UseSpecialLine_Param;
+        P_ShootSpecialLine = P_ShootSpecialLine_Param;
+        P_CrossSpecialLine = P_CrossSpecialLine_Param;
+        P_PlayerInSector = P_PlayerInSector_Param;
+        P_MObjInSector = P_MObjInSector_Param;
+        P_ApplySectorMovement = P_ApplySectorMovement_Param;
+    }
+    else
+    {
+        P_UseSpecialLine = P_UseSpecialLine_Classic;
+        P_ShootSpecialLine = P_ShootSpecialLine_Classic;
+        P_CrossSpecialLine = P_CrossSpecialLine_Classic;
+        P_PlayerInSector = P_PlayerInSector_Classic;
+        P_MObjInSector = P_MObjInSector_Classic;
+        P_ApplySectorMovement = P_ApplySectorMovement_Classic;
     }
 
     SC_MustGetToken(s, ';');
@@ -425,6 +447,7 @@ static void UDMF_ParseLinedef(scanner_t *s)
     line.sideback = -1;
     M_CopyLumpName(line.tranmap, "-");
     line.alpha = 1.0;
+    line.id = (udmf_linedef_flags & UDMF_LINE_PARAM) ? -1 : 0;
 
     SC_MustGetToken(s, '{');
     while (!SC_CheckToken(s, '}'))
@@ -536,6 +559,10 @@ static void UDMF_ParseLinedef(scanner_t *s)
         else if (LINE_PROP(tranmap, UDMF_LINE_TRANMAP))
         {
             UDMF_ScanLumpName(s, line.tranmap);
+        }
+        else if (LINE_PROP(locknumber, UDMF_LINE_PARAM))
+        {
+            line.lock = UDMF_ScanInt(s);
         }
         else
         {
@@ -878,7 +905,7 @@ static void UDMF_ParseThing(scanner_t *s)
         }
         else if (THING_PROP(id, UDMF_THING_PARAM))
         {
-            thing.id = UDMF_ScanInt(s);
+            thing.tid = UDMF_ScanInt(s);
         }
         else if (BASE_PROP(x))
         {
@@ -1002,7 +1029,7 @@ static void UDMF_ParseTextMap(map_t *map)
 
         if (!strcmp(toplevel, "namespace"))
         {
-            UDMF_ParseNamespace(s);
+            UDMF_ParseNamespace(s, map);
         }
         else if (!strcmp(toplevel, "vertex"))
         {
@@ -1099,23 +1126,23 @@ static void UDMF_LoadSectors(void)
             && (udmf_sectors[i].scroll_floor_x
                 || udmf_sectors[i].scroll_floor_y))
         {
-            Add_EESectorScroller(udmf_sectors[i].scroll_floor_type, i, false,
-                                 udmf_sectors[i].scroll_floor_x,
-                                 udmf_sectors[i].scroll_floor_y);
+            Add_SectorScroller_EE(udmf_sectors[i].scroll_floor_type, i, false,
+                                  udmf_sectors[i].scroll_floor_x,
+                                  udmf_sectors[i].scroll_floor_y);
         }
 
         if (udmf_sectors[i].scroll_ceil_type
             && (udmf_sectors[i].scroll_ceil_x || udmf_sectors[i].scroll_ceil_y))
         {
-            Add_EESectorScroller(udmf_sectors[i].scroll_floor_type, i, true,
-                                 udmf_sectors[i].scroll_floor_x,
-                                 udmf_sectors[i].scroll_floor_y);
+            Add_SectorScroller_EE(udmf_sectors[i].scroll_floor_type, i, true,
+                                  udmf_sectors[i].scroll_floor_x,
+                                  udmf_sectors[i].scroll_floor_y);
         }
 
         if (udmf_sectors[i].scrollfloormode
             && (udmf_sectors[i].xscrollfloor || udmf_sectors[i].yscrollfloor))
         {
-            Add_ParamSectorScroller(
+            Add_SectorScroller_Param(
                 udmf_sectors[i].scrollfloormode, i, false,
                 DoubleToFixed(udmf_sectors[i].xscrollfloor),
                 DoubleToFixed(udmf_sectors[i].yscrollfloor));
@@ -1125,7 +1152,7 @@ static void UDMF_LoadSectors(void)
             && (udmf_sectors[i].xscrollceiling
                 || udmf_sectors[i].yscrollceiling))
         {
-            Add_ParamSectorScroller(
+            Add_SectorScroller_Param(
                 udmf_sectors[i].scrollceilingmode, i, true,
                 DoubleToFixed(udmf_sectors[i].xscrollceiling),
                 DoubleToFixed(udmf_sectors[i].yscrollceiling));
@@ -1213,12 +1240,7 @@ static void UDMF_LoadLineDefs(void)
         lines[i].args[2] = udmf_linedefs[i].args[2];
         lines[i].args[3] = udmf_linedefs[i].args[3];
         lines[i].args[4] = udmf_linedefs[i].args[4];
-
-        // Woof! currently does not support parameterized line specials
-        if (udmf_linedef_flags & UDMF_LINE_PARAM)
-        {
-            lines[i].special = 0;
-        }
+        lines[i].lock = udmf_linedefs[i].lock;
 
         // Support for namespaces that do not make the tag -> arg0/id split
         if (udmf_linedef_flags & UDMF_COMP_NO_ARG0)
@@ -1270,8 +1292,10 @@ static void UDMF_LoadLineDefs(void)
     }
 }
 
-static void UDMF_LoadSideDefs_Post(void)
+static void UDMF_LoadSideDefs_Post(boolean param)
 {
+    P_ProcessSideDefs =
+        (param) ? P_ProcessSideDefs_Param : P_ProcessSideDefs_Classic;
     for (int i = 0; i < numsides; i++)
     {
         P_ProcessSideDefs(&sides[i], i, udmf_sidedefs[i].texturebottom,
@@ -1280,40 +1304,16 @@ static void UDMF_LoadSideDefs_Post(void)
     }
 }
 
-static void UDMF_LoadLineDefs_Post(void)
+static void UDMF_LoadLineDefs_Post(boolean param)
 {
+    if (param) // Nothing to do
+    {
+        return;
+    }
+
     for (int i = 0; i < numlines; i++)
     {
-        // killough 4/11/98: handle special types
-        switch (lines[i].special)
-        {
-            // killough 4/11/98: translucent 2s textures
-            case 260:
-                {
-                    // translucency from sidedef
-                    int32_t lump = sides[*lines[i].sidenum].special;
-                    const byte *tranmap =
-                        !lump ? main_tranmap
-                              : W_CacheLumpNum(lump - 1, PU_STATIC);
-                    if (!lines[i].args[0])
-                    {
-                        // if tag==0, affect this linedef only
-                        lines[i].tranmap = tranmap;
-                    }
-                    else
-                    {
-                        for (int j = 0; j < numlines; j++)
-                        {
-                            if (lines[j].id == lines[i].args[0])
-                            {
-                                // if tag!=0, affect all matching linedefs
-                                lines[i].tranmap = tranmap;
-                            }
-                        }
-                    }
-                    break;
-                }
-        }
+        P_ProcessLineDefSpecial_Classic(&lines[i]);
     }
 }
 
@@ -1322,23 +1322,8 @@ void P_LoadThings_UDMF(void)
     for (int i = 0; i < array_size(udmf_things); i++)
     {
         // Do not spawn cool, new monsters if !commercial
-        if (gamemode != commercial)
-        {
-            switch (udmf_things[i].type)
-            {
-                case 68: // Arachnotron
-                case 64: // Archvile
-                case 88: // Boss Brain
-                case 89: // Boss Shooter
-                case 69: // Hell Knight
-                case 67: // Mancubus
-                case 71: // Pain Elemental
-                case 65: // Former Human Commando
-                case 66: // Revenant
-                case 84: // Wolf SS
-                    continue;
-            }
-        }
+        if (!IsDoomEdNumAllowed(udmf_things[i].type))
+          continue;
 
         // Do spawn all other stuff.
 
@@ -1350,7 +1335,7 @@ void P_LoadThings_UDMF(void)
         mt.type = udmf_things[i].type;
         mt.options = udmf_things[i].options;
 
-        mt.id = udmf_things[i].id;
+        mt.tid = udmf_things[i].tid;
         mt.special = udmf_things[i].special;
         mt.args[0] = udmf_things[i].args[0];
         mt.args[1] = udmf_things[i].args[1];
@@ -1401,10 +1386,10 @@ void UDMF_LoadMap(map_t *map)
     // note: most of this ordering is important
     UDMF_LoadVertexes();
     UDMF_LoadSectors();
-    UDMF_LoadSideDefs();      // <- This needs Sectors
-    UDMF_LoadLineDefs();      // <- this needs Sides
-    UDMF_LoadSideDefs_Post(); // <- this needs side_t::special
-    UDMF_LoadLineDefs_Post(); // <- this needs Sides Post Processing
+    UDMF_LoadSideDefs();                // <- This needs Sectors
+    UDMF_LoadLineDefs();                // <- this needs Sides
+    UDMF_LoadSideDefs_Post(map->param); // <- this needs side_t::special
+    UDMF_LoadLineDefs_Post(map->param); // <- this needs Sides Post Processing
 
     map->bmap_format = P_LoadBlockMap(map->blockmap);
     P_LoadBSPTree_ZDBSP(map->znodes, map->bsp_format);
