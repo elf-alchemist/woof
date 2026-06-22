@@ -301,7 +301,7 @@ manual_ceiling:
     ceiling->direction = Dirn? 1 : -1;
     ceiling->sector = sec;
     ceiling->texture = sec->ceilingpic;
-    P_CopyTransferSpecial(&ceiling->special, sec);
+    P_CopyTransferSpecial(&ceiling->transfer, sec);
     ceiling->tag = sec->tag;
     ceiling->type = genCeiling;
 
@@ -391,11 +391,11 @@ manual_ceiling:
           switch (ChgT)
           {
             case CChgZero:  // type is zeroed
-              P_ResetTransferSpecial(&ceiling->special);
+              P_ResetTransferSpecial(&ceiling->transfer);
               ceiling->type = genCeilingChg0;
               break;
             case CChgTyp:   // type is copied
-              P_CopyTransferSpecial(&ceiling->special, sec);
+              P_CopyTransferSpecial(&ceiling->transfer, sec);
               ceiling->type = genCeilingChgT;
               break;
             case CChgTxt:   // type is left alone
@@ -412,11 +412,11 @@ manual_ceiling:
         switch (ChgT)
         {
           case CChgZero:    // type is zeroed
-            P_ResetTransferSpecial(&ceiling->special);
+            P_ResetTransferSpecial(&ceiling->transfer);
             ceiling->type = genCeilingChg0;
             break;
           case CChgTyp:     // type is copied
-            P_CopyTransferSpecial(&ceiling->special, line->frontsector);
+            P_CopyTransferSpecial(&ceiling->transfer, line->frontsector);
             ceiling->type = genCeilingChgT;
             break;
           case CChgTxt:     // type is left alone
@@ -848,7 +848,7 @@ manual_crusher:
     ceiling->direction = -1;
     ceiling->sector = sec;
     ceiling->texture = sec->ceilingpic;
-    P_CopyTransferSpecial(&ceiling->special, sec);
+    P_CopyTransferSpecial(&ceiling->transfer, sec);
     ceiling->tag = sec->tag;
     ceiling->type = Slnt? genSilentCrusher : genCrusher;
     ceiling->topheight = sec->ceilingheight;
