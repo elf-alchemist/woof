@@ -4105,10 +4105,211 @@ static void SpawnScrollers_Classic(void)
     }
 }
 
+#define COPY_SCROLLER_CEILING     1
+#define COPY_SCROLLER_FLOOR       2
+#define COPY_SCROLLER_FLOOR_CARRY 4
+
+static int copyscroller_count = 0;
+static int copyscroller_max = 0;
+static line_t **copyscrollers;
+
+static void AddCopyScroller(line_t *l)
+{
+    while (copyscroller_count >= copyscroller_max)
+    {
+        copyscroller_max = copyscroller_max ? copyscroller_max * 2 : 8;
+        copyscrollers =
+            I_Realloc(copyscrollers, copyscroller_max * sizeof(*copyscrollers));
+    }
+
+    copyscrollers[copyscroller_count++] = l;
+}
+
+static void InitCopyScrollers(void)
+{
+    line_t *l = lines;
+
+    for (int i = 0; i < numlines; i++, l++)
+    {
+        if (l->special == Sector_CopyScroller)
+        {
+            // don't allow copying the scroller if the sector has the same tag
+            //   as it would just duplicate it.
+            if (l->frontsector->tag == l->args[0])
+            {
+                AddCopyScroller(l);
+            }
+
+            l->special = 0;
+        }
+    }
+}
+
+static void FreeCopyScrollers(void)
+{
+    if (copyscrollers)
+    {
+        copyscroller_count = 0;
+        copyscroller_max = 0;
+        free(copyscrollers);
+    }
+}
+
 static void SpawnScrollers_Param(void)
 {
-    // TODO: add this
+    line_t *l = lines;
+
+    InitCopyScrollers();
+
+    for (int i = 0; i < numlines; i++, l++)
+    {
+        fixed_t dx = 0; // direction and speed of scrolling
+        fixed_t dy = 0;
+        int control = -1, accel = 0; // no control sector or acceleration
+        int special = l->special;
+        int side_num = l->sidenum[0];
+        side_t *side = &sides[side_num];
+        fixed_t factor = 0;
+
+        if (special == Scroll_Ceiling || special == Scroll_Floor
+            || special == Scroll_Texture_Model)
+        {
+            if (l->args[1] & 3)
+            {
+                // if 1, then displacement
+                // if 2, then accelerative (also if 3)
+                control = side->sector - sectors;
+                if (l->args[1] & 2)
+                {
+                    accel = 1;
+                }
+            }
+
+            if (special == Scroll_Texture_Model || l->args[1] & 4)
+            {
+                // The line housing the special controls the
+                // direction and speed of scrolling.
+                dx = l->dx >> SCROLL_SHIFT;
+                dy = l->dy >> SCROLL_SHIFT;
+            }
+            else
+            {
+                // The speed and direction are parameters to the special.
+                dx = (fixed_t)(l->args[3] - 128) * FRACUNIT / 32;
+                dy = (fixed_t)(l->args[4] - 128) * FRACUNIT / 32;
+            }
+        }
+
+        if (special >= Scroll_Texture_Left && special <= Scroll_Texture_Up)
+        {
+            factor = FRACUNIT * l->args[0] / 64;
+        }
+
+        switch (special)
+        {
+            // TODO: need to refactor sc_side_top/sc_side_mid/sc_side_bottom to accept flags instead
+            case Scroll_Texture_Left:
+                Add_Scroller(sc_side, factor, 0, -1, side_num, 0);
+                break;
+            case Scroll_Texture_Down:
+                Add_Scroller(sc_side, 0, -factor, -1, side_num, 0);
+                break;
+            case Scroll_Texture_Right:
+                Add_Scroller(sc_side, -factor, 0, -1, side_num, 0);
+                break;
+            case Scroll_Texture_Up:
+                Add_Scroller(sc_side, 0, factor, -1, side_num, 0);
+                break;
+            case Scroll_Texture_Both:
+                if (l->args[0])
+                {
+                    dx = FRACUNIT * (l->args[1] - l->args[2]) / 64;
+                    dy = FRACUNIT * (l->args[4] - l->args[3]) / 64;
+                    Add_Scroller(sc_side, dx, dy, -1, side_num, 0);
+                }
+                l->special = 0;
+                break;
+            case Scroll_Texture_Model:
+                // killough 3/1/98: scroll wall according to linedef
+                // (same direction and speed as scrolling floors)
+                l->special = 0;
+                break;
+            case Scroll_Floor:
+                // scroll the floor texture
+                if (l->args[2] != 1)
+                {
+                    for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+                    {
+                        Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+                    }
+
+                    for (int j = 0; j < copyscroller_count; ++j)
+                    {
+                        line_t *cs = copyscrollers[j];
+
+                        if (cs->args[0] == l->args[0] && cs->args[1] & 2)
+                        {
+                            int sec = cs->frontsector - sectors;
+                            Add_Scroller(sc_floor, -dx, dy, control, sec,
+                                         accel);
+                        }
+                    }
+                }
+
+                // carry objects on the floor
+                if (l->args[2] > 0)
+                {
+                    for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+                    {
+                        Add_Scroller(sc_carry, -dx, dy, control, s, accel);
+                    }
+
+                    for (int j = 0; j < copyscroller_count; ++j)
+                    {
+                        line_t *cs = copyscrollers[j];
+
+                        if (cs->args[0] == l->args[0] && cs->args[1] & 4)
+                        {
+                            int sec = cs->frontsector - sectors;
+                            Add_Scroller(sc_carry, -dx, dy, control, sec,
+                                         accel);
+                        }
+                    }
+                }
+                l->special = 0;
+                break;
+            case Scroll_Ceiling:
+                for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+                {
+                    Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+                }
+
+                for (int j = 0; j < copyscroller_count; ++j)
+                {
+                    line_t *cs = copyscrollers[j];
+
+                    if (cs->args[0] == l->args[0] && cs->args[1] & 1)
+                    {
+                        int sec = cs->frontsector - sectors;
+                        Add_Scroller(sc_ceiling, -dx, dy, control, sec, accel);
+                    }
+                }
+                l->special = 0;
+                break;
+            case Scroll_Texture_Offsets:
+                // killough 3/2/98: scroll according to sidedef offsets
+                Add_Scroller(sc_side, -side->textureoffset, side->rowoffset, -1, side_num, 0);
+                l->special = 0;
+                break;
+        }
+    }
+
+    FreeCopyScrollers();
 }
+
+#undef COPY_SCROLLER_CEILING
+#undef COPY_SCROLLER_FLOOR
+#undef COPY_SCROLLER_FLOOR_CARRY
 
 // Restored Boom's friction code
 
@@ -4740,7 +4941,14 @@ static void SpawnPushers_Param(void)
                 else
                 {
                     // [RH] Find thing by tid
-                    // TODO: add this
+                    while ((thing = P_FindMobjFromTID(l->args[1], thing, NULL)))
+                    {
+                        if (thing->type == MT_PUSH || thing->type == MT_PULL)
+                        {
+                            int sec = thing->subsector->sector - sectors;
+                            Add_Pusher(p_push, dx, dy, thing, sec);
+                        }
+                    }
                 }
                 l->special = 0;
                 break;
