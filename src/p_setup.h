@@ -65,6 +65,7 @@ boolean IsDoomEdNumAllowed(short type);
 void P_ProcessLineDefSpecial_Classic(line_t *ld);
 void P_ProcessLineDefSpecial_Param(line_t *ld);
 
+extern void (*P_ProcessSideDefs)(side_t *side, int i, char *bottomtexture, char *midtexture, char *toptexture);
 extern void P_ProcessSideDefs_Classic(side_t *side, int i, char *bottomtexture, char *midtexture, char *toptexture);
 extern void P_ProcessSideDefs_Param(side_t *side, int i, char *bottomtexture, char *midtexture, char *toptexture);
 

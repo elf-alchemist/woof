@@ -1631,6 +1631,7 @@ static void UnArchiveThinkers(void)
             case tc_mobj:
             case tc_mobj_del:
                 read_mobj_t(pointer->p.mobj, pointer->tc);
+                P_AddThingTID(pointer->p.mobj, pointer->p.mobj->tid);
                 break;
             case tc_ceiling:
             case tc_ceiling_del:

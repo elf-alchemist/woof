@@ -33,6 +33,7 @@
 #include "p_setup.h"
 #include "p_spec.h"
 #include "r_data.h"
+#include "r_defs.h"
 #include "r_state.h"
 #include "r_tranmap.h"
 #include "tables.h"
@@ -67,6 +68,7 @@ typedef enum UDMF_Features_Linedef_e
     UDMF_LINE_3DMIDTEX = (1u << 3), // EE's 3D middle texture
     UDMF_LINE_ALPHA = (1u << 4),    // opacity percentage
     UDMF_LINE_TRANMAP = (1u << 5),  // ditto, also customizable LUT
+    UDMF_LINE_STYLE = (1u << 6),    // custom automap style
     UDMF_COMP_NO_ARG0 = (1u << 31), // Compatibility
 } UDMF_Features_Linedef_t;
 
@@ -134,6 +136,7 @@ typedef struct
     // Extensions
     char tranmap[9];
     double alpha;
+    amls_t amls;
     int32_t lock;
 } UDMF_Linedef_t;
 
@@ -563,6 +566,10 @@ static void UDMF_ParseLinedef(scanner_t *s)
         else if (LINE_PROP(locknumber, UDMF_LINE_PARAM))
         {
             line.lock = UDMF_ScanInt(s);
+        }
+        else if (LINE_PROP(automapstyle, UDMF_LINE_STYLE))
+        {
+            line.amls = UDMF_ScanInt(s);
         }
         else
         {
@@ -1241,6 +1248,13 @@ static void UDMF_LoadLineDefs(void)
         lines[i].args[3] = udmf_linedefs[i].args[3];
         lines[i].args[4] = udmf_linedefs[i].args[4];
         lines[i].lock = udmf_linedefs[i].lock;
+
+        // Custom automap line style
+        lines[i].amls = udmf_linedefs[i].amls;
+        if (lines[i].amls < amls_Default || lines[i].amls >= AMLS_COUNT)
+        {
+            lines[i].amls = amls_Default;
+        }
 
         // Support for namespaces that do not make the tag -> arg0/id split
         if (udmf_linedef_flags & UDMF_COMP_NO_ARG0)

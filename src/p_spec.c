@@ -1176,16 +1176,24 @@ boolean P_IsDeathExit(sector_t *sector)
   return false;
 }
 
-boolean P_IsExitLine(line_t * line)
+boolean P_IsExitLine(line_t *line)
 {
   int special = line->special;
 
-  return special == 11  || special == 51 ||
-         special == 52  || special == 124 ||
+  return special == 11 || special == 51 ||
+         special == 52 || special == 124 ||
          special == 197 || special == 198 ||
          special == 2069 || special == 2070 ||
          special == 2071 || special == 2072 ||
          special == 2073 || special == 2074;
+}
+
+boolean P_IsTeleportLine(line_t *line)
+{
+  int special = line->special;
+
+  return special == 39 || special == 97 ||
+         special == 125 || special == 126;
 }
 
 //
@@ -1216,6 +1224,15 @@ boolean P_IsSecret(sector_t *sec)
 boolean P_WasSecret(sector_t *sec)
 {
   return (sec->flags & SECF_WAS_SECRET) != 0;
+}
+
+//
+// P_RevealedSecret()
+//
+
+boolean P_RevealedSecret(sector_t *sec)
+{
+  return P_WasSecret(sec) && !P_IsSecret(sec);
 }
 
 //
