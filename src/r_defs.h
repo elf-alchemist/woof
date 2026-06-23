@@ -154,8 +154,8 @@ typedef struct sector_s
 
   // Parameterized damage system via UDMF
   short dmg_amount;
-  byte  dmg_leakrate;
-  byte  dmg_interval;
+  short dmg_leakrate;
+  short dmg_interval;
 
   // WiggleFix: [kb] For R_FixWiggle()
   int cachedheight;

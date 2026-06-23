@@ -3131,7 +3131,7 @@ static void SpawnSectorSpecials_Classic(void)
 }
 
 static void SetupSectorDamage_Param(sector_t *sector, short amount,
-                                    byte interval, byte leakrate,
+                                    short interval, short leakrate,
                                     uint32_t flags)
 {
     // Only set if damage is not yet initialized.
@@ -3140,7 +3140,7 @@ static void SetupSectorDamage_Param(sector_t *sector, short amount,
         return;
     }
     sector->dmg_amount = amount;
-    sector->dmg_interval = interval;
+    sector->dmg_interval = MAX(1, interval);
     sector->dmg_leakrate = leakrate;
     sector->flags =
         (sector->flags & ~SECF_DAMAGE_FLAGS) | (flags & SECF_DAMAGE_FLAGS);
@@ -3148,9 +3148,9 @@ static void SetupSectorDamage_Param(sector_t *sector, short amount,
 
 static void SpawnGeneralizedSector_Param(sector_t *sector)
 {
-     int bits = (sector->special & PARAM_DAMAGE_MASK) >> 8;
+    int bits = (sector->special & PARAM_DAMAGE_MASK) >> 8;
 
-         switch (bits & 3)
+    switch (bits & 3)
     {
         case 0:
             break;
@@ -3170,7 +3170,7 @@ static void SpawnGeneralizedSector_Param(sector_t *sector)
         AddSectorSecret(sector);
     }
 
-   if (sector->special & PARAM_FRICTION_MASK)
+    if (sector->special & PARAM_FRICTION_MASK)
     {
         sector->flags |= SECF_FRICTION;
     }
@@ -3250,14 +3250,12 @@ static void SpawnSector_Param(sector_t *sector, int i)
             P_SpawnDoorCloseIn30(sector);
             sector->special = 0;
             break;
-            SetupSectorDamage_Param(sector, 20, 32, 0,
-                                    SECF_END_GODMODE | SECF_END_LEVEL
-                                        | SECF_DMG_UNBLOCKABLE);
+            SetupSectorDamage_Param(sector, 20, 32, 256,
+                                    SECF_END_GODMODE | SECF_END_LEVEL);
             sector->special = 0;
             break;
         case dDamage_End:
-            SetupSectorDamage_Param(sector, 5, 32, 0,
-                                    SECF_DMG_TERRAIN_FX | SECF_DMG_UNBLOCKABLE);
+            SetupSectorDamage_Param(sector, 5, 32, 256, SECF_DMG_TERRAIN_FX);
             sector->special = 0;
             break;
         case dSector_DoorRaiseIn5Mins:
@@ -3274,19 +3272,16 @@ static void SpawnSector_Param(sector_t *sector, int i)
             sector->special = 0;
             break;
         case dDamage_LavaWimpy:
-            SetupSectorDamage_Param(sector, 5, 32, 0,
-                                    SECF_DMG_TERRAIN_FX | SECF_DMG_UNBLOCKABLE);
+            SetupSectorDamage_Param(sector, 5, 32, 256, SECF_DMG_TERRAIN_FX);
             sector->special = 0;
             break;
         case dDamage_LavaHefty:
-            SetupSectorDamage_Param(sector, 8, 32, 0,
-                                    SECF_DMG_TERRAIN_FX | SECF_DMG_UNBLOCKABLE);
+            SetupSectorDamage_Param(sector, 8, 32, 256, SECF_DMG_TERRAIN_FX);
             sector->special = 0;
             break;
         case dScroll_EastLavaDamage:
             Add_SectorScroller_Param(sc_floor, i, false, -4, 0);
-            SetupSectorDamage_Param(sector, 5, 32, 0,
-                                    SECF_DMG_TERRAIN_FX | SECF_DMG_UNBLOCKABLE);
+            SetupSectorDamage_Param(sector, 5, 32, 256, SECF_DMG_TERRAIN_FX);
             break;
         // Heretic
         case hDamage_Sludge:
@@ -3303,7 +3298,7 @@ static void SpawnSector_Param(sector_t *sector, int i)
             sector->special = 0;
             break;
         case Damage_InstantDeath:
-            SetupSectorDamage_Param(sector, 10000, 1, 0, SECF_DMG_UNBLOCKABLE);
+            SetupSectorDamage_Param(sector, 10000, 1, 256, 0);
             sector->special = 0;
             break;
         case sDamage_SuperHellslime:
@@ -3374,10 +3369,10 @@ static void SpawnSectorSpecials_Param(void)
     sector_t *sector = sectors;
     for (int i = 0; i < numsectors; i++, sector++)
     {
-      SpawnGeneralizedSector_Param(sector);
-      sector->special &= 0xff;
-      SpawnSectorLights_Param(sector);
-      SpawnSector_Param(sector, i);
+        SpawnGeneralizedSector_Param(sector);
+        sector->special &= 0xff;
+        SpawnSectorLights_Param(sector);
+        SpawnSector_Param(sector, i);
     }
 }
 
@@ -3434,10 +3429,13 @@ static void SpawnExtras_Classic(void)
             case 272: // Same, only flipped
                 {
                     // Pre-calculate sky color
-                    skyindex_t skyindex = R_AddLevelskyFromLine(&sides[lines[i].sidenum[0]]);
-                    for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+                    skyindex_t skyindex =
+                        R_AddLevelskyFromLine(&sides[lines[i].sidenum[0]]);
+                    for (s = -1;
+                         (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
                     {
-                        sectors[s].floorsky = sectors[s].ceilingsky = skyindex | PL_SKYFLAT;
+                        sectors[s].floorsky = sectors[s].ceilingsky =
+                            skyindex | PL_SKYFLAT;
                     }
                     break;
                 }
@@ -3455,7 +3453,8 @@ static void SpawnExtras_Classic(void)
                 break;
 
             case 2075:
-                for (int s = -1; (s = P_FindSectorFromLineTag(&lines[i], s)) >= 0;)
+                for (int s = -1;
+                     (s = P_FindSectorFromLineTag(&lines[i], s)) >= 0;)
                 {
                     sectors[s].tint = lines[i].fronttint;
                 }
@@ -3464,9 +3463,133 @@ static void SpawnExtras_Classic(void)
     }
 }
 
+static void HandleStaticInitSpecial(line_t *l)
+{
+    typedef enum init_type_e
+    {
+        Init_Gravity,
+        Init_Color,
+        Init_Damage,
+        Init_SectorLink,
+
+        Init_EDSector = 253,
+        Init_EDLine,
+        Init_TransferSky,
+    } init_type_t;
+
+    init_type_t init_type = l->args[1];
+
+    // fixed_t grav = 0
+    skyindex_t skyindex = 0;
+    short dmg_amount = 0;
+    byte dmg_leakrate = 0;
+    byte dmg_interval = 0;
+
+    switch (init_type)
+    {
+        case Init_Gravity:
+            // grav = FixedDiv(P_AproxDistance(l->dx, l->dy), 100 * FRACUNIT)
+            for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+            {
+                // sectors[s].gravity = grav;
+            }
+            break;
+        case Init_Color:
+            // Unsupported, requires true color (or hardware) renderer
+            break;
+        case Init_Damage:
+            dmg_amount = P_AproxDistance(l->dx, l->dy) >> FRACBITS;
+            if (dmg_amount < 20)
+            {
+                dmg_leakrate = 0;
+                dmg_interval = 32;
+            }
+            else if (dmg_amount < 50)
+            {
+                dmg_leakrate = 5;
+                dmg_interval = 32;
+            }
+            else
+            {
+                dmg_leakrate = 0;
+                dmg_interval = 1;
+            }
+
+            for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+            {
+                sectors[s].dmg_amount = dmg_amount;
+                sectors[s].dmg_leakrate = dmg_leakrate;
+                sectors[s].dmg_interval = dmg_interval;
+            }
+            break;
+        case Init_SectorLink:
+        case Init_EDSector:
+        case Init_EDLine:
+            // Unsupported
+            break;
+
+        // killough 10/98:
+        //
+        // Support for sky textures being transferred from sidedefs.
+        // Allows scrolling and other effects (but if scrolling is
+        // used, then the same sector tag needs to be used for the
+        // sky sector, the sky-transfer linedef, and the
+        // scroll-effect linedef). Still requires user to use F_SKY1
+        // for the floor or ceiling texture, to distinguish floor
+        // and ceiling sky.
+        case Init_TransferSky:
+            skyindex = R_AddLevelskyFromLine(&sides[l->sidenum[0]]);
+            for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+            {
+                sectors[s].floorsky = sectors[s].ceilingsky =
+                    skyindex | PL_SKYFLAT;
+            }
+            break;
+    }
+}
+
 static void SpawnExtras_Param(void)
 {
-    // TODO: add this
+    line_t *l = lines;
+    for (int i = 0; i < numlines; i++, l++)
+    {
+        int sec = l->frontsector - sectors;
+
+        switch (l->special)
+        {
+            // [RH] ZDoom Static_Init settings
+            case Static_Init:
+                HandleStaticInitSpecial(l);
+                break;
+
+            // killough 3/7/98:
+            // support for drawn heights coming from different sector
+            case Transfer_Heights:
+                for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+                {
+                    sectors[s].heightsec = sec;
+                }
+                break;
+
+            // killough 3/16/98: Add support for setting
+            // floor lighting independently (e.g. lava)
+            case Transfer_FloorLight:
+                for (int s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+                {
+                    sectors[s].floorlightsec = sec;
+                }
+                break;
+
+            // killough 4/11/98: Add support for setting
+            // ceiling lighting independently
+            case Transfer_CeilingLight:
+                for (int s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
+                {
+                    sectors[s].ceilinglightsec = sec;
+                }
+                break;
+        }
+    }
 }
 
 //

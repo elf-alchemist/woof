@@ -788,8 +788,8 @@ static void read_ceiling_t(ceiling_t *str, thinker_class_t tc)
     str->crush = read32();
     str->transfer.special = read16();
     str->transfer.dmg_amount = read16();
-    str->transfer.dmg_interval = read8();
-    str->transfer.dmg_leakrate = read8();
+    str->transfer.dmg_interval = read16();
+    str->transfer.dmg_leakrate = read16();
     str->transfer.flags = read32();
     str->texture = read16();
     str->direction = read32();
@@ -810,8 +810,8 @@ static void write_ceiling_t(ceiling_t *str)
     write32(str->crush);
     write16(str->transfer.special);
     write16(str->transfer.dmg_amount);
-    write8(str->transfer.dmg_interval);
-    write8(str->transfer.dmg_leakrate);
+    write16(str->transfer.dmg_interval);
+    write16(str->transfer.dmg_leakrate);
     write32(str->transfer.flags);
     write16(str->texture);
     write32(str->direction);
@@ -857,8 +857,8 @@ static void read_floormove_t(floormove_t *str, thinker_class_t tc)
     str->direction = read32();
     str->transfer.special = read16();
     str->transfer.dmg_amount = read16();
-    str->transfer.dmg_interval = read8();
-    str->transfer.dmg_leakrate = read8();
+    str->transfer.dmg_interval = read16();
+    str->transfer.dmg_leakrate = read16();
     str->transfer.flags = read32();
     str->texture = read16();
     str->floordestheight = read32();
@@ -874,8 +874,8 @@ static void write_floormove_t(floormove_t *str)
     write32(str->direction);
     write16(str->transfer.special);
     write16(str->transfer.dmg_amount);
-    write8(str->transfer.dmg_interval);
-    write8(str->transfer.dmg_leakrate);
+    write16(str->transfer.dmg_interval);
+    write16(str->transfer.dmg_leakrate);
     write32(str->transfer.flags);
     write16(str->texture);
     write32(str->floordestheight);

@@ -701,8 +701,8 @@ typedef struct special_s
   short special;
   unsigned int flags;
   short dmg_amount;
-  byte  dmg_leakrate;
-  byte  dmg_interval;
+  short dmg_leakrate;
+  short dmg_interval;
 } special_t;
 
 typedef struct ceiling_s
