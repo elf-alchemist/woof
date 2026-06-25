@@ -570,6 +570,7 @@ void P_LinedefInit(line_t * const linedef)
   // Andrey Budko: fix sound origin for large levels
   linedef->soundorg.x = linedef->bbox[BOXLEFT] / 2 + linedef->bbox[BOXRIGHT] / 2;
   linedef->soundorg.y = linedef->bbox[BOXTOP] / 2 + linedef->bbox[BOXBOTTOM] / 2;
+  linedef->soundorg.thinker.function.p1 = P_DegenMobjThinker;
 
   /* cph 2006/09/30 - fix sidedef errors right away.
     * cph 2002/07/20 - these errors are fatal if not fixed, so apply them
