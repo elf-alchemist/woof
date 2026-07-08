@@ -26,7 +26,7 @@
 #include "sounds.h"
 
 //
-// Parameterized line specials type definitions
+// Parameterized actions type definitions
 //
 
 typedef int (*ParamSpec)(line_t *line, mobj_t *mobj, bool backSide, int arg[5]);
@@ -39,7 +39,7 @@ static ParamSpec LineSpecials[NUM_SPECIAL];
 #define LS(a) [a] = LS_##a
 
 //
-// Parameterized line specials execution
+// Parameterized actions execution
 //
 
 static boolean TestActivateLine(line_t *line, mobj_t *mo, int side, spac_t spac)
@@ -167,7 +167,7 @@ static boolean TestActivateLine(line_t *line, mobj_t *mo, int side, spac_t spac)
     return true;
 }
 
-static boolean CheckKeys(mobj_t *mo, lockdefs_t lock, boolean legacy)
+boolean P_CheckKeys(mobj_t *mo, lockdefs_t lock, boolean legacy)
 {
     if (!mo || !mo->player)
     {
@@ -308,7 +308,7 @@ boolean P_ActivateLine(line_t *line, mobj_t *mo, int side, spac_t spac)
                 break;
         }
 
-        if (!CheckKeys(mo, line->lock, legacy))
+        if (!P_CheckKeys(mo, line->lock, legacy))
         {
             return false;
         }
@@ -325,7 +325,7 @@ boolean P_ActivateLine(line_t *line, mobj_t *mo, int side, spac_t spac)
         line->special = 0;
     }
 
-    if (buttonSuccess && line->spac & SPAC_Switch)
+    if (buttonSuccess && line->spac & (SPAC_Use | SPAC_Impact | SPAC_Push))
     {
         P_ChangeSwitchTexture(line, repeat);
     }
@@ -344,7 +344,7 @@ boolean P_ExecuteLineSpecial(line_t *line, int special, int32_t args[5],
 }
 
 //
-// Parameterized line specials implementation
+// Parameterized actions implementation
 //
 
 FUNC(NOP)

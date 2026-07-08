@@ -270,8 +270,6 @@ typedef enum spac_e
     SPAC_Damage     = (1u << 11),
     SPAC_Death      = (1u << 12),
     SPAC_Walking    = (1u << 13),
-
-    SPAC_Switch = (SPAC_Use | SPAC_Impact | SPAC_Push),
 } spac_t;
 
 // Sector definition, from editing.

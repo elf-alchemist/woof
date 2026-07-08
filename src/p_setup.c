@@ -1212,7 +1212,7 @@ boolean P_LoadReject(int lumpnum, int totallines)
 
 static void LoadMap(map_t *map)
 {
-    // Parameterized specials
+  // Parameterized actions
   if (map->param)
   {
     P_LoadLineDefs = LoadLineDefs_Param;

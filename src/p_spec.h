@@ -383,7 +383,35 @@ typedef enum
   genBlazeClose,
   genCdO,
   genBlazeCdO,
+
+  // Parameterized actions
+  doorWaitRaise,
+  doorWaitClose,
 } vldoor_e;
+
+typedef enum lockdefs_e
+{
+    Lock_None = 0,
+    Lock_RedCard = 1,
+    Lock_BlueCard = 2,
+    Lock_YellowCard = 3,
+    Lock_RedSkull = 4,
+    Lock_BlueSkull = 5,
+    Lock_YellowSkull = 6,
+
+    Lock_Any = 100,
+    Lock_All = 101,
+
+    Lock_RedLax = 129,
+    Lock_BlueLax = 130,
+    Lock_YellowLax = 131,
+    Lock_Red = 132,
+    Lock_Blue = 133,
+    Lock_Yellow = 134,
+
+    Lock_AnyX = 228,
+    Lock_EachColor = 229,
+} lockdefs_t;
 
 // p_ceilng
 
@@ -408,7 +436,40 @@ typedef enum
   genCrusher,
   genSilentCrusher,
 
+  // Parameterized actions
+  ceilLowerByValue,
+  ceilLowerToHighest,
+  ceilLowerToLowest,
+  ceilLowerToNearest,
+  ceilLowerToHighestFloor,
+  ceilLowerToFloor,
+  ceilLowerByTexture,
+  ceilLowerInstant,
+  ceilLowerAndCrush,
+
+  ceilRaiseByValue,
+  ceilRaiseToHighest,
+  ceilRaiseToLowest,
+  ceilRaiseToNearest,
+  ceilRaiseToHighestFloor,
+  ceilRaiseToFloor,
+  ceilRaiseByTexture,
+  ceilRaiseInstant,
+
+  ceilCrushAndRaise,
+  ceilCrushRaiseAndStay,
+
+  ceilMoveToValue,
+
+  ceil_placeholder,
 } ceiling_e;
+
+typedef enum
+{
+  crushDoom = 0,
+  crushHexen = 1,
+  crushSlowdown = 2,
+} crushmode_e;
 
 // p_floor
 
@@ -467,13 +528,45 @@ typedef enum
   //new types for stair builders
   buildStair,
   genBuildStair,
+
+  // Parameterized actions
+  floorLowerByValue,
+  floorLowerToHighest,
+  floorLowerToLowest,
+  floorLowerToNearest,
+  floorLowerToLowestCeiling,
+  floorLowerToCeiling,
+  floorLowerByTexture,
+  floorLowerAndChange,
+  floorLowerInstant,
+
+  floorRaiseByValue,
+  floorRaiseToHighest,
+  floorRaiseToLowest,
+  floorRaiseToNearest,
+  floorRaiseToLowestCeiling,
+  floorRaiseToCeiling,
+  floorRaiseByTexture,
+  floorRaiseAndChange,
+  floorRaiseInstant,
+
+  floorMoveToValue,
+  floorRaiseAndCrush,
+  floorRaiseAndCrushDoom,
+
+  floorBuildStair,
+  floorWaitStair,
+  floorResetStair,
 } floor_e;
 
 typedef enum
 {
   build8, // slowly build by 8
-  turbo16 // quickly build by 16
-    
+  turbo16, // quickly build by 16
+
+  // Parameterized actions
+  stairBuildDown,
+  stairBuildUp,
 } stair_e;
 
 typedef enum
@@ -481,6 +574,10 @@ typedef enum
   elevateUp,
   elevateDown,
   elevateCurrent,
+
+  // Parameterized actions
+  elevateLower,
+  elevateRaise,
 } elevator_e;
 
 //////////////////////////////////////////////////////////////////
@@ -584,7 +681,7 @@ typedef struct
 
 } glow_t;
 
-// Parameterized Specials
+// Parameterized actions
 
 typedef struct glow_param_s
 {
@@ -723,9 +820,14 @@ typedef struct ceiling_s
   int direction;
 
   // ID
-  int tag;                   
+  int tag;
   int olddirection;
   struct ceilinglist *list;   // jff 2/22/98 copied from killough's plats
+
+  // Parameterized actions
+  fixed_t speed2;
+  crushmode_e crushmode;
+  byte silent;
 } ceiling_t;
 
 typedef struct ceilinglist {
@@ -746,6 +848,9 @@ typedef struct floormove_s
   short texture;
   fixed_t floordestheight;
   fixed_t speed;
+
+  // Parameterized actions
+  boolean hexen_crush;
 } floormove_t;
 
 typedef struct elevator_s
@@ -915,6 +1020,22 @@ boolean P_CanUnlockGenDoor(struct line_s *line, struct player_s *player);
 
 int P_SectorActive(special_e t, struct sector_s *s);
 
+void P_CopySectorSpecial(struct sector_s *dest, struct sector_s *source);
+
+void P_TransferSpecial(struct sector_s *sector, struct special_s *newspecial);
+
+void P_CopyTransferSpecial(struct special_s *newspecial, struct sector_s *sector);
+
+void P_ResetTransferSpecial(struct special_s *newspecial);
+
+void P_ResetSectorSpecial(struct sector_s *sector);
+
+void P_ClearNonGeneralizedSectorSpecial(struct sector_s *sector);
+
+boolean P_IsSpecialSector(struct sector_s *sector);
+
+void P_PlayerCollectsSecret(struct player_s *player);
+
 boolean P_IsDeathExit(struct sector_s *sec);
 
 boolean P_IsExitLine(struct line_s * line);
@@ -1003,6 +1124,10 @@ int EV_DoElevator(struct line_s *line, elevator_e elevtype);
 int EV_BuildStairs(struct line_s *line, stair_e type);
 
 int EV_DoFloor(struct line_s *line, floor_e floortype);
+
+int EV_DoFloor_Param(floor_e floortype, struct line_s *line, int tag,
+                     fixed_t speed, fixed_t height, int crush, int change,
+                     boolean hexen_crush, boolean heretic_lower);
 
 // p_ceilng
 
@@ -1129,6 +1254,10 @@ void P_SpawnDoorCloseIn30(struct sector_s *sec);
 
 void P_SpawnDoorRaiseIn5Mins(struct sector_s *sec);
 
+int EV_DoDoor_Param(vldoor_e type, struct line_s *line, struct mobj_s *mo, int tag,
+                    fixed_t speed, int topwait, enum lockdefs_e lock, int lightTag,
+                    boolean boomgen, int topcountdown);
+
 // p_ceilng
 
 void P_RemoveActiveCeiling(ceiling_t *ceiling);  //jff 2/22/98
@@ -1144,38 +1273,12 @@ struct mobj_s *P_GetPushThing(int);                                // phares 3/2
 void P_HitFloor (struct mobj_s *mo, int oof); // [FG] play sound when hitting animated floor
 
 //
-// p_specx -- Parameterized line specials
+// p_specx -- Parameterized actions
 //
 
 void P_ThrustMobj(struct mobj_s *mo, angle_t angle, fixed_t move);
 
-// Default LOCKDEFS
-//   The definitions 129, 130 and 131 are meant to include Heretic keys :/
-typedef enum lockdefs_e
-{
-    Lock_None = 0,
-    Lock_RedCard = 1,
-    Lock_BlueCard = 2,
-    Lock_YellowCard = 3,
-    Lock_RedSkull = 4,
-    Lock_BlueSkull = 5,
-    Lock_YellowSkull = 6,
-
-    Lock_Any = 100,
-    Lock_All = 101,
-
-    Lock_RedLax = 129,
-    Lock_BlueLax = 130,
-    Lock_YellowLax = 131,
-    Lock_Red = 132,
-    Lock_Blue = 133,
-    Lock_Yellow = 134,
-
-    Lock_AnyX = 228,
-    Lock_EachColor = 229,
-} lockdefs_t;
-
-// Parameterized specials
+// Parameterized actions
 // https://doomwiki.org/wiki/Action_specials
 typedef enum param_action_e
 {
@@ -1587,18 +1690,10 @@ typedef enum sector_gen_e
     PARAM_PUSH_MASK = (1u << 12),              // 0x1000,
 } sector_gen_t;
 
-void P_PlayerCollectsSecret(struct player_s *player);
+boolean P_CheckKeys(struct mobj_s *mo, lockdefs_t lock, boolean legacy);
 boolean P_ActivateLine(struct line_s * line, struct mobj_s * mo, int side, spac_t spac);
 boolean P_ExecuteLineSpecial(struct line_s *line, int special, int32_t args[5],
                              struct mobj_s *mo, int side);
-
-boolean P_IsSpecialSector(struct sector_s *sector);
-void P_CopySectorSpecial(struct sector_s *dest, struct sector_s *source);
-void P_TransferSpecial(struct sector_s *sector, struct special_s *newspecial);
-void P_CopyTransferSpecial(struct special_s *newspecial, struct sector_s *sector);
-void P_ResetTransferSpecial(struct special_s *newspecial);
-void P_ResetSectorSpecial(struct sector_s *sector);
-void P_ClearNonGeneralizedSectorSpecial(struct sector_s *sector);
 
 #endif
 

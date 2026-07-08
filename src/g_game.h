@@ -139,7 +139,7 @@ extern boolean secretexit;
 
 extern byte *demo_p;
 
-// Parameterized Specials
+// Parameterized Actions
 void G_Completed(int map, int position, int flags, angle_t angle);
 
 #endif

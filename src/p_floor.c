@@ -636,6 +636,219 @@ int EV_DoFloor
   return rtn;
 }
 
+static void SetFloorChangeType(floormove_t *floor, sector_t *sec, int change)
+{
+    floor->texture = sec->floorpic;
+
+    switch (change & 3)
+    {
+        case 0:
+            break;
+        case 1:
+            P_ResetTransferSpecial(&floor->transfer);
+            floor->type = genFloorChg0;
+            break;
+        case 2:
+            floor->type = genFloorChg;
+            break;
+        case 3:
+            P_CopyTransferSpecial(&floor->transfer, sec);
+            floor->type = genFloorChgT;
+            break;
+    }
+}
+
+static void SpawnFloor_Param(sector_t *sec, floor_e floortype, line_t *line,
+                             fixed_t speed, fixed_t height, int crush,
+                             int change, boolean hexen_crush,
+                             boolean heretic_lower)
+{
+    floormove_t *floor = arena_alloc(thinkers_arena, floormove_t);
+    sector_t *modelsec;
+    int sector_id = (sec - sectors);
+
+    P_AddThinker(&floor->thinker);
+    sec->floordata = floor;
+    floor->thinker.function.p1 = T_MoveFloorAdapter;
+    floor->type = floortype;
+    floor->crush = crush;
+    floor->speed = speed;
+    floor->sector = sec;
+    floor->hexen_crush = hexen_crush;
+
+    switch (floortype)
+    {
+        case floorLowerToHighest:
+            floor->direction = -1;
+            floor->floordestheight = P_FindHighestFloorSurrounding(sec);
+            if (heretic_lower || floor->floordestheight != sec->floorheight)
+            {
+                floor->floordestheight += height;
+            }
+            break;
+        case floorLowerToLowest:
+            floor->direction = -1;
+            floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+            break;
+        case floorLowerToNearest:
+            floor->direction = -1;
+            floor->floordestheight =
+                P_FindNextLowestFloor(sec, sec->floorheight);
+            break;
+        case floorLowerInstant:
+            floor->speed = height;
+        case floorLowerByValue:
+            floor->direction = -1;
+            floor->floordestheight = sec->floorheight - height;
+            break;
+        case floorRaiseInstant:
+            floor->speed = height;
+        case floorRaiseByValue:
+            floor->direction = 1;
+            floor->floordestheight = sec->floorheight + height;
+            break;
+        case floorMoveToValue:
+            floor->floordestheight = height;
+            floor->direction =
+                (floor->floordestheight > sec->floorheight) ? 1 : -1;
+            break;
+        case floorRaiseAndCrushDoom:
+            height = 8 * FRACUNIT;
+        case floorRaiseToLowestCeiling:
+            floor->direction = 1;
+            floor->floordestheight =
+                P_FindLowestCeilingSurrounding(sec) - height;
+            if (floor->floordestheight > sec->ceilingheight)
+            {
+                floor->floordestheight = sec->ceilingheight - height;
+            }
+            break;
+        case floorRaiseToHighest:
+            floor->direction = 1;
+            floor->floordestheight = P_FindHighestFloorSurrounding(sec);
+            break;
+        case floorRaiseToNearest:
+            floor->direction = 1;
+            floor->floordestheight =
+                P_FindNextHighestFloor(sec, sec->floorheight);
+            break;
+        case floorRaiseToLowest:
+            floor->direction = 1;
+            floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+            break;
+        case floorRaiseAndCrush:
+            height = 8 * FRACUNIT;
+        case floorRaiseToCeiling:
+            floor->direction = 1;
+            floor->floordestheight = sec->ceilingheight - height;
+            break;
+        case floorLowerToLowestCeiling:
+            floor->direction = -1;
+            floor->floordestheight = P_FindLowestCeilingSurrounding(sec);
+            break;
+        case floorLowerByTexture:
+            floor->direction = -1;
+            floor->floordestheight =
+                sec->floorheight - P_FindShortestTextureAround(sector_id);
+            break;
+        case floorRaiseByTexture:
+            floor->direction = 1;
+            floor->floordestheight =
+                sec->floorheight + P_FindShortestTextureAround(sector_id);
+            break;
+        case floorLowerToCeiling:
+            floor->direction = -1;
+            floor->floordestheight = sec->ceilingheight - height;
+            break;
+        case floorRaiseAndChange:
+            floor->direction = 1;
+            floor->floordestheight = sec->floorheight + height;
+            if (line)
+            {
+                sec->floorpic = line->frontsector->floorpic;
+                P_CopySectorSpecial(sec, line->frontsector);
+            }
+            else
+            {
+                P_ResetSectorSpecial(sec);
+            }
+            break;
+        case floorLowerAndChange:
+            floor->direction = -1;
+            floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+            floor->texture = sec->floorpic;
+            P_CopyTransferSpecial(&floor->transfer, sec);
+
+            modelsec =
+                P_FindModelFloorSector(floor->floordestheight, sector_id);
+            if (modelsec)
+            {
+                floor->texture = modelsec->floorpic;
+                P_CopyTransferSpecial(&floor->transfer, modelsec);
+            }
+            break;
+        default:
+            break;
+    }
+
+    // hexen and zdoom emit sound at this point, but not doom
+
+    if (change & 3)
+    {
+        // [RH] Need to do some transferring
+        if (change & 4)
+        {
+            // Numeric model change
+            boolean ceiling = (floortype == floorRaiseToLowestCeiling
+                               || floortype == floorLowerToLowestCeiling
+                               || floortype == floorRaiseToCeiling
+                               || floortype == floorLowerToCeiling);
+
+            sector_t *modelsec =
+                (ceiling)
+                    ? P_FindModelCeilingSector(floor->floordestheight,
+                                               sector_id)
+                    : P_FindModelFloorSector(floor->floordestheight, sector_id);
+
+            if (modelsec)
+            {
+                SetFloorChangeType(floor, modelsec, change);
+            }
+        }
+        else if (line)
+        {
+            // Trigger model change
+            SetFloorChangeType(floor, line->frontsector, change);
+        }
+    }
+}
+
+int EV_DoFloor_Param(floor_e floortype, line_t *line, int tag, fixed_t speed,
+                     fixed_t height, int crush, int change, boolean hexen_crush,
+                     boolean heretic_lower)
+{
+    sector_t *sec;
+    int retcode = 0;
+
+    speed *= FRACUNIT / 8;
+    height *= FRACUNIT;
+
+    int s = -1;
+    while ((s = P_FindSectorFromLineTag(line, s)) >= 0)
+    {
+        sec = &sectors[s];
+        if (sec->floordata)
+        {
+            continue;
+        }
+        retcode = 1;
+        SpawnFloor_Param(sec, floortype, line, speed, height, crush, change,
+                          hexen_crush, heretic_lower);
+    }
+
+    return retcode;
+}
+
 //
 // EV_DoChange()
 //

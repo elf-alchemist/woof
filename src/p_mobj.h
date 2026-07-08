@@ -333,7 +333,7 @@ typedef struct mobj_s
     mobjflag_int_t      intflags;  // killough 9/15/98: internal flags
     int                 health;
 
-    // Parameterized specials
+    // Parameterized actions
     int32_t             tid;
     int32_t             special;
     int32_t             args[5];

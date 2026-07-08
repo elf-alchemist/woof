@@ -446,7 +446,7 @@ int EV_LightTurnOnPartway(line_t *line, fixed_t level)
   return 1;
 }
 
-// Parameterized specials
+// Parameterized actions
 
 static int PhaseTable[64] = {
     128, 112, 96, 80, 64, 48, 32, 32, 16, 16, 16, 0,  0,  0,  0,   0,
