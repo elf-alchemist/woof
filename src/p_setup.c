@@ -1214,15 +1214,35 @@ static void LoadMap(map_t *map)
   // Parameterized actions
   if (map->param)
   {
+    // Parameterized actions
+    P_UseSpecialLine = P_UseSpecialLine_Classic;
+    P_ShootSpecialLine = P_ShootSpecialLine_Classic;
+    P_CrossSpecialLine = P_CrossSpecialLine_Classic;
+    P_PlayerInSector = P_PlayerInSector_Classic;
+    P_MObjInSector = P_MObjInSector_Classic;
+    P_ApplySectorMovement = P_ApplySectorMovement_Classic;
     P_LoadLineDefs = LoadLineDefs_Param;
     P_ProcessSideDefs = P_ProcessSideDefs_Param;
     P_ProcessLinedefSpecial = P_ProcessLinedefSpecial_Param;
+    // ZDoom uses only higher precision math
+    P_PointOnLineSide = P_PointOnLineSide_Precise;
+    P_PointOnDivlineSide = P_PointOnDivlineSide_Precise;
   }
   else
   {
+    // Classic line specials
+    P_UseSpecialLine = P_UseSpecialLine_Classic;
+    P_ShootSpecialLine = P_ShootSpecialLine_Classic;
+    P_CrossSpecialLine = P_CrossSpecialLine_Classic;
+    P_PlayerInSector = P_PlayerInSector_Classic;
+    P_MObjInSector = P_MObjInSector_Classic;
+    P_ApplySectorMovement = P_ApplySectorMovement_Classic;
     P_LoadLineDefs = LoadLineDefs_Classic;
     P_ProcessSideDefs = P_ProcessSideDefs_Classic;
     P_ProcessLinedefSpecial = P_ProcessLinedefSpecial_Classic;
+    // The original implementation used only lower precision math
+    P_PointOnLineSide = P_PointOnLineSide_Classic;
+    P_PointOnDivlineSide = P_PointOnDivlineSide_Classic;
   }
 
   // note: most of this ordering is important
@@ -1280,7 +1300,6 @@ static void CheckMapFormat(int lumpnum, map_t *map)
     map->map_format = MAP_NONE;
     map->bsp_format = BSP_NANO;
     map->bmap_format = BMAP_BoomBuilder;
-    map->built = false;
     map->param = false;
 
     map->label = lumpnum;
@@ -1313,7 +1332,6 @@ static void CheckMapFormat(int lumpnum, map_t *map)
         && W_LumpExistsWithName(lumpnum + ML_BLOCKMAP, "BLOCKMAP"))
     {
         map->map_format = MAP_DOOM;
-        map->built = true;
         map->things = lumpnum + ML_THINGS;
         map->linedefs = lumpnum + ML_LINEDEFS;
         map->sidedefs = lumpnum + ML_SIDEDEFS;
@@ -1345,7 +1363,6 @@ static void CheckMapFormat(int lumpnum, map_t *map)
         && W_LumpExistsWithName(lumpnum + MLX_SECTORS, "SECTORS"))
     {
         map->map_format = MAP_DOOM;
-        map->built = false;
         map->things = lumpnum + MLX_THINGS;
         map->linedefs = lumpnum + MLX_LINEDEFS;
         map->sidedefs = lumpnum + MLX_SIDEDEFS;
@@ -1365,7 +1382,6 @@ static void CheckMapFormat(int lumpnum, map_t *map)
     if (W_LumpExistsWithName(lumpnum + ML_TEXTMAP, "TEXTMAP"))
     {
         map->map_format = MAP_UDMF;
-        map->built = true;
         map->textmap = lumpnum + ML_TEXTMAP;
 
         // skip label and TEXTMAP, test against all other lumps until ENDMAP
@@ -1465,36 +1481,10 @@ void P_SetupLevel(int episode, int map_num, skill_t skill)
   switch (map.map_format)
   {
     case MAP_DOOM:
-      // the original implementation used only low precision math
-      P_PointOnLineSide = P_PointOnLineSide_Classic;
-      P_PointOnDivlineSide = P_PointOnDivlineSide_Classic;
-      // use classic line specials
-      P_UseSpecialLine = P_UseSpecialLine_Classic;
-      P_ShootSpecialLine = P_ShootSpecialLine_Classic;
-      P_CrossSpecialLine = P_CrossSpecialLine_Classic;
-      P_PlayerInSector = P_PlayerInSector_Classic;
-      P_MObjInSector = P_MObjInSector_Classic;
-      P_ApplySectorMovement = P_ApplySectorMovement_Classic;
-      LoadMap(&map);
-      break;
     case MAP_HEXEN:
-      // zdoom used only higher precision math
-      P_PointOnLineSide = P_PointOnLineSide_Precise;
-      P_PointOnDivlineSide = P_PointOnDivlineSide_Precise;
-      // use hexen-style/zdoom/param line specials
-      P_UseSpecialLine = P_UseSpecialLine_Param;
-      P_ShootSpecialLine = P_ShootSpecialLine_Param;
-      P_CrossSpecialLine = P_CrossSpecialLine_Param;
-      P_PlayerInSector = P_PlayerInSector_Param;
-      P_MObjInSector = P_MObjInSector_Param;
-      P_ApplySectorMovement = P_ApplySectorMovement_Param;
       LoadMap(&map);
       break;
     case MAP_UDMF:
-      // udmf requires higher precision math
-      P_PointOnLineSide = P_PointOnLineSide_Precise;
-      P_PointOnDivlineSide = P_PointOnDivlineSide_Precise;
-      // classic vs param line specials are decided by the namespace
       UDMF_LoadMap(&map);
       break;
     case MAP_NONE:

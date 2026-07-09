@@ -254,8 +254,8 @@ typedef enum
   MIF_MCROSS          = (1u << 9), // can activate monster cross lines
   MIF_PCROSS          = (1u << 10), // can activate projectile cross lines
   MIF_IMPACT          = (1u << 11), // an MF_MISSILE mobj can activate
-  MIF_CANUSEWALLS     = (1u << 12), // [ZD] mobj can "use" walls
-  MIF_COUNTSECRET     = (1u << 13), // [ZD] item pickup counts as a secret
+  MIF_CANUSEWALLS     = (1u << 12), // mobj can "use" walls
+  MIF_COUNTSECRET     = (1u << 13), // item pickup counts as a secret
   MIF_PROJECTILE      = (MIF_PCROSS|MIF_IMPACT),
   MIF_MONSTER         = (MIF_MCROSS|MIF_PUSHWALL|MIF_CANUSEWALLS),
   MIF_PLAYER          = (MIF_WINDTHRUST|MIF_PUSHWALL|MIF_CANUSEWALLS),

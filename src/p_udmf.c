@@ -29,6 +29,7 @@
 #include "m_scanner.h"
 #include "m_swap.h"
 #include "p_bsp.h"
+#include "p_maputl.h"
 #include "p_mobj.h"
 #include "p_setup.h"
 #include "p_spec.h"
@@ -371,16 +372,10 @@ static void UDMF_ParseNamespace(scanner_t *s, map_t *map)
     else if (!strcasecmp(name, "woof"))
     {
         map->param = false;
-        udmf_linedef_flags |= UDMF_LINE_PASSUSE | UDMF_LINE_BLOCK
-                              | UDMF_LINE_ALPHA | UDMF_LINE_TRANMAP;
-        udmf_thing_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM
-                            | UDMF_THING_HEALTH | UDMF_THING_ALPHA
-                            | UDMF_THING_TRANMAP | UDMF_THING_TINT;
-        udmf_sidedef_flags |= UDMF_SIDE_OFFSET | UDMF_SIDE_SCROLL
-                              | UDMF_SIDE_LIGHT | UDMF_SIDE_TINT;
-        udmf_sector_flags |= UDMF_SEC_ANGLE | UDMF_SEC_OFFSET | UDMF_SEC_SCROLL
-                             | UDMF_SEC_LIGHT | UDMF_SEC_COLORMAP
-                             | UDMF_SEC_TINT;
+        udmf_linedef_flags |= UDMF_LINE_PASSUSE | UDMF_LINE_BLOCK | UDMF_LINE_ALPHA | UDMF_LINE_TRANMAP;
+        udmf_thing_flags |= UDMF_THING_FRIEND | UDMF_THING_PARAM | UDMF_THING_HEALTH | UDMF_THING_ALPHA | UDMF_THING_TRANMAP | UDMF_THING_TINT;
+        udmf_sidedef_flags |= UDMF_SIDE_OFFSET | UDMF_SIDE_SCROLL | UDMF_SIDE_LIGHT | UDMF_SIDE_TINT;
+        udmf_sector_flags |= UDMF_SEC_ANGLE | UDMF_SEC_OFFSET | UDMF_SEC_SCROLL | UDMF_SEC_LIGHT | UDMF_SEC_COLORMAP | UDMF_SEC_TINT;
     }
     else
     {
@@ -1378,6 +1373,10 @@ void UDMF_LoadMap(map_t *map)
         I_Error("Invalid format found on ZNODES lump for UDMF map: %s",
                 lumpinfo[map->label].name);
     }
+
+    // UDMF always requires higher precision math
+    P_PointOnLineSide = P_PointOnLineSide_Precise;
+    P_PointOnDivlineSide = P_PointOnDivlineSide_Precise;
 
     // Clear everything
     UDMF_ClearMemory();

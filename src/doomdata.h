@@ -63,10 +63,6 @@ typedef struct map_s
     bmap_format_t bmap_format;
     // Is map using the parameterized line special system?
     boolean param;
-    // Is the map actually compiled by a BSP tree builder?
-    // To be more specific, does the map have the expected compiled lumps
-    // even if said compiled lumps are empty?
-    boolean built;
     // Is the reject matrix compiled correctly?
     boolean reject_built;
     // Level components

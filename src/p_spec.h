@@ -359,6 +359,22 @@ typedef enum
   genPerpetual, 
   toggleUpDn,   //jff 3/14/98 added to support instant toggle type
 
+  // Parameterized actions
+  platUpByValue,
+  platUpWaitDownStay,
+  platUpNearestWaitDownStay,
+  platUpByValueStay,
+  platDownWaitUpStay,
+  platDownWaitUpStayStone,
+  platDownByValue,
+  platDownToNearestFloor,
+  platDownToLowestCeiling,
+
+  platRaiseAndStay,
+  platRaiseAndStayLockout,
+  platPerpetualRaise,
+
+  platToggle,
 } plattype_e;
 
 // p_doors
@@ -568,6 +584,13 @@ typedef enum
   stairBuildDown,
   stairBuildUp,
 } stair_e;
+
+typedef enum
+{
+  SFP_UseSpecial = 0x01,
+  SFP_Sync       = 0x02,
+  SFP_Crush      = 0x04,
+} stair_flags_param_t;
 
 typedef enum
 {
@@ -1089,6 +1112,11 @@ void T_MoveFloorAdapter(struct mobj_s *mobj);
 
 void T_MoveElevatorAdapter(struct mobj_s *mobj);
 
+// Parameterized actions
+void T_BuildPillarAdapter(struct mobj_s *mobj);
+void T_FloorWaggleAdapter(struct mobj_s *mobj);
+void T_CeilingWaggleAdapter(struct mobj_s *mobj);
+
 // p_spec
 
 void T_ScrollAdapter(struct mobj_s *mobj); // killough 3/7/98: scroll effect thinker
@@ -1204,29 +1232,29 @@ void P_SpawnSpecials(map_t *map);
 void P_UpdateSpecials(void);
 
 // when needed
-extern boolean (*P_UseSpecialLine)(struct mobj_s *thing, struct line_s *line, int side, boolean bossaction);
-extern boolean P_UseSpecialLine_Classic(struct mobj_s *thing, struct line_s *line, int side, boolean bossaction);
-extern boolean P_UseSpecialLine_Param(struct mobj_s *thing, struct line_s *line, int side, boolean bossaction);
+boolean (*P_UseSpecialLine)(struct mobj_s *thing, struct line_s *line, int side, boolean bossaction);
+boolean P_UseSpecialLine_Classic(struct mobj_s *thing, struct line_s *line, int side, boolean bossaction);
+boolean P_UseSpecialLine_Param(struct mobj_s *thing, struct line_s *line, int side, boolean bossaction);
 
-extern void (*P_ShootSpecialLine)(struct mobj_s *thing, struct line_s *line, int side);
-extern void P_ShootSpecialLine_Classic(struct mobj_s *thing, struct line_s *line, int side);
-extern void P_ShootSpecialLine_Param(struct mobj_s *thing, struct line_s *line, int side);
+void (*P_ShootSpecialLine)(struct mobj_s *thing, struct line_s *line, int side);
+void P_ShootSpecialLine_Classic(struct mobj_s *thing, struct line_s *line, int side);
+void P_ShootSpecialLine_Param(struct mobj_s *thing, struct line_s *line, int side);
 
-extern void (*P_CrossSpecialLine)(struct line_s *line, int side, struct mobj_s  *thing, boolean bossaction);
-extern void P_CrossSpecialLine_Classic(struct line_s *line, int side, struct mobj_s *thing, boolean bossaction);
-extern void P_CrossSpecialLine_Param(struct line_s *line, int side, struct mobj_s *thing, boolean bossaction);
+void (*P_CrossSpecialLine)(struct line_s *line, int side, struct mobj_s  *thing, boolean bossaction);
+void P_CrossSpecialLine_Classic(struct line_s *line, int side, struct mobj_s *thing, boolean bossaction);
+void P_CrossSpecialLine_Param(struct line_s *line, int side, struct mobj_s *thing, boolean bossaction);
 
 extern int disable_nuke;  // killough 12/98: nukage disabling cheat
 
 void P_PlayerInSpecialSector(struct player_s *player);
 
-extern void (*P_PlayerInSector)(struct player_s *player, struct sector_s *sector);
-extern void P_PlayerInSector_Classic(struct player_s *player, struct sector_s *sector);
-extern void P_PlayerInSector_Param(struct player_s *player, struct sector_s *sector);
+void (*P_PlayerInSector)(struct player_s *player, struct sector_s *sector);
+void P_PlayerInSector_Classic(struct player_s *player, struct sector_s *sector);
+void P_PlayerInSector_Param(struct player_s *player, struct sector_s *sector);
 
-extern boolean (*P_MObjInSector)(struct mobj_s *mobj);
-extern boolean P_MObjInSector_Classic(struct mobj_s *mobj);
-extern boolean P_MObjInSector_Param(struct mobj_s *mobj);
+boolean (*P_MObjInSector)(struct mobj_s *mobj);
+boolean P_MObjInSector_Classic(struct mobj_s *mobj);
+boolean P_MObjInSector_Param(struct mobj_s *mobj);
 
 // p_lights
 

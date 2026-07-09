@@ -221,95 +221,97 @@ void P_ChangeSwitchTexture(line_t *line, int useAgain)
 
 static boolean P_IsSwitchTexture(short texture)
 {
-  int i;
+    for (int i = 0; i < numswitches * 2; ++i)
+    {
+        if (switchlist[i] == texture)
+        {
+            return true;
+        }
+    }
 
-  for (i = 0; i < numswitches * 2; ++i)
-    if (switchlist[i] == texture)
-      return true;
-
-  return false;
+    return false;
 }
 
 boolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno)
 {
-  side_t *side;
-  sector_t *front;
-
-  // Is it possible to use a side that doesn't exist?
-  if (line->sidenum[sideno] == NO_INDEX)
-  {
-    return true;
-  }
-
-  side = &sides[line->sidenum[sideno]];
-  front = side->sector;
-
-  if (mo->z + mo->height <= front->floorheight || mo->z >= front->ceilingheight)
-  {
-    return false;
-  }
-
-  // one-sided
-  if (line->sidenum[1] == NO_INDEX)
-  {
-    return true;
-  }
-
-  P_LineOpening(line);
-
-  // acts like one-sided
-  if (openrange <= 0)
-  {
-    return true;
-  }
-
-  boolean can_hit_top = (front->ceilingheight > opentop) &&
-          (mo->z + mo->height > opentop && mo->z < front->ceilingheight);
-
-  boolean can_hit_bottom = (front->floorheight < openbottom) &&
-          (mo->z + mo->height > front->floorheight && mo->z < openbottom);
-
-  boolean found_switch = false;
-
-  if (side->toptexture && P_IsSwitchTexture(side->toptexture))
-  {
-    found_switch = true;
-
-    if (can_hit_top)
+    // Is it possible to use a side that doesn't exist?
+    if (line->sidenum[sideno] == NO_INDEX)
     {
-      return true;
+        return true;
     }
-  }
 
-  if (side->bottomtexture && P_IsSwitchTexture(side->bottomtexture))
-  {
-    found_switch = true;
+    side_t *side = &sides[line->sidenum[sideno]];
+    sector_t *sec = side->sector;
 
-    if (can_hit_bottom)
+    if (mo->z + mo->height <= sec->floorheight
+        || mo->z >= sec->ceilingheight)
     {
-      return true;
+        return false;
     }
-  }
 
-  if (side->midtexture && P_IsSwitchTexture(side->midtexture))
-  {
-    fixed_t top, bottom;
-
-    found_switch = true;
-
-    if (P_GetMidTexturePosition(line, sideno, &top, &bottom))
+    // one-sided
+    if (line->sidenum[1] == NO_INDEX)
     {
-      if (front->ceilingheight > bottom && front->floorheight < top)
-      {
-        if (mo->z + mo->height > bottom && mo->z < top)
+        return true;
+    }
+
+    P_LineOpening(line);
+
+    // acts like one-sided
+    if (openrange <= 0)
+    {
+        return true;
+    }
+
+    boolean can_hit_top =
+        (sec->ceilingheight > opentop)
+        && (mo->z + mo->height > opentop && mo->z < sec->ceilingheight);
+
+    boolean can_hit_bottom =
+        (sec->floorheight < openbottom)
+        && (mo->z + mo->height > sec->floorheight && mo->z < openbottom);
+
+    boolean found_switch = false;
+
+    if (side->toptexture && P_IsSwitchTexture(side->toptexture))
+    {
+        found_switch = true;
+
+        if (can_hit_top)
         {
-          return true;
+            return true;
         }
-      }
     }
-  }
 
-  return !found_switch && (can_hit_top || can_hit_bottom);
+    if (side->bottomtexture && P_IsSwitchTexture(side->bottomtexture))
+    {
+        found_switch = true;
+
+        if (can_hit_bottom)
+        {
+            return true;
+        }
+    }
+
+    if (side->midtexture && P_IsSwitchTexture(side->midtexture))
+    {
+        fixed_t top, bottom;
+
+        found_switch = true;
+
+        if (P_GetMidTexturePosition(line, sideno, &top, &bottom))
+        {
+            if (sec->ceilingheight > bottom && sec->floorheight < top)
+            {
+                if (mo->z + mo->height > bottom && mo->z < top)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return !found_switch && (can_hit_top || can_hit_bottom);
 }
 
 //
@@ -323,26 +325,27 @@ boolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno)
 // Passed the thing using the line, the line being used, and the side used
 // Returns true if a thinker was created
 //
-boolean (*P_UseSpecialLine)(mobj_t *thing, line_t *line, int side, boolean bossaction) = P_UseSpecialLine_Classic;
+boolean (*P_UseSpecialLine)(mobj_t *thing, line_t *line, int side,
+                            boolean bossaction) = P_UseSpecialLine_Classic;
 
-boolean P_UseSpecialLine_Param(mobj_t *thing, line_t *line, int side, boolean bossaction)
+boolean P_UseSpecialLine_Param(mobj_t *thing, line_t *line, int side,
+                               boolean bossaction)
 {
-  if (side)
-  {
-    if (line->spac & SPAC_UseBack)
+    if (side)
     {
-      return P_ActivateLine(line, thing, side, SPAC_UseBack);
+        if (line->spac & SPAC_UseBack)
+        {
+            return P_ActivateLine(line, thing, side, SPAC_UseBack);
+        }
+
+        return false;
     }
 
-    return false;
-  }
-
-  return P_ActivateLine(line, thing, side, SPAC_Use);
+    return P_ActivateLine(line, thing, side, SPAC_Use);
 }
 
 boolean P_UseSpecialLine_Classic(mobj_t *thing, line_t *line, int side, boolean bossaction)
 {
-
   if (side) //jff 6/1/98 fix inadvertent deletion of side test
     return false;
 
