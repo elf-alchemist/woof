@@ -617,7 +617,9 @@ void P_LinedefInit(line_t * const linedef)
   }
 }
 
-void P_ProcessLineDefSpecial_Classic(line_t *ld)
+void (*P_ProcessLinedefSpecial)(line_t *ld) = P_ProcessLinedefSpecial_Classic;
+
+void P_ProcessLinedefSpecial_Classic(line_t *ld)
 {
   // killough 4/11/98: handle special types
   // killough 4/11/98: translucent 2s textures
@@ -646,7 +648,7 @@ void P_ProcessLineDefSpecial_Classic(line_t *ld)
   }
 }
 
-void P_ProcessLineDefSpecial_Param(line_t *ld)
+void P_ProcessLinedefSpecial_Param(line_t *ld)
 {
   if (ld->special == TranslucentLine)
   {
@@ -674,9 +676,6 @@ void P_ProcessLineDefSpecial_Param(line_t *ld)
 
 void P_LoadLineDefs2(int lump)
 {
-  void (*PostProcess)(line_t *ld) = (map.param)
-                                  ? P_ProcessLineDefSpecial_Param
-                                  : P_ProcessLineDefSpecial_Classic;
   int i = numlines;
   register line_t *ld = lines;
   for (;i--;ld++)
@@ -684,7 +683,7 @@ void P_LoadLineDefs2(int lump)
     // Andrey Budko: Can't be NO_INDEX here
     ld->frontsector = sides[ld->sidenum[0]].sector;
     ld->backsector  = ld->sidenum[1] != NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
-    PostProcess(ld);
+    P_ProcessLinedefSpecial(ld);
   }
 }
 
@@ -1217,11 +1216,13 @@ static void LoadMap(map_t *map)
   {
     P_LoadLineDefs = LoadLineDefs_Param;
     P_ProcessSideDefs = P_ProcessSideDefs_Param;
+    P_ProcessLinedefSpecial = P_ProcessLinedefSpecial_Param;
   }
   else
   {
     P_LoadLineDefs = LoadLineDefs_Classic;
     P_ProcessSideDefs = P_ProcessSideDefs_Classic;
+    P_ProcessLinedefSpecial = P_ProcessLinedefSpecial_Classic;
   }
 
   // note: most of this ordering is important

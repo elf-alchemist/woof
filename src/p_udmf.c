@@ -395,6 +395,8 @@ static void UDMF_ParseNamespace(scanner_t *s, map_t *map)
         P_PlayerInSector = P_PlayerInSector_Param;
         P_MObjInSector = P_MObjInSector_Param;
         P_ApplySectorMovement = P_ApplySectorMovement_Param;
+        P_ProcessSideDefs = P_ProcessSideDefs_Param;
+        P_ProcessLinedefSpecial = P_ProcessLinedefSpecial_Param;
     }
     else
     {
@@ -404,6 +406,8 @@ static void UDMF_ParseNamespace(scanner_t *s, map_t *map)
         P_PlayerInSector = P_PlayerInSector_Classic;
         P_MObjInSector = P_MObjInSector_Classic;
         P_ApplySectorMovement = P_ApplySectorMovement_Classic;
+        P_ProcessSideDefs = P_ProcessSideDefs_Classic;
+        P_ProcessLinedefSpecial = P_ProcessLinedefSpecial_Classic;
     }
 
     SC_MustGetToken(s, ';');
@@ -1099,8 +1103,7 @@ static void UDMF_LoadSectors(void)
         sectors[i].floorheight = IntToFixed(udmf_sectors[i].heightfloor);
         sectors[i].ceilingheight = IntToFixed(udmf_sectors[i].heightceiling);
         sectors[i].floorpic = R_FlatNumForName(udmf_sectors[i].texturefloor);
-        sectors[i].ceilingpic =
-            R_FlatNumForName(udmf_sectors[i].textureceiling);
+        sectors[i].ceilingpic = R_FlatNumForName(udmf_sectors[i].textureceiling);
         sectors[i].lightlevel = udmf_sectors[i].lightlevel;
         sectors[i].special = udmf_sectors[i].special;
         sectors[i].tag = udmf_sectors[i].tag;
@@ -1109,29 +1112,23 @@ static void UDMF_LoadSectors(void)
         sectors[i].lightfloor = udmf_sectors[i].lightfloor;
         sectors[i].lightceiling = udmf_sectors[i].lightceiling;
 
-        sectors[i].floor_rotation =
-            FixedToAngle(DoubleToFixed(udmf_sectors[i].rotationfloor));
-        sectors[i].ceiling_rotation =
-            FixedToAngle(DoubleToFixed(udmf_sectors[i].rotationceiling));
+        sectors[i].floor_rotation = FixedToAngle(DoubleToFixed(udmf_sectors[i].rotationfloor));
+        sectors[i].ceiling_rotation = FixedToAngle(DoubleToFixed(udmf_sectors[i].rotationceiling));
 
         sectors[i].floor_xoffs = DoubleToFixed(udmf_sectors[i].xpanningfloor);
         sectors[i].floor_yoffs = DoubleToFixed(udmf_sectors[i].ypanningfloor);
-        sectors[i].ceiling_xoffs =
-            DoubleToFixed(udmf_sectors[i].xpanningceiling);
-        sectors[i].ceiling_yoffs =
-            DoubleToFixed(udmf_sectors[i].ypanningceiling);
+        sectors[i].ceiling_xoffs = DoubleToFixed(udmf_sectors[i].xpanningceiling);
+        sectors[i].ceiling_yoffs = DoubleToFixed(udmf_sectors[i].ypanningceiling);
 
         P_SectorInit(&sectors[i]);
 
         sectors[i].colormap = R_ColormapNumForName(udmf_sectors[i].colormap);
         sectors[i].tint = R_ColormapNumForName(udmf_sectors[i].tint);
-        sectors[i].tintceiling =
-            R_ColormapNumForName(udmf_sectors[i].tintceiling);
+        sectors[i].tintceiling = R_ColormapNumForName(udmf_sectors[i].tintceiling);
         sectors[i].tintfloor = R_ColormapNumForName(udmf_sectors[i].tintfloor);
 
         if (udmf_sectors[i].scroll_floor_type
-            && (udmf_sectors[i].scroll_floor_x
-                || udmf_sectors[i].scroll_floor_y))
+            && (udmf_sectors[i].scroll_floor_x || udmf_sectors[i].scroll_floor_y))
         {
             Add_SectorScroller_EE(udmf_sectors[i].scroll_floor_type, i, false,
                                   udmf_sectors[i].scroll_floor_x,
@@ -1156,8 +1153,7 @@ static void UDMF_LoadSectors(void)
         }
 
         if (udmf_sectors[i].scrollceilingmode
-            && (udmf_sectors[i].xscrollceiling
-                || udmf_sectors[i].yscrollceiling))
+            && (udmf_sectors[i].xscrollceiling || udmf_sectors[i].yscrollceiling))
         {
             Add_SectorScroller_Param(
                 udmf_sectors[i].scrollceilingmode, i, true,
@@ -1182,10 +1178,8 @@ static void UDMF_LoadSideDefs(void)
         sides[i].offsety_top = DoubleToFixed(udmf_sidedefs[i].offsety_top);
         sides[i].offsetx_mid = DoubleToFixed(udmf_sidedefs[i].offsetx_mid);
         sides[i].offsety_mid = DoubleToFixed(udmf_sidedefs[i].offsety_mid);
-        sides[i].offsetx_bottom =
-            DoubleToFixed(udmf_sidedefs[i].offsetx_bottom);
-        sides[i].offsety_bottom =
-            DoubleToFixed(udmf_sidedefs[i].offsety_bottom);
+        sides[i].offsetx_bottom = DoubleToFixed(udmf_sidedefs[i].offsetx_bottom);
+        sides[i].offsety_bottom = DoubleToFixed(udmf_sidedefs[i].offsety_bottom);
 
         P_SidedefInit(&sides[i]);
 
@@ -1306,10 +1300,8 @@ static void UDMF_LoadLineDefs(void)
     }
 }
 
-static void UDMF_LoadSideDefs_Post(boolean param)
+static void UDMF_LoadSideDefs_Post(void)
 {
-    P_ProcessSideDefs =
-        (param) ? P_ProcessSideDefs_Param : P_ProcessSideDefs_Classic;
     for (int i = 0; i < numsides; i++)
     {
         P_ProcessSideDefs(&sides[i], i, udmf_sidedefs[i].texturebottom,
@@ -1318,16 +1310,11 @@ static void UDMF_LoadSideDefs_Post(boolean param)
     }
 }
 
-static void UDMF_LoadLineDefs_Post(boolean param)
+static void UDMF_LoadLineDefs_Post(void)
 {
-    if (param) // Nothing to do
-    {
-        return;
-    }
-
     for (int i = 0; i < numlines; i++)
     {
-        P_ProcessLineDefSpecial_Classic(&lines[i]);
+        P_ProcessLinedefSpecial(&lines[i]);
     }
 }
 
@@ -1400,10 +1387,10 @@ void UDMF_LoadMap(map_t *map)
     // note: most of this ordering is important
     UDMF_LoadVertexes();
     UDMF_LoadSectors();
-    UDMF_LoadSideDefs();                // <- This needs Sectors
-    UDMF_LoadLineDefs();                // <- this needs Sides
-    UDMF_LoadSideDefs_Post(map->param); // <- this needs side_t::special
-    UDMF_LoadLineDefs_Post(map->param); // <- this needs Sides Post Processing
+    UDMF_LoadSideDefs();      // <- This needs Sectors
+    UDMF_LoadLineDefs();      // <- this needs Sides
+    UDMF_LoadSideDefs_Post(); // <- this needs side_t::special
+    UDMF_LoadLineDefs_Post(); // <- this needs Sides Post Processing
 
     map->bmap_format = P_LoadBlockMap(map->blockmap);
     P_LoadBSPTree_ZDBSP(map->znodes, map->bsp_format);
