@@ -24,6 +24,10 @@
 #include <ctype.h>
 #endif
 
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +43,8 @@
 #include "d_player.h"
 #include "d_ticcmd.h"
 #include "decl_main.h"
+#include "decl_sndinfo.h"
+#include "decl_sounds.h"
 #include "deh_main.h"
 #include "deh_strings.h"
 #include "deh_thing.h"
@@ -104,6 +110,7 @@ boolean clcoopspawns;   // checkparm of -coop_spawns
 boolean cshalfplayerdamage = false;
 boolean csdoubleammo = false;
 boolean csaggromonsters = false;
+int cshelperdogs = 0;
 
 boolean nomonsters;     // working -nomonsters
 boolean respawnparm;    // working -respawn
@@ -221,8 +228,9 @@ void D_ProcessEvents (void)
 //
 
 // wipegamestate can be set to -1 to force a wipe on the next draw
-gamestate_t    wipegamestate = GS_DEMOSCREEN;
-static int     screen_melt = wipe_Melt;
+gamestate_t wipegamestate = GS_DEMOSCREEN;
+wipefx_t    screen_wipe_internal = wipe_Default;
+wipefx_t    screen_wipe = wipe_None;
 
 void D_Display (void)
 {
@@ -259,7 +267,7 @@ void D_Display (void)
   wipe = false;
 
   // save the current screen if about to wipe
-  if (gamestate != wipegamestate && (strictmode || screen_melt))
+  if (gamestate != wipegamestate)
     {
       wipe = true;
       wipe_StartScreen(0, 0, video.width, video.height);
@@ -391,8 +399,7 @@ void D_Display (void)
 
       fractionaltic = I_GetFracTime();
 
-      done = wipe_ScreenWipe(strictmode ? wipe_Melt : screen_melt,
-                             0, 0, video.width, video.height, tics);
+      done = wipe_ScreenWipe(0, 0, video.width, video.height, tics);
       wipestart = nowtime;
       M_Drawer();                   // menu is drawn even on top of wipes
       I_FinishUpdate();             // page flip or blit buffer
@@ -408,6 +415,7 @@ static int demosequence;         // killough 5/2/98: made static
 static int pagetic;
 static const char *pagename;
 static demoloop_t demoloop_point;
+static demoloop_t demoloop_prev;
 
 //
 // D_PageTicker
@@ -453,6 +461,8 @@ void D_AdvanceDemo(void)
 // This cycles through the demo sequences.
 void D_AdvanceDemoLoop(void)
 {
+  if (demosequence >= 0)
+    demoloop_prev = &demoloop[demosequence];
   demosequence = (demosequence + 1) % demoloop_count;
   demoloop_point = &demoloop[demosequence];
 }
@@ -494,6 +504,11 @@ void D_DoAdvanceDemo(void)
         default:
             I_Printf(VB_DEBUG, "D_DoAdvanceDemo: unhandled demoloop type");
             break;
+    }
+
+    if (demoloop_prev)
+    {
+        screen_wipe_internal = demoloop_prev->outro_wipe;
     }
 }
 
@@ -810,7 +825,7 @@ static void InitGameVersion(void)
     // @category compat
     //
     // Emulate a specific version of Doom. Valid values are "1.9",
-    // "ultimate", "final", "chex". Implies -complevel vanilla.
+    // "ultimate", "final", "final2", "chex". Requires -complevel vanilla.
     //
 
     p = M_CheckParm("-gameversion");
@@ -1251,7 +1266,8 @@ static void LoadIWadBase(void)
     D_GetModeAndMissionByIWADName(M_BaseName(wadfiles[0]), &local_gamemode,
                                   &local_gamemission);
 
-    if (local_gamemission == none || local_gamemode == indetermined)
+    if (local_gamemission == none
+        || (local_gamemode == indetermined && local_gamemission != doom))
     {
         return;
     }
@@ -1607,6 +1623,18 @@ void D_DoomMain(void)
     M_PrintHelpString();
     I_SafeExit(0);
   }
+
+  #ifdef __linux__
+
+  if (M_ParmExists("-setup"))
+  {
+    char* setup_path = M_StringJoin(D_DoomExeDir(), DIR_SEPARATOR_S, PROJECT_SHORTNAME "-setup");
+    char* args[] = { setup_path, NULL };
+    execv(setup_path, args);
+    I_SafeExit(1);
+  }
+
+  #endif
 
   // [FG] initialize logging verbosity early to decide
   //      if the following lines will get printed or not
@@ -2104,6 +2132,11 @@ void D_DoomMain(void)
 
   W_ProcessInWads("DECLARE", DECL_Parse, PROCESS_IWAD | PROCESS_PWAD);
 
+  if (!DECL_HasAmbientSounds())
+  {
+    W_ProcessInWads("SNDINFO", SNDINFO_Parse, PROCESS_IWAD | PROCESS_PWAD);
+  }
+
   DECL_Install();
 
   // Ambient
@@ -2414,9 +2447,10 @@ void D_DoomMain(void)
   }
   else if (startloadgame >= 0 && startloadgame <= 77) // Page 0-7, slot 0-7.
   {
+    const int slot = startloadgame % 10, page = startloadgame / 10;
     char *file;
-    file = G_SaveGameName(startloadgame);
-    G_LoadGame(file, startloadgame, true); // killough 5/15/98: add command flag
+    file = G_SaveGameName(slot, page);
+    G_LoadGame(file, slot, page, true); // killough 5/15/98: add command flag
     I_Free(file);
   }
   else
@@ -2424,10 +2458,14 @@ void D_DoomMain(void)
     {
       if (autostart || netgame)
 	{
-	  G_InitNew(startskill, startepisode, startmap);
+	  G_InitNew(startskill, startepisode, startmap, false);
 	  // [crispy] no need to write a demo header in demo continue mode
 	  if (demorecording && gameaction != ga_playdemo)
+	  {
 	    G_BeginRecording();
+	    // enforce melt as first screen wipe for demorecording
+	    screen_wipe_internal = wipe_Melt;
+	  }
 	}
       else
 	D_StartTitle();                 // start up intro loop
@@ -2464,8 +2502,11 @@ void D_BindMiscVariables(void)
   BIND_NUM_GENERAL(show_endoom, ENDOOM_OFF, ENDOOM_OFF, ENDOOM_ALWAYS,
     "Show ENDOOM screen (0 = Off; 1 = PWAD Only; 2 = Always)");
   BIND_BOOL_GENERAL(demobar, true, "Show demo progress bar");
-  BIND_NUM_GENERAL(screen_melt, wipe_Melt, wipe_None, wipe_Fizzle,
+
+  M_BindNum(
+    "screen_melt", &screen_wipe, NULL, wipe_Melt, wipe_None, wipe_Fizzle, ss_gen, wad_no,
     "Screen wipe effect (0 = None; 1 = Melt; 2 = Crossfade; 3 = Fizzlefade)");
+
   BIND_NUM_GENERAL(palette_changes, PAL_CHANGE_ON, PAL_CHANGE_OFF, PAL_CHANGE_REDUCED,
     "Palette changes when taking damage or picking up items (0 = Off; 1 = On; 2 = Reduced)");
   BIND_NUM_GENERAL(organize_savefiles, -1, -1, 1,

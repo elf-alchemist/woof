@@ -22,6 +22,7 @@ set(WOOF_SOURCES
     decl_main.c            decl_main.h
     decl_props.c
     decl_states.c
+    decl_sndinfo.c         decl_sndinfo.h
     decl_sounds.c          decl_sounds.h
     deh_ammo.c
     deh_bex_helper.c
@@ -230,6 +231,7 @@ target_link_libraries(
             miniz::miniz
             spng::spng
             netlib
+            base64
             md5
             sha1
             opl

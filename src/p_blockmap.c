@@ -365,8 +365,8 @@ static void P_CreateBlockMap(void)
 
     // blockmap header
 
-    blockmaplump[0] = bmaporgx = xorg << FRACBITS;
-    blockmaplump[1] = bmaporgy = yorg << FRACBITS;
+    blockmaplump[0] = bmaporgx = IntToFixed(xorg);
+    blockmaplump[1] = bmaporgy = IntToFixed(yorg);
     blockmaplump[2] = bmapwidth = ncols;
     blockmaplump[3] = bmapheight = nrows;
 
@@ -442,8 +442,8 @@ static void P_CreateBlockMap(void)
 
     // Save blockmap parameters
 
-    bmaporgx = minx << FRACBITS;
-    bmaporgy = miny << FRACBITS;
+    bmaporgx = IntToFixed(minx);
+    bmaporgy = IntToFixed(miny);
     bmapwidth = ((maxx - minx) >> MAPBTOFRAC) + 1;
     bmapheight = ((maxy - miny) >> MAPBTOFRAC) + 1;
 
@@ -649,7 +649,7 @@ static bmap_format_t CheckBlockmapFormat(int lump, int lump_size)
 {
     bmap_format_t format = BMAP_DoomBlockmap;
     boolean force_rebuild = false;
-    void *data = W_CacheLumpNum(lump);
+    void *data = (lump >= 0) ? W_CacheLumpNum(lump) : NULL;
     int vanilla_size = lump_size / sizeof(uint16_t);
 
     // Try extended formats

@@ -30,6 +30,7 @@
 #include "doomdata.h"
 #include "doomdef.h"
 #include "doomtype.h"
+#include "f_wipe.h"
 
 struct mapentry_s;
 
@@ -203,6 +204,8 @@ extern boolean halfplayerdamage, cshalfplayerdamage;
 extern boolean doubleammo, csdoubleammo;
 extern boolean aggromonsters, csaggromonsters;
 
+extern int cshelperdogs;
+
 // Netgame? Only true if >1 player.
 extern  boolean netgame;
 extern  boolean solonet;
@@ -327,8 +330,6 @@ extern  boolean   critical;
 
 #define CRITICAL(x) (critical || strictmode ? 0 : (x))
 
-extern  int       savegameslot;
-
 extern  gamestate_t  gamestate;
 
 //-----------------------------
@@ -372,6 +373,8 @@ extern  boolean precache;
 // wipegamestate can be set to -1
 //  to force a wipe on the next draw
 extern  gamestate_t     wipegamestate;
+extern  wipefx_t        screen_wipe_internal;
+extern  wipefx_t        screen_wipe;
 
 // debug flag to cancel adaptiveness
 extern  boolean         singletics;

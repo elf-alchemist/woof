@@ -74,31 +74,6 @@ enum VoxelFace
 };
 
 
-static int VX_PaletteIndex (byte * pal, int r, int g, int b)
-{
-	int best = 0;
-	int best_dist = (1 << 30);
-
-	int i;
-	for (i = 0 ; i < 256 ; i++)
-	{
-		int dr = r - (int)*pal++;
-		int dg = g - (int)*pal++;
-		int db = b - (int)*pal++;
-
-		int dist = dr * dr + dg * dg + db * db;
-
-		if (dist < best_dist)
-		{
-			best = i;
-			best_dist = dist;
-		}
-	}
-
-	return best;
-}
-
-
 static void VX_CreateRemapTable (byte * p, byte * table)
 {
 	for (int c = 0 ; c < 256 ; c++)
@@ -107,7 +82,7 @@ static void VX_CreateRemapTable (byte * p, byte * table)
 		int g = (int)*p++ << 2;
 		int b = (int)*p++ << 2;
 
-		table[c] = VX_PaletteIndex(global_playpal, r, g, b);
+		table[c] = I_GetNearestColor (pal, r, g, b);
 	}
 }
 
@@ -496,7 +471,7 @@ boolean VX_ProjectVoxel(mobj_t *thing, int lightlevel_override)
 		return false;
 
 	// skip the player thing we are viewing from
-	if (thing->player == viewplayer)
+	if (thing == viewplayer->mo)
 		return true;
 
 	// does the voxel model exist?
@@ -681,9 +656,9 @@ boolean VX_ProjectVoxel(mobj_t *thing, int lightlevel_override)
 	{
 		vis->colormap[0] = vis->colormap[1] = NULL;
 	}
-	else if (fixedcolormap != NULL)
+	else if (fixedcolormapoffset)
 	{
-		vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapindex * 256;
+		vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapoffset;
 	}
 	else if (thing->frame & FF_FULLBRIGHT)
 	{
@@ -692,18 +667,19 @@ boolean VX_ProjectVoxel(mobj_t *thing, int lightlevel_override)
 	else
 	{
 		// diminished light
-		const int index = R_GetLightIndex(xscale);
-		int lightnum = (demo_version >= DV_MBF)
-				? (lightlevel_override >> LIGHTSEGSHIFT)
-				: (thing->subsector->sector->lightlevel >> LIGHTSEGSHIFT);
 
-		lightnum = CLAMP(lightnum + extralight, 0, LIGHTLEVELS - 1);
-		int* spritelightoffsets = &scalelightoffset[MAXLIGHTSCALE * lightnum];
+		int lightnum = (demo_version >= DV_MBF)
+		             ? (lightlevel_override >> LIGHTSEGSHIFT)
+		             : (thing->subsector->sector->lightlevel >> LIGHTSEGSHIFT);
+
+		lightnum += extralight;
+		lightnum = CLAMP(lightnum, 0, LIGHTLEVELS - 1);
+
+		const int *const spritelightoffsets = scalelightoffset[lightnum];
+		const int index = R_GetLightIndex(xscale);
 
 		vis->colormap[0] = thiscolormap + spritelightoffsets[index];
-		vis->colormap[1] = (STRICTMODE(brightmaps) || force_brightmaps)
-				? thiscolormap
-				: dc_colormap[0];
+		vis->colormap[1] = thiscolormap;
 	}
 
 	// ID24 per-state tranmap
@@ -832,8 +808,8 @@ static void VX_DrawColumn (vissprite_t * spr, int x, int y)
 
 	boolean shadow = ((spr->mobjflags & MF_SHADOW) != 0);
 
-	int linesize = video.width;
-	pixel_t * dest = I_VideoBuffer + viewwindowy * linesize + viewwindowx;
+	int linesize = video.height;
+	pixel_t * dest = I_VideoBuffer + (viewwindowx * linesize) + viewwindowy;
 
 	// iterate over screen columns
 	fixed_t ux = ((Ax - 1) | FRACMASK) + 1;
@@ -929,7 +905,7 @@ static void VX_DrawColumn (vissprite_t * spr, int x, int y)
 
 				for (; uy < uy1 ; uy += FRACUNIT)
 				{
-					dest[(uy >> FRACBITS) * linesize + (ux >> FRACBITS)] = pix;
+					dest[(ux >> FRACBITS) * linesize + (uy >> FRACBITS)] = pix;
 				}
 			}
 			else if (has_bottom)
@@ -944,7 +920,7 @@ static void VX_DrawColumn (vissprite_t * spr, int x, int y)
 
 				for (; uy > uy2 ; uy -= FRACUNIT)
 				{
-					dest[(uy >> FRACBITS) * linesize + (ux >> FRACBITS)] = pix;
+					dest[(ux >> FRACBITS) * linesize + (uy >> FRACBITS)] = pix;
 				}
 			}
 
@@ -962,7 +938,7 @@ static void VX_DrawColumn (vissprite_t * spr, int x, int y)
 					byte src = slab[i];
 					byte pix = spr->colormap[spr->brightmap[src]][src];
 
-					dest[(uy >> FRACBITS) * linesize + (ux >> FRACBITS)] = pix;
+					dest[(ux >> FRACBITS) * linesize + (uy >> FRACBITS)] = pix;
 				}
 			}
 		}
@@ -1052,7 +1028,7 @@ void VX_DrawVoxel (vissprite_t * spr)
 	if ((spr->mobjflags_extra & MFX_COLOREDBLOOD) && (spr->colormap[0] != NULL))
 	{
 		static const byte * prev_trans = NULL, * prev_map = NULL;
-		const byte * trans = red2col[spr->color], * map = spr->colormap[0];
+		const byte * trans = xlat[spr->color].lump, * map = spr->colormap[0];
 
 		static byte new_colormap[256];
 

@@ -391,11 +391,12 @@ enum
     str_death_use_action,
     str_widescreen,
     str_bobbing_pct,
-    str_screen_melt,
+    str_screen_wipe,
     str_palette_changes,
     str_invul_mode,
     str_skill,
-    str_freelook
+    str_freelook,
+    str_sky_projection,
 };
 
 static const char **GetStrings(int id);
@@ -563,7 +564,7 @@ static void DrawTabs(void)
         {
             DrawMenuStringEx(tabs[i].flags, x, rect->y, CR_TITLE);
             V_FillRect(x + video.deltaw, rect->y + M_SPC, rect->w, 1,
-                       colrngs[CR_TITLE][cr_shaded[v_lightest_color]]);
+                       xlat[CR_TITLE].table[cr_shaded[v_lightest_color]]);
         }
         else
         {
@@ -695,9 +696,9 @@ static void DrawIndicator_Meter(const setup_menu_t *s, int x, int y, int width)
         if (scale > 0.0f)
         {
             const byte shade = cr_shaded[v_lightest_color];
-            const byte color = scale < limit    ? cr_green[shade]
-                               : scale >= 0.99f ? cr_red[shade]
-                                                : cr_gold[shade];
+            const byte color = scale < limit    ? xlat[CR_GREEN].table[shade]
+                               : scale >= 0.99f ? xlat[CR_RED].table[shade]
+                                                : xlat[CR_GOLD].table[shade];
             V_FillRect(x, y, lroundf(width * scale), 1, color);
         }
     }
@@ -1042,7 +1043,7 @@ static void DrawSetting(setup_menu_t *s, int accum_y)
         }
         else if (flags & S_HILITE)
         {
-            cr = cr_bright;
+            cr = xlat[CR_BRIGHT].table;
         }
         else
         {
@@ -1193,7 +1194,7 @@ static void DrawGyroCalibration(void)
             I_UpdateGyroCalibrationState();
             if (I_GetGyroCalibrationState() == GYRO_CALIBRATION_ACTIVE)
             {
-                M_StartSound(sfx_pstop);
+                M_StartSound(sfx_mnumov);
             }
             break;
 
@@ -1202,7 +1203,7 @@ static void DrawGyroCalibration(void)
             I_UpdateGyroCalibrationState();
             if (I_GetGyroCalibrationState() == GYRO_CALIBRATION_COMPLETE)
             {
-                M_StartSound(sfx_pstop);
+                M_StartSound(sfx_mnumov);
             }
             break;
 
@@ -1211,7 +1212,7 @@ static void DrawGyroCalibration(void)
             I_UpdateGyroCalibrationState();
             if (I_GetGyroCalibrationState() == GYRO_CALIBRATION_INACTIVE)
             {
-                M_StartSound(sfx_swtchx);
+                M_StartSound(sfx_mnucls);
                 block_input = false;
             }
             break;
@@ -1883,26 +1884,26 @@ static const char *hud_anchoring_strings[] = {
     "Wide", "4:3", "16:9", "21:9"
 };
 
-#define H_X_THRM8 (M_X_THRM8 - 14)
-#define H_X       (M_X - 14)
+#define ST_X_THRM4 (M_X_THRM4 - 48)
+#define ST_X       (M_X - 48)
 
 static setup_menu_t stat_settings1[] = {
 
-    {"HUD Layout", S_THERMO, H_X_THRM8, M_THRM_SPC, {"screenblocks"},
+    {"HUD Layout", S_THERMO | S_THRM_SIZE4, ST_X_THRM4, M_THRM_SPC, {"screenblocks"},
      .strings_id = str_screensize, .action = SizeDisplayAlt},
 
     MI_GAP,
 
-    {"HUD Anchoring", S_CHOICE, H_X, M_SPC, {"hud_anchoring"},
+    {"HUD Anchoring", S_CHOICE, ST_X, M_SPC, {"hud_anchoring"},
      .strings_id = str_hud_anchoring, .action = I_UpdateHudAnchoring},
 
     MI_GAP,
 
-    {"Status Bar", S_SKIP | S_TITLE, H_X, M_SPC},
+    {"Status Bar", S_SKIP | S_TITLE, ST_X, M_SPC},
 
-    {"Colored Numbers", S_ONOFF | S_COSMETIC, H_X, M_SPC, {"sts_colored_numbers"}},
+    {"Colored Numbers", S_ONOFF | S_COSMETIC, ST_X, M_SPC, {"sts_colored_numbers"}},
 
-    {"Solid Background Color", S_ONOFF, H_X, M_SPC, {"st_solidbackground"},
+    {"Solid Background", S_ONOFF, ST_X, M_SPC, {"st_solidbackground"},
      .action = RefreshSolidBackground},
 
     MI_RESET,
@@ -1924,6 +1925,8 @@ static const char *show_adv_widgets_strings[] = {"Off", "Automap", "HUD",
 static const char *stats_format_strings[] = {
   "Ratio", "Boolean", "Percent", "Remaining", "Count"
 };
+
+#define H_X       (M_X - 14)
 
 static setup_menu_t stat_settings2[] = {
 
@@ -2058,7 +2061,7 @@ void MN_DrawStatusHUD(void)
         int x = XH_X + 85 - SHORT(patch->width) / 2;
         int y = M_Y + M_SPC / 2 - SHORT(patch->height) / 2 - 1;
 
-        V_DrawPatchTranslated(x, y, patch, colrngs[hud_crosshair_color]);
+        V_DrawPatchTranslated(x, y, patch, xlat[hud_crosshair_color].table);
     }
 
     // If the Reset Button has been selected, an "Are you sure?" message
@@ -3329,6 +3332,11 @@ static const char *fuzzmode_strings[] = {
     "Blocky", "Refraction", "Shadow", "Original"
 };
 
+// [Nugget] Sky projection
+static const char *sky_projection_strings[] = {
+  "Vanilla", "Linear", "Cylindrical"
+};
+
 static setup_menu_t gen_settings5[] = {
 
     {"Smooth Pixel Scaling", S_ONOFF, OFF_CNTR_X, M_SPC, {"smooth_scaling"},
@@ -3349,8 +3357,8 @@ static setup_menu_t gen_settings5[] = {
     {"Stretch Short Skies", S_ONOFF, OFF_CNTR_X, M_SPC, {"stretchsky"},
      .action = R_UpdateStretchSkies},
 
-    {"Linear Sky Scrolling", S_ONOFF, OFF_CNTR_X, M_SPC, {"linearsky"},
-     .action = R_InitPlanes},
+    {"Sky Projection", S_CHOICE, OFF_CNTR_X, M_SPC, {"sky_projection"},
+     .action = R_InitPlanes, .strings_id = str_sky_projection},
 
     {"Swirling Flats", S_ONOFF, OFF_CNTR_X, M_SPC, {"r_swirl"}},
 
@@ -3360,7 +3368,7 @@ static setup_menu_t gen_settings5[] = {
 static const char *death_use_action_strings[] = {"default", "last save",
                                                  "nothing"};
 
-static const char *screen_melt_strings[] = {"Off", "Melt", "Crossfade", "Fizzle"};
+static const char *screen_wipe_strings[] = {"Off", "Melt", "Crossfade", "Fizzle"};
 
 static const char *palette_changes_strings[] = {"Off", "On", "Reduced"};
 
@@ -3373,7 +3381,7 @@ static setup_menu_t gen_settings6[] = {
     {"Quality of life", S_SKIP | S_TITLE, OFF_CNTR_X, M_SPC},
 
     {"Screen wipe effect", S_CHOICE | S_STRICT, OFF_CNTR_X, M_SPC,
-     {"screen_melt"}, .strings_id = str_screen_melt},
+     {"screen_melt"}, .strings_id = str_screen_wipe},
 
     {"Pain/Pickup/Powerup flashes", S_CHOICE | S_STRICT, OFF_CNTR_X, M_SPC,
      {"palette_changes"}, .strings_id = str_palette_changes},
@@ -3513,13 +3521,22 @@ static struct
     boolean pistolstart;
     boolean halfplayerdamage;
     boolean doubleammo;
-    boolean aggromonsters;    
+    boolean aggromonsters;
+    int helperdogs;
 } csmenu;
 
 const char *skill_strings[] = {
     "I'm too young to die", "Hey, not too rough", "Hurt me plenty",
     "Ultra-Violence", "NIGHTMARE!",
 };
+
+static void CsBarkSound(void)
+{
+    if (csmenu.helperdogs)
+    {
+        M_StartSound(sfx_dgact);
+    }
+}
 
 static void SelectSkillLevel(void);
 
@@ -3533,6 +3550,7 @@ static void StartGame(void)
     cshalfplayerdamage = csmenu.halfplayerdamage;
     csdoubleammo = csmenu.doubleammo;
     csaggromonsters = csmenu.aggromonsters;
+    cshelperdogs = csmenu.helperdogs;
 
     M_ChooseSkill(csmenu_skill);
     setup_active = false;
@@ -3540,8 +3558,11 @@ static void StartGame(void)
 
 static setup_menu_t customskill_settings1[] = {
     MI_GAP_Y(10),
-    {"Skill level", S_CHOICE, CNTR_X, M_SPC, {"csmenu_skill"},
-     .strings_id = str_skill, .action = SelectSkillLevel},
+    {"Skill level",
+          S_CHOICE, CNTR_X,
+          M_SPC, {"csmenu_skill"},
+          .strings_id = str_skill,
+          .action = SelectSkillLevel},
     {"Half damage", S_ONOFF, CNTR_X, M_SPC, {"csmenu.halfplayerdamage"}},
     {"Double ammo", S_ONOFF, CNTR_X, M_SPC, {"csmenu.doubleammo"}},
     {"Fast monsters", S_ONOFF, CNTR_X, M_SPC, {"csmenu.fastparm"}},
@@ -3551,6 +3572,11 @@ static setup_menu_t customskill_settings1[] = {
     {"No monsters", S_ONOFF, CNTR_X, M_SPC, {"csmenu.nomonsters"}},
     {"Co-op spawns", S_ONOFF, CNTR_X, M_SPC, {"csmenu.coopspawns"}},
     {"Pistol start", S_ONOFF, CNTR_X, M_SPC, {"csmenu.pistolstart"}},
+    {"Helper dogs",
+          S_MBF | S_THERMO | S_THRM_SIZE4 | S_ACTION,
+          CNTR_X, M_THRM_SPC,
+          {"csmenu.helperdogs"},
+          .action = CsBarkSound},
     MI_GAP,
     {"Start Game", S_CENTER, 0, M_SPC, .action = StartGame},
     MI_END
@@ -3622,7 +3648,7 @@ static void SelectDone(setup_menu_t *ptr)
 {
     ptr->m_flags &= ~S_SELECT;
     ptr->m_flags |= S_HILITE;
-    M_StartSound(sfx_itemup);
+    M_StartSound(sfx_mnusel);
     setup_select = false;
     if (print_warning_about_changes) // killough 8/15/98
     {
@@ -3881,7 +3907,7 @@ void MN_DrawStringCR(int cx, int cy, byte *cr1, byte *cr2, const char *ch)
             c = *ch++;
             if (c >= '0' && c <= '0' + CR_NONE)
             {
-                cr = colrngs[c - '0'];
+                cr = xlat[c - '0'].table;
             }
             else if (c == '0' + CR_ORIG)
             {
@@ -3927,7 +3953,7 @@ void MN_DrawStringCR(int cx, int cy, byte *cr1, byte *cr2, const char *ch)
 
 void MN_DrawString(int cx, int cy, int color, const char *ch)
 {
-    MN_DrawStringCR(cx, cy, colrngs[color], NULL, ch);
+    MN_DrawStringCR(cx, cy, xlat[color].table, NULL, ch);
 }
 
 static void DrawMenuString(int cx, int cy, int color)
@@ -3946,11 +3972,11 @@ static void DrawMenuStringBuffer(int flags, int x, int y, int color,
     {
         if (color == CR_NONE)
         {
-            MN_DrawStringCR(x, y, cr_bright, NULL, buffer);
+            MN_DrawStringCR(x, y, xlat[CR_BRIGHT].table, NULL, buffer);
         }
         else
         {
-            MN_DrawStringCR(x, y, colrngs[color], cr_bright, buffer);
+            MN_DrawStringCR(x, y, xlat[color].table, xlat[CR_BRIGHT].table, buffer);
         }
     }
     else
@@ -4026,7 +4052,7 @@ boolean MN_SetupCursorPostion(int x, int y)
                 if (highlight_tab != i)
                 {
                     highlight_tab = i;
-                    M_StartSound(sfx_itemup);
+                    M_StartSound(sfx_mnusel);
                 }
             }
         }
@@ -4060,7 +4086,7 @@ boolean MN_SetupCursorPostion(int x, int y)
             {
                 print_warning_about_changes = false;
                 highlight_item = i;
-                M_StartSound(sfx_itemup);
+                M_StartSound(sfx_mnusel);
             }
         }
     }
@@ -4121,7 +4147,7 @@ static void Choice(menu_action_t action)
 
         if (*def->location.i != value)
         {
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
         }
         *def->location.i = value;
 
@@ -4152,7 +4178,7 @@ static void Choice(menu_action_t action)
 
         if (*def->location.i != value)
         {
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
         }
         *def->location.i = value;
 
@@ -4420,7 +4446,7 @@ static boolean NextPage(int inc)
         current_menu[set_item_on].m_flags |= S_HILITE;
     }
 
-    M_StartSound(sfx_pstop); // killough 10/98
+    M_StartSound(sfx_mnumov); // killough 10/98
     return true;
 }
 
@@ -4457,7 +4483,7 @@ boolean MN_SetupResponder(menu_action_t action, int ch)
     {
         if (ItemDisabled(current_item->m_flags))
         {
-            M_StartSound(sfx_oof);
+            M_StartSound(sfx_mnuerr);
             return true;
         }
         else if (current_item->action)
@@ -4465,7 +4491,7 @@ boolean MN_SetupResponder(menu_action_t action, int ch)
             current_item->action();
         }
 
-        M_StartSound(sfx_pistol);
+        M_StartSound(sfx_mnuact);
         return true;
     }
 
@@ -4624,7 +4650,7 @@ boolean MN_SetupResponder(menu_action_t action, int ch)
 
         if (ItemDisabled(flags))
         {
-            M_StartSound(sfx_oof);
+            M_StartSound(sfx_mnuerr);
             return true;
         }
         else if (flags & S_NUM)
@@ -4640,7 +4666,7 @@ boolean MN_SetupResponder(menu_action_t action, int ch)
 
         current_item->m_flags |= S_SELECT;
         setup_select = true;
-        M_StartSound(sfx_itemup);
+        M_StartSound(sfx_mnusel);
         return true;
     }
 
@@ -4682,7 +4708,7 @@ boolean MN_SetupResponder(menu_action_t action, int ch)
         default_verify = false;              // phares 4/19/98
         print_warning_about_changes = false; // [FG] reset
         active_thermo = NULL;
-        M_StartSound(sfx_swtchx);
+        M_StartSound(sfx_mnucls);
         return true;
     }
 
@@ -4727,7 +4753,7 @@ static boolean SetupTab(void)
         ;
     set_item_on--;
 
-    M_StartSound(sfx_pstop);
+    M_StartSound(sfx_mnumov);
     return true;
 }
 
@@ -4843,7 +4869,7 @@ boolean MN_SetupMouseResponder(int x, int y)
             {
                 active_thermo->action();
             }
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
         }
         return true;
     }
@@ -4856,7 +4882,7 @@ boolean MN_SetupMouseResponder(int x, int y)
     if (flags & S_ONOFF) // yes or no setting?
     {
         OnOff();
-        M_StartSound(sfx_itemup);
+        M_StartSound(sfx_mnusel);
         return true;
     }
 
@@ -4876,7 +4902,7 @@ boolean MN_SetupMouseResponder(int x, int y)
 
         if (*def->location.i != value)
         {
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
         }
         *def->location.i = value;
 
@@ -5035,11 +5061,12 @@ static const char **selectstrings[] = {
     [str_death_use_action] = death_use_action_strings,
     [str_widescreen] = widescreen_strings,
     [str_bobbing_pct] = bobbing_pct_strings,
-    [str_screen_melt] = screen_melt_strings,
+    [str_screen_wipe] = screen_wipe_strings,
     [str_palette_changes] = palette_changes_strings,
     [str_invul_mode] = invul_mode_strings,
     [str_skill] = skill_strings,
     [str_freelook] = free_look_strings,
+    [str_sky_projection] = sky_projection_strings,
 };
 
 static const char **GetStrings(int id)
@@ -5157,5 +5184,6 @@ void MN_BindMenuVariables(void)
     BIND_BOOL_MENU(csmenu.doubleammo);
     BIND_BOOL_MENU(csmenu.halfplayerdamage);
     BIND_BOOL_MENU(csmenu.aggromonsters);
+    BIND_NUM_MENU(csmenu.helperdogs, 0, 3);
     BIND_NUM_MENU(freelook_mode, FREELOOK_OFF, FREELOOK_DIRECT_AIM);
 }

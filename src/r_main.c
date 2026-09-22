@@ -62,8 +62,8 @@ byte *global_playpal;
 
 int viewangleoffset;
 int validcount = 1;         // increment every time a check is made
-lighttable_t *fixedcolormap;
-int fixedcolormapindex;
+const lighttable_t *fixedcolormap;
+int fixedcolormapoffset;
 int      centerx, centery;
 fixed_t  centerxfrac, centeryfrac;
 fixed_t  projection;
@@ -109,15 +109,10 @@ int numcolormaps;
 lighttable_t *fullcolormap;
 lighttable_t **colormaps;
 
-// updated thanks to Rum-and-Raisin Doom, Ethan Watson
-int* scalelightoffset;
-int* scalelightindex;
-int* zlightoffset;
-int* zlightindex;
-int* planezlightoffset;
-int  planezlightindex;
-int* walllightoffset;
-int  walllightindex;
+int       ** scalelightoffset;
+int       ** zlightoffset;
+int const  * planezlightoffset;
+int const  * walllightoffset;
 
 // killough 3/20/98, 4/4/98: end dynamic colormaps
 
@@ -135,50 +130,55 @@ void (*colfunc)(void);                    // current column draw function
 //
 // killough 5/2/98: reformatted
 //
-int (*R_PointOnSide)(fixed_t x, fixed_t y, struct node_s *node) = R_PointOnSideClassic;
+int (*R_PointOnSide)(fixed_t x, fixed_t y, struct node_s *node) = R_PointOnSide_Classic;
 
-// Workaround for optimization bug in clang
-// fixes desync in competn/doom/fp2-3655.lmp and in dmnsns.wad dmn01m909.lmp
-#if defined(__clang__)
-int R_PointOnSideClassic(volatile fixed_t x, volatile fixed_t y, node_t *node)
-#else
-int R_PointOnSideClassic(fixed_t x, fixed_t y, node_t *node)
-#endif
+int R_PointOnSide_Classic(fixed_t x, fixed_t y, node_t *node)
 {
-  if (!node->dx)
-    return x <= node->x ? node->dy > 0 : node->dy < 0;
+    if (!node->dx)
+    {
+        return x <= node->x ? node->dy > 0 : node->dy < 0;
+    }
 
-  if (!node->dy)
-    return y <= node->y ? node->dx < 0 : node->dx > 0;
-        
-  x -= node->x;
-  y -= node->y;
-  
-  // Try to quickly decide by looking at sign bits.
-  if ((node->dy ^ node->dx ^ x ^ y) < 0)
-    return (node->dy ^ x) < 0;  // (left is negative)
-  return FixedMul(y, node->dx>>FRACBITS) >= FixedMul(node->dy>>FRACBITS, x);
+    if (!node->dy)
+    {
+        return y <= node->y ? node->dx < 0 : node->dx > 0;
+    }
+
+    // Workaround for optimization bug in clang
+    // fixes desync in competn/doom/fp2-3655.lmp and in dmnsns.wad dmn01m909.lmp
+    x = (fixed_t)((unsigned int)x - (unsigned int)node->x);
+    y = (fixed_t)((unsigned int)y - (unsigned int)node->y);
+
+    // Try to quickly decide by looking at sign bits.
+    if ((node->dy ^ node->dx ^ x ^ y) < 0)
+    {
+        return (node->dy ^ x) < 0; // (left is negative)
+    }
+    return FixedMul(y, node->dx >> FRACBITS)
+           >= FixedMul(node->dy >> FRACBITS, x);
 }
 
-#if defined(__clang__)
-int R_PointOnSidePrecise(volatile fixed_t x, volatile fixed_t y, node_t *node)
-#else
-int R_PointOnSidePrecise(fixed_t x, fixed_t y, node_t *node)
-#endif
+int R_PointOnSide_Precise(fixed_t x, fixed_t y, node_t *node)
 {
-   if(!node->dx)
-      return x <= node->x ? node->dy > 0 : node->dy < 0;
+    if (!node->dx)
+    {
+        return x <= node->x ? node->dy > 0 : node->dy < 0;
+    }
 
-   if(!node->dy)
-      return y <= node->y ? node->dx < 0 : node->dx > 0;
+    if (!node->dy)
+    {
+        return y <= node->y ? node->dx < 0 : node->dx > 0;
+    }
 
-   x -= node->x;
-   y -= node->y;
+    x = (fixed_t)((unsigned int)x - (unsigned int)node->x);
+    y = (fixed_t)((unsigned int)y - (unsigned int)node->y);
 
-   // Try to quickly decide by looking at sign bits.
-   if((node->dy ^ node->dx ^ x ^ y) < 0)
-      return (node->dy ^ x) < 0;  // (left is negative)
-   return (int64_t)y * node->dx >= (int64_t)node->dy * x;
+    // Try to quickly decide by looking at sign bits.
+    if ((node->dy ^ node->dx ^ x ^ y) < 0)
+    {
+        return (node->dy ^ x) < 0; // (left is negative)
+    }
+    return (int64_t)y * node->dx >= (int64_t)node->dy * x;
 }
 
 // killough 5/2/98: reformatted
@@ -415,56 +415,54 @@ static void R_InitTextureMapping(void)
 void R_InitLightTables (void)
 {
   // killough 4/4/98: dynamic colormaps
-  // ScaleLight calculated below
-  if (zlightoffset == NULL && zlightindex == NULL)
-  {
-    int NumZLightEntries = LIGHTLEVELS * MAXLIGHTZ;
-    zlightoffset = I_AllocNum(NumZLightEntries, sizeof(int));
-    zlightindex  = I_AllocNum(NumZLightEntries, sizeof(int));
-  }
+  zlightoffset = I_AllocNum(sizeof(*zlightoffset), LIGHTLEVELS);
+
+  int *const all_zlightoffsets =
+    I_AllocNum(sizeof(**zlightoffset), LIGHTLEVELS * MAXLIGHTZ);
 
   // Calculate the light levels to use
   //  for each level / distance combination.
   for (int lightlevel = 0; lightlevel < LIGHTLEVELS; lightlevel++)
   {
-    int lightz, startmap = ((LIGHTLEVELS-1-lightlevel)*2)*NUMCOLORMAPS/LIGHTLEVELS;
-    for (lightz = 0; lightz < MAXLIGHTZ; lightz++)
+    zlightoffset[lightlevel] = all_zlightoffsets + MAXLIGHTZ * lightlevel;
+
+    const int startmap =
+      ((LIGHTLEVELS - 1 - lightlevel) * 2) * NUMCOLORMAPS / LIGHTLEVELS;
+
+    for (int lightz = 0; lightz < MAXLIGHTZ; lightz++)
     {
-      int scale = FixedDiv((SCREENWIDTH / 2 * FRACUNIT), (lightz + 1) << LIGHTZSHIFT);
+      const int scale =
+        FixedDiv((SCREENWIDTH / 2 * FRACUNIT), (lightz + 1) << LIGHTZSHIFT);
+
       int level = startmap - (scale >> LIGHTSCALESHIFT) / DISTMAP;
       level = CLAMP(level, 0, NUMCOLORMAPS - 1);
 
-      // killough 3/20/98: Initialize multiple colormaps
-      // killough 4/4/98
-      // updated thanks to Rum-and-Raisin Doom
-      zlightindex[lightlevel * MAXLIGHTZ + lightz] = level;
-      zlightoffset[lightlevel * MAXLIGHTZ + lightz] = level * 256;
+      zlightoffset[lightlevel][lightz] = level * 256;
     }
   }
 
   // [Woof!] scalelight has been made independent of view size,
   // so we initialize it here
+  scalelightoffset = I_Alloc(sizeof(*scalelightoffset) * LIGHTLEVELS);
 
-  int NumScaleLightEntries = LIGHTLEVELS * MAXLIGHTSCALE;
-  scalelightindex  = (int*)I_Alloc(sizeof(int) * NumScaleLightEntries);
-  scalelightoffset = (int*)I_Alloc(sizeof(int) * NumScaleLightEntries);
+  int *const all_scalelightoffsets =
+    I_Alloc(sizeof(**scalelightoffset) * LIGHTLEVELS * MAXLIGHTSCALE);
 
   // Calculate the light levels to use
   //  for each level / scale combination.
   for (int lightlevel = 0; lightlevel < LIGHTLEVELS; lightlevel++)
   {
-    int startmap = ((LIGHTLEVELS - 1 - lightlevel) * 2) * NUMCOLORMAPS / LIGHTLEVELS;
+    scalelightoffset[lightlevel] = all_scalelightoffsets + MAXLIGHTSCALE * lightlevel;
+
+    const int startmap =
+      ((LIGHTLEVELS - 1 - lightlevel) * 2) * NUMCOLORMAPS / LIGHTLEVELS;
+
     for (int lightscale = 0; lightscale < MAXLIGHTSCALE; lightscale++)
     {
-      // killough 11/98:
       int level = startmap - lightscale / DISTMAP;
       level = CLAMP(level, 0, NUMCOLORMAPS - 1);
 
-      // killough 3/20/98: initialize multiple colormaps
-      // killough 4/4/98
-      // updated thanks to Rum-and-Raisin Doom
-      scalelightindex[lightlevel * MAXLIGHTSCALE + lightscale] = level;
-      scalelightoffset[lightlevel * MAXLIGHTSCALE + lightscale] = level * 256;
+      scalelightoffset[lightlevel][lightscale] = level * 256;
     }
   }
 }
@@ -529,26 +527,19 @@ void R_ExecuteSetViewSize (void)
 
   setsizeneeded = false;
 
-  if (setblocks == 10)
-  {
-    st_height = st_height_screenblocks10;
-  }
+  if (setblocks >= 10)
+    {
+      ST_UpdateStatusBar(); // let the new statusbar take effect
+      ST_SetSTHeight();
 
-  if (setblocks == 11)
-    {
       scaledviewwidth_nonwide = NONWIDEWIDTH;
       scaledviewwidth = video.unscaledw;
-      scaledviewheight = SCREENHEIGHT;                    // killough 11/98
-    }
-  // [crispy] hard-code to SCREENWIDTH and SCREENHEIGHT minus status bar height
-  else if (setblocks == 10)
-    {
-      scaledviewwidth_nonwide = NONWIDEWIDTH;
-      scaledviewwidth = video.unscaledw;
-      scaledviewheight = SCREENHEIGHT - st_height;
+      scaledviewheight = SCREENHEIGHT - st_height; // killough 11/98
     }
   else
     {
+      st_height = st_height_screenblocks10;
+
       const int st_screen = SCREENHEIGHT - st_height;
 
       scaledviewwidth_nonwide = setblocks * 32;
@@ -815,16 +806,16 @@ void R_SetupFrame (player_t *player)
   }
 
   fullcolormap = colormaps[cm];
-  fixedcolormapindex = player->fixedcolormap;
+  fixedcolormapoffset = player->fixedcolormap * 256;
 
-  if (fixedcolormapindex)
+  if (fixedcolormapoffset)
   {
     // killough 3/20/98: use fullcolormap
-    fixedcolormap = fullcolormap + fixedcolormapindex * 256;
+    fixedcolormap = fullcolormap + fixedcolormapoffset;
   }
   else
   {
-    fixedcolormap = 0;
+    fixedcolormap = NULL;
   }
 
   validcount++;
@@ -974,7 +965,9 @@ void R_BindRenderVariables(void)
   BIND_NUM_GENERAL(fuzzmode, FUZZ_BLOCKY, FUZZ_BLOCKY, FUZZ_ORIGINAL,
     "Partial Invisibility (0 = Blocky; 1 = Refraction; 2 = Shadow, 3 = Original)");
   BIND_BOOL_GENERAL(stretchsky, false, "Stretch short skies");
-  BIND_BOOL_GENERAL(linearsky, false, "Linear horizontal scrolling for skies");
+  M_BindNum("sky_projection", &sky_projection, NULL,
+            SKYPROJ_VANILLA, SKYPROJ_VANILLA, NUM_SKYPROJS-1, ss_gen, wad_no,
+            "Sky projection (0 = Vanilla; 1 = Linear; 2 = Cylindrical)");
   BIND_BOOL_GENERAL(r_swirl, false, "Swirling animated flats");
   M_BindBool("voxels_rendering", &default_voxels_rendering, &voxels_rendering,
              true, ss_none, wad_no, "Allow voxel models");

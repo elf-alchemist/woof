@@ -993,7 +993,7 @@ byte *R_MissingFlat(void)
 
     if (buffer == NULL)
     {
-        const byte c1 = colrngs[CR_PURPLE][v_lightest_color];
+        const byte c1 = xlat[CR_PURPLE].table[v_lightest_color];
         const byte c2 = v_darkest_color;
 
         buffer = arena_alloc_num(world_arena, byte, 4096);

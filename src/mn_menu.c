@@ -1,7 +1,7 @@
 //
 //  Copyright (C) 1999 by
 //  id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
-//  Copyright(C) 2020-2021 Fabian Greffrath
+//  Copyright(C) 2020-2026 Fabian Greffrath
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -23,7 +23,6 @@
 //-----------------------------------------------------------------------------
 
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -45,6 +44,7 @@
 #include "i_video.h"
 #include "m_input.h"
 #include "m_io.h"
+#include "m_json.h"
 #include "m_misc.h"
 #include "m_swap.h"
 #include "mn_font.h"
@@ -65,6 +65,8 @@
 #include "w_wad.h"
 #include "wi_stuff.h"
 
+#include "miniz.h"
+
 // [crispy] remove DOS reference from the game quit confirmation dialogs
 #ifndef _WIN32
 #  include <unistd.h> // [FG] isatty()
@@ -78,7 +80,7 @@
 // int     detailLevel;    obsolete -- killough
 int screenblocks, maxscreenblocks; // has default
 
-static int quickSaveSlot; // -1 = no quicksave slot picked!
+static int quickSavePage, quickSaveSlot; // -1 = no quicksave slot picked!
 
 static int messageToPrint; // 1 = message to be printed
 
@@ -240,6 +242,7 @@ static void M_DrawSetup(void); // phares 3/21/98
 
 static void M_DrawSaveLoadBorder(int x, int y, byte *cr);
 static void M_DrawThermo(int x, int y, int thermWidth, int thermDot, byte *cr);
+static void WriteTextCR(int x, int y, byte *cr, const char *string);
 static void WriteText(int x, int y, const char *string);
 static void M_StartMessage(const char *string, void (*routine)(int), boolean input);
 
@@ -897,19 +900,17 @@ static void DeleteAutoSave(void)
 
 static void DeleteSaveGame(int slot)
 {
-    char *name = G_SaveGameName(slot);
+    char *name = G_SaveGameName(slot, savepage);
     M_remove(name);
     I_Free(name);
 
-    if (slot == quickSaveSlot)
+    if (savepage == quickSavePage && slot == quickSaveSlot)
     {
+        quickSavePage = -1;
         quickSaveSlot = -1;
     }
 
-    if (slot == savegameslot)
-    {
-        savegameslot = -1;
-    }
+    G_ClearPendingSaveSlot(slot);
 }
 
 static void M_DeleteGame(int choice)
@@ -944,7 +945,7 @@ static void M_DrawSaveLoadBottomLine(void)
     int index = (menu_input == mouse_mode ? highlight_item : itemOn);
 
     int flags = currentMenu->menuitems[index].flags;
-    byte *cr = (flags & MF_PAGE) ? cr_bright : NULL;
+    byte *cr = (flags & MF_PAGE) ? xlat[CR_BRIGHT].table : NULL;
 
     M_DrawSaveLoadBorder(x, y, cr);
 
@@ -968,15 +969,25 @@ static void M_DrawSaveLoadBorders(void)
     const int num_slots = currentMenu->numitems - 1;
     const int x = currentMenu->x;
 
+    int slot = quickSaveSlot;
+
+    if (menuactive && currentMenu == &LoadAutoSaveDef)
+    {
+        slot++;
+    }
+
     for (int i = 0; i < num_slots; i++)
     {
         const int y = currentMenu->y + LINEHEIGHT * i;
 
         const menuitem_t *item = &currentMenu->menuitems[i];
-        byte *cr = (item->flags & MF_HILITE) ? cr_bright : NULL;
+        byte *cr = (item->flags & MF_HILITE) ? xlat[CR_BRIGHT].table : NULL;
 
         M_DrawSaveLoadBorder(x, y, cr);
-        WriteText(x, y, savegamestrings[i]);
+
+        byte *cr2 =
+            (savepage == quickSavePage && i == slot) ? xlat[CR_GOLD].table : NULL;
+        WriteTextCR(x, y, cr2, savegamestrings[i]);
     }
 }
 
@@ -1034,9 +1045,32 @@ static void M_LoadAutoSaveSelect(int choice)
     //SaveDef.lastOn = choice;
 }
 
+// Loads the savegame at slot/page without relying on the live savepage
+// global, so quickload can target its own page independently of whatever
+// page the save/load menu currently has open.
+static void LoadGameAtSlot(int slot, int page)
+{
+    char *name = G_SaveGameName(slot, page);
+    saveg_compat = saveg_woof510;
+
+    if (!M_FileExistsNotDir(name))
+    {
+        free(name);
+        name = G_MBFSaveGameName(slot, page);
+        saveg_compat = saveg_mbf;
+    }
+
+    G_LoadGame(name, slot, page, false); // killough 3/16/98, 5/15/98: add slot, cmd
+
+    MN_ClearMenus();
+    free(name);
+
+    // [crispy] save the last game you loaded
+    SaveDef.lastOn = slot;
+}
+
 static void M_LoadSelect(int choice)
 {
-    char *name = NULL; // killough 3/22/98
     int slot = choice;
 
     if (menuactive && currentMenu == &LoadAutoSaveDef)
@@ -1044,29 +1078,7 @@ static void M_LoadSelect(int choice)
         slot--;
     }
 
-    name = G_SaveGameName(slot);
-    saveg_compat = saveg_woof510;
-
-    if (!M_FileExistsNotDir(name))
-    {
-        if (name)
-        {
-            I_Free(name);
-        }
-        name = G_MBFSaveGameName(slot);
-        saveg_compat = saveg_mbf;
-    }
-
-    G_LoadGame(name, slot, false); // killough 3/16/98, 5/15/98: add slot, cmd
-
-    MN_ClearMenus();
-    if (name)
-    {
-        I_Free(name);
-    }
-
-    // [crispy] save the last game you loaded
-    SaveDef.lastOn = slot;
+    LoadGameAtSlot(slot, savepage);
 }
 
 //
@@ -1196,51 +1208,152 @@ static void EmptySaveString(char *name, boolean is_autosave)
     }
 }
 
-static void M_ReadSaveString(char *name, int menu_slot, int save_slot,
-                             boolean is_autosave)
+// Parses the already-resolved save file `name` and stores description and
+// (optionally) screenshot at menu index `slot`.
+static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
+                                  boolean read_screenshot)
 {
-    FILE *fp = M_fopen(name, "rb");
-    MN_ReadSavegameTime(menu_slot, name);
-    I_Free(name);
+    MN_ReadSavegameTime(slot, name);
 
-    MN_ResetSnapshot(menu_slot);
-
-    if (!fp)
+    if (read_screenshot)
     {
-        if (!is_autosave)
-        {
-            name = G_MBFSaveGameName(save_slot);
-            fp = M_fopen(name, "rb");
-            I_Free(name);
-        }
-
-        if (!fp)
-        {
-            EmptySaveString(savegamestrings[menu_slot], is_autosave);
-            SetLoadSlotStatus(menu_slot, 0);
-            return;
-        }
+        MN_ResetSnapshot(slot);
     }
 
-    // [FG] check return value
-    if (!fread(&savegamestrings[menu_slot], SAVESTRINGSIZE, 1, fp))
+    // Check if file exists
+
+    if (!M_FileExistsNotDir(name))
     {
-        fclose(fp);
-        EmptySaveString(savegamestrings[menu_slot], is_autosave);
-        SetLoadSlotStatus(menu_slot, 0);
+        EmptySaveString(savegamestrings[slot], is_autosave);
+        SetLoadSlotStatus(slot, 0);
+        free(name);
         return;
     }
 
-    // Ensure that string is terminated
-    savegamestrings[menu_slot][SAVESTRINGSIZE - 1] = '\0';
+    // Open file and read content
 
-    if (!MN_ReadSnapshot(menu_slot, fp))
+    int savegamesize = M_ReadFile(name, &save_p);
+    savebuffer = save_p;
+    free(name);
+
+    if (savegamesize < SAVESTRINGSIZE)
     {
-        MN_ResetSnapshot(menu_slot);
+        EmptySaveString(savegamestrings[slot], is_autosave);
+        SetLoadSlotStatus(slot, 0);
+        I_Free(save_p);
+        return;
     }
 
-    fclose(fp);
-    SetLoadSlotStatus(menu_slot, 1);
+    // Check for zlib-compressed JSON stream
+
+    unsigned char *decomp_str = NULL;
+    mz_ulong decomp_len = (mz_ulong)saveg_read32();
+
+    if (CheckStreamLength((int32_t)decomp_len) && CheckZlibHeader(save_p))
+    {
+        decomp_str = malloc((size_t)decomp_len);
+
+        if (decomp_str)
+        {
+            mz_ulong actual_len = decomp_len;
+            int mz_ret = mz_uncompress(
+                decomp_str, &actual_len, (const unsigned char *)save_p,
+                (mz_ulong)savegamesize - sizeof(int32_t));
+
+            if (mz_ret != MZ_OK || actual_len != decomp_len)
+            {
+                free(decomp_str);
+                decomp_str = NULL;
+            }
+        }
+    }
+
+    // Uncompressed stream
+
+    unsigned char *json_str = decomp_str;
+    size_t json_len = (size_t)decomp_len;
+
+    if (json_str == NULL)
+    {
+        json_str = savebuffer;
+        json_len = savegamesize - 1;
+    }
+
+    // Check for JSON stream
+
+    json_t *root = NULL;
+    if (CheckJSONStream(json_str, json_len))
+    {
+        root = JS_OpenString((char *)json_str, json_len);
+    }
+
+    // Parse JSON stream or legacy binary savegame
+
+    if (root)
+    {
+        const char *savegamestring = JS_GetStringValue(root, "savedescription");
+
+        M_snprintf(savegamestrings[slot], SAVESTRINGSIZE, "%s",
+                   savegamestring ? savegamestring : DEH_String(EMPTYSTRING));
+
+        if (read_screenshot)
+        {
+            const char *snapshot = JS_GetStringValue(root, "snapshot");
+            if (!MN_ReadSnapshot(slot, (byte *)snapshot, 0))
+            {
+                MN_ResetSnapshot(slot);
+            }
+        }
+
+        JS_CloseOptions(NO_INDEX);
+    }
+    else
+    {
+        M_snprintf(savegamestrings[slot], SAVESTRINGSIZE, "%s",
+                   (char *)savebuffer);
+
+        if (read_screenshot && !MN_ReadSnapshot(slot, savebuffer, savegamesize))
+        {
+            MN_ResetSnapshot(slot);
+        }
+    }
+
+    if (decomp_str)
+    {
+        free(decomp_str);
+    }
+
+    if (savebuffer)
+    {
+        Z_Free(savebuffer);
+        savebuffer = save_p = NULL;
+    }
+
+    SetLoadSlotStatus(slot, 1);
+}
+
+// Reads name/screenshot for the numbered savegame menu slot `slot` on `page`,
+// applying the same LoadAutoSaveDef slot offset as M_LoadSelect and friends.
+// Used both to refresh a whole page (M_ReadSaveStrings) and to preload a
+// single slot's existing description (e.g. before overwriting a quicksave).
+static void ReadSaveGameInfo(int slot, int page, boolean read_screenshot)
+{
+    int file_slot = slot;
+
+    if (menuactive && currentMenu == &LoadAutoSaveDef)
+    {
+        file_slot--;
+    }
+
+    char *name = G_SaveGameName(file_slot, page);
+
+    if (!M_FileExistsNotDir(name))
+    {
+        free(name);
+        name = G_MBFSaveGameName(file_slot, page);
+    }
+
+    ReadSaveGameContents(name, slot, false, read_screenshot);
 }
 
 static void UpdateRectX(menu_t *menu, int x)
@@ -1275,8 +1388,7 @@ static void M_ReadSaveStrings(void)
 
     if (currentMenu == &LoadAutoSaveDef)
     {
-        char *name = G_AutoSaveName();
-        M_ReadSaveString(name, 0, 0, true);
+        ReadSaveGameContents(G_AutoSaveName(), 0, true, true);
         start_slot = 1;
     }
 
@@ -1284,9 +1396,7 @@ static void M_ReadSaveStrings(void)
 
     for (int menu_slot = start_slot; menu_slot < num_slots; menu_slot++)
     {
-        const int save_slot = menu_slot - start_slot;
-        char *name = G_SaveGameName(save_slot);
-        M_ReadSaveString(name, menu_slot, save_slot, false);
+        ReadSaveGameInfo(menu_slot, savepage, true);
     }
 }
 
@@ -1304,8 +1414,11 @@ static void M_DrawSave(void)
     if (saveStringEnter)
     {
         i = MN_StringWidth(savegamestrings[saveSlot]);
-        WriteText(currentMenu->x + i, currentMenu->y + LINEHEIGHT * saveSlot,
-                  "_");
+        byte *cr = (savepage == quickSavePage && itemOn == quickSaveSlot)
+                       ? xlat[CR_GOLD].table
+                       : NULL;
+        WriteTextCR(currentMenu->x + i, currentMenu->y + LINEHEIGHT * saveSlot,
+                    cr, "_");
     }
 
     int index = (menu_input == mouse_mode ? highlight_item : itemOn);
@@ -1321,16 +1434,24 @@ static void M_DrawSave(void)
 //
 // M_Responder calls this when user is finished
 //
-static void M_DoSave(int slot)
+static void M_DoSave(int slot, int page)
 {
-    G_SaveGame(slot, savegamestrings[slot]);
+    G_SaveGame(slot, page, savegamestrings[slot]);
     MN_ClearMenus();
 }
 
-void MN_SetQuickSaveSlot(int slot)
+void MN_SetQuickSaveSlot(int choice, int page)
 {
+    int slot = choice;
+
+    if (menuactive && currentMenu == &LoadAutoSaveDef)
+    {
+        slot--;
+    }
+
     if (quickSaveSlot == -2)
     {
+        quickSavePage = page;
         quickSaveSlot = slot;
     }
 }
@@ -1415,7 +1536,7 @@ static boolean GamepadSave(int choice)
     {
         // Immediately save game using a default name.
         SetDefaultSaveName(savegamestrings[choice], NULL);
-        M_DoSave(choice);
+        M_DoSave(choice, savepage);
         LoadDef.lastOn = choice;
         QuickLoadDef.lastOn = choice;
         LoadAutoSaveDef.lastOn = choice + 1;
@@ -1579,7 +1700,7 @@ static void M_DrawSound(void)
 
     if (index == sfx_vol_thermo && (item->flags & MF_HILITE))
     {
-        cr = cr_bright;
+        cr = xlat[CR_BRIGHT].table;
     }
     else
     {
@@ -1591,7 +1712,7 @@ static void M_DrawSound(void)
 
     if (index == music_vol_thermo && (item->flags & MF_HILITE))
     {
-        cr = cr_bright;
+        cr = xlat[CR_BRIGHT].table;
     }
     else
     {
@@ -1672,12 +1793,16 @@ static void M_QuickSaveResponse(int ch)
 {
     if (ch == 'y')
     {
+        // load the quicksave slot's current description directly, on
+        // whatever page it lives on, without switching the visible menu page
+        ReadSaveGameInfo(quickSaveSlot, quickSavePage, false);
+
         if (MN_StartsWithMapIdentifier(savegamestrings[quickSaveSlot]))
         {
             SetDefaultSaveName(savegamestrings[quickSaveSlot], NULL);
         }
-        M_DoSave(quickSaveSlot);
-        M_StartSound(sfx_swtchx);
+        M_DoSave(quickSaveSlot, quickSavePage);
+        M_StartSound(sfx_mnucls);
     }
 }
 
@@ -1685,7 +1810,7 @@ static void M_QuickSave(void)
 {
     if (!usergame && (!demoplayback || netgame)) // killough 10/98
     {
-        M_StartSound(sfx_oof);
+        M_StartSound(sfx_mnuerr);
         return;
     }
 
@@ -1714,8 +1839,8 @@ static void M_QuickLoadResponse(int ch)
 {
     if (ch == 'y')
     {
-        M_LoadSelect(quickSaveSlot);
-        M_StartSound(sfx_swtchx);
+        LoadGameAtSlot(quickSaveSlot, quickSavePage);
+        M_StartSound(sfx_mnucls);
     }
 }
 
@@ -1723,14 +1848,14 @@ static void M_QuickLoad(void)
 {
     if (netgame && !demoplayback) // killough 5/26/98: add !demoplayback
     {
-        M_StartSound(sfx_swtchn);
+        M_StartSound(sfx_mnuopn);
         M_StartMessage(DEH_String(QLOADNET), NULL, false);
         return;
     }
 
     if (demorecording) // killough 5/26/98: exclude during demo recordings
     {
-        M_StartSound(sfx_swtchn);
+        M_StartSound(sfx_mnuopn);
         M_StartMessage("you can't quickload\n"
                        "while recording a demo!\n\n" PRESSKEY,
                        NULL, false); // killough 5/26/98: not externalized
@@ -1768,6 +1893,7 @@ static void M_EndGameResponse(int ch)
     }
 
     // [crispy] clear quicksave slot
+    quickSavePage = -1;
     quickSaveSlot = -1;
 
     currentMenu->lastOn = itemOn;
@@ -1829,7 +1955,7 @@ static void M_SizeDisplay(int choice)
         return;
     }
     R_SetViewSize(screenblocks /*, detailLevel obsolete -- killough */);
-    M_StartSound(sfx_stnmov);
+    M_StartSound(sfx_mnusli);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2191,7 +2317,7 @@ static boolean MenuBack(void)
     currentMenu = currentMenu->prevMenu;
     itemOn = currentMenu->lastOn;
     highlight_item = 0;
-    M_StartSound(sfx_swtchn);
+    M_StartSound(sfx_mnubak);
     return true;
 }
 
@@ -2288,6 +2414,7 @@ void M_Init(void)
     messageToPrint = 0;
     messageString = NULL;
     messageLastMenuActive = menuactive;
+    quickSavePage = -1;
     quickSaveSlot = -1;
     M_ResetAutoSave();
 
@@ -2307,7 +2434,7 @@ void M_Init(void)
         ReadDef2.prevMenu = NULL;
     }
 
-    if (gameversion == exe_final)
+    if (gameversion == exe_final || gameversion == exe_final2)
     {
         ReadDef2.routine = M_DrawReadThisCommercial;
         // [crispy] rearrange Skull in Final Doom HELP screen
@@ -2541,7 +2668,7 @@ boolean M_ShortcutResponder(const event_t *ev)
     if (M_InputActivated(input_endgame)) // End game
     {
         M_PauseSound();
-        M_StartSound(sfx_swtchn);
+        M_StartSound(sfx_mnuopn);
         M_EndGame(0);
         return true;
     }
@@ -2549,7 +2676,7 @@ boolean M_ShortcutResponder(const event_t *ev)
     if (M_InputActivated(input_messages)) // Toggle messages
     {
         M_ChangeMessages(0);
-        M_StartSound(sfx_swtchn);
+        M_StartSound(sfx_mnuopn);
         return true;
     }
 
@@ -2564,7 +2691,7 @@ boolean M_ShortcutResponder(const event_t *ev)
         if (quit_prompt)
         {
             M_PauseSound();
-            M_StartSound(sfx_swtchn);
+            M_StartSound(sfx_mnuopn);
         }
         M_QuitDOOM(0);
         return true;
@@ -2755,7 +2882,7 @@ static void CursorPosition(void)
             if (highlight_item != cursor)
             {
                 highlight_item = cursor;
-                M_StartSound(sfx_itemup);
+                M_StartSound(sfx_mnusel);
             }
         }
     }
@@ -2808,13 +2935,13 @@ static boolean SaveLoadResponder(menu_action_t action, int ch)
         {
             M_DeleteGame(old_menu_input == mouse_mode ? highlight_item : itemOn);
             M_ReadSaveStrings();
-            M_StartSound(sfx_itemup);
+            M_StartSound(sfx_mnusel);
             delete_verify = false;
         }
         else if (M_ToUpper(ch) == 'N' || action == MENU_BACKSPACE
                  || action == MENU_ESCAPE)
         {
-            M_StartSound(sfx_itemup);
+            M_StartSound(sfx_mnusel);
             delete_verify = false;
         }
         return true;
@@ -2827,10 +2954,9 @@ static boolean SaveLoadResponder(menu_action_t action, int ch)
         if (savepage > 0)
         {
             savepage--;
-            quickSaveSlot = -1;
             M_UpdateLoadMenu();
             M_ReadSaveStrings();
-            M_StartSound(sfx_pstop);
+            M_StartSound(sfx_mnumov);
         }
         return true;
     }
@@ -2839,10 +2965,9 @@ static boolean SaveLoadResponder(menu_action_t action, int ch)
         if (savepage < savepage_max)
         {
             savepage++;
-            quickSaveSlot = -1;
             M_UpdateLoadMenu();
             M_ReadSaveStrings();
-            M_StartSound(sfx_pstop);
+            M_StartSound(sfx_mnumov);
         }
         return true;
     }
@@ -2945,7 +3070,7 @@ static boolean MouseResponder(void)
         if (current_item->routine)
         {
             current_item->routine(value);
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
         }
 
         return true;
@@ -3121,7 +3246,7 @@ boolean M_Responder(event_t *ev)
             saveStringEnter = 0;
             if (savegamestrings[saveSlot][0])
             {
-                M_DoSave(saveSlot);
+                M_DoSave(saveSlot, savepage);
             }
         }
         else if (ev->type == ev_text)
@@ -3169,7 +3294,7 @@ boolean M_Responder(event_t *ev)
         G_ClearInput();
         menuactive = false;
         M_ResumeSound();
-        M_StartSound(sfx_swtchx);
+        M_StartSound(sfx_mnucls);
         return true;
     }
 
@@ -3233,7 +3358,7 @@ boolean M_Responder(event_t *ev)
             {
                 itemOn++;
             }
-            M_StartSound(sfx_pstop);
+            M_StartSound(sfx_mnumov);
         } while (currentMenu->menuitems[itemOn].status == -1);
         return true;
     }
@@ -3250,7 +3375,7 @@ boolean M_Responder(event_t *ev)
             {
                 itemOn--;
             }
-            M_StartSound(sfx_pstop);
+            M_StartSound(sfx_mnumov);
         } while (currentMenu->menuitems[itemOn].status == -1);
         return true;
     }
@@ -3260,7 +3385,7 @@ boolean M_Responder(event_t *ev)
         if (currentMenu->menuitems[itemOn].routine
             && currentMenu->menuitems[itemOn].status == 2)
         {
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
             currentMenu->menuitems[itemOn].routine(CHOICE_LEFT);
         }
         return true;
@@ -3271,7 +3396,7 @@ boolean M_Responder(event_t *ev)
         if (currentMenu->menuitems[itemOn].routine
             && currentMenu->menuitems[itemOn].status == 2)
         {
-            M_StartSound(sfx_stnmov);
+            M_StartSound(sfx_mnusli);
             currentMenu->menuitems[itemOn].routine(CHOICE_RIGHT);
         }
         return true;
@@ -3287,17 +3412,17 @@ boolean M_Responder(event_t *ev)
             if (currentMenu->menuitems[itemOn].status == 2)
             {
                 currentMenu->menuitems[itemOn].routine(CHOICE_RIGHT);
-                M_StartSound(sfx_stnmov);
+                M_StartSound(sfx_mnusli);
             }
             else
             {
                 currentMenu->menuitems[itemOn].routine(itemOn);
-                M_StartSound(sfx_pistol);
+                M_StartSound(sfx_mnuact);
             }
         }
         else
         {
-            M_StartSound(sfx_oof); // [FG] disabled menu item
+            M_StartSound(sfx_mnuerr); // [FG] disabled menu item
         }
         // jff 3/24/98 remember last skill selected
         //  killough 10/98 moved to skill-specific functions
@@ -3311,7 +3436,7 @@ boolean M_Responder(event_t *ev)
             currentMenu->lastOn = itemOn;
         }
         MN_ClearMenus();
-        M_StartSound(sfx_swtchx);
+        M_StartSound(sfx_mnucls);
         help_input = old_help_input;
         menu_input = old_menu_input;
         MN_ResetMouseCursor();
@@ -3349,12 +3474,12 @@ boolean M_Responder(event_t *ev)
             }
             itemOn = currentMenu->lastOn;
             highlight_item = 0;
-            M_StartSound(sfx_swtchn);
+            M_StartSound(sfx_mnubak);
         }
         else
         {
             MN_ClearMenus();
-            M_StartSound(sfx_swtchx);
+            M_StartSound(sfx_mnucls);
         }
         help_input = old_help_input;
         menu_input = old_menu_input;
@@ -3370,7 +3495,7 @@ boolean M_Responder(event_t *ev)
         {
             if (AllowDeleteSaveGame())
             {
-                M_StartSound(sfx_itemup);
+                M_StartSound(sfx_mnusel);
                 currentMenu->lastOn = itemOn;
                 help_input = old_help_input;
                 menu_input = old_menu_input;
@@ -3379,7 +3504,7 @@ boolean M_Responder(event_t *ev)
             }
             else
             {
-                M_StartSound(sfx_oof);
+                M_StartSound(sfx_mnuerr);
             }
         }
     }
@@ -3393,7 +3518,7 @@ boolean M_Responder(event_t *ev)
             if (currentMenu->menuitems[i].alphaKey == ch)
             {
                 itemOn = i;
-                M_StartSound(sfx_pstop);
+                M_StartSound(sfx_mnumov);
                 return true;
             }
         }
@@ -3403,7 +3528,7 @@ boolean M_Responder(event_t *ev)
             if (currentMenu->menuitems[i].alphaKey == ch)
             {
                 itemOn = i;
-                M_StartSound(sfx_pstop);
+                M_StartSound(sfx_mnumov);
                 return true;
             }
         }
@@ -3454,7 +3579,7 @@ void MN_StartControlPanel(void)
     G_ClearInput();
 
     M_PauseSound();
-    M_StartSound(sfx_swtchn);
+    M_StartSound(sfx_mnuopn);
 }
 
 //
@@ -3584,7 +3709,7 @@ void M_Drawer(void)
         }
         else if (item->flags & MF_HILITE)
         {
-            cr = cr_bright;
+            cr = xlat[CR_BRIGHT].table;
         }
         else
         {
@@ -3691,7 +3816,7 @@ static void M_DrawThermo(int x, int y, int thermWidth, int thermDot, byte *cr)
 //    Write a string using the hu_font
 //
 
-static void WriteText(int x, int y, const char *string)
+static void WriteTextCR(int x, int y, byte *cr, const char *string)
 {
     int w;
     const char *ch;
@@ -3729,9 +3854,23 @@ static void WriteText(int x, int y, const char *string)
         {
             break;
         }
-        V_DrawPatch(cx, cy, hu_font[c]);
+
+        if (cr)
+        {
+            V_DrawPatchTranslated(cx, cy, hu_font[c], cr);
+        }
+        else
+        {
+            V_DrawPatch(cx, cy, hu_font[c]);
+        }
+
         cx += w;
     }
+}
+
+static void WriteText(int x, int y, const char *string)
+{
+    WriteTextCR(x, y, NULL, string);
 }
 
 void M_StartSound(int sound_id)

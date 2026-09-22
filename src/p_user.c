@@ -58,6 +58,8 @@ static fixed_t PlayerSlope(player_t *player)
 #define MAXBOB  0x100000
 
 boolean onground; // whether player is on ground or in air
+int offgroundtics; // how many frames the player has been in the air
+#define AIRBOBFADETICS 4 // how many frames over which to reduce bob to 0 in midair
 
 //
 // P_Thrust
@@ -98,7 +100,7 @@ void P_Bob(player_t *player, angle_t angle, fixed_t move)
 void P_CalcHeight (player_t* player)
 {
   int     angle;
-  fixed_t bob;
+  fixed_t bob, totalviewoffset;
 
   // Regular movement bobbing
   // (needs to be calculated for gun swing
@@ -134,7 +136,9 @@ void P_CalcHeight (player_t* player)
     player->bob = MAXBOB;
   }
 
-  if (!onground || player->cheats & CF_NOMOMENTUM)
+  offgroundtics = onground ? 0 : (offgroundtics+1);
+
+  if (player->cheats & CF_NOMOMENTUM || (!onground && (offgroundtics > AIRBOBFADETICS)) )
     {
       player->viewz = player->mo->z + VIEWHEIGHT;
 
@@ -158,7 +162,7 @@ void P_CalcHeight (player_t* player)
 
   // move viewheight
 
-  if (player->playerstate == PST_LIVE)
+  if (player->playerstate == PST_LIVE && onground)
     {
       player->viewheight += player->deltaviewheight;
 
@@ -183,7 +187,10 @@ void P_CalcHeight (player_t* player)
 	}
     }
 
-  player->viewz = player->mo->z + player->viewheight + bob;
+  totalviewoffset = player->viewheight + bob - VIEWHEIGHT;
+  if (!onground)
+    totalviewoffset = totalviewoffset * (AIRBOBFADETICS-offgroundtics+1) / AIRBOBFADETICS;
+  player->viewz = player->mo->z + VIEWHEIGHT + totalviewoffset;
 
   if (player->viewz > player->mo->ceilingz-4*FRACUNIT)
     player->viewz = player->mo->ceilingz-4*FRACUNIT;
@@ -323,13 +330,7 @@ void P_DeathThink (player_t* player)
 
     if (!G_AutoSaveEnabled() || !G_LoadAutoSaveDeathUse())
     {
-      if (savegameslot >= 0)
-      {
-        char *file = G_SaveGameName(savegameslot);
-        G_LoadGame(file, savegameslot, false);
-        I_Free(file);
-      }
-      else
+      if (!G_LoadGameDeathUse())
       {
         player->playerstate = PST_REBORN;
       }

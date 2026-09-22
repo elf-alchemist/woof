@@ -51,6 +51,7 @@
 #include "r_draw.h"
 #include "r_main.h"
 #include "r_plane.h"
+#include "r_srgb.h"
 #include "r_voxel.h"
 #include "s_sound.h"
 #include "st_stuff.h"
@@ -113,8 +114,10 @@ static SDL_Window *screen;
 static SDL_Renderer *renderer;
 static SDL_Palette *palette;
 static SDL_Texture *texture;
-static SDL_Rect rect = {0};
-static SDL_FRect frect = {0.0f};
+static SDL_Rect src_rect = {0}, dst_rect = {0};
+static SDL_FRect src_frect = {0.0f}, dst_frect = {0.0f};
+
+static boolean clearneeded = false;
 
 static int window_width, window_height;
 static int default_window_width, default_window_height;
@@ -585,24 +588,24 @@ static void UpdateMouseMenu(void)
     float x, y;
     SDL_GetMouseState(&x, &y);
 
-    SDL_FRect rect;
-    SDL_GetRenderLogicalPresentationRect(renderer, &rect);
+    SDL_FRect mouse_rect;
+    SDL_GetRenderLogicalPresentationRect(renderer, &mouse_rect);
 
     static SDL_FRect old_rect;
-    if (SDL_RectsEqualFloat(&rect, &old_rect))
+    if (SDL_RectsEqualFloat(&mouse_rect, &old_rect))
     {
         ev.data1.i = 0;
     }
     else
     {
-        old_rect = rect;
+        old_rect = mouse_rect;
         ev.data1.i = EV_RESIZE_VIEWPORT;
     }
 
     const float scale = SDL_GetWindowPixelDensity(screen);
 
-    x = clampf((x * scale - rect.x) / rect.w, 0.0f, 1.0f) * video.unscaledw;
-    y = clampf((y * scale - rect.y) / rect.h, 0.0f, 1.0f) * SCREENHEIGHT;
+    x = clampf((x * scale - mouse_rect.x) / mouse_rect.w, 0.0f, 1.0f) * video.unscaledw;
+    y = clampf((y * scale - mouse_rect.y) / mouse_rect.h, 0.0f, 1.0f) * SCREENHEIGHT;
 
     static float oldx, oldy;
     if (x != oldx || y != oldy)
@@ -683,21 +686,30 @@ static void UpdateRender(void)
     // video buffer in order to emulate HOM effects.
     void *pixels;
     int dst_pitch;
-    SDL_LockTexture(texture, &rect, &pixels, &dst_pitch);
-    int h = rect.h;
-    int src_pitch = video.width;
+
+    SDL_LockTexture(texture, &src_rect, &pixels, &dst_pitch);
+
+    int h = src_rect.h;
+    const int src_pitch = video.height;
     pixel_t *dst = pixels;
     pixel_t *src = I_VideoBuffer;
+
     while (h--)
     {
         memcpy(dst, src, src_pitch);
-        dst += dst_pitch;        
+        dst += dst_pitch;
         src += src_pitch;
     }
+
     SDL_UnlockTexture(texture);
 
-    SDL_RenderClear(renderer);
-    SDL_RenderTexture(renderer, texture, &frect, NULL);
+    if (clearneeded)
+    {
+        SDL_RenderClear(renderer);
+        clearneeded = false;
+    }
+
+    SDL_RenderTextureRotated(renderer, texture, &src_frect, &dst_frect, 90.0, NULL, SDL_FLIP_VERTICAL);
 }
 
 static uint64_t frametime_start, frametime_withoutpresent;
@@ -1045,27 +1057,52 @@ void I_SetPalette(byte *playpal)
         // emulating VGA "porch" behaviour
         SDL_SetRenderDrawColor(renderer, colors[0].r, colors[0].g, colors[0].b,
                                SDL_ALPHA_OPAQUE);
+
+        clearneeded = true;
     }
 }
 
 // Taken from Chocolate Doom chocolate-doom/src/i_video.c:L841-867
+// Adapted to use Linear sRGB instead of Gamma sRGB
 
-byte I_GetNearestColor(byte *palette, int r, int g, int b)
+static boolean linear_palette_init = false;
+static double linear_palette[768];
+
+byte I_GetNearestColor(const byte *palette, int red, int green, int blue)
 {
-    byte best;
-    int best_diff, diff;
-    int i, dr, dg, db;
-
-    best = 0;
-    best_diff = INT_MAX;
-
-    for (i = 0; i < 256; ++i)
+    if (!linear_palette_init)
     {
-        dr = r - *palette++;
-        dg = g - *palette++;
-        db = b - *palette++;
+        linear_palette_init = true;
 
-        diff = dr * dr + dg * dg + db * db;
+        // We assume that all calls to this function pass the same palette
+
+        const byte *palette_rover = palette;
+        double *linear_palette_rover = linear_palette;
+
+        for (int i = 0; i < 768; i++)
+        {
+            *linear_palette_rover++ = sRGB_ByteToLinear(*palette_rover++);
+        }
+    }
+
+    const double
+        linear_red   = sRGB_ByteToLinear(red),
+        linear_green = sRGB_ByteToLinear(green),
+        linear_blue  = sRGB_ByteToLinear(blue);
+
+    byte best = 0;
+    double best_diff = INT_MAX;
+
+    const double *linear_palette_rover = linear_palette;
+
+    for (int i = 0; i < 256; ++i)
+    {
+        const double
+            dr = linear_red   - *linear_palette_rover++,
+            dg = linear_green - *linear_palette_rover++,
+            db = linear_blue  - *linear_palette_rover++;
+
+        const double diff = dr * dr + dg * dg + db * db;
 
         if (diff < best_diff)
         {
@@ -1173,7 +1210,12 @@ static void SetWindowPosition(void)
     SDL_SyncWindow(screen);
 }
 
-static double CurrentAspectRatio(void)
+typedef struct
+{
+    int w, h;
+} aspect_ratio_t;
+
+static aspect_ratio_t CurrentAspectRatio(void)
 {
     int w, h;
 
@@ -1209,29 +1251,28 @@ static double CurrentAspectRatio(void)
             break;
     }
 
-    double aspect_ratio = (double)w / (double)h;
+    if (w > ASPECT_RATIO_MAX * h)
+    {
+        return (aspect_ratio_t){.w = 36, .h = 10};
+    }
+    else if (w < ASPECT_RATIO_MIN * h)
+    {
+        return (aspect_ratio_t){.w = 4, .h = 3};
+    }
 
-    aspect_ratio = CLAMP(aspect_ratio, ASPECT_RATIO_MIN, ASPECT_RATIO_MAX);
-
-    return aspect_ratio;
+    return (aspect_ratio_t){.w = w, .h = h};
 }
 
 static void ResetResolution(int height)
 {
-    double aspect_ratio = CurrentAspectRatio();
+    const aspect_ratio_t aspect_ratio = CurrentAspectRatio();
 
-    actualheight = correct_aspect_ratio ? (int)(height * 1.2) : height;
+    actualheight = correct_aspect_ratio ? (6 * height / 5) : height;
     video.height = height;
 
-    video.unscaledw = (int)(unscaled_actualheight * aspect_ratio);
-
-    // Unscaled widescreen 16:9 resolution truncates to 426x240, which is not
-    // quite 16:9. To avoid visual instability, we calculate the scaled width
-    // without the actual aspect ratio. For example, at 1280x720 we get
-    // 1278x720.
-
-    double vertscale = (double)actualheight / (double)unscaled_actualheight;
-    video.width = (int)ceil(video.unscaledw * vertscale);
+    video.unscaledw = unscaled_actualheight * aspect_ratio.w / aspect_ratio.h;
+    video.width = actualheight * aspect_ratio.w / aspect_ratio.h;
+    video.width &= (int)~1;
 
     video.deltaw = (video.unscaledw - NONWIDEWIDTH) / 2;
 
@@ -1252,9 +1293,15 @@ static void ResetResolution(int height)
 
 static void ResetLogicalSize(void)
 {
-    rect.w = video.width;
-    rect.h = video.height;
-    SDL_RectToFRect(&rect, &frect);
+    src_rect.w = video.height;
+    src_rect.h = video.width;
+    SDL_RectToFRect(&src_rect, &src_frect);
+
+    dst_rect.x = (video.width - actualheight) / 2;
+    dst_rect.y = (actualheight - video.width) / 2;
+    dst_rect.w = actualheight;
+    dst_rect.h = video.width;
+    SDL_RectToFRect(&dst_rect, &dst_frect);
 
     if (!SDL_SetRenderLogicalPresentation(renderer, video.width, actualheight,
         SDL_LOGICAL_PRESENTATION_LETTERBOX))
@@ -1359,9 +1406,7 @@ static void I_InitVideoParms(void)
             I_Error("The vertical resolution is too low, turn off the aspect "
                     "ratio correction.");
         }
-        double aspect_ratio =
-            (double)max_video_width / (double)max_video_height;
-        if (aspect_ratio < ASPECT_RATIO_MIN)
+        if (max_video_width < ASPECT_RATIO_MIN * max_video_height)
         {
             I_Printf(VB_ERROR, "Aspect ratio not supported, set other resolution");
             max_video_width = mode->w;
@@ -1378,7 +1423,7 @@ static void I_InitVideoParms(void)
 
     if (correct_aspect_ratio)
     {
-        max_height_adjusted = (int)(max_height / 1.2);
+        max_height_adjusted = 5 * max_height / 6;
         unscaled_actualheight = ACTUALHEIGHT;
     }
     else
@@ -1571,7 +1616,7 @@ static void CreateVideoBuffer(void)
 
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_INDEX8,
                                 SDL_TEXTUREACCESS_STREAMING,
-                                video.width, video.height);
+                                video.height, video.width);
     if (!texture)
     {
         I_Error("Failed to create texture: %s", SDL_GetError());
@@ -1659,6 +1704,8 @@ void I_ResetScreen(void)
 
     SDL_SetTextureScaleMode(texture, smooth_scaling ? SDL_SCALEMODE_PIXELART
                                                     : SDL_SCALEMODE_NEAREST);
+
+    clearneeded = true;
 }
 
 void I_ShutdownGraphics(void)

@@ -100,7 +100,7 @@ static struct
 } subdirs[] = {
     {"music",     NULL,       NULL,     ns_global   },
     {"graphics",  NULL,       NULL,     ns_global   },
-    {"actors",    NULL,       NULL,     ns_global   },
+    {"actors",    "AC_START", "AC_END", ns_actors   },
     {"sounds",    NULL,       NULL,     ns_global   },
     {"textures",  "TX_START", "TX_END", ns_textures },
     {"sprites",   "S_START",  "S_END",  ns_sprites  },
@@ -474,11 +474,19 @@ void W_InitMultipleFiles(void)
 // W_LumpLength
 // Returns the buffer size needed to load the given lump.
 //
+static inline int LumpLength(int lump)
+{
+  return lumpinfo[lump].size;
+}
+
 int W_LumpLength (int lump)
 {
+#ifdef RANGECHECK
   if (lump >= numlumps)
     I_Error ("%i >= numlumps",lump);
-  return lumpinfo[lump].size;
+#endif
+
+  return LumpLength(lump);
 }
 
 //
@@ -487,16 +495,9 @@ int W_LumpLength (int lump)
 //  which must be >= W_LumpLength().
 //
 
-void W_ReadLumpSize(int lump, void *dest, int size)
+static inline void ReadLumpSize(int lump, void *dest, int size)
 {
     lumpinfo_t *info = lumpinfo + lump;
-
-#ifdef RANGECHECK
-    if (lump >= numlumps)
-    {
-        I_Error("%i >= numlumps", lump);
-    }
-#endif
 
     if (!size || !info->size)
     {
@@ -521,9 +522,21 @@ void W_ReadLumpSize(int lump, void *dest, int size)
     I_EndRead();
 }
 
-void W_ReadLump(int lump, void *dest)
+void W_ReadLumpSize(int lump, void *dest, int size)
 {
-    W_ReadLumpSize(lump, dest, -1);
+#ifdef RANGECHECK
+    if (lump >= numlumps)
+    {
+        I_Error("%i >= numlumps", lump);
+    }
+#endif
+
+    ReadLumpSize(lump, dest, size);
+}
+
+static void ReadLump(int lump, void *dest)
+{
+    ReadLumpSize(lump, dest, -1);
 }
 
 //
@@ -545,7 +558,7 @@ void *W_CacheLumpName(const char *lumpname, namespace_t ns)
     if (!lumpcache[lumpnum])
     {
         lumpcache[lumpnum] = I_Alloc(lumpinfo[lumpnum].size);
-        W_ReadLump(lumpnum, lumpcache[lumpnum]);
+        ReadLump(lumpnum, lumpcache[lumpnum]);
     }
     return lumpcache[lumpnum];
 }
@@ -562,7 +575,7 @@ void *W_CacheLumpNum(int lumpnum)
     if (!lumpcache[lumpnum])
     {
         lumpcache[lumpnum] = I_Alloc(lumpinfo[lumpnum].size);
-        W_ReadLump(lumpnum, lumpcache[lumpnum]);
+        ReadLump(lumpnum, lumpcache[lumpnum]);
     }
     return lumpcache[lumpnum];
 }
@@ -604,7 +617,7 @@ void W_ReleaseLumpName(const char *lumpname, namespace_t ns)
 // [FG] name of the WAD file that contains the lump
 const char *W_WadNameForLump (const int lump)
 {
-  if (lump < 0 || lump >= numlumps)
+  if (!W_LumpExists(lump))
     return "invalid";
   else
   {
@@ -617,21 +630,25 @@ const char *W_WadNameForLump (const int lump)
   }
 }
 
+boolean W_LumpExists(const int lump)
+{
+  return 0 <= lump && lump < numlumps;
+}
+
 boolean W_IsIWADLump (const int lump)
 {
-	return lump >= 0 && lump < numlumps &&
-	       lumpinfo[lump].wad_file == wadfiles[0];
+	return W_LumpExists(lump) && lumpinfo[lump].wad_file == wadfiles[0];
 }
 
 // check if lump is from WAD
 boolean W_IsWADLump (const int lump)
 {
-	return lump >= 0 && lump < numlumps && lumpinfo[lump].wad_file;
+	return W_LumpExists(lump) && lumpinfo[lump].wad_file;
 }
 
 boolean W_LumpExistsWithName(int lump, char *name)
 {
-  if (lump < 0 || lump >= numlumps)
+  if (!W_LumpExists(lump))
     return false;
 
   if (name && strncasecmp(lumpinfo[lump].name, name, 8))
@@ -645,7 +662,7 @@ int W_LumpLengthWithName(int lump, char *name)
   if (!W_LumpExistsWithName(lump, name))
     return 0;
 
-  return W_LumpLength(lump);
+  return LumpLength(lump);
 }
 
 // killough 10/98: support .deh from wads

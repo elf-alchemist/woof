@@ -1082,7 +1082,10 @@ WI_drawNum
 
   neg = n < 0;    // killough 11/98: move up to here, for /= 10 division below
   if (neg)
-    n = -n;
+  {
+    // Cast needed to avoid UB. Fixes gcc optimization bug.
+    n = -(unsigned int)n;
+  }
 
   if (digits < 0)
     {
@@ -1459,7 +1462,7 @@ static void WI_updateDeathmatchStats(void)
         }
   
 
-      S_StartSound(0, sfx_barexp);  // bang
+      S_StartSound(0, sfx_inttot);  // bang
       dm_state = 4;  // we're done with all 4 (or all we have to do)
     }
 
@@ -1467,7 +1470,7 @@ static void WI_updateDeathmatchStats(void)
   if (dm_state == 2)
     {
       if (!(bcnt&3))
-        S_StartSound(0, sfx_pistol);  // noise while counting
+        S_StartSound(0, sfx_inttic);  // noise while counting
   
       stillticking = false;
 
@@ -1506,7 +1509,7 @@ static void WI_updateDeathmatchStats(void)
 
       if (!stillticking)
         {
-          S_StartSound(0, sfx_barexp);
+          S_StartSound(0, sfx_inttot);
           dm_state++;
         }
     }
@@ -1515,7 +1518,7 @@ static void WI_updateDeathmatchStats(void)
       {
         if (acceleratestage)
           {   
-            S_StartSound(0, sfx_slop);
+            S_StartSound(0, sfx_intdms);
 
             if (NextLocAnimation())
               WI_initShowNextLoc();
@@ -1757,14 +1760,14 @@ static void WI_updateNetgameStats(void)
           if (dofrags)
             cnt_frags[i] = WI_fragSum(i);  // we had frags
         }
-      S_StartSound(0, sfx_barexp);  // bang
+      S_StartSound(0, sfx_inttot);  // bang
       ng_state = 10;
     }
 
   if (ng_state == 2)
     {
       if (!(bcnt&3))
-        S_StartSound(0, sfx_pistol);  // pop
+        S_StartSound(0, sfx_inttic);  // pop
 
       stillticking = false;
 
@@ -1783,7 +1786,7 @@ static void WI_updateNetgameStats(void)
   
       if (!stillticking)
         {
-          S_StartSound(0, sfx_barexp); 
+          S_StartSound(0, sfx_inttot); 
           ng_state++;
         }
     }
@@ -1791,7 +1794,7 @@ static void WI_updateNetgameStats(void)
     if (ng_state == 4)
       {
         if (!(bcnt&3))
-          S_StartSound(0, sfx_pistol);
+          S_StartSound(0, sfx_inttic);
   
         stillticking = false;
   
@@ -1809,7 +1812,7 @@ static void WI_updateNetgameStats(void)
   
         if (!stillticking)
           {
-            S_StartSound(0, sfx_barexp);
+            S_StartSound(0, sfx_inttot);
             ng_state++;
           }
       }
@@ -1817,7 +1820,7 @@ static void WI_updateNetgameStats(void)
       if (ng_state == 6)
         {
           if (!(bcnt&3))
-            S_StartSound(0, sfx_pistol);
+            S_StartSound(0, sfx_inttic);
 
           stillticking = false;
 
@@ -1840,7 +1843,7 @@ static void WI_updateNetgameStats(void)
   
           if (!stillticking)
             {
-              S_StartSound(0, sfx_barexp);
+              S_StartSound(0, sfx_inttot);
               ng_state += 1 + 2*!dofrags;
             }
         }
@@ -1848,7 +1851,7 @@ static void WI_updateNetgameStats(void)
         if (ng_state == 8)
           {
             if (!(bcnt&3))
-              S_StartSound(0, sfx_pistol);
+              S_StartSound(0, sfx_inttic);
 
             stillticking = false;
 
@@ -1867,7 +1870,7 @@ static void WI_updateNetgameStats(void)
       
             if (!stillticking)
               {
-                S_StartSound(0, sfx_pldeth);
+                S_StartSound(0, sfx_intnet);
                 ng_state++;
               }
           }
@@ -1876,7 +1879,7 @@ static void WI_updateNetgameStats(void)
             {
               if (acceleratestage)
                 {
-                  S_StartSound(0, sfx_sgcock);
+                  S_StartSound(0, sfx_intnex);
 
                   if (NextLocAnimation())
                     WI_initShowNextLoc();
@@ -2064,7 +2067,7 @@ static void WI_updateStats(void)
       cnt_total_time = wbs->totaltimes / TICRATE;
       cnt_time = plrs[me].stime / TICRATE;
       cnt_par = wbs->partime / TICRATE;
-      S_StartSound(0, sfx_barexp);
+      S_StartSound(0, sfx_inttot);
       sp_state = 10;
     }
 
@@ -2073,12 +2076,12 @@ static void WI_updateStats(void)
       cnt_kills[0] += 2;
 
       if (!(bcnt&3))
-        S_StartSound(0, sfx_pistol);
+        S_StartSound(0, sfx_inttic);
 
       if (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
         {
           cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
-          S_StartSound(0, sfx_barexp);
+          S_StartSound(0, sfx_inttot);
           sp_state++;
         }
     }
@@ -2088,12 +2091,12 @@ static void WI_updateStats(void)
         cnt_items[0] += 2;
 
         if (!(bcnt&3))
-          S_StartSound(0, sfx_pistol);
+          S_StartSound(0, sfx_inttic);
 
         if (cnt_items[0] >= (plrs[me].sitems * 100) / wbs->maxitems)
           {
             cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
-            S_StartSound(0, sfx_barexp);
+            S_StartSound(0, sfx_inttot);
             sp_state++;
           }
       }
@@ -2103,7 +2106,7 @@ static void WI_updateStats(void)
           cnt_secret[0] += 2;
 
           if (!(bcnt&3))
-            S_StartSound(0, sfx_pistol);
+            S_StartSound(0, sfx_inttic);
 
           // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
           // [FG] Intermission screen secrets desync
@@ -2114,7 +2117,7 @@ static void WI_updateStats(void)
             {
               cnt_secret[0] = (wbs->maxsecret ? 
                                (plrs[me].ssecret * 100) / wbs->maxsecret : 100);
-              S_StartSound(0, sfx_barexp);
+              S_StartSound(0, sfx_inttot);
               sp_state++;
             }
         }
@@ -2122,7 +2125,7 @@ static void WI_updateStats(void)
         if (sp_state == 8)
           {
             if (!(bcnt&3))
-              S_StartSound(0, sfx_pistol);
+              S_StartSound(0, sfx_inttic);
 
             cnt_time += 3;
 
@@ -2147,7 +2150,7 @@ static void WI_updateStats(void)
                   {
                     if (demo_version < DV_MBF)
                       cnt_total_time = wbs->totaltimes / TICRATE;
-                    S_StartSound(0, sfx_barexp);
+                    S_StartSound(0, sfx_inttot);
                     sp_state++;
                   }
               }
@@ -2157,7 +2160,7 @@ static void WI_updateStats(void)
             {
               if (acceleratestage)
                 {
-                  S_StartSound(0, sfx_sgcock);
+                  S_StartSound(0, sfx_intnex);
 
                   if (NextLocAnimation())
                     WI_initShowNextLoc();

@@ -72,8 +72,6 @@ typedef struct {
 fixed_t pspritescale;
 fixed_t pspriteiscale;
 
-lighttable_t **spritelights;        // killough 1/25/98 made static
-
 // [Woof!] optimization for drawing huge amount of drawsegs.
 // adapted from prboom-plus/src/r_things.c
 typedef struct drawseg_xrange_item_s
@@ -450,7 +448,7 @@ void R_DrawVisSprite(vissprite_t *vis, int x1, int x2)
     // [FG] colored blood and gibs
     if (vis->mobjflags_extra & MFX_COLOREDBLOOD)
     {
-      dc_translation = red2col[vis->color];
+      dc_translation = xlat[vis->color].lump;
     }
     else if (vis->mobjflags & MF_TRANSLATION)
     {
@@ -526,7 +524,6 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
   spritedef_t   *sprdef;
   spriteframe_t *sprframe;
   int       lump;
-  boolean   flip;
   vissprite_t *vis;
   fixed_t   iscale;
   int heightsec;      // killough 3/27/98
@@ -584,7 +581,8 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
 
   xscale = FixedDiv(projection, tz);
 
-    // decide which patch to use for sprite relative to player
+  // decide which patch to use for sprite relative to player
+
   if ((unsigned) thing->sprite >= num_sprites)
     I_Error ("invalid sprite number %i", thing->sprite);
 
@@ -596,28 +594,37 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
 
   sprframe = &sprdef->spriteframes[thing->frame & FF_FRAMEMASK];
 
-  if (sprframe->rotate)
-    {
-      // choose a different rotation based on player view
-      angle_t ang = R_PointToAngle(interpx, interpy);
-      unsigned rot = (ang-interpangle+(unsigned)(ANG45/2)*9)>>29;
-      lump = sprframe->lump[rot];
-      flip = (boolean) sprframe->flip[rot];
-    }
-  else
-    {
-      // use single rotation for all views
-      lump = sprframe->lump[0];
-      flip = (boolean) sprframe->flip[0];
-    }
+  boolean flip = false;
 
   // [crispy] randomly flip corpse, blood and death animation sprites
   if (STRICTMODE(flipcorpses) &&
       (thing->flags_extra & MFX_MIRROREDCORPSE) &&
       !(thing->flags & MF_SHOOTABLE) &&
       (thing->intflags & MIF_FLIP))
+  {
+    flip = !flip;
+  }
+
+  if (sprframe->rotate)
     {
-      flip = !flip;
+      // choose a different rotation based on player view
+      angle_t ang = R_PointToAngle(interpx, interpy);
+      unsigned rot = (ang-interpangle+(unsigned)(ANG45/2)*9)>>29;
+
+      // [Alaux] Proper rotation for flipped things
+      if (flip)
+      {
+        rot = (8 - rot) & 7;
+      }
+
+      lump = sprframe->lump[rot];
+      flip ^= (boolean) sprframe->flip[rot];
+    }
+  else
+    {
+      // use single rotation for all views
+      lump = sprframe->lump[0];
+      flip ^= (boolean) sprframe->flip[0];
     }
 
   txc = tx; // [FG] sprite center coordinate
@@ -715,10 +722,10 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
     // shadow draw
     vis->colormap[0] = vis->colormap[1] = NULL;
   }
-  else if (fixedcolormap)
+  else if (fixedcolormapoffset)
   {
     // fixed map
-    vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapindex * 256;
+    vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapoffset;
   }
   else if (thing->frame & FF_FULLBRIGHT)
   {
@@ -729,18 +736,19 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
   else
   {
     // diminished light
-    const int index = R_GetLightIndex(xscale);
+
     int lightnum = (demo_version >= DV_MBF)
                  ? (lightlevel_override >> LIGHTSEGSHIFT)
                  : (thing->subsector->sector->lightlevel >> LIGHTSEGSHIFT);
 
-    lightnum = CLAMP(lightnum + extralight, 0, LIGHTLEVELS - 1);
-    int* spritelightoffsets = &scalelightoffset[MAXLIGHTSCALE * lightnum];
+    lightnum += extralight;
+    lightnum = CLAMP(lightnum, 0, LIGHTLEVELS - 1);
+
+    const int *const spritelightoffsets = scalelightoffset[lightnum];
+    const int index = R_GetLightIndex(xscale);
 
     vis->colormap[0] = thiscolormap + spritelightoffsets[index];
-    vis->colormap[1] = (STRICTMODE(brightmaps) || force_brightmaps)
-                       ? thiscolormap
-                       : dc_colormap[0];
+    vis->colormap[1] = thiscolormap;
   }
 
   // ID24 per-state tranmap
@@ -756,7 +764,7 @@ static void R_ProjectSprite(mobj_t* thing, int lightlevel_override)
   {
     vis->tranmap = main_addimap;
   }
-  else if (thing->flags & MF_TRANSLUCENT)
+  else if ((thing->flags & MF_TRANSLUCENT) || (thing->intflags & MIF_GHOST))
   {
     vis->tranmap = main_tranmap;
   }
@@ -862,19 +870,15 @@ void R_DrawPSprite(pspdef_t *psp, int lightlevel_override)
 
   // decide which patch to use
 
-#ifdef RANGECHECK
   if ((unsigned) psp->state->sprite >= num_sprites)
     I_Error ("invalid sprite number %i", psp->state->sprite);
-#endif
 
   sprdef = &sprites[psp->state->sprite];
 
-#ifdef RANGECHECK
   if ((psp->state->frame&FF_FRAMEMASK) >= sprdef->numframes)
     I_Error ("invalid frame %i for sprite %s",
              (int)(psp->state->frame & FF_FRAMEMASK),
              sprnames[psp->state->sprite]);
-#endif
 
   sprframe = &sprdef->spriteframes[psp->state->frame & FF_FRAMEMASK];
 
@@ -951,10 +955,10 @@ void R_DrawPSprite(pspdef_t *psp, int lightlevel_override)
     // shadow draw
     vis->colormap[0] = vis->colormap[1] = NULL;
   }
-  else if (fixedcolormap)
+  else if (fixedcolormapoffset)
   {
     // fixed color
-    vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapindex * 256;
+    vis->colormap[0] = vis->colormap[1] = thiscolormap + fixedcolormapoffset;
   }
   else if (psp->state->frame & FF_FULLBRIGHT)
   {
@@ -969,13 +973,13 @@ void R_DrawPSprite(pspdef_t *psp, int lightlevel_override)
                  ? (lightlevel_override >> LIGHTSEGSHIFT)
                  : (viewplayer->mo->subsector->sector->lightlevel >> LIGHTSEGSHIFT);
 
-    lightnum = CLAMP(lightnum + extralight, 0, LIGHTLEVELS - 1);
-    int* spritelightoffsets = &scalelightoffset[MAXLIGHTSCALE * lightnum];
+    lightnum += extralight;
+    lightnum = CLAMP(lightnum, 0, LIGHTLEVELS - 1);
+
+    const int *const spritelightoffsets = scalelightoffset[lightnum];
 
     vis->colormap[0] = thiscolormap + spritelightoffsets[MAXLIGHTSCALE - 1];
-    vis->colormap[1] = (STRICTMODE(brightmaps) || force_brightmaps)
-                        ? thiscolormap
-                        : dc_colormap[0];
+    vis->colormap[1] = thiscolormap;
   }
 
   // ID24 per-state tranmap
@@ -991,7 +995,7 @@ void R_DrawPSprite(pspdef_t *psp, int lightlevel_override)
   {
     vis->tranmap = main_addimap;
   }
-  else if (viewplayer->mo->flags & MF_TRANSLUCENT)
+  else if (viewplayer->mo->flags & MF_TRANSLUCENT /* || (thing->intflags & MIF_GHOST) */)
   {
     vis->tranmap = main_tranmap;
   }
