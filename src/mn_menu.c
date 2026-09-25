@@ -155,7 +155,7 @@ typedef enum
 typedef struct
 {
     short status; // 0 = no cursor here, 1 = ok, 2 = arrows ok
-    char name[10];
+    char name[9];
 
     // choice = menu item #.
     // if status = 2,
@@ -561,11 +561,10 @@ void MN_AddEpisode(const char *map, const char *gfx, const char *txt, char key)
         return;
     }
 
-    G_ValidateMapName(map, &epi, &mapnum);
+    MI_LumpName(map, &epi, &mapnum);
     EpiMenuEpi[EpiDef.numitems] = epi;
     EpiMenuMap[EpiDef.numitems] = mapnum;
-    strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
-    EpisodeMenu[EpiDef.numitems].name[9] = 0;
+    M_CopyLumpName(EpisodeMenu[EpiDef.numitems].name, gfx);
     EpisodeMenu[EpiDef.numitems].alttext = txt ? strdup(txt) : NULL;
     EpisodeMenu[EpiDef.numitems].alphaKey = key;
     EpiDef.numitems++;
@@ -1298,8 +1297,10 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
 
         if (read_screenshot)
         {
-            const char *snapshot = JS_GetStringValue(root, "snapshot");
-            if (!MN_ReadSnapshot(slot, (byte *)snapshot, 0))
+            json_t *snapshot_obj = JS_GetObject(root, "snapshot");
+            const char *snapshot = JS_GetString(snapshot_obj);
+            const int snapshot_len = JS_GetStringLen(snapshot_obj);
+            if (!MN_ReadSnapshot(slot, (byte *)snapshot, snapshot_len, true))
             {
                 MN_ResetSnapshot(slot);
             }
@@ -1312,7 +1313,7 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
         M_snprintf(savegamestrings[slot], SAVESTRINGSIZE, "%s",
                    (char *)savebuffer);
 
-        if (read_screenshot && !MN_ReadSnapshot(slot, savebuffer, savegamesize))
+        if (read_screenshot && !MN_ReadSnapshot(slot, savebuffer, savegamesize, false))
         {
             MN_ResetSnapshot(slot);
         }
@@ -1325,7 +1326,7 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
 
     if (savebuffer)
     {
-        Z_Free(savebuffer);
+        I_Free(savebuffer);
         savebuffer = save_p = NULL;
     }
 
@@ -1463,7 +1464,7 @@ static void SetDefaultSaveName(char *name, const char *append)
     int maplumpnum = W_CheckNumForName(maplump);
 
     if (gamemapinfo && gamemapinfo->label
-        && !(gamemapinfo->flags & MapInfo_LabelClear))
+        && !(gamemapinfo->flags & MI_LabelClear))
     {
         maplump = gamemapinfo->label;
     }
@@ -2796,7 +2797,7 @@ boolean M_ShortcutResponder(const event_t *ev)
             G_EnableWarp(true);
             return true;
         }
-        else if (G_GotoNextLevel(NULL, NULL))
+        else if (G_GotoNextLevel())
         {
             return true;
         }
