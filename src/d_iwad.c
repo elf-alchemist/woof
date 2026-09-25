@@ -329,7 +329,7 @@ static char *GetRegistryString(registry_value_t *reg_val)
     {
         // Allocate a buffer for the value and read the value
 
-        result = I_Malloc(len + 1);
+        result = I_Alloc(len + 1);
 
         if (RegQueryValueEx(key, reg_val->value, NULL, &valtype,
                             (unsigned char *)result, &len)

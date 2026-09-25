@@ -1390,7 +1390,7 @@ void P_Init (void)
   activeplats_arena = M_ArenaInit(SIZE_MB(32), SIZE_MB(1));
   #undef SIZE_MB
 
-  seenstate_tab = calloc(num_states, sizeof(*seenstate_tab));
+  seenstate_tab = I_AllocNum(num_states, sizeof(*seenstate_tab));
 }
 
 //----------------------------------------------------------------------------

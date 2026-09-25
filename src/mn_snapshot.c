@@ -82,17 +82,17 @@ boolean MN_ReadSnapshot(int i, const byte *buf, int len, boolean decode)
 
         if (decoded_size != snapshot_size)
         {
-            free(str);
+            I_Free(str);
             return false;
         }
 
         if (memcpy(snapshots[i], str, snapshot_size) == NULL)
         {
-            free(str);
+            I_Free(str);
             return false;
         }
 
-        free(str);
+        I_Free(str);
     }
     else
     {

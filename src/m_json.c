@@ -241,7 +241,7 @@ json_t *JS_ArrayNext(json_arr_iter_t *iter)
 
 void JS_ArrayIteratorFree(json_arr_iter_t *iter)
 {
-    free(iter);
+    I_Free(iter);
 }
 
 boolean JS_GetBoolean(json_t *json)

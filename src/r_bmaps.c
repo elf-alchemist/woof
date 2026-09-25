@@ -252,7 +252,7 @@ void R_ParseBrightmaps(int lumpnum)
                 }
                 hashmap_put_str(textures_bm, name, &idx);
             }
-            free(name);
+            I_Free(name);
         }
         else if (!strcasecmp("SPRITE", SC_GetString(s)))
         {
@@ -274,7 +274,7 @@ void R_ParseBrightmaps(int lumpnum)
                     }
                 }
             }
-            free(name);
+            I_Free(name);
         }
         else if (!strcasecmp("FLAT", SC_GetString(s)))
         {
@@ -293,7 +293,7 @@ void R_ParseBrightmaps(int lumpnum)
                     hashmap_put(flats_bm, num, &idx);
                 }
             }
-            free(name);
+            I_Free(name);
         }
         else if (!strcasecmp("STATE", SC_GetString(s)))
         {

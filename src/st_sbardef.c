@@ -166,7 +166,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
     {
         case sbe_list:
             {
-                sbe_list_t *list = calloc(1, sizeof(*list));
+                sbe_list_t *list = I_Alloc(sizeof(*list));
                 list->horizontal = JS_GetBooleanValue(json, "horizontal");
                 list->spacing = JS_GetIntegerValue(json, "spacing");
                 out->subtype.list = list;
@@ -325,11 +325,11 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_string:
             {
-                sbe_string_t *string = calloc(1, sizeof(*string));
+                sbe_string_t *string = I_Alloc(sizeof(*string));
                 const char *font_name = JS_GetStringValue(json, "font");
                 if (!font_name)
                 {
-                    free(string);
+                    I_Free(string);
                     return false;
                 }
                 array_foreach_type(font, hudfonts, hudfont_t)
@@ -355,7 +355,7 @@ static boolean ParseSbarElemType(json_t *json, sbarelementtype_t type,
 
         case sbe_minimap:
             {
-                sbe_minimap_t *mm = calloc(1, sizeof(*mm));
+                sbe_minimap_t *mm = I_Alloc(sizeof(*mm));
                 mm->width = JS_GetIntegerValue(json, "width");
                 mm->height = JS_GetIntegerValue(json, "height");
                 double scale = JS_GetNumberValue(json, "scale");

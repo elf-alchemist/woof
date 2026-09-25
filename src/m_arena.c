@@ -265,7 +265,7 @@ int M_ArenaTableSize(const arena_t *arena)
 // Get an ordered array of pointers to the allocated memory.
 uintptr_t *M_ArenaTable(const arena_t *arena)
 {
-    uintptr_t *table = calloc(hashmap_size(arena->hashmap), sizeof(*table));
+    uintptr_t *table = I_AllocNum(hashmap_size(arena->hashmap), sizeof(*table));
 
     hashmap_iterator_t iter = hashmap_iterator(arena->hashmap);
     uint64_t key;

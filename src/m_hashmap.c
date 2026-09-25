@@ -148,7 +148,7 @@ static void Resize(hashmap_t *map, int new_capacity)
     hashmap_entry_t *old_entries = map->entries;
     int old_capacity = map->capacity;
 
-    map->entries = calloc(new_capacity, sizeof(hashmap_entry_t));
+    map->entries = I_AllocNum(new_capacity, sizeof(hashmap_entry_t));
     map->capacity = new_capacity;
 
     for (int i = 0; i < old_capacity; ++i)
@@ -199,7 +199,7 @@ static hashmap_t *Init(int initial_capacity, size_t value_size,
     if (map->values_are_packed)
     {
         map->values_capacity = capacity;
-        map->values = malloc(map->values_capacity * value_size);
+        map->values = I_Alloc(map->values_capacity * value_size);
     }
     else
     {

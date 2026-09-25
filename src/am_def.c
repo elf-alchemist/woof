@@ -51,7 +51,7 @@ amdef_t *AM_ParseAmDef(void)
         return NULL;
     }
 
-    amdef_t *out = calloc(1, sizeof(*out));
+    amdef_t *out = I_Alloc(sizeof(*out));
 
     json_t *player = JS_GetObject(data, "player");
     if (JS_IsObject(player))

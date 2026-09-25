@@ -1054,7 +1054,7 @@ static void LoadGameAtSlot(int slot, int page)
 
     if (!M_FileExistsNotDir(name))
     {
-        free(name);
+        I_Free(name);
         name = G_MBFSaveGameName(slot, page);
         saveg_compat = saveg_mbf;
     }
@@ -1062,7 +1062,7 @@ static void LoadGameAtSlot(int slot, int page)
     G_LoadGame(name, slot, page, false); // killough 3/16/98, 5/15/98: add slot, cmd
 
     MN_ClearMenus();
-    free(name);
+    I_Free(name);
 
     // [crispy] save the last game you loaded
     SaveDef.lastOn = slot;
@@ -1225,7 +1225,7 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
     {
         EmptySaveString(savegamestrings[slot], is_autosave);
         SetLoadSlotStatus(slot, 0);
-        free(name);
+        I_Free(name);
         return;
     }
 
@@ -1233,7 +1233,7 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
 
     int savegamesize = M_ReadFile(name, &save_p);
     savebuffer = save_p;
-    free(name);
+    I_Free(name);
 
     if (savegamesize < SAVESTRINGSIZE)
     {
@@ -1261,7 +1261,7 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
 
             if (mz_ret != MZ_OK || actual_len != decomp_len)
             {
-                free(decomp_str);
+                I_Free(decomp_str);
                 decomp_str = NULL;
             }
         }
@@ -1321,7 +1321,7 @@ static void ReadSaveGameContents(char *name, int slot, boolean is_autosave,
 
     if (decomp_str)
     {
-        free(decomp_str);
+        I_Free(decomp_str);
     }
 
     if (savebuffer)
@@ -1350,7 +1350,7 @@ static void ReadSaveGameInfo(int slot, int page, boolean read_screenshot)
 
     if (!M_FileExistsNotDir(name))
     {
-        free(name);
+        I_Free(name);
         name = G_MBFSaveGameName(file_slot, page);
     }
 

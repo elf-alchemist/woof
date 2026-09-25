@@ -475,9 +475,9 @@ static boolean DecodePNG(png_t *png)
             alpha_pixels_capacity = indexed_size;
 
             // Don't use `realloc()`, we don't need to keep the previous contents
-            if (alpha_pixels) { free(alpha_pixels); }
+            if (alpha_pixels) { I_Free(alpha_pixels); }
 
-            alpha_pixels = malloc(sizeof(*alpha_pixels) * alpha_pixels_capacity);
+            alpha_pixels = I_Alloc(sizeof(*alpha_pixels) * alpha_pixels_capacity);
         }
 
         unsigned num_alpha_pixels = 0;

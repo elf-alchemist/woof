@@ -473,7 +473,7 @@ static void P_CreateBlockMap(void)
         // size of blockmap
         unsigned tot = bmapwidth * bmapheight;
         // array of blocklists
-        bmap_t *bmap = Z_Calloc(tot, sizeof(*bmap), 0);
+        bmap_t *bmap = I_AllocNum(tot, sizeof(*bmap));
 
         for (i = 0; i < numlines; i++)
         {

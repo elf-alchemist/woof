@@ -1014,7 +1014,7 @@ static void ColorizeString(const char *haystack, const char *needle, xlat_index_
     M_snprintf(replacement, sizeof(replacement), "%s%s%s", xlat[cr].str, needle, ORIG_S);
     char * colorized = M_StringReplaceWord(DEH_String(haystack), needle, replacement);
     DEH_AddStringColorizedReplacement(haystack, colorized);
-    free(colorized);
+    I_Free(colorized);
 }
 
 void ST_InitWidgets(void)

@@ -1710,7 +1710,7 @@ static thinker_class_t CheckCeilingInStasis(thinker_t *thinker)
             break;
         }
     }
-    free(table);
+    I_Free(table);
 
     return tc;
 }
@@ -1731,7 +1731,7 @@ static thinker_class_t CheckPlatInStasis(thinker_t *thinker)
             break;
         }
     }
-    free(table);
+    I_Free(table);
 
     return tc;
 }

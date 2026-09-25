@@ -164,13 +164,13 @@ void P_InitSubsectorLines(void)
 
     if (sslines_indexes)
     {
-        free(sslines_indexes);
+        I_Free(sslines_indexes);
         sslines_indexes = NULL;
     }
 
     if (sslines)
     {
-        free(sslines);
+        I_Free(sslines);
         sslines = NULL;
     }
 

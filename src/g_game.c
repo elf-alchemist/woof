@@ -1730,7 +1730,7 @@ static void InvalidDemo(void)
 
 static char *SanitizeSignature(const char *orig, size_t len)
 {
-    char *san = malloc(4 * len + 1);
+    char *san = I_Alloc(4 * len + 1);
 
     for (int i = 0, j = 0; i < len; i++)
     {
@@ -1805,7 +1805,7 @@ static void G_DoPlayDemo(void)
       I_Printf(VB_WARNING,
             "Extended demo format %d found with unknown signature: %s",
             demover, san);
-      free(san);
+      I_Free(san);
       InvalidDemo();
       return;
     }
@@ -2329,7 +2329,7 @@ static void DoSaveGame(char *name)
 
 #ifndef SAVEGAME_NO_COMPRESS
     mz_ulong compressed_len = mz_compressBound((mz_ulong)json_len);
-    if ((compressed = malloc((size_t)compressed_len)))
+    if ((compressed = I_Alloc((size_t)compressed_len)))
     {
         int mz_ret = mz_compress2(compressed, &compressed_len,
                                   (const unsigned char *)json_str,
@@ -2338,7 +2338,7 @@ static void DoSaveGame(char *name)
         if (mz_ret == MZ_OK && CheckStreamLength((int32_t)json_len)
             && CheckStreamLength((int32_t)compressed_len))
         {
-            free(json_str);
+            I_Free(json_str);
             save_p = savebuffer =
                 I_Alloc(SAVESTRINGSIZE + sizeof(int32_t) + compressed_len
                              + MN_SnapshotDataSize());
@@ -2374,11 +2374,11 @@ static void DoSaveGame(char *name)
         save_p = savebuffer = I_Alloc(json_len);
         M_StringCopy((char *)save_p, json_str, json_len);
         save_p += json_len;
-        free(json_str);
+        I_Free(json_str);
     }
     else
     {
-        free(compressed);
+        I_Free(compressed);
 
         (void)MN_WriteSnapshot(save_p);
         save_p += MN_SnapshotDataSize();
@@ -2476,7 +2476,7 @@ static boolean DoLoadGameJSON(boolean do_load_autosave, json_t *root)
             json_t *wadfiles_arr = JS_GetObject(root, "wadfiles");
             int num_wadfiles = JS_GetArraySize(wadfiles_arr);
             const char **wadfile_names =
-                malloc(num_wadfiles * sizeof(*wadfile_names));
+                I_Alloc(num_wadfiles * sizeof(*wadfile_names));
 
             int str_len = 128;
             json_arr_iter_t *wadfiles_iter = JS_ArrayIterator(wadfiles_arr);
@@ -2488,7 +2488,7 @@ static boolean DoLoadGameJSON(boolean do_load_autosave, json_t *root)
             }
             JS_ArrayIteratorFree(wadfiles_iter);
 
-            char *msg = malloc(str_len);
+            char *msg = I_Alloc(str_len);
             int offset =
                 M_snprintf(msg, str_len, "%s",
                            "Incompatible Savegame!!!\nWads expected:\n\n");
@@ -2498,7 +2498,7 @@ static boolean DoLoadGameJSON(boolean do_load_autosave, json_t *root)
                                      wadfile_names[i]);
             }
             M_snprintf(msg + offset, str_len - offset, "%s", "\nAre you sure?");
-            free(wadfile_names);
+            I_Free(wadfile_names);
 
             if (do_load_autosave)
             {
@@ -2508,7 +2508,7 @@ static boolean DoLoadGameJSON(boolean do_load_autosave, json_t *root)
             {
                 G_LoadGameErr(msg);
             }
-            free(msg);
+            I_Free(msg);
 
             return false;
         }
@@ -2801,7 +2801,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
 
     if (CheckStreamLength((int32_t)decomp_len) && CheckZlibHeader(save_p))
     {
-        decomp_str = malloc((size_t)decomp_len);
+        decomp_str = I_Alloc((size_t)decomp_len);
 
         if (decomp_str)
         {
@@ -2812,7 +2812,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
 
             if (mz_ret != MZ_OK || actual_len != decomp_len)
             {
-                free(decomp_str);
+                I_Free(decomp_str);
                 decomp_str = NULL;
             }
         }
@@ -2852,7 +2852,7 @@ static boolean DoLoadGame(boolean do_load_autosave)
 
     if (decomp_str)
     {
-        free(decomp_str);
+        I_Free(decomp_str);
     }
 
     if (!ret)
@@ -2978,7 +2978,7 @@ boolean G_LoadGameDeathUse(void)
 
   char *name = G_SaveGameName(savegameslot, savegamepage);
   G_LoadGame(name, savegameslot, savegamepage, false);
-  free(name);
+  I_Free(name);
   return true;
 }
 

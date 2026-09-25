@@ -139,7 +139,7 @@ static void CreateTranMapPaletteDir(void)
     int length = strlen(tranmap_dir) + sizeof(playpal_string) + 1;
     playpal_dir = I_Alloc(length);
     M_snprintf(playpal_dir, length, "%s/%s", tranmap_dir, playpal_string);
-    free(tranmap_dir);
+    I_Free(tranmap_dir);
     tranmap_dir = NULL;
 
     M_MakeDirectory(playpal_dir);
