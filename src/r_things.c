@@ -126,12 +126,12 @@ void R_InitSpritesRes(void)
 
   if (clipbot) I_Free(clipbot);
 
-  xtoviewangle = I_AllocNum(sizeof(angle_t), (video.width + 1));
-  linearskyangle = I_AllocNum(sizeof(angle_t), (video.width + 1));
-  negonearray = I_AllocNum(sizeof(int), video.width);
-  screenheightarray = I_AllocNum(sizeof(int), video.width);
+  xtoviewangle = I_AllocNum((video.width + 1), sizeof(angle_t));
+  linearskyangle = I_AllocNum((video.width + 1), sizeof(angle_t));
+  negonearray = I_AllocNum(video.width, sizeof(int));
+  screenheightarray = I_AllocNum(video.width, sizeof(int));
 
-  clipbot = I_AllocNum(sizeof(int), 2 * video.width);
+  clipbot = I_AllocNum(2 * video.width, sizeof(int));
   cliptop = clipbot + video.width;
 }
 

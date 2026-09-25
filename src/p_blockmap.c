@@ -361,7 +361,7 @@ static void P_CreateBlockMap(void)
 
     // blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) *
     // (4 + NBlocks + linetotal));
-    blockmaplump = I_AllocNum(sizeof(*blockmaplump), 4 + NBlocks + linetotal);
+    blockmaplump = I_AllocNum(4 + NBlocks + linetotal, sizeof(*blockmaplump));
 
     // blockmap header
 

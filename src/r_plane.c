@@ -147,20 +147,20 @@ void R_InitPlanesRes(void)
 
     if (openings) I_Free(openings);
 
-    floorclip = I_AllocNum(sizeof(int), video.width);
-    ceilingclip = I_AllocNum(sizeof(int), video.width);
-    spanstart = I_AllocNum(sizeof(int), video.height);
+    floorclip = I_AllocNum(video.width, sizeof(int));
+    ceilingclip = I_AllocNum(video.width, sizeof(int));
+    spanstart = I_AllocNum(video.height, sizeof(int));
 
-    cachedheight = I_AllocNum(sizeof(fixed_t), video.height);
-    cacheddistance = I_AllocNum(sizeof(fixed_t), video.height);
-    cachedxstep = I_AllocNum(sizeof(fixed_t), video.height);
-    cachedystep = I_AllocNum(sizeof(fixed_t), video.height);
-    cachedrotation = I_AllocNum(sizeof(fixed_t), video.height);
+    cachedheight = I_AllocNum(video.height, sizeof(fixed_t));
+    cacheddistance = I_AllocNum(video.height, sizeof(fixed_t));
+    cachedxstep = I_AllocNum(video.height, sizeof(fixed_t));
+    cachedystep = I_AllocNum(video.height, sizeof(fixed_t));
+    cachedrotation = I_AllocNum(video.height, sizeof(fixed_t));
 
-    yslope = I_AllocNum(sizeof(fixed_t), video.height);
+    yslope = I_AllocNum(video.height, sizeof(fixed_t));
 
     maxopenings = video.width * video.height;
-    openings = I_AllocNum(sizeof(int), maxopenings);
+    openings = I_AllocNum(maxopenings, sizeof(int));
 
     R_InitPlanes();
 }

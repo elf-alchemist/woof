@@ -293,7 +293,7 @@ int hashmap_size(const hashmap_t *map)
 
 hashmap_t *M_HashMapCopy(const hashmap_t *from)
 {
-    hashmap_t *to = I_AllocNum(1, sizeof(hashmap_t));
+    hashmap_t *to = I_Alloc(sizeof(hashmap_t));
 
     to->key_type = from->key_type;
     to->capacity = from->capacity;

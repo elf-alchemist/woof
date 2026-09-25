@@ -1047,9 +1047,9 @@ void R_InitBufferRes(void)
     if (xlookup) I_Free(xlookup);
     if (solidcol) I_Free(solidcol);
 
-    rowofs = I_AllocNum(sizeof(int), video.width);
-    xlookup = I_AllocNum(sizeof(pixel_t*), video.height);
-    solidcol = I_AllocNum(sizeof(byte), video.width);
+    rowofs = I_AllocNum(video.width, sizeof(int));
+    xlookup = I_AllocNum(video.height, sizeof(pixel_t*));
+    solidcol = I_AllocNum(video.width, sizeof(byte));
 }
 
 //

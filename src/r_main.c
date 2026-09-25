@@ -415,10 +415,10 @@ static void R_InitTextureMapping(void)
 void R_InitLightTables (void)
 {
   // killough 4/4/98: dynamic colormaps
-  zlightoffset = I_AllocNum(sizeof(*zlightoffset), LIGHTLEVELS);
+  zlightoffset = I_AllocNum(LIGHTLEVELS, sizeof(*zlightoffset));
 
   int *const all_zlightoffsets =
-    I_AllocNum(sizeof(**zlightoffset), LIGHTLEVELS * MAXLIGHTZ);
+    I_AllocNum(LIGHTLEVELS * MAXLIGHTZ, sizeof(**zlightoffset));
 
   // Calculate the light levels to use
   //  for each level / distance combination.

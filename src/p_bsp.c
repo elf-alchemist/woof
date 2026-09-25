@@ -442,7 +442,7 @@ void P_LoadNodes(int lump)
     byte *data;
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_t);
-    nodes = I_AllocNum(sizeof(node_t), numnodes);
+    nodes = I_AllocNum(numnodes, sizeof(node_t));
     data = W_CacheLumpNum(lump);
 
     for (int i = 0; i < numnodes; i++)
@@ -786,7 +786,7 @@ void P_LoadNodes_DeePBSPV4(int lump)
     int i;
 
     numnodes = W_LumpLength(lump) / sizeof(mapnode_deepbspv4_t);
-    nodes = I_AllocNum(sizeof(node_t), numnodes);
+    nodes = I_AllocNum(numnodes, sizeof(node_t));
     data = W_CacheLumpNum(lump);
 
     // [FG] skip header
@@ -1214,7 +1214,7 @@ void P_LoadBSPTree_ZDBSP(int lump, bsp_format_t format)
     data += sizeof(numNodes);
 
     numnodes = numNodes;
-    nodes = I_AllocNum(sizeof(node_t), numnodes);
+    nodes = I_AllocNum(numnodes, sizeof(node_t));
 
     for (i = 0; i < numnodes; i++)
     {

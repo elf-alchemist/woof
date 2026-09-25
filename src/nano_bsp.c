@@ -783,7 +783,7 @@ void BSP_BuildNodes (void)
 	BSP_CountStuff (root);
 
 	// allocate the global arrays
-	nodes      = I_AllocNum(sizeof(node_t), numnodes);
+	nodes      = I_AllocNum(numnodes, sizeof(node_t));
 	subsectors = arena_alloc_num(world_arena, subsector_t, numsubsectors);
 	segs       = arena_alloc_num(world_arena, seg_t, numsegs);
 
