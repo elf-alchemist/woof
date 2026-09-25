@@ -289,7 +289,7 @@ static void InitRGB2Pal(void)
 
     rgb2pal = malloc(sizeof(*rgb2pal) * RGB2PAL_SPC);
 
-    byte *const playpal = W_CacheLumpName("PLAYPAL", PU_CACHE);
+    byte *const playpal = W_CacheLumpName("PLAYPAL", ns_global);
 
     for (int r = 0;  r < RGB2PAL_SPC;  r++)
     {

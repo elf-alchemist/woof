@@ -36,7 +36,6 @@
 #include "m_misc.h"
 #include "m_scanner.h"
 #include "w_wad.h"
-#include "z_zone.h"
 
 typedef enum
 {
@@ -362,8 +361,7 @@ void SNDINFO_Parse(int lumpnum)
 
     char lumpname[9] = {0};
     M_CopyLumpName(lumpname, lumpinfo[lumpnum].name);
-    scanner_t *sc = SC_Open(lumpname, W_CacheLumpNum(lumpnum, PU_CACHE),
-                            W_LumpLength(lumpnum));
+    scanner_t *sc = SC_Open(lumpname, lumpnum);
     ParseSndInfo(sc);
     SC_Close(sc);
 }

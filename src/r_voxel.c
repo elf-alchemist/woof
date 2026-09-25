@@ -76,6 +76,7 @@ enum VoxelFace
 
 static void VX_CreateRemapTable (byte * p, byte * table)
 {
+  const byte* pal = W_CacheLumpName("PLAYPAL", ns_global);
 	for (int c = 0 ; c < 256 ; c++)
 	{
 		int r = (int)*p++ << 2;

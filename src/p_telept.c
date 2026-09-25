@@ -25,6 +25,7 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
+#include "i_system.h"
 #include "info.h"
 #include "m_fixed.h"
 #include "p_map.h"
@@ -39,7 +40,6 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "tables.h"
-#include "z_zone.h"
 
 //
 // TELEPORTATION
@@ -56,8 +56,7 @@ static void P_InitTeleptFromSector(void)
 {
     if (sectors_telept == NULL)
     {
-        sectors_telept = Z_Calloc(numsectors, sizeof(*sectors_telept), PU_LEVEL,
-                                  (void **)&sectors_telept);
+        sectors_telept = I_AllocNum(numsectors, sizeof(*sectors_telept));
     }
 }
 

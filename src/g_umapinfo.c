@@ -1684,7 +1684,7 @@ void MI_WI_Start(wbstartstruct_t *wbs, const char **exitpic,
         {
             if (!*animation)
             {
-                *animation = I_Alloc(sizeof(**animation), PU_LEVEL, NULL);
+                *animation = I_Alloc(sizeof(**animation));
             }
             (*animation)->interlevel_exiting =
                 WI_ParseInterlevel(wbs->lastmapinfo->exitanim);
@@ -1701,7 +1701,7 @@ void MI_WI_Start(wbstartstruct_t *wbs, const char **exitpic,
         {
             if (!*animation)
             {
-                *animation = I_Alloc(sizeof(**animation), PU_LEVEL, NULL);
+                *animation = I_Alloc(sizeof(**animation));
             }
             (*animation)->interlevel_entering =
                 WI_ParseInterlevel(wbs->nextmapinfo->enteranim);
